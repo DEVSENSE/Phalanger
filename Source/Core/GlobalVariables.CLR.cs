@@ -181,28 +181,19 @@ namespace PHP.Core
 		/// <param name="array">The array.</param>
 		/// <param name="name">A unparsed name of variable.</param>
 		/// <param name="value">A value to be added.</param>
-		/// <param name="isGpc">Whether the array is GET, POST or COOKIE (value will be slashed then).</param>
-		/// <param name="config">A configuration record.</param>
 		/// <param name="subname">A name of intermediate array inserted before the value.</param>
 		private static void AddVariable(
 		  PhpArray/*!*/ array,
 		  string name,
 		  object value,
-		  string subname,
-		  bool isGpc,
-				LocalConfiguration/*!*/ config)
+		  string subname)
 		{
-			if (config == null)
-				throw new ArgumentNullException("config");
 			if (array == null)
 				throw new ArgumentNullException("array");
 			if (name == null)
 				name = String.Empty;
 
-            if (isGpc)
-                value = GpcEncodeValue(value, config);
-            
-			string key;
+            string key;
 
 			// current left and right square brace positions:
 			int left, right;
@@ -266,28 +257,38 @@ namespace PHP.Core
             return name.Replace('.', '_').Replace(' ', '_');
         }
 
-		private static object GpcEncodeValue(object value, LocalConfiguration config)
-		{
-            //if (value != null && value.GetType() == typeof(string))
-            //{
-            //    var svalue = (string)value;
+        /// <summary>
+        /// Returns <see cref="HttpUtility.UrlDecode"/>  of <paramref name="value"/> if it is a string.
+        /// </summary>
+        private static object UrlDecodeValue(object value)
+        {
+            if (value != null && value.GetType() == typeof(string))
+                return HttpUtility.UrlDecode((string)value, Configuration.Application.Globalization.PageEncoding);
 
-            //    //// url-decodes the values:
-            //    //svalue = HttpUtility.UrlDecode(svalue, Configuration.Application.Globalization.PageEncoding);
-                
-            //    // quotes the values:
-            //    if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
-            //    {
-            //        if (config.Variables.QuoteInDbManner)
-            //            svalue = StringUtils.AddDbSlashes(svalue);
-            //        svalue = StringUtils.AddCSlashes(svalue, true, true);
-            //    }
+            return value;
+        }
 
-            //    return svalue;
-            //}
+        //private static object GpcEncodeValue(object value, LocalConfiguration config)
+        //{
+        //    if (value != null && value.GetType() == typeof(string))
+        //    {
+        //         // url-decodes the values: (COOKIES ONLY)
+        //        string svalue = HttpUtility.UrlDecode((string)value, Configuration.Application.Globalization.PageEncoding);
 
-			return value;
-		}
+        //        // quotes the values:
+        //        if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
+        //        {
+        //            if (config.Variables.QuoteInDbManner)
+        //                svalue = StringUtils.AddDbSlashes(svalue);
+        //            svalue = StringUtils.AddCSlashes(svalue, true, true);
+        //        }
+
+        //        //
+        //        value = svalue;
+        //    }
+
+        //    return value;
+        //}
 
 		/// <summary>
 		/// Adds variables from one auto-global array to another.
@@ -330,9 +331,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="result">An array where to add variables stored in the collection.</param>
 		/// <param name="collection">The collection.</param>
-		/// <param name="isGpc">Whether the array is GET, POST or COOKIE.</param>
-		/// <param name="config">A configuration record.</param>
-		private static void LoadFromCollection(PhpArray result, NameValueCollection collection, bool isGpc, LocalConfiguration config)
+		private static void LoadFromCollection(PhpArray result, NameValueCollection collection)
 		{
 			foreach (string name in collection)
 			{
@@ -346,7 +345,7 @@ namespace PHP.Core
 				if (name != null)
 				{
 					foreach (string value in values)
-                        AddVariable(result, name, value, null, isGpc, config);
+                        AddVariable(result, name, value, null);
 				}
 				else
 				{
@@ -354,7 +353,7 @@ namespace PHP.Core
 					// e.g. for GET variables, URL looks like this: ...&test&...
 					// we add the name of the variable and an emtpy string to get what PHP gets:
                     foreach (string value in values)
-                        AddVariable(result, value, String.Empty, null, isGpc, config);
+                        AddVariable(result, value, String.Empty, null);
 				}
 			}
 		}
@@ -400,7 +399,7 @@ namespace PHP.Core
 			PhpArray array = new PhpArray(0, env_vars.Count);
 
 			foreach (DictionaryEntry entry in env_vars)
-				AddVariable(array, entry.Key as string, entry.Value as string, null, false, config);
+				AddVariable(array, entry.Key as string, entry.Value as string, null);
 
 			Env.Value = array;
 		}
@@ -426,7 +425,7 @@ namespace PHP.Core
             Server.Value = array = new PhpArray(0, /*serverVariables.Count*/64);
 
 			// adds variables defined by ASP.NET and IIS:
-            LoadFromCollection(array, serverVariables, false, config);
+            LoadFromCollection(array, serverVariables);
 
 			// adds argv, argc variables:
 			if (Configuration.Global.GlobalVariables.RegisterArgcArgv)
@@ -546,7 +545,7 @@ namespace PHP.Core
                     postArray = new PhpArray(0, 0);
 
                     // loads Form variables to GET array:
-                    LoadFromCollection(getArray, request.Form, true, config);
+                    LoadFromCollection(getArray, request.Form);
                 }
                 else
                 {
@@ -554,11 +553,11 @@ namespace PHP.Core
                     postArray = new PhpArray(0, request.Form.Count);
 
                     // loads Form variables to POST array:
-                    LoadFromCollection(postArray, request.Form, true, config);
+                    LoadFromCollection(postArray, request.Form);
                 }
 
                 // loads Query variables to GET array:
-                LoadFromCollection(getArray, request.QueryString, true, config);
+                LoadFromCollection(getArray, request.QueryString);
 
                 // HTTP_RAW_POST_DATA   // when always_populate_raw_post_data option is TRUE, however using "php://input" is preferred. For "multipart/form-data" it is not available.
                 try
@@ -602,12 +601,12 @@ namespace PHP.Core
 				foreach (string cookie_name in request.Cookies)
 				{
 					HttpCookie cookie = request.Cookies[cookie_name];
-					AddVariable(cookieArray, cookie.Name, cookie.Value, null, true, config);
+					AddVariable(cookieArray, cookie.Name, UrlDecodeValue(cookie.Value), null);
 
 					// adds a copy of cookie with the same key as the session name;
 					// the name gets encoded and so $_COOKIE[session_name()] doesn't work then:
 					if (cookie.Name == AspNetSessionHandler.AspNetSessionName)
-						cookieArray[AspNetSessionHandler.AspNetSessionName] = GpcEncodeValue(cookie.Value, config);
+						cookieArray[AspNetSessionHandler.AspNetSessionName] = UrlDecodeValue(cookie.Value);
 				}
 			}
 			else
@@ -698,11 +697,11 @@ namespace PHP.Core
 						error = PostedFileError.NoFile;
 					}
 
-					AddVariable(files, name, file_name, "name", false, config);
-					AddVariable(files, name, type, "type", false, config);
-					AddVariable(files, name, file_path, "tmp_name", false, config);
-					AddVariable(files, name, (int)error, "error", false, config);
-					AddVariable(files, name, file.ContentLength, "size", false, config);
+					AddVariable(files, name, file_name, "name");
+					AddVariable(files, name, type, "type");
+					AddVariable(files, name, file_path, "tmp_name");
+					AddVariable(files, name, (int)error, "error");
+					AddVariable(files, name, file.ContentLength, "size");
 				}
 			}
 			else
