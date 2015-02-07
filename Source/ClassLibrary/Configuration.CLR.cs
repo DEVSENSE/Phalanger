@@ -440,6 +440,7 @@ namespace PHP.Library
 				case "sendmail_from": return PhpIni.GSR(ref local.Mailer.DefaultFromHeader, @default.Mailer.DefaultFromHeader, value, action);
 				case "SMTP": return PhpIni.GSR(ref local.Mailer.SmtpServer, @default.Mailer.SmtpServer, value, action);
 				case "smtp_port": return PhpIni.GSR(ref local.Mailer.SmtpPort, @default.Mailer.SmtpPort, value, action);
+                case "mail.add_x_header": return PhpIni.GSR(ref local.Mailer.AddXHeader, @default.Mailer.AddXHeader, value, action);
 
 				case "highlight.bg": return PhpIni.GSR(ref local.Highlighting.Background, @default.Highlighting.Background, value, action);
 				case "highlight.comment": return PhpIni.GSR(ref local.Highlighting.Comment, @default.Highlighting.Comment, value, action);
@@ -546,6 +547,7 @@ namespace PHP.Library
 			IniOptions.Register("smtp_port", IniFlags.Supported | IniFlags.Local, d, s);
 			IniOptions.Register("sendmail_from", IniFlags.Supported | IniFlags.Local, d, s);
 			IniOptions.Register("sendmail_path", IniFlags.Unsupported | IniFlags.Global, d, s);
+            IniOptions.Register("mail.add_x_header", IniFlags.Supported | IniFlags.Local, d, s);
 
 			// session:
 			IniOptions.Register("session.cache_expire", IniFlags.Supported | IniFlags.Local | IniFlags.Http, d, s);
