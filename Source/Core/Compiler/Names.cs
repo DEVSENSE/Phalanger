@@ -847,6 +847,24 @@ namespace PHP.Core
 		#endregion
 	}
 
+    internal class ConstantQualifiedNameComparer : IEqualityComparer<QualifiedName>
+    {
+        public static readonly ConstantQualifiedNameComparer Singleton = new ConstantQualifiedNameComparer();
+
+        public bool Equals(QualifiedName x, QualifiedName y)
+        {
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+
+            return x.Equals(y) && string.Compare(x.Name.Value, y.Name.Value, StringComparison.Ordinal) == 0;   // case sensitive comparison of names
+        }
+
+        public int GetHashCode(QualifiedName obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
 	#endregion
 
 	#region GenericQualifiedName

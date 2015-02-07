@@ -11,17 +11,13 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
+using PHP.Core.Parsers;
+using PHP.Core.Emit;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
 using System.IO;
-
-using PHP.Core.AST;
-using PHP.Core.Compiler.AST;
-using PHP.Core.Emit;
-using PHP.Core.Parsers;
 
 namespace PHP.Core.Reflection
 {
@@ -361,11 +357,11 @@ namespace PHP.Core.Reflection
 			mainHelper = scriptModule.MainHelper;
 
 			foreach (KeyValuePair<string, DTypeDesc> val in typesTmp)
-                types.Add(ClrNotationUtils.FromClrNotation(val.Value.RealType), val.Value.Type);   // TODO: parse the val.Key
+				types.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.Type);
 			foreach (KeyValuePair<string, DConstantDesc> val in constantsTmp)
-                constants.Add(ClrNotationUtils.FromClrNotation(val.Key, true), val.Value.GlobalConstant);// TODO: parse the val.Key
+				constants.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.GlobalConstant);
 			foreach (KeyValuePair<string, DRoutineDesc> val in functionsTmp)
-                functions.Add(ClrNotationUtils.FromClrNotation(val.Key, true), val.Value.Routine);// TODO: parse the val.Key
+				functions.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.Routine);
 
 			state = States.Reflected;
 		}
@@ -550,7 +546,7 @@ namespace PHP.Core.Reflection
 				{
 					try
 					{
-						source_unit.Parse(errors, this, languageFeatures);
+						source_unit.Parse(errors, this, Position.Initial, languageFeatures);
 						files[source_file] = source_unit;
 					}
 					catch (CompilerException)
@@ -633,7 +629,7 @@ namespace PHP.Core.Reflection
 
 				// perform full analysis:
 
-				foreach (var source_unit in source_units)
+				foreach (SourceFileUnit source_unit in source_units)
 					analyzer.Analyze(source_unit);
 
 				if (context.Errors.AnyFatalError) return false;
@@ -643,7 +639,7 @@ namespace PHP.Core.Reflection
 
 				// check entry point presence:
 				if (assembly_builder.IsExecutable && entryPoint == null)
-					context.Errors.Add(Errors.MissingEntryPoint, null, Text.Span.Invalid, PureAssembly.EntryPointName);
+					context.Errors.Add(Errors.MissingEntryPoint, null, Position.Invalid, PureAssembly.EntryPointName);
 			}
 			catch (CompilerException)
 			{
@@ -654,7 +650,7 @@ namespace PHP.Core.Reflection
 				// close opened streams (analyzer may need to read the source code due to conditional class declarations):
 				if (source_units != null)
 				{
-                    foreach (var source_unit in source_units)
+					foreach (SourceFileUnit source_unit in source_units)
 						source_unit.Close();
 				}
 			}
@@ -669,7 +665,7 @@ namespace PHP.Core.Reflection
 
 			CodeGenerator cg = new CodeGenerator(context);
 
-            foreach (var source_unit in source_units)
+			foreach (SourceUnit source_unit in source_units)
 			{
 				source_unit.Emit(cg);
 			}
@@ -681,17 +677,10 @@ namespace PHP.Core.Reflection
 
 		private void DefineBuilders()
 		{
-            foreach (Declaration declaration in types.Values)
+			foreach (Declaration declaration in types.Values)
 			{
-                ((PhpType)declaration.Declaree).DefineBuilders();
+				((PhpType)declaration.Declaree).DefineBuilders();
 			}
-
-            foreach (Declaration declaration in types.Values)
-            {
-                var phptype = (PhpType)declaration.Declaree;
-                if (phptype.IsExported)
-                    PhpObjectBuilder.DefineExportedConstructors(phptype);
-            }
 
 			foreach (Declaration declaration in functions.Values)
 			{
@@ -726,31 +715,23 @@ namespace PHP.Core.Reflection
 		public void InclusionReduced(Parser/*!*/ parser, AST.IncludingEx/*!*/ node)
 		{
 			if (!relaxPurity)
-				parser.ErrorSink.Add(Errors.InclusionInPureUnit, parser.SourceUnit, node.Span);
+				parser.ErrorSink.Add(Errors.InclusionInPureUnit, parser.SourceUnit, node.Position);
 		}
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
 		{
-			AddDeclaration(parser.ErrorSink, node.GetFunction(), functions);
+			AddDeclaration(parser.ErrorSink, node.Function, functions);
 		}
 
 		public void TypeDeclarationReduced(Parser/*!*/ parser, AST.TypeDecl/*!*/ node)
 		{
-			AddDeclaration(parser.ErrorSink, node.Type(), types);
+			AddDeclaration(parser.ErrorSink, node.Type, types);
 		}
 
 		public void GlobalConstantDeclarationReduced(Parser/*!*/ parser, AST.GlobalConstantDecl/*!*/ node)
 		{
-            AddDeclaration(parser.ErrorSink, node.GetGlobalConstant(), constants);
+			AddDeclaration(parser.ErrorSink, node.GlobalConstant, constants);
 		}
-
-        public void NamespaceDeclReduced(Parser parser, AST.NamespaceDecl decl)
-        {
-        }
-
-        public void LambdaFunctionReduced(Parser parser, AST.LambdaFunctionExpr decl)
-        {
-        }
 
 		private void AddDeclaration(ErrorSink/*!*/ errors, IDeclaree/*!*/ member, Dictionary<QualifiedName, Declaration>/*!*/ table)
 		{
@@ -804,8 +785,8 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Source unit or <B>null</B> for reflected units.
 		/// </summary>
-        public CompilationSourceUnit SourceUnit { get { return sourceUnit; } set { sourceUnit = value; } }
-        private CompilationSourceUnit sourceUnit;
+		public SourceUnit SourceUnit { get { return sourceUnit; } set { sourceUnit = value; } }
+		private SourceUnit sourceUnit;
 
 		#endregion
 
@@ -962,8 +943,8 @@ namespace PHP.Core.Reflection
 #if !SILVERLIGHT
 			if (context.Config.Compiler.PrependFile != null)
 			{
-                prepend = new AST.IncludingEx(sourceUnit, new Scope(1), false, Text.Span.FromBounds(0, 0), InclusionTypes.Prepended,
-                    new AST.StringLiteral(Text.Span.FromBounds(0, 0), context.Config.Compiler.PrependFile));
+				prepend = new AST.IncludingEx(sourceUnit, new Scope(1), false, Position.Initial, InclusionTypes.Prepended,
+					new AST.StringLiteral(Position.Initial, context.Config.Compiler.PrependFile));
 
 				inclusionExpressions.Add(prepend);
 			}
@@ -985,15 +966,15 @@ namespace PHP.Core.Reflection
 #if !SILVERLIGHT
 			if (context.Config.Compiler.AppendFile != null)
 			{
-                append = new AST.IncludingEx(sourceUnit, new Scope(Int32.MaxValue), false, Text.Span.FromBounds(0, 0), InclusionTypes.Appended,
-                    new AST.StringLiteral(Text.Span.FromBounds(0, 0), context.Config.Compiler.AppendFile));
+				append = new AST.IncludingEx(sourceUnit, new Scope(Int32.MaxValue), false, Position.Initial, InclusionTypes.Appended,
+					new AST.StringLiteral(Position.Initial, context.Config.Compiler.AppendFile));
 
 				inclusionExpressions.Add(append);
 			}
 #endif
-            var astcompiler = sourceUnit.Ast.NodeCompiler<IGlobalCodeCompiler>();
-            astcompiler.PrependedInclusion = prepend;
-            astcompiler.AppendedInclusion = append;
+
+			sourceUnit.Ast.PrependedInclusion = prepend;
+			sourceUnit.Ast.AppendedInclusion = append;
 
 			this.state = States.Parsed;
 		}
@@ -1008,7 +989,7 @@ namespace PHP.Core.Reflection
 
 			try
 			{
-				sourceUnit.Parse(errors, this, languageFeatures);
+				sourceUnit.Parse(errors, this, Position.Initial, languageFeatures);
 			}
 			catch (CompilerException)
 			{
@@ -1050,8 +1031,6 @@ namespace PHP.Core.Reflection
 		{
 			int added_count = 0;
 
-            Dictionary<QualifiedName, ScopedDeclaration<T>> dstTableOverwrites = null;
-
 			foreach (KeyValuePair<QualifiedName, ScopedDeclaration<T>> entry in srcTable)
 			{
 				ScopedDeclaration<T> existing;
@@ -1063,25 +1042,8 @@ namespace PHP.Core.Reflection
 					dstTable.Add(entry.Key, entry.Value.CloneWithScope(inclusion.Scope));
 					added_count++;
 				}
-                else if (existing.Scope.Start > inclusion.Scope.Start && inclusion.Scope.IsValid)  // better Scope level?
-                {
-                    if (existing.Member == entry.Value.Member ||                    // mostly DMember is the same reference, just in different Scope level
-                        !entry.Value.Member.IsUnknown || existing.Member.IsUnknown) // otherwise, we don't want to overwrite a Known member with an Unknown!
-                    {
-                        // overwrite the existing declaration with better inclusion scope:
-                        if (dstTableOverwrites == null)
-                            dstTableOverwrites = new Dictionary<QualifiedName, ScopedDeclaration<T>>();
-                        dstTableOverwrites[entry.Key] = entry.Value.CloneWithScope(inclusion.Scope);
-                    }
-                }
 			}
 
-            // merge overwrites into dstTable // to avoid changing of enumerated collection above
-            if (dstTableOverwrites != null)
-                foreach (var entry in dstTableOverwrites)
-                    dstTable[entry.Key] = entry.Value;
-
-            //
 			return added_count;
 		}
 
@@ -1214,26 +1176,18 @@ namespace PHP.Core.Reflection
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
 		{
-			AddDeclaration<DRoutine>(parser.ErrorSink, node.GetFunction(), visibleFunctions);
+			AddDeclaration<DRoutine>(parser.ErrorSink, node.Function, visibleFunctions);
 		}
 
 		public void TypeDeclarationReduced(Parser/*!*/ parser, AST.TypeDecl/*!*/ node)
 		{
-            AddDeclaration<DType>(parser.ErrorSink, node.Type(), visibleTypes);
+			AddDeclaration<DType>(parser.ErrorSink, node.Type, visibleTypes);
 		}
 
 		public void GlobalConstantDeclarationReduced(Parser/*!*/ parser, AST.GlobalConstantDecl/*!*/ node)
 		{
-			AddDeclaration<DConstant>(parser.ErrorSink, node.GetGlobalConstant(), visibleConstants);
+			AddDeclaration<DConstant>(parser.ErrorSink, node.GlobalConstant, visibleConstants);
 		}
-
-        public void NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
-        {
-        }
-
-        public void LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
-        {
-        }
 
 		private void AddDeclaration<T>(ErrorSink/*!*/ errors, IDeclaree/*!*/ member,
 			Dictionary<QualifiedName, ScopedDeclaration<T>>/*!*/ table)
@@ -1318,13 +1272,12 @@ namespace PHP.Core.Reflection
 		{
 			Debug.Assert(state == States.Parsed);
 
-			foreach (var inclusion in inclusionExpressions)
+			foreach (AST.IncludingEx inclusion in inclusionExpressions)
 			{
 				Characteristic characteristic;
 				PhpSourceFile target_file;
 
 				ResolveInclusion(inclusion.InclusionType, inclusion, graphBuilder.Context, out characteristic, out target_file);
-                var inclusionCompiler = inclusion.NodeCompiler<IIncludingExCompiler>();
 
 				if (target_file != null)
 				{
@@ -1335,15 +1288,15 @@ namespace PHP.Core.Reflection
 					this.Inclusions.Add(static_inclusion);
 					includee.Includers.Add(static_inclusion);
 
-					inclusionCompiler.Inclusion = static_inclusion;
-					inclusionCompiler.Characteristic = characteristic;
+					inclusion.Inclusion = static_inclusion;
+					inclusion.Characteristic = characteristic;
 
 					graphBuilder.EdgeAdded(static_inclusion);
 				}
 				else
 				{
-					inclusionCompiler.Inclusion = null;
-					inclusionCompiler.Characteristic = Characteristic.Dynamic;
+					inclusion.Inclusion = null;
+					inclusion.Characteristic = Characteristic.Dynamic;
 				}
 			}
 
@@ -1362,24 +1315,24 @@ namespace PHP.Core.Reflection
 			// inclusions in dynamic code are dynamic: 
 			if (InclusionTypesEnum.IsAutoInclusion(inclusionType))
 			{
-				Debug.Assert(inclusionExpr.Target.HasValue());
+				Debug.Assert(inclusionExpr.Target.HasValue);
 
 				// auto-inclusions contain explicit path:
-				targetFile = DetermineStaticTarget((string)inclusionExpr.Target.GetValue(), inclusionExpr.Target, context);
+				targetFile = DetermineStaticTarget((string)inclusionExpr.Target.Value, inclusionExpr.Target, context);
 				if (targetFile != null) characteristic = Characteristic.StaticAutoInclusion;
 
 				return;
 			}
 			else
 			{
-				if (!context.SaveOnlyAssembly && (context.Config.Compiler.EnableStaticInclusions ?? false))
+				if (context.Config.Compiler.EnableStaticInclusions ?? false)
 				{
 					// replacement //
 
 					if (context.Config.Compiler.InclusionMappings.Count > 0)
 					{
 						// tries to match the pattern:
-						string source_code = sourceUnit.GetSourceCode(inclusionExpr.Target.Span);
+						string source_code = sourceUnit.GetSourceCode(inclusionExpr.Target.Position);
 						string translated_path = InclusionMapping.TranslateExpression(context.Config.Compiler.InclusionMappings,
                             source_code, context.Config.Compiler.SourceRoot.FullFileName);
 
@@ -1392,13 +1345,13 @@ namespace PHP.Core.Reflection
 						}
 						else
 						{
-							context.Errors.Add(Warnings.InclusionReplacementFailed, SourceUnit, inclusionExpr.Span, source_code);
+							context.Errors.Add(Warnings.InclusionReplacementFailed, SourceUnit, inclusionExpr.Position, source_code);
 						}
 					}
 
 					// evaluation //
 
-					Evaluation eval = inclusionExpr.Target.EvaluatePriorAnalysis((CompilationSourceUnit)inclusionExpr.SourceUnit);
+					Evaluation eval = inclusionExpr.Target.EvaluatePriorAnalysis(inclusionExpr.SourceUnit);
 					if (eval.HasValue)
 					{
 						targetFile = DetermineStaticTarget(Convert.ObjectToString(eval.Value), inclusionExpr.Target, context);
@@ -1446,7 +1399,7 @@ namespace PHP.Core.Reflection
 
             if (full_path.IsEmpty)
 			{
-				context.Errors.Add(Warnings.InclusionDeferredToRuntime, SourceUnit, target.Span,
+				context.Errors.Add(Warnings.InclusionDeferredToRuntime, SourceUnit, target.Position,
 					translatedPath, warning);
 				return null;
 			}
