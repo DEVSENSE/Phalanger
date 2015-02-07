@@ -423,7 +423,10 @@ namespace PHP.Core
         {
             #region Fields
 
-            private static string/*!*/PoweredByHeader = PhalangerVersion.ProductName + " " + PhalangerVersion.Current;
+            /// <summary>
+            /// Value of "X-Powered-By" header.
+            /// </summary>
+            private static readonly string/*!*/PoweredByHeader = PhalangerVersion.ProductName + " " + PhalangerVersion.Current;
 
             #endregion
 
@@ -432,7 +435,8 @@ namespace PHP.Core
             public IntegratedPipelineHeaders()
                 :base(false)
             {
-                httpContext.Response.Headers["X-Powered-By"] = PoweredByHeader;
+                if (httpContext != null)
+                    httpContext.Response.Headers["X-Powered-By"] = PoweredByHeader;
             }
 
             #endregion
