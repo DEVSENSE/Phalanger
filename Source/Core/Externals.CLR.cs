@@ -2363,6 +2363,9 @@ namespace PHP.Core
 
             public object Invoke(PhpObject self, ref object[] args, int[] refInfo, string workingDir)
             {
+                Debug.Assert(Externals.extMansInitialized, "Externals.extMansInitialized is false!");
+                Debug.Assert(Externals._localExtMan != null, "Externals._localExtMan[] not even initialized!");
+
                 object[] args_copy = args;  // avoid of changing args
                 return externalFunction.Invoke(self, ref args_copy, refInfo, workingDir);
             }

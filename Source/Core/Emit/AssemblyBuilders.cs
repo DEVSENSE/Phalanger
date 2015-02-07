@@ -18,7 +18,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 using PHP.Core;
-using PHP.Core.Compiler.AST;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
 using System.Text;
@@ -58,7 +57,7 @@ namespace PHP.Core.Emit
 
 	#region PhpAssemblyBuilderBase
 
-	public abstract class PhpAssemblyBuilderBase : IPhpCustomAttributeProvider
+	public abstract class PhpAssemblyBuilderBase : AST.IPhpCustomAttributeProvider
 	{
 		public abstract bool IsExported { get; }
 		public abstract bool IsPure { get; }
@@ -129,6 +128,7 @@ namespace PHP.Core.Emit
             // bake global functions and <Global Fields> type, only once:
             if (!globalTypeCreated)
             {
+#if !SILVERLIGHT
                 // Bake global CLR type:
 
                 // Throws No Debug Module if the globals have been already created
@@ -136,12 +136,10 @@ namespace PHP.Core.Emit
 
                 try
                 { ReflectionUtils.CreateGlobalType(RealModuleBuilder); }
-                catch (Exception)
-                {
-#if DEBUG
-                    throw;
+                catch (Exception) { Debug.Fail(); }
+#else
+			    // TODO: .. this is some hack.. 
 #endif
-                }
                 globalTypeCreated = true;
             }
 		}
@@ -209,7 +207,7 @@ namespace PHP.Core.Emit
 
 		/// <summary>
 		/// The argument <paramref name="completeSource" /> determines whether the source code
-		/// is complete PHP script file, which is a case in dynamic include in Silverlight
+		/// is complete PHP script file, which is a case in dynamic includ in Silverlight
 		/// </summary>
 		public TransientCompilationUnit Build(string/*!*/ sourceCode, SourceCodeDescriptor descriptor,
 			EvalKinds kind, CompilationContext/*!*/ context, ScriptContext/*!*/ scriptContext,
@@ -261,12 +259,12 @@ namespace PHP.Core.Emit
 		public TransientAssembly TransientAssembly { get { return (TransientAssembly)assembly; } }
 
 		public TransientModuleBuilder/*!*/ DefineModule(TransientCompilationUnit/*!*/ compilationUnit, bool debuggable,
-			int containerId, EvalKinds kind, string sourcePath)
+			int containerId, EvalKinds kind)
 		{
 			InitializeRealAssembly(debuggable);
 			Debug.Assert(this.debuggable == debuggable);
 
-			return TransientAssembly.DefineModule(this, compilationUnit, containerId, kind, sourcePath);
+			return TransientAssembly.DefineModule(this, compilationUnit, containerId, kind);
 		}
 
 		internal bool IsTransientRealType(Type/*!*/ realType)

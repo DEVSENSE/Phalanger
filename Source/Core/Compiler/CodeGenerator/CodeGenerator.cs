@@ -2790,8 +2790,7 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-
+        
 		#region EmitPhpException, EmitThrow (Tomas Matousek)
 
 		/// <summary>
@@ -3035,6 +3034,14 @@ namespace PHP.Core
 
                 // <field> = <STACK>
                 il.Emit(OpCodes.Stsfld, field);
+
+                // new PurePhpFunction(<field>, fullName, argfull);   // writes desc.Member
+                il.Emit(OpCodes.Ldsfld, field);
+                il.Emit(OpCodes.Ldstr, function.FullName);
+                CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/);
+                il.Emit(OpCodes.Newobj, typeof(PurePhpFunction).GetConstructor(new Type[] { typeof(PhpRoutineDesc), Types.String[0], typeof(MethodInfo) }));
+                il.Emit(OpCodes.Pop);
+                
             }
             il.MarkLabel(lbl_fieldinitialized);
 
@@ -3092,7 +3099,42 @@ namespace PHP.Core
 				}
 			}
 		}
-		
+
+        /// <summary>
+        /// Emits load of <see cref="MethodInfo"/> onto the top of evaluation stack.
+        /// </summary>
+        /// <param name="il"></param>
+        /// <param name="mi"></param>
+        internal static void EmitLoadMethodInfo(ILEmitter/*!*/il, MethodInfo/*!*/mi/*, DelegateBuilder dbuild*/)
+        {
+            if (mi == null)
+                throw new ArgumentNullException("mi");
+
+            if (!mi.IsStatic)
+                throw new NotSupportedException();
+
+            // following code uses hack, where we can create delegate in "compile time", and then takes its MethodInfo property.
+            // new Func<...>( null, <mi> ).Method
+
+            //// construct the type
+            ////var miArgs = mi.GetParameters();    // THIS FAILS WHEN <mi> IS NOT BAKED YET
+            ////Type[] delegateArgs = new Type[1 + miArgs.Length];
+            ////delegateArgs[0] = mi.ReturnType;
+            ////for (int i = 0; i < miArgs.Length; i++) delegateArgs[i + 1] = miArgs[i].ParameterType;
+            //var delegateCtor = DelegateBuilder.GetDelegateCtor(dbuild.GetDelegateType(delegateArgs, il.GetNextUniqueIndex()));
+            var delegateCtor = DelegateBuilder.GetDelegateCtor(typeof(Action)); // NOT NICE
+
+            //.ldnull
+            //.ldftn <mi>
+            //.newobj instance void Action::.ctor(object, native int)
+            //.call get_Method
+
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ldftn, mi);
+            il.Emit(OpCodes.Newobj, delegateCtor);
+            il.Emit(OpCodes.Call, Properties.Delegate_Method.GetGetMethod());
+        }
+
 		#endregion
 
 		#region Array Keys and Operators

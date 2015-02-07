@@ -324,6 +324,7 @@
     <Compile Include="Emit\AssemblyBuilders.cs" />
     <Compile Include="Emit\ClrOverloadBuilder.cs" />
     <Compile Include="Emit\ClrStubBuilder.cs" />
+    <Compile Include="Emit\DelegateBuilder.cs" />
     <Compile Include="Emit\DocFileBuilder.CLR.cs" />
     <Compile Include="Emit\FunctionBuilder.cs">
       <SubType>Code</SubType>
