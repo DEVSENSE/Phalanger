@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Dynamic;
+using PHP.Core.Reflection;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using PHP.Core.Emit;
-using PHP.Core.Reflection;
-
 namespace PHP.Core.Binders
 {
+    using PHP.Core.Emit;
 
     /// <summary>
     /// 
@@ -49,10 +47,10 @@ namespace PHP.Core.Binders
         {
             if (target.Value is IDynamicMetaObjectProvider)
             {
-                //throw new NotImplementedException();
+                throw new NotImplementedException();
                 //Translate arguments to DLR standard
-                //TODO: Create DlrCompatibilityInvokeBinder because it has to be derived from GetMemberBinder
-                //return target.BindGetMember(this,args);
+                //TODO: Create DlrCompatibilityInvokeBinder because it has to be derived from InvokeMemberBinder
+                //return target.BindInvokeMember(this,args);
             }
 
             return FallbackInvokeMember(target, args);
@@ -123,7 +121,7 @@ namespace PHP.Core.Binders
                 if (obj is ClrObject /*|| obj is IClrValue // IClrValue -> ClrValue<T> -> already in restriction */)
                 {
                     // ((DObject)target).RealType == <obj>.RealType
-                    restrictions = restrictions.Merge(
+                    restrictions.Merge(
                         BindingRestrictions.GetInstanceRestriction(
                             Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealType),
                             obj.RealType));
@@ -337,13 +335,25 @@ namespace PHP.Core.Binders
                             Func<DObject, string, DTypeDesc, PhpReference> op = (self, name, caller) =>
                             {
                                 PhpReference reference;
+                                object value;
                                 bool getter_exists;
 
                                 // search in RT fields
-                                if (self.RuntimeFields != null && self.RuntimeFields.ContainsKey(name))
+                                OrderedHashtable<string>.Element element;
+                                if (self.RuntimeFields != null && (element = self.RuntimeFields.GetElement(name)) != null)
                                 {
-                                    var namekey = new IntStringKey(name);
-                                    return self.RuntimeFields.table._ensure_item_ref(ref namekey, self.RuntimeFields);
+                                    value = element.Value;
+                                    reference = value as PhpReference;
+
+                                    if (reference == null)
+                                    {
+                                        // it is correct to box the value without making a deep copy since there was a single pointer on value
+                                        // before this operation (by invariant) and there will be a single one after the operation as well:
+                                        reference = new PhpReference(value);
+                                        element.Value = reference;
+                                    }
+
+                                    return reference;
                                 }
 
                                 // property is not present -> try to invoke __get
@@ -354,7 +364,7 @@ namespace PHP.Core.Binders
 
                                 // add the field
                                 reference = new PhpReference();
-                                if (self.RuntimeFields == null) self.RuntimeFields = new PhpArray();
+                                if (self.RuntimeFields == null) self.RuntimeFields = new OrderedHashtable<string>();
                                 self.RuntimeFields[name] = reference;
 
                                 return reference;
@@ -385,12 +395,9 @@ namespace PHP.Core.Binders
                             {
                                 Func<DObject, string, DTypeDesc, object> notsetOperation = (self, name, caller) =>
                                 {
-                                    if (self.RuntimeFields != null)
-                                    {
-                                        object value;
-                                        if (self.RuntimeFields.TryGetValue(name, out value))
-                                            return value;
-                                    }
+                                    OrderedHashtable<string>.Element element;
+                                    if (self.RuntimeFields != null && (element = self.RuntimeFields.GetElement(name)) != null)
+                                        return element.Value;
 
                                     bool handled;
                                     return self.PropertyIssetHandler(name, caller, out handled);
