@@ -11,246 +11,584 @@
 */
 
 using System;
-using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using PHP.Core.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
-using System.IO;
 
-namespace PHP.Core.Compiler.AST
+namespace PHP.Core.AST
 {
-    partial class NodeCompilers
-    {
-        #region NewEx
+	#region TypeRef
 
-        [NodeCompiler(typeof(NewEx))]
-        sealed class NewExCompiler : VarLikeConstructUseCompiler<NewEx>
+	/// <summary>
+	/// Represents a use of a class name in <c>new</c> and <c>instanceof</c> constructs.
+	/// </summary>
+	public abstract class TypeRef : LangElement
+	{
+		internal static readonly List<TypeRef>/*!*/ EmptyList = new List<TypeRef>(1);
+
+		public abstract DType ResolvedType { get; }
+
+		public List<TypeRef>/*!*/ GenericParams { get { return genericParams; } }
+		protected readonly List<TypeRef>/*!*/ genericParams;
+
+		public TypeRef(Position position, List<TypeRef>/*!*/ genericParams)
+			: base(position)
+		{
+			Debug.Assert(genericParams != null);
+
+			this.genericParams = genericParams;
+		}
+
+		/// <summary>
+		/// Resolves generic arguments.
+		/// </summary>
+		/// <returns><B>true</B> iff all arguments are resolvable to types or constructed types (none is variable).</returns>
+		internal virtual bool Analyze(Analyzer/*!*/ analyzer)
+		{
+			bool result = true;
+
+			foreach (TypeRef arg in genericParams)
+				result &= arg.Analyze(analyzer);
+
+			return result;
+		}
+
+		internal abstract void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags);
+
+		/// <summary>
+		/// Emits code that loads type descriptors for all generic arguments and a call to 
+		/// <see cref="Operators.MakeGenericTypeInstantiation"/>.
+		/// </summary>
+		internal void EmitMakeGenericInstantiation(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+		{
+			ILEmitter il = codeGenerator.IL;
+
+			il.EmitOverloadedArgs(Types.DTypeDesc[0], genericParams.Count, Methods.Operators.MakeGenericTypeInstantiation.ExplicitOverloads, delegate(ILEmitter eil, int i)
+			{
+				genericParams[i].EmitLoadTypeDesc(codeGenerator, flags);
+			});
+
+			if (genericParams.Count > 0)
+				il.Emit(OpCodes.Call, Methods.Operators.MakeGenericTypeInstantiation.Overload(genericParams.Count));
+		}
+
+		/// <summary>
+		/// Gets the static type reference or <B>null</B> if the reference cannot be resolved at compile time.
+		/// </summary>
+		internal abstract object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit);
+
+		internal static object[]/*!!*/ ToStaticTypeRefs(List<TypeRef>/*!*/ typeRefs, ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
+		{
+			if (typeRefs.Count == 0) return ArrayUtils.EmptyObjects;
+
+			object[] result = new object[typeRefs.Count];
+
+			for (int i = 0; i < typeRefs.Count; i++)
+			{
+				result[i] = typeRefs[i].ToStaticTypeRef(errors, sourceUnit);
+
+				if (result[i] == null)
+				{
+					errors.Add(Errors.GenericParameterMustBeType, sourceUnit, typeRefs[i].Position);
+					result[i] = PrimitiveType.Object;
+				}
+			}
+
+			return result;
+		}
+	}
+
+	#endregion
+
+	#region PrimitiveTypeRef
+
+	/// <summary>
+	/// Primitive type reference.
+	/// </summary>
+	public sealed class PrimitiveTypeRef : TypeRef
+	{
+		public override DType/*!*/ ResolvedType { get { return type; } }
+		private PrimitiveType/*!*/ type;
+        public PrimitiveType/*!*/ Type { get { return type; } }
+
+		public PrimitiveTypeRef(Position position, PrimitiveType/*!*/ type)
+			: base(position, TypeRef.EmptyList)
+		{
+			this.type = type;
+		}
+
+		internal override object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
+		{
+			return type;
+		}
+
+		internal override bool Analyze(Analyzer/*!*/ analyzer)
+		{
+			return true;
+		}
+
+		internal override void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+		{
+			type.EmitLoadTypeDesc(codeGenerator, ResolveTypeFlags.SkipGenericNameParsing);
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            private DRoutine constructor;
-            private bool runtimeVisibilityCheck;
-            private bool typeArgsResolved;
-
-            public override Evaluation Analyze(NewEx node, Analyzer analyzer, ExInfoFromParent info)
-            {
-                Debug.Assert(node.IsMemberOf == null);
-
-                access = info.Access;
-
-                this.typeArgsResolved = TypeRefHelper.Analyze(node.ClassNameRef, analyzer);
-
-                DType type = TypeRefHelper.ResolvedType(node.ClassNameRef);
-                RoutineSignature signature;
-
-                if (typeArgsResolved)
-                    analyzer.AnalyzeConstructedType(type);
-
-                if (type != null)
-                {
-                    bool error_reported = false;
-
-                    // make checks if we are sure about character of the type:
-                    if (type.IsIdentityDefinite)
-                    {
-                        if (type.IsAbstract || type.IsInterface)
-                        {
-                            analyzer.ErrorSink.Add(Errors.AbstractClassOrInterfaceInstantiated, analyzer.SourceUnit,
-                                node.Span, type.FullName);
-                            error_reported = true;
-                        }
-                    }
-
-                    // disallow instantiation of Closure
-                    if (type.RealType == typeof(PHP.Library.SPL.Closure))
-                    {
-                        analyzer.ErrorSink.Add(Errors.ClosureInstantiated, analyzer.SourceUnit, node.Span, type.FullName);
-                        error_reported = true;
-                    }
-
-                    // type name resolved, look the constructor up:
-                    constructor = analyzer.ResolveConstructor(type, node.Span, analyzer.CurrentType, analyzer.CurrentRoutine,
-                      out runtimeVisibilityCheck);
-
-                    if (constructor.ResolveOverload(analyzer, node.CallSignature, node.Span, out signature) == DRoutine.InvalidOverloadIndex)
-                    {
-                        if (!error_reported)
-                        {
-                            analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, node.Span, type.FullName);
-                        }
-                    }
-                }
-                else
-                {
-                    signature = UnknownSignature.Default;
-                }
-
-                CallSignatureHelpers.Analyze(node.CallSignature, analyzer, signature, info, false);
-
-                return new Evaluation(node);
-            }
-
-            public override bool IsDeeplyCopied(NewEx node, CopyReason reason, int nestingLevel)
-            {
-                return false;
-            }
-
-            public override PhpTypeCode Emit(NewEx node, CodeGenerator codeGenerator)
-            {
-                Statistics.AST.AddNode("NewEx");
-
-                PhpTypeCode result;
-                var newextype = TypeRefHelper.ResolvedType(node.ClassNameRef);
-
-                if (newextype != null && typeArgsResolved)
-                {
-                    // constructor is resolvable (doesn't mean that known) //
-
-                    result = newextype.EmitNew(codeGenerator, null, constructor, node.CallSignature, runtimeVisibilityCheck);
-                }
-                else
-                {
-                    // constructor is unresolvable (a variable is used in type name => type is unresolvable as well) //
-
-                    codeGenerator.EmitNewOperator(null, node.ClassNameRef, null, node.CallSignature);
-                    result = PhpTypeCode.Object;
-                }
-
-                codeGenerator.EmitReturnValueHandling(node, false, ref result);
-                return result;
-            }
+            visitor.VisitPrimitiveTypeRef(this);
         }
+	}
 
-        #endregion
+	#endregion
 
-        #region InstanceOfEx
+	#region DirectTypeRef
 
-        [NodeCompiler(typeof(InstanceOfEx))]
-        sealed class InstanceOfExCompiler : ExpressionCompiler<InstanceOfEx>
+	/// <summary>
+	/// Direct use of class name.
+	/// </summary>
+	public sealed class DirectTypeRef : TypeRef
+	{
+		public QualifiedName ClassName { get { return className; } }
+		private QualifiedName className;
+
+		public override DType ResolvedType { get { return resolvedType; } }
+		private DType/*! after analysis */ resolvedType;
+
+		internal override object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
+		{
+			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(genericParams, errors, sourceUnit));
+		}
+
+		public DirectTypeRef(Position position, QualifiedName className, List<TypeRef>/*!*/ genericParams)
+			: base(position, genericParams)
+		{
+			this.className = className;
+		}
+
+		#region Analysis
+
+		internal override bool Analyze(Analyzer/*!*/ analyzer)
+		{
+			resolvedType = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+
+			// base call must follow the class name resolution:
+			bool args_static = base.Analyze(analyzer);
+
+			if (args_static)
+			{
+				DTypeDesc[] resolved_arguments = (genericParams.Count > 0) ? new DTypeDesc[genericParams.Count] : DTypeDesc.EmptyArray;
+				for (int i = 0; i < genericParams.Count; i++)
+					resolved_arguments[i] = genericParams[i].ResolvedType.TypeDesc;
+
+				resolvedType = resolvedType.MakeConstructedType(analyzer, resolved_arguments, position);
+			}
+
+			return args_static;
+		}
+
+		#endregion
+
+		#region Emission
+
+		internal override void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+		{
+			ILEmitter il = codeGenerator.IL;
+			Debug.Assert(resolvedType != null);
+
+			// disallow generic parameters on generic type which already has generic arguments:
+			resolvedType.EmitLoadTypeDesc(codeGenerator, flags |
+					  ((genericParams.Count > 0) ? ResolveTypeFlags.SkipGenericNameParsing : 0));
+
+			// constructed type already emited its generic parameters:
+			if (!(resolvedType is ConstructedType))
+				EmitMakeGenericInstantiation(codeGenerator, flags);
+		}
+
+		#endregion
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            private bool typeArgsResolved;
-
-            public override Evaluation Analyze(InstanceOfEx node, Analyzer analyzer, ExInfoFromParent info)
-            {
-                access = info.Access;
-
-                node.Expression = node.Expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
-
-                typeArgsResolved = TypeRefHelper.Analyze(node.ClassNameRef, analyzer);
-
-                if (typeArgsResolved)
-                    analyzer.AnalyzeConstructedType(TypeRefHelper.ResolvedType(node.ClassNameRef));
-
-                return new Evaluation(node);
-            }
-
-            public override bool IsDeeplyCopied(InstanceOfEx node, CopyReason reason, int nestingLevel)
-            {
-                return false;
-            }
-
-            public override PhpTypeCode Emit(InstanceOfEx node, CodeGenerator codeGenerator)
-            {
-                Statistics.AST.AddNode("InstanceOfEx");
-
-                // emits load of expression value on the stack:
-                codeGenerator.EmitBoxing(node.Expression.Emit(codeGenerator));
-
-                var resolvedType = TypeRefHelper.ResolvedType(node.ClassNameRef);
-
-                if (resolvedType != null && typeArgsResolved)
-                {
-                    // type is resolvable (doesn't mean known) //
-
-                    resolvedType.EmitInstanceOf(codeGenerator, null);
-                }
-                else
-                {
-                    // type is unresolvable (there is some variable or the type is a generic parameter) //
-
-                    codeGenerator.EmitInstanceOfOperator(null, node.ClassNameRef, null);
-                }
-
-                if (access == AccessType.None)
-                {
-                    codeGenerator.IL.Emit(OpCodes.Pop);
-                    return PhpTypeCode.Void;
-                }
-                else
-                {
-                    return PhpTypeCode.Boolean;
-                }
-            }
+            visitor.VisitDirectTypeRef(this);
         }
+	}
 
-        #endregion
+	#endregion
 
-        #region TypeOfEx
+	#region IndirectTypeRef
 
-        [NodeCompiler(typeof(TypeOfEx))]
-        sealed class TypeOfExCompiler : ExpressionCompiler<TypeOfEx>
+	/// <summary>
+	/// Indirect use of class name (through variable).
+	/// </summary>
+	public sealed class IndirectTypeRef : TypeRef
+	{
+		public override DType ResolvedType { get { return null; } }
+
+        /// <summary>
+        /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
+        /// </summary>
+        public VariableUse/*!*/ ClassNameVar { get { return this.classNameVar; } }
+        private readonly VariableUse/*!*/ classNameVar;
+        
+		public IndirectTypeRef(Position position, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
+			: base(position, genericParams)
+		{
+			Debug.Assert(classNameVar != null && genericParams != null);
+
+			this.classNameVar = classNameVar;
+		}
+
+		internal override object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
+		{
+			return null;
+		}
+
+		#region Analysis
+
+		internal override bool Analyze(Analyzer/*!*/ analyzer)
+		{
+			classNameVar.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
+
+			// base call must follow the class name resolve:
+			base.Analyze(analyzer);
+
+			// indirect:
+			return false;
+		}
+
+		#endregion
+
+		#region Emission
+
+		internal override void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+		{
+			// disallow generic parameters on generic type which already has generic arguments:
+			codeGenerator.EmitLoadTypeDescOperator(null, classNameVar, flags |
+				((genericParams.Count > 0) ? ResolveTypeFlags.SkipGenericNameParsing : 0));
+
+			EmitMakeGenericInstantiation(codeGenerator, flags);
+		}
+
+		#endregion
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            public bool/*!*/ TypeArgsResolved { get { return typeArgsResolved; } }
-            private bool typeArgsResolved;
-
-            public override Evaluation Analyze(TypeOfEx node, Analyzer analyzer, ExInfoFromParent info)
-            {
-                access = info.Access;
-
-                typeArgsResolved = TypeRefHelper.Analyze(node.ClassNameRef, analyzer);
-
-                if (typeArgsResolved)
-                    analyzer.AnalyzeConstructedType(TypeRefHelper.ResolvedType(node.ClassNameRef));
-
-                return new Evaluation(node);
-            }
-
-            public override bool IsCustomAttributeArgumentValue(TypeOfEx node)
-            {
-                var resolvedtype = TypeRefHelper.ResolvedType(node.ClassNameRef);
-                return resolvedtype != null && typeArgsResolved && resolvedtype.IsDefinite;
-            }
-
-            public override bool IsDeeplyCopied(TypeOfEx node, CopyReason reason, int nestingLevel)
-            {
-                return false;
-            }
-
-            public override PhpTypeCode Emit(TypeOfEx node, CodeGenerator codeGenerator)
-            {
-                Statistics.AST.AddNode("TypeOfEx");
-
-                var resolvedtype = TypeRefHelper.ResolvedType(node.ClassNameRef);
-
-                if (resolvedtype != null && typeArgsResolved)
-                {
-                    // type is resolvable (doesn't mean known) //
-
-                    resolvedtype.EmitTypeOf(codeGenerator, null);
-                }
-                else
-                {
-                    // type is unresolvable (there is some variable or the type is a generic parameter) //
-
-                    codeGenerator.EmitTypeOfOperator(null, node.ClassNameRef, null);
-                }
-
-                if (access == AccessType.None)
-                {
-                    codeGenerator.IL.Emit(OpCodes.Pop);
-                    return PhpTypeCode.Void;
-                }
-                else
-                {
-                    return PhpTypeCode.DObject;
-                }
-            }
+            visitor.VisitIndirectTypeRef(this);
         }
+	}
 
-        #endregion
-    }
+	#endregion
+
+	#region NewEx
+
+	/// <summary>
+	/// <c>new</c> expression.
+	/// </summary>
+	public sealed class NewEx : Expression
+	{
+		internal override Operations Operation { get { return Operations.New; } }
+
+		internal override bool AllowsPassByReference { get { return true; } }
+
+		private TypeRef/*!*/ classNameRef;
+		private CallSignature callSignature;
+		private DRoutine constructor;
+		private bool runtimeVisibilityCheck;
+		private bool typeArgsResolved;
+        /// <summary>Type of class being instantiated</summary>
+        public TypeRef /*!*/ ClassNameRef { get { return classNameRef; } }
+        /// <summary>Call signature of constructor</summary>
+        public CallSignature CallSignature { get { return callSignature; } }
+
+		public NewEx(Position position, TypeRef/*!*/ classNameRef, List<ActualParam>/*!*/ parameters)
+			: base(position)
+		{
+			Debug.Assert(classNameRef != null && parameters != null);
+			this.classNameRef = classNameRef;
+			this.callSignature = new CallSignature(parameters, TypeRef.EmptyList);
+		}
+
+		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
+		{
+			access = info.Access;
+
+			this.typeArgsResolved = classNameRef.Analyze(analyzer);
+
+			DType type = classNameRef.ResolvedType;
+			RoutineSignature signature;
+
+			if (typeArgsResolved)
+				analyzer.AnalyzeConstructedType(type);
+
+			if (type != null)
+			{
+				bool error_reported = false;
+
+				// make checks if we are sure about character of the type:
+				if (type.IsIdentityDefinite)
+				{
+					if (type.IsAbstract || type.IsInterface)
+					{
+						analyzer.ErrorSink.Add(Errors.AbstractClassOrInterfaceInstantiated, analyzer.SourceUnit,
+							position, type.FullName);
+						error_reported = true;
+					}
+				}
+
+				// type name resolved, look the constructor up:
+				constructor = analyzer.ResolveConstructor(type, position, analyzer.CurrentType, analyzer.CurrentRoutine,
+				  out runtimeVisibilityCheck);
+
+				if (constructor.ResolveOverload(analyzer, callSignature, position, out signature) == DRoutine.InvalidOverloadIndex)
+				{
+					if (!error_reported)
+					{
+						analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit,
+						  position, type.FullName);
+					}
+				}
+			}
+			else
+			{
+				signature = UnknownSignature.Default;
+			}
+
+			callSignature.Analyze(analyzer, signature, info, false);
+
+			return new Evaluation(this);
+		}
+
+		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+		{
+			return false;
+		}
+
+		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			Statistics.AST.AddNode("NewEx");
+
+			PhpTypeCode result;
+
+			if (classNameRef.ResolvedType != null && typeArgsResolved)
+			{
+				// constructor is resolvable (doesn't mean that known) //
+
+				result = classNameRef.ResolvedType.EmitNew(codeGenerator, null, constructor, callSignature, runtimeVisibilityCheck);
+			}
+			else
+			{
+				// constructor is unresolvable (a variable is used in type name => type is unresolvable as well) //
+
+				codeGenerator.EmitNewOperator(null, classNameRef, null, callSignature);
+				result = PhpTypeCode.Object;
+			}
+
+			codeGenerator.EmitReturnValueHandling(this, false, ref result);
+			return result;
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitNewEx(this);
+        }
+	}
+
+	#endregion
+
+	#region InstanceOfEx
+
+	/// <summary>
+	/// <c>instanceof</c> expression.
+	/// </summary>
+	public sealed class InstanceOfEx : Expression
+	{
+		internal override Operations Operation { get { return Operations.InstanceOf; } }
+
+		private Expression/*!*/ expression;
+        /// <summary>Expression being tested</summary>
+        public Expression /*!*/ Expression { get { return expression; } }
+        private TypeRef/*!*/ classNameRef;
+        /// <summary>Type to test if <see cref="Expression"/> is of</summary>
+        public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
+		private bool typeArgsResolved;
+
+		public InstanceOfEx(Position position, Expression/*!*/ expression, TypeRef/*!*/ classNameRef)
+			: base(position)
+		{
+			Debug.Assert(expression != null && classNameRef != null);
+
+			this.expression = expression;
+			this.classNameRef = classNameRef;
+		}
+
+		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
+		{
+			access = info.Access;
+
+			expression = expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
+
+			typeArgsResolved = classNameRef.Analyze(analyzer);
+
+			if (typeArgsResolved)
+				analyzer.AnalyzeConstructedType(classNameRef.ResolvedType);
+
+			return new Evaluation(this);
+		}
+
+		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+		{
+			return false;
+		}
+
+		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			Statistics.AST.AddNode("InstanceOfEx");
+
+			// emits load of expression value on the stack:
+			codeGenerator.EmitBoxing(expression.Emit(codeGenerator));
+
+			if (classNameRef.ResolvedType != null && typeArgsResolved)
+			{
+				// type is resolvable (doesn't mean known) //
+
+				classNameRef.ResolvedType.EmitInstanceOf(codeGenerator, null);
+			}
+			else
+			{
+				// type is unresolvable (there is some variable or the type is a generic parameter) //
+
+				codeGenerator.EmitInstanceOfOperator(null, classNameRef, null);
+			}
+
+			if (access == AccessType.None)
+			{
+				codeGenerator.IL.Emit(OpCodes.Pop);
+				return PhpTypeCode.Void;
+			}
+			else
+			{
+				return PhpTypeCode.Boolean;
+			}
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitInstanceOfEx(this);
+        }
+	}
+
+	#endregion
+
+	#region TypeOfEx
+
+	/// <summary>
+	/// <c>typeof</c> expression.
+	/// </summary>
+	public sealed class TypeOfEx : Expression
+	{
+		internal override Operations Operation { get { return Operations.TypeOf; } }
+
+		public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
+		private TypeRef/*!*/ classNameRef;
+
+		public bool/*!*/ TypeArgsResolved { get { return typeArgsResolved; } }
+		private bool typeArgsResolved;
+
+		public TypeOfEx(Position position, TypeRef/*!*/ classNameRef)
+			: base(position)
+		{
+			Debug.Assert(classNameRef != null);
+
+			this.classNameRef = classNameRef;
+		}
+
+		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
+		{
+			access = info.Access;
+
+			typeArgsResolved = classNameRef.Analyze(analyzer);
+
+			if (typeArgsResolved)
+				analyzer.AnalyzeConstructedType(classNameRef.ResolvedType);
+
+			return new Evaluation(this);
+		}
+
+		internal override bool IsCustomAttributeArgumentValue
+		{
+			get
+			{
+				return classNameRef.ResolvedType != null && typeArgsResolved && classNameRef.ResolvedType.IsDefinite;
+			}
+		}
+
+		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+		{
+			return false;
+		}
+
+		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			Statistics.AST.AddNode("TypeOfEx");
+
+			if (classNameRef.ResolvedType != null && typeArgsResolved)
+			{
+				// type is resolvable (doesn't mean known) //
+
+				classNameRef.ResolvedType.EmitTypeOf(codeGenerator, null);
+			}
+			else
+			{
+				// type is unresolvable (there is some variable or the type is a generic parameter) //
+
+				codeGenerator.EmitTypeOfOperator(null, classNameRef, null);
+			}
+
+			if (access == AccessType.None)
+			{
+				codeGenerator.IL.Emit(OpCodes.Pop);
+				return PhpTypeCode.Void;
+			}
+			else
+			{
+				return PhpTypeCode.DObject;
+			}
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitTypeOfEx(this);
+        }
+	}
+
+	#endregion	
 }
