@@ -428,7 +428,7 @@ namespace PHP.Library
 		public static string RawUrlEncode(string str)
 		{
 			if (str == null) return null;
-			return HttpUtility.UrlEncode(str).Replace("+", "%20");
+            return UpperCaseEncodedChars(HttpUtility.UrlPathEncode(str));
 		}
 
 		/// <summary>
@@ -446,8 +446,22 @@ namespace PHP.Library
 		[ImplementsFunction("urlencode")]
 		public static string UrlEncode(string str)
 		{
-			return HttpUtility.UrlEncode(str);
+            return UpperCaseEncodedChars(HttpUtility.UrlEncode(str));
 		}
+
+        private static string UpperCaseEncodedChars(string encoded)
+        {
+            char[] temp = encoded.ToCharArray();
+            for (int i = 0; i < temp.Length - 2; i++)
+            {
+                if (temp[i] == '%')
+                {
+                    temp[i + 1] = temp[i + 1].ToUpperAsciiInvariant();
+                    temp[i + 2] = temp[i + 2].ToUpperAsciiInvariant();
+                }
+            }
+            return new string(temp);
+        }
 
 //#if !SILVERLIGHT
 //        /// <summary>
