@@ -21,7 +21,6 @@ using System.Runtime.InteropServices;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 namespace PHP.Library.Xml
 {
@@ -578,10 +577,8 @@ namespace PHP.Library.Xml
             if (className == null) return new SimpleXMLElement(xmlAttribute, iterationNamespace);
 
             SimpleXMLElement instance = Create(className);
-            instance.XmlElement = xmlAttribute.OwnerElement;
-            instance.iterationType = IterationType.Attribute;
-            instance.iterationNamespace = iterationNamespace;
             instance.XmlAttribute = xmlAttribute;
+            instance.iterationNamespace = iterationNamespace;
 
             return instance;
         }
@@ -597,10 +594,8 @@ namespace PHP.Library.Xml
             if (className == null) return new SimpleXMLElement(xmlAttribute);
 
             SimpleXMLElement instance = Create(className);
-            instance.XmlElement = xmlAttribute.OwnerElement;
-            instance.iterationType = IterationType.Attribute;
             instance.XmlAttribute = xmlAttribute;
-            
+
             return instance;
         }
 
@@ -636,88 +631,19 @@ namespace PHP.Library.Xml
 
             return sb.ToString();
 		}
-
-        /// <summary>
-        /// String representation of the XML element.
-        /// </summary>
-        /// <returns>XML element content.</returns>
-        public override string ToString()
-        {
-            bool success;
-            return ToString(false, out success);
-        }
 		
 		/// <summary>
-		/// Internal to-<see cref="int"/> conversion.
+		/// Internal to-<see cref="bool"/> conversion.
 		/// </summary>
-		public override int ToInteger()
+		public override bool ToBoolean()
 		{
-            return PHP.Core.Convert.StringToInteger(ToString());
+			// return true iff the instance has at least one property
+			foreach (KeyValuePair<object, object> pair in this)
+			{
+				return true;
+			}
+			return false;
 		}
-
-        /// <summary>
-        /// Internal to-<see cref="long"/> conversion.
-        /// </summary>
-        public override long ToLongInteger()
-        {
-            return PHP.Core.Convert.StringToLongInteger(ToString());
-        }
-
-        /// <summary>
-        /// Internal to-<see cref="double"/> conversion.
-        /// </summary>
-        public override double ToDouble()
-        {
-            return PHP.Core.Convert.StringToDouble(ToString());
-        }
-
-        /// <summary>
-        /// Internal to-<see cref="bool"/> conversion.
-        /// </summary>
-        public override bool ToBoolean()
-        {
-            switch (this.iterationType)
-            {
-                case IterationType.Attribute:
-                    return true;
-
-                #region modified from this.GetEnumerator()
-
-                case IterationType.Element:
-                    {
-                        // find at least one sibling:
-                        for (XmlNode sibling = XmlElement; sibling != null; sibling = sibling.NextSibling)
-                            if (sibling.NodeType == XmlNodeType.Element && sibling.LocalName.Equals(XmlElement.LocalName, StringComparison.Ordinal) && iterationNamespace.IsIn(sibling))
-                                return true;
-                        return false;
-                    }
-
-                case IterationType.ChildElements:
-                    {
-                        // find at least one child element:
-                        foreach (XmlNode child in XmlElement)
-                            if (child.NodeType == XmlNodeType.Element && iterationNamespace.IsIn(child))
-                                return true;
-                        return false;
-                    }
-
-                case IterationType.AttributeList:
-                    {
-                        // find at least one attribute
-                        foreach (XmlAttribute attr in XmlElement.Attributes)
-                            if (!attr.Name.Equals("xmlns", StringComparison.Ordinal) && iterationNamespace.IsIn(attr))
-                                return true;
-                        return false;
-                    }
-
-                #endregion
-
-                default:
-                    // return true iff the instance has at least one property
-                    return this.GetEnumerator().MoveNext();
-            }
-        }
-
 
 		/// <summary>
 		/// Internal dump enumeration.
@@ -1037,38 +963,31 @@ namespace PHP.Library.Xml
         {
             PhpArray array = new PhpArray();
 
-            if (XmlAttribute != null)
+            foreach (XmlNode child in XmlElement)
             {
-                array.AddToEnd(XmlAttribute.Value);
-            }
-            else
-            {
-                foreach (XmlNode child in XmlElement)
+                object childElement = GetPhpChildElement(child);
+
+                if (childElement != null)
                 {
-                    object childElement = GetPhpChildElement(child);
-
-                    if (childElement != null)
+                    if (array.ContainsKey(child.LocalName))
                     {
-                        if (array.ContainsKey(child.LocalName))
-                        {
-                            object item = array[child.LocalName];
-                            PhpArray arrayitem = item as PhpArray;
+                        object item = array[child.LocalName];
+                        PhpArray arrayitem = item as PhpArray;
 
-                            if (arrayitem == null)
-                            {
-                                arrayitem = new PhpArray(2);
-                                arrayitem.Add(item);
-                                arrayitem.Add(childElement);
-                                array[child.LocalName] = arrayitem;
-                            }
-                            else
-                            {
-                                arrayitem.Add(childElement);
-                            }
+                        if (arrayitem == null)
+                        {
+                            arrayitem = new PhpArray(2);
+                            arrayitem.Add(item);
+                            arrayitem.Add(childElement);
+                            array[child.LocalName] = arrayitem;
                         }
                         else
-                            array.Add(child.LocalName, childElement);
+                        {
+                            arrayitem.Add(childElement);
+                        }                        
                     }
+                    else
+                        array.Add(child.LocalName, childElement);
                 }
             }
 
@@ -1498,13 +1417,16 @@ namespace PHP.Library.Xml
 				case IterationType.Element:
 				{
 					// yield return siblings
-					for (XmlNode sibling = XmlElement; sibling != null; sibling = sibling.NextSibling)
+					XmlNode sibling = XmlElement;
+					while (sibling != null)
 					{
-                        if (sibling.NodeType == XmlNodeType.Element && sibling.LocalName.Equals(XmlElement.LocalName, StringComparison.Ordinal) && iterationNamespace.IsIn(sibling) /*sibling.NamespaceURI == namespaceUri*/)
+                        if (sibling.NodeType == XmlNodeType.Element && iterationNamespace.IsIn(sibling) /*sibling.NamespaceURI == namespaceUri*/ && sibling.LocalName == XmlElement.LocalName)
 						{
 							yield return new KeyValuePair<object, object>
                                 (sibling.LocalName, Create(className, (XmlElement)sibling, IterationType.ChildElements, iterationNamespace /* preserve namespaceUri */));
 						}
+
+						sibling = sibling.NextSibling;
 					}
 					break;
 				}
@@ -1533,7 +1455,7 @@ namespace PHP.Library.Xml
 					// yield return attributes
 					foreach (XmlAttribute attr in XmlElement.Attributes)
 					{
-						if (!attr.Name.Equals("xmlns", StringComparison.Ordinal) && iterationNamespace.IsIn(attr)/*attr.NamespaceURI == namespaceUri*/)
+						if (iterationNamespace.IsIn(attr)/*attr.NamespaceURI == namespaceUri*/ && attr.Name != "xmlns")
 						{
 							yield return new KeyValuePair<object, object>
                                 (attr.LocalName, Create(className, attr));

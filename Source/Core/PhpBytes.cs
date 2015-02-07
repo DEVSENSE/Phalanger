@@ -1,6 +1,5 @@
 /*
 
- Copyright (c) 2013 DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek.
   
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -16,6 +15,10 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections;
 
+#if SILVERLIGHT
+using PHP.CoreCLR;
+#endif
+
 namespace PHP.Core
 {
 	/// <summary>
@@ -23,11 +26,9 @@ namespace PHP.Core
 	/// </summary>
 	[Serializable]
 	[DebuggerNonUserCode]
-	[DebuggerTypeProxy(typeof(DebuggerProxy))]
-	[DebuggerDisplay("\"{this.DebugView(),nq}\"", Type = "binary({Length})")]
-	public sealed class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
+    [DebuggerDisplay("{((IPhpConvertible)this).ToString()}", Type = "string({Length})")]
+	public class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
 	{
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public const string PhpTypeName = PhpVariable.TypeNameString;
 
         #region DataContainer
@@ -36,7 +37,6 @@ namespace PHP.Core
         /// Internal data structure holds the byte array.
         /// The data can be marked as read only. This tells the runtime if the internal data structure can be reused to avoid of copying.
         /// </summary>
-        [Serializable]
         private sealed class DataContainer
         {
             #region Fields
@@ -135,21 +135,18 @@ namespace PHP.Core
         /// <summary>
         /// Empty bytes. Not a single instance with zero length.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static readonly PhpBytes Empty = new PhpBytes(ArrayUtils.EmptyBytes);
 
         /// <summary>
         /// Get the internal byte array for read only purposes.
         /// The returned array must not be modified! It is modifiable only because of the performance.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public byte[]/*!*/ReadonlyData { get { return _data.Data; } }
 
         /// <summary>
 		/// Data contained in this instance. If internal byte array is shared with other <see cref="PhpBytes"/> objects,
         /// internal byte array is cloned.
 		/// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public byte[]/*!*/ Data
 		{
 			get
@@ -172,13 +169,11 @@ namespace PHP.Core
                 _data = new DataContainer(value);
             }
 		}
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private DataContainer/*!*/_data;
 
 		/// <summary>
 		/// Gets data length.
 		/// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public int Length { get { return _data.Length; } }
 
         /// <summary>
@@ -188,73 +183,11 @@ namespace PHP.Core
         /// <returns></returns>
         public byte this[int i] { get { return _data[i]; } }
 
-        #endregion
+		#endregion
 
-        #region DebugView, DumpTo
+		#region Constructors
 
-        /// <summary>
-        /// Dumps internal data, escapes non-ASCII characters.
-        /// </summary>
-        /// <param name="output">Output to dump to.</param>
-        private void DumpTo(System.IO.TextWriter/*!*/output)
-        {
-            Debug.Assert(output != null);
-
-            const string hex_digs = "0123456789abcdef";
-            char[] patch = new char[4] { '\\', 'x', '0', '0' };
-
-            foreach (byte b in ReadonlyData)
-            {
-                // printable characters are outputted normally
-                if (b < 0x7f)
-                {
-                    output.Write((char)b);
-                }
-                else
-                {
-                    patch[2] = hex_digs[(b & 0xf0) >> 4];
-                    patch[3] = hex_digs[(b & 0x0f)];
-
-                    output.Write(patch);
-                }
-            }
-        }
-
-        private string DebugView()
-        {
-            var output = new System.IO.StringWriter();
-            const string hex_digs = "0123456789ABCDEF";
-            var isBinary = false;
-            var data = ReadonlyData;
-            foreach (var b in data)
-            {
-                if (b < 32)
-                {
-                    isBinary = true;
-                    break;
-                }
-            }
-            if (isBinary)
-            {
-                output.Write("0x");
-                foreach (byte b in data)
-                {
-                    output.Write(hex_digs[(b & 0xf0) >> 4]);
-                    output.Write(hex_digs[(b & 0x0f)]);
-                }
-            }
-            else
-            {
-                output.Write(ToString());
-            }
-            return output.ToString();
-        }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
+		/// <summary>
 		/// Creates a new instance of the <see cref="PhpBytes"/> class.
 		/// </summary>
 		/// <param name="data">The array of bytes.</param>
@@ -385,11 +318,6 @@ namespace PHP.Core
 			return Convert.StringToNumber(((IPhpConvertible)this).ToString(), out intValue, out longValue, out doubleValue);
 		}
 
-        public override string ToString()
-        {
-            return ((IPhpConvertible)this).ToString();
-        }
-
         string IPhpConvertible.ToString()
         {
             return Configuration.Application.Globalization.PageEncoding.GetString(this.ReadonlyData, 0, this.Length);
@@ -417,8 +345,27 @@ namespace PHP.Core
 		/// <param name="output">The output text stream.</param>
 		public void Print(System.IO.TextWriter output)
 		{
-			output.Write("\"");
-            DumpTo(output);
+			//output.WriteLine("\"\\x{0}\"", StringUtils.BinToHex(data, "\\x"));
+
+            const string hex_digs = "0123456789abcdef";
+            char[] patch = new char[4]{'\\', 'x', '0', '0'};
+            
+            output.Write("\"");
+            foreach (byte b in ReadonlyData)
+            {
+                // printable characters are outputted normally
+                if (b >= 0x20 && b <= 0x7e)
+                {
+                    output.Write((char)b);
+                }
+                else
+                {
+                    patch[2] = hex_digs[(b & 0xf0) >> 4];
+                    patch[3] = hex_digs[(b & 0x0f)];
+
+                    output.Write(patch);
+                }
+            }
             output.WriteLine("\"");            
 		}
 
@@ -489,24 +436,14 @@ namespace PHP.Core
 			Debug.Assert(comparer != null);
 
             // try to compare two PhpBytes instances
-            if (obj != null && obj.GetType() == typeof(PhpBytes))
+            PhpBytes other;
+            if ((other = obj as PhpBytes) != null)
             {
-                var other = (PhpBytes)obj;
-
                 // if both PhpByte instances share the same internal byte array:
                 if (this._data == other._data) return 0;
 
-                if (object.ReferenceEquals(comparer, PhpComparer.Default) &&
-                    !(StringUtils.IsConvertableToNumber(this.ReadonlyData) && StringUtils.IsConvertableToNumber(other.ReadonlyData)))
-                {
-                    // we don't have to convert bytes to string:
-                    return ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData);
-                }
-                else
-                {
-                    // user comparers can handle this operation differently:
-                    return comparer.Compare(((IPhpConvertible)this).ToString(), ((IPhpConvertible)other).ToString());
-                }
+                // as we know the second operand is PhpBytes, compare as strings directly:
+                return comparer.Compare(((IPhpConvertible)this).ToString(), ((IPhpConvertible)other).ToString());
             }
 
             // compare this as string with obj
@@ -722,48 +659,15 @@ namespace PHP.Core
             if (ReferenceEquals(obj, this))
                 return true;
 
-            if (obj != null && obj.GetType() == typeof(PhpBytes))
-                return Equals((PhpBytes)obj);
-            else
+            PhpBytes other;
+            if ((other = obj as PhpBytes) == null)
                 return false;
+
+			return
+                this._data == other._data ||    // compare internal data structures if they are shared first
+                ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData) == 0; // compare byte by byte
 		}
 
-        public bool Equals(PhpBytes/*!*/other)
-        {
-            Debug.Assert(other != null);
-
-            return
-                this._data == other._data ||    // compare internal data structures if they are shared first
-                (
-                    this._data.Length == other._data.Length &&  // arrays have to be the same length
-                    ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData) == 0 // compare byte by byte
-                );
-        }
-
 		#endregion
-
-        #region Nested class: DebuggerProxy
-
-        private sealed class DebuggerProxy
-		{
-			private readonly PhpBytes _phpBytes;
-
-			public DebuggerProxy(PhpBytes phpBytes)
-			{
-				_phpBytes = phpBytes;
-			}
-
-			public string String
-			{
-				get { return _phpBytes.ToString(); }
-			}
-
-			public byte[] Binary
-			{
-				get { return _phpBytes.ReadonlyData; }
-			}
-        }
-
-        #endregion
-    }
+	}
 }

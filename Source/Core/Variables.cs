@@ -872,7 +872,7 @@ namespace PHP.Core
 				return new PhpBytes(s);
 
 			if ((pstr = variable as PhpString) != null)
-				return new PhpBytes(((IPhpConvertible)pstr).ToString());
+				return ((IPhpConvertible)pstr).ToPhpBytes();
 
 			return null;
 		}

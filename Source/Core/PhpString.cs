@@ -15,7 +15,6 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections;
 using PHP.Core.Reflection;
-using System.Runtime.Serialization;
 
 namespace PHP.Core
 {
@@ -23,11 +22,7 @@ namespace PHP.Core
 	/// String representation that uses <see cref="StringBuilder"/> internally to improve
     /// performance of modifications such as Append, Prepend and singe character change.
 	/// </summary>
-#if !SILVERLIGHT
-    [Serializable]
-#endif
-    [DebuggerDisplay("{ToString()}", Type = PhpString.PhpTypeName)]
-    public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode, IComparable, ISerializable
+	public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode
 	{
         /// <summary>
         /// PhpStrings PHP type name (string).
@@ -38,11 +33,6 @@ namespace PHP.Core
 		/// Copy-on-write aware string builder.
 		/// </summary>
 		private CowStringBuilder/*!*/cow;
-
-        /// <summary>
-        /// Internal <see cref="StringBuilder"/> containing string data. Note: Can be shared.
-        /// </summary>
-        internal StringBuilder/*!*/StringBuilder { get { return this.cow.Builder; } }
 
 		#region Nested Class: CowStringBuilder
 
@@ -436,84 +426,7 @@ namespace PHP.Core
 		{ }
 
 		#endregion
-
-        public override bool Equals(object obj)
-        {
-            if (obj != null && obj.GetType() == typeof(PhpString))
-                return this.cow.Builder.Equals(((PhpString)obj).cow.Builder);
-            return false;
-        }
-        public override int GetHashCode()
-        {
-            return this.cow.Builder.Length;
-        }
-
-        #region ISerializable (CLR only)
-#if !SILVERLIGHT
-
-        /// <summary>
-        /// Handles serialization and deserialization of <see cref="PhpString"/>.
-        /// </summary>
-        /// <remarks>Deserialization converts this object into <see cref="string"/>.</remarks>
-        [Serializable]
-        private class SerializationHelper : ISerializable, IDeserializationCallback, IObjectReference
-        {
-            /// <summary>
-            /// Name of value field within <see cref="SerializationInfo"/> containing serialized string.
-            /// </summary>
-            private const string InfoValueName = "Value";
-
-            /// <summary>
-            /// Deserialized string value.
-            /// </summary>
-            private readonly string value;
-
-            /// <summary>
-            /// Beginning of the deserialization.
-            /// </summary>
-            /// <param name="info"></param>
-            /// <param name="context"></param>
-            private SerializationHelper(SerializationInfo/*!*/info, StreamingContext context)
-            {
-                this.value = (string)info.GetValue(InfoValueName, typeof(string));
-            }
-
-            [System.Security.SecurityCritical]
-            internal static void GetObjectData(PhpString/*!*/instance, SerializationInfo info, StreamingContext context)
-            {
-                Debug.Assert(instance != null);
-                Debug.Assert(info != null);
-
-                info.SetType(typeof(SerializationHelper));
-                info.AddValue(InfoValueName, instance.ToString());
-            }
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                // should never be called
-                throw new InvalidOperationException();
-            }
-
-            public object GetRealObject(StreamingContext context)
-            {
-                return this.value;
-            }
-
-            public virtual void OnDeserialization(object sender)
-            {
-                
-            }
-        }
-
-        [System.Security.SecurityCritical]
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            SerializationHelper.GetObjectData(this, info, context);
-        }
-
-#endif
-        #endregion
-    }
+	}
 
 	#region Array Proxy
 
@@ -525,6 +438,8 @@ namespace PHP.Core
 	/// </summary>
 	internal sealed class PhpArrayString : PhpArray // TODO: Bytes/String
 	{
+		public override bool IsProxy { get { return true; } }
+		
 		internal PhpString String { get { return (PhpString)obj; } }
 		internal PhpBytes Bytes { get { return (PhpBytes)obj; } }
 		internal object Object { get { return obj; } }
@@ -539,89 +454,106 @@ namespace PHP.Core
 		
 		#region Operators
 
-        protected override object GetArrayItemOverride(object key, bool quiet)
+		public override object GetArrayItem(object key, bool quiet)
 		{
 			Debug.Fail("N/A: written chains only");
 			throw null;
 		}
+		
+		public override void SetArrayItem(object key, object value)
+		{
+			PhpString str = obj as PhpString;
 
-        protected override PhpReference/*!*/ GetArrayItemRefOverride()
+			int index;
+			if (Operators.CheckStringIndexRange(index = Convert.ObjectToInteger(key), Int32.MaxValue, false))
+			{	
+				if (str != null)
+					Operators.SetStringItem(str, index, value);
+				else
+					Operators.SetBytesItem((PhpBytes)obj, index, value);
+			}		
+		}
+
+		public override PhpReference/*!*/ GetArrayItemRef()
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-        protected override PhpReference/*!*/ GetArrayItemRefOverride(object key)
+		public override PhpReference/*!*/ GetArrayItemRef(object key)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-        protected override PhpReference/*!*/ GetArrayItemRefOverride(int key)
+		public override PhpReference/*!*/ GetArrayItemRef(int key)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-        protected override PhpReference/*!*/ GetArrayItemRefOverride(string key)
+		public override PhpReference/*!*/ GetArrayItemRef(string key)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-        protected override void SetArrayItemOverride(object value)
-        {
-            PhpException.VariableMisusedAsArray(obj, false);
-        }
+		public override void SetArrayItem(object value)
+		{
+			PhpException.VariableMisusedAsArray(obj, false);
+		}
 
-        protected override void SetArrayItemOverride(object key, object value)
-        {
-            int index;
-            if (Operators.CheckStringIndexRange(index = Convert.ObjectToInteger(key), Int32.MaxValue, false))
-            {
-                if (obj.GetType() == typeof(PhpString))
-                    Operators.SetStringItem((PhpString)obj, index, value);
-                else
-                    Operators.SetBytesItem((PhpBytes)obj, index, value);
-            }
-        }
-
-        protected override void SetArrayItemOverride(int key, object value)
-        {
-            PhpException.VariableMisusedAsArray(obj, true);
-        }
-
-        protected override void SetArrayItemOverride(string key, object value)
-        {
-            PhpException.VariableMisusedAsArray(obj, true);
-        }
-
-        protected override void SetArrayItemRefOverride(object key, PhpReference value)
+		public override void SetArrayItemRef(object key, PhpReference value)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 		}
 
-        protected override PhpArray EnsureItemIsArrayOverride(object key)
+		public override void SetArrayItem(int key, object value)
+		{
+			PhpException.VariableMisusedAsArray(obj, true);
+		}
+
+		public override void SetArrayItem(string key, object value)
+		{
+			PhpException.VariableMisusedAsArray(obj, true);
+		}
+
+		public override void SetArrayItemExact(string key, object value, int hashcode)
+		{
+			PhpException.VariableMisusedAsArray(obj, true);
+		}
+
+		public override void SetArrayItemRef(int key, PhpReference value)
+		{
+			PhpException.VariableMisusedAsArray(obj, true);
+		}
+
+		public override void SetArrayItemRef(string/*!*/ key, PhpReference value)
+		{
+			PhpException.VariableMisusedAsArray(obj, true);
+		}		
+
+		public override PhpArray EnsureItemIsArray(object key)
 		{
 			// error (postponed error, which cannot be reported by the previous operator):  
 			PhpException.VariableMisusedAsArray(obj, false);
 			return null;
 		}
 
-        protected override PhpArray EnsureItemIsArrayOverride()
+		public override PhpArray EnsureItemIsArray()
 		{
 			PhpException.VariableMisusedAsArray(obj, false);
 			return null;
 		}
 
-        protected override DObject EnsureItemIsObjectOverride(object key, ScriptContext/*!*/ context)
+		public override DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
 		{
 			// error (postponed error, which cannot be reported by the previous operator):  
 			PhpException.VariableMisusedAsObject(obj, false);
 			return null;
 		}
 
-        protected override DObject EnsureItemIsObjectOverride(ScriptContext/*!*/ context)
+		public override DObject EnsureItemIsObject(ScriptContext/*!*/ context)
 		{
 			PhpException.VariableMisusedAsObject(obj, false);
 			return null;

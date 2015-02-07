@@ -467,14 +467,6 @@ namespace PHP.Core
         /// <summary>
 		/// Converts this instance to a string value.
 		/// </summary>
-		/// <returns>Returns "array" string.</returns>
-		string IPhpConvertible.ToString(DTypeDesc caller)
-		{
-            return ((IPhpConvertible)this).ToString();
-		}
-		/// <summary>
-		/// Converts this instance to a string value.
-		/// </summary>
 		/// <param name="throwOnError">Throw 'notice' when conversion fails?</param>
 		/// <param name="success">Indicates whether conversion was successful.</param>
 		/// <returns>Returns "array" string.</returns>

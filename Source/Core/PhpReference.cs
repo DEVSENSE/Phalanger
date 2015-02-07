@@ -19,32 +19,23 @@ using PHP.CoreCLR;
 
 namespace PHP.Core
 {
-    /// <summary>
+	/// <summary>
 	/// Represents a PHP reference.
 	/// </summary>
 	[Serializable]
-    [DebuggerDisplay("&{this.Value}", Type = "&{PHP.Core.PhpVariable.GetTypeName(this.Value),nq}")]
-    [DebuggerNonUserCode]
-	[DebuggerTypeProxy(typeof(DebuggerProxy))]
+    [DebuggerDisplay("&{Value}", Type = "&{PHP.Core.PhpVariable.GetTypeName(Value),nq}")]
+	[DebuggerNonUserCode]
 	public class PhpReference : IPhpVariable, ICloneable, IPhpObjectGraphNode
 	{
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public const string PhpTypeName = "reference";
+		public const string PhpTypeName = "reference";
 
-	    private string DebugView()
-	    {
-		    if (Value == null)
-			    return null;
-		    return Value.ToString();
-	    }
-
-	    #region Fields
+		#region Fields
 
 		/// <summary>
 		/// Referenced object.
 		/// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public object Value
+        [DebuggerDisplay("{Value}", Type = "{PHP.Core.PhpVariable.GetTypeName(Value),nq}")]
+		public object Value
 		{
 			[Emitted]
 			get { return value; }
@@ -82,18 +73,6 @@ namespace PHP.Core
 			this.value = value;
 		}
 
-        /// <summary>
-        /// Initializes new instance of <see cref="PhpReference"/> and
-        /// assigns this new instance into <paramref name="value"/>.
-        /// </summary>
-        /// <param name="value">Value to be wrapped into new instance of <see cref="PhpReference"/> and
-        /// then it will be overwritten by the reference to this new instance.</param>
-        internal PhpReference(ref object value)
-            :this(value)
-        {
-            value = this;
-        }
-
 		#endregion
 
 		#region IsAliased, IsSet
@@ -101,8 +80,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Returns <B>true</B>. Overriden in <see cref="PhpSmartReference"/>.
 		/// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public virtual bool IsAliased
+		public virtual bool IsAliased
 		{
 			get { return true; }
 			[Emitted]
@@ -112,8 +90,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Returns <B>true</B>. Overriden in <see cref="PhpSmartReference"/>.
 		/// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public virtual bool IsSet
+		public virtual bool IsSet
 		{
 			[Emitted]
 			get { return true; }
@@ -377,17 +354,6 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-	    private class DebuggerProxy
-	    {
-				private PhpReference _reference;
-		    public DebuggerProxy(PhpReference reference)
-		    {
-			    _reference = reference;
-		    }
-				[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-				public object Value { get { return _reference.Value; } }
-	    }
 	}
 
 	/// <summary>
@@ -395,7 +361,7 @@ namespace PHP.Core
 	/// (i.e. whether it really is a reference).
 	/// </summary>
 	[Serializable, DebuggerNonUserCodeAttribute]
-	public sealed class PhpSmartReference : PhpReference
+	public class PhpSmartReference : PhpReference
 	{
 		#region Fields
 
