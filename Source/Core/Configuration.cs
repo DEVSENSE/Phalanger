@@ -202,6 +202,18 @@ namespace PHP.Core
 			public bool ImplicitFlush { get { return implicitFlush; } }
 			public bool implicitFlush = false;
 
+            /// <summary>
+            /// Overrides <see cref="System.Web.HttpResponse.Charset"/> if not <c>null</c>.
+            /// </summary>
+            public string CharSet { get { return this.charSet; } }
+            private string charSet = null;
+
+            /// <summary>
+            /// Overrides <see cref="System.Web.HttpResponse.ContentType"/> if not <c>null</c>.
+            /// </summary>
+            public string ContentType { get { return this.contentType; } }
+            private string contentType = null;
+
 			internal OutputControlSection DeepCopy()
 			{
 				return (OutputControlSection)MemberwiseClone();
