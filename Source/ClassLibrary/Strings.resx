@@ -597,17 +597,4 @@
   <data name="unexpected_arg_given" xml:space="preserve">
     <value>expects parameter {0} to be {1}, {2} given</value>
   </data>
-  <data name="option_missing" xml:space="preserve">
-    <value>'{0}' option missing</value>
-  </data>
-  <data name="smtp_sendmail_from_not_set" xml:space="preserve">
-    <value>From header was not specified.</value>
-  </data>
-  <data name="aspnet_sessionhandler_id_reset" xml:space="preserve">
-    <value>By changing ASP.NET session ID, all the session data created during this request will be lost. New session will start in the next request.</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="WindowsTZ" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\WindowsTZ.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
-  </data>
 </root>
