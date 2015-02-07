@@ -581,7 +581,7 @@ namespace PHP.Core
 
 
 		/// <summary>
-		/// Loads compiler configuration values from a sspecfiiced .config file into a given record.
+		/// Loads compiler configuration values from a specified .config file into a given record.
 		/// </summary>
 		/// <param name="appContext">Application context where to load libraries.</param>
 		/// <param name="path">A full path to the .config file.</param>
@@ -608,24 +608,36 @@ namespace PHP.Core
 			XmlNode root = doc.DocumentElement;
 			if (root.Name == "configuration")
 			{
-				foreach (XmlNode node in root.ChildNodes)
-				{
-					if (node.NodeType == XmlNodeType.Element)
-					{
-						switch (node.Name)
-						{
-							case Configuration.SectionName:
-								Parse(appContext, node);
-								break;
-
-							case "system.web":
-								ParseSystemWebSection(node);
-								break;
-						}
-					}
-				}
+                ProcessNodes(appContext, root);
 			}
 		}
+
+        /// <summary>
+        /// Recursively handles loading of the configuration file sections, to handle the inheritance properly
+        /// </summary>
+        /// <param name="appContext">Application context where to load libraries.</param>
+        /// <param name="root">Root to parse child nodes from</param>
+        private void ProcessNodes(ApplicationContext appContext, XmlNode root)
+        {
+            foreach (XmlNode node in root.ChildNodes) {
+                if (node.NodeType == XmlNodeType.Element) {
+                    switch (node.Name) {
+                        case Configuration.SectionName:
+                            Parse(appContext, node);
+                            break;
+
+                        case Configuration.LocationName:
+                            // Recursively parse the Web.config file to include everything in the <location> element
+                            ProcessNodes(appContext, node);
+                            break;
+
+                        case "system.web":
+                            ParseSystemWebSection(node);
+                            break;
+                    }
+                }
+            }
+        }
 
 		#endregion
 	}
@@ -2006,6 +2018,7 @@ namespace PHP.Core
 	public sealed class Configuration
 	{
 		public const string SectionName = "phpNet";
+        public const string LocationName = "location";
 
 		private readonly GlobalConfiguration/*!*/ global;
 		private readonly LocalConfiguration/*!*/ defaultLocal;
