@@ -75,28 +75,28 @@ namespace PHP.Core.Reflection
 
 		#region Error-throwing setters and getters
 
-        private void EventSetter(object instance, object value)
-        {
-            PhpException.Throw(
-                PhpError.Error,
-                string.Format(CoreResources.event_written, DeclaringType.MakeFullName(), MakeFullName()));
-        }
+		private void EventSetter(object instance, object value)
+		{
+			PhpException.Throw(PhpError.Error,
+				CoreResources.GetString("event_written",
+				DeclaringType.MakeFullName(), MakeFullName()));
+		}
 
-        private void MissingSetter(object instance, object value)
-        {
-            PhpException.Throw(
-                PhpError.Error,
-                string.Format(CoreResources.readonly_property_written, DeclaringType.MakeFullName(), MakeFullName()));
-        }
+		private void MissingSetter(object instance, object value)
+		{
+			PhpException.Throw(PhpError.Error,
+				CoreResources.GetString("readonly_property_written",
+				DeclaringType.MakeFullName(), MakeFullName()));
+		}
 
-        private object MissingGetter(object instance)
-        {
-            PhpException.Throw(
-                PhpError.Error,
-                string.Format(CoreResources.writeonly_property_read, DeclaringType.MakeFullName(), MakeFullName()));
+		private object MissingGetter(object instance)
+		{
+			PhpException.Throw(PhpError.Error,
+				CoreResources.GetString("writeonly_property_read",
+				DeclaringType.MakeFullName(), MakeFullName()));
 
-            return null;
-        }
+			return null;
+		}
 
 		#endregion
 
@@ -324,86 +324,7 @@ namespace PHP.Core.Reflection
             return GetterStub((instance == null ? null : instance.InstanceObject));
 		}
 
-        #region nested class: ClrPrintableValue
-
-        /// <summary>
-        /// Get operation used for <see cref="IPhpPrintable"/> operations.
-        /// </summary>
-        /// <param name="instance">Reference to <c>self</c> instance.</param>
-        /// <returns>Value of this property.</returns>
-        /// <remarks>Value of CLR properties are wrapped into <see cref="ClrPrintableValue"/> avoiding infinite recursion and displaying values converted to string if necessary.</remarks>
-        public virtual object DumpGet(DObject instance)
-        {
-            var value = this.Get(instance);
-
-            if (this.Member is ClrProperty)
-                return new ClrPrintableValue(value);
-            else
-                return value;
-        }
-
-        /// <summary>
-        /// Wraps CLR property value to stop recursion and display the value as a string. Same as VisualStudio's Immediate Window.
-        /// </summary>
-        private class ClrPrintableValue : IPhpPrintable
-        {
-            #region Fields & Properties
-
-            private readonly object value;
-
-            /// <summary>
-            /// Determines whether <see cref="value"/> is primitive type and can be printed as it is. Otherwise the <see cref="value"/> should be evaluated to string to be printed.
-            /// </summary>
-            private bool OverridePrint { get { return value != null && !PhpVariable.IsPrimitiveType(value.GetType()); } }
-
-            /// <summary>
-            /// Converts <see cref="value"/> to string enclosed with { and }.
-            /// </summary>
-            private string ValueString { get { if (value == null) throw new ArgumentNullException("value"); return string.Format("{{{0}}}", value.ToString()); } }
-
-            #endregion
-
-            #region constructor
-
-            public ClrPrintableValue(object value)
-            {
-                this.value = value;
-            }
-
-            #endregion
-
-            #region IPhpPrintable
-
-            public void Print(System.IO.TextWriter output)
-            {
-                if (OverridePrint)
-                    output.WriteLine(ValueString);
-                else
-                    PhpVariable.Print(value);
-            }
-
-            public void Dump(System.IO.TextWriter output)
-            {
-                if (OverridePrint)
-                    output.WriteLine(ValueString);
-                else
-                    PhpVariable.Dump(value);
-            }
-
-            public void Export(System.IO.TextWriter output)
-            {
-                if (OverridePrint)
-                    output.Write(ValueString);
-                else
-                    PhpVariable.Export(value);
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        /// <summary>
+		/// <summary>
 		/// If the property is an unset <see cref="PhpReference"/>, it is returned (no modification takes place),
 		/// otherwise <B>null</B> is returned (and the new value is written to the property).
 		/// </summary>
@@ -418,25 +339,18 @@ namespace PHP.Core.Reflection
 
 		public override string MakeFullName()
 		{
-            var knownProperty = this.Member as KnownProperty;
-            return (knownProperty != null) ? knownProperty.FullName : LookupFullName();
+			// TODO:
+			// didn't work:
+			//return (_setterStub != null) ?
+			//    _setterStub.GetUserEntryPoint.Name.Substring("set_".Length) : _getterStub.GetUserEntryPoint.Name.Substring("get_".Length); 
+
+			// brute force:
+			foreach (KeyValuePair<VariableName, DPropertyDesc> pair in DeclaringType.Properties)
+			{
+				if (pair.Value == this) return pair.Key.ToString();
+			}
+			return "<Unknown>";
 		}
-
-        private string LookupFullName()
-        {
-            // TODO:
-            // didn't work:
-            //return (_setterStub != null) ?
-            //    _setterStub.GetUserEntryPoint.Name.Substring("set_".Length) : _getterStub.GetUserEntryPoint.Name.Substring("get_".Length); 
-
-            // brute force:
-            foreach (KeyValuePair<VariableName, DPropertyDesc> pair in DeclaringType.Properties)
-            {
-                if (pair.Value == this) return pair.Key.ToString();
-            }
-
-            return "<Unknown>";
-        }
 
 		public override string MakeFullGenericName()
 		{
@@ -613,7 +527,7 @@ namespace PHP.Core.Reflection
 		internal override void ReportAbstractNotImplemented(ErrorSink/*!*/ errors, DType/*!*/ declaringType, PhpType/*!*/ referringType)
 		{
 			errors.Add(Errors.AbstractPropertyNotImplemented, referringType.Declaration.SourceUnit,
-				referringType.Declaration.Span, referringType.FullName, declaringType.MakeFullGenericName(), this.FullName);
+				referringType.Declaration.Position, referringType.FullName, declaringType.MakeFullGenericName(), this.FullName);
 
 			ReportError(errors, Errors.RelatedLocation);
 		}
@@ -777,8 +691,8 @@ namespace PHP.Core.Reflection
 		/// Error reporting.
 		/// <c>Position.Invalid</c> for reflected PHP fields.
 		/// </summary>
-        public Text.Span Span { get { return span; } }
-        private readonly Text.Span span;
+		public Position Position { get { return position; } }
+		private readonly Position position;
 
 		/// <summary>
 		/// Error reporting (for partial classes).
@@ -844,11 +758,11 @@ namespace PHP.Core.Reflection
 		/// Used by compiler.
 		/// </summary>
 		public PhpField(VariableName name, DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes,
-            bool hasInitialValue, SourceUnit/*!*/ sourceUnit, Text.Span position)
+			bool hasInitialValue, SourceUnit/*!*/ sourceUnit, Position position)
 			: base(new DPhpFieldDesc(declaringType, memberAttributes), name)
 		{
 			this.hasInitialValue = hasInitialValue;
-			this.span = position;
+			this.position = position;
 			this.sourceUnit = sourceUnit;
 			this.builder = new PhpFieldBuilder(this);
 		}
@@ -896,7 +810,7 @@ namespace PHP.Core.Reflection
 		internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
 		{
 			if (sourceUnit != null)
-				sink.Add(error, SourceUnit, span);
+				sink.Add(error, SourceUnit, position);
 		}
 
 		#endregion
@@ -922,19 +836,19 @@ namespace PHP.Core.Reflection
 
 		internal void Validate(SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
-			Debug.Assert(span.IsValid);
+			Debug.Assert(position.IsValid);
 
 			// no abstract fields:
 			if (IsAbstract)
 			{
-				errors.Add(Errors.PropertyDeclaredAbstract, SourceUnit, span);
+				errors.Add(Errors.PropertyDeclaredAbstract, SourceUnit, position);
 				memberDesc.MemberAttributes &= ~PhpMemberAttributes.Abstract;
 			}
 
 			// no final fields:
 			if (IsFinal)
 			{
-				errors.Add(Errors.PropertyDeclaredFinal, SourceUnit, span);
+				errors.Add(Errors.PropertyDeclaredFinal, SourceUnit, position);
 				memberDesc.MemberAttributes &= ~PhpMemberAttributes.Final;
 			}
 		}
@@ -949,7 +863,7 @@ namespace PHP.Core.Reflection
             // static field cannot be made non static
             if (overridden.IsStatic && !this.IsStatic)
             {
-                errors.Add(Errors.MakeStaticPropertyNonStatic, SourceUnit, Span,
+                errors.Add(Errors.MakeStaticPropertyNonStatic, SourceUnit, Position,
                   overridden.DeclaringType.FullName, this.Name.ToString(), this.DeclaringType.FullName);
             }
 
@@ -957,7 +871,7 @@ namespace PHP.Core.Reflection
             if ((overridden.IsPublic && (this.IsPrivate || this.IsProtected)) ||
                 (overridden.IsProtected && (this.IsPrivate)))
             {
-                errors.Add(Errors.OverridingFieldRestrictsVisibility, SourceUnit, Span,
+                errors.Add(Errors.OverridingFieldRestrictsVisibility, SourceUnit, Position,
                   overridden.DeclaringType.FullName, this.Name.ToString(), overridden.Visibility.ToString().ToLowerInvariant(), this.DeclaringType.FullName);
             }
 
@@ -1069,6 +983,24 @@ namespace PHP.Core.Reflection
 			}
 		}
 
+		private void EmitThreadStaticInit(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
+		{
+			ILEmitter il = codeGenerator.IL;
+
+			PhpType implementor = Implementor;
+			DType feature = ((DType)constructedType ?? (DType)implementor);
+
+			// ensure that the field has been initialized for this request by invoking __InitializeStaticFields
+			if (!il.IsFeatureControlFlowPrecedent(feature))
+			{
+				codeGenerator.EmitLoadScriptContext();
+				il.Emit(OpCodes.Call, DType.MakeConstructed(implementor.StaticFieldInitMethodInfo, constructedType));
+
+				// remember that we have just initialized class_entry's static fields
+				il.MarkFeature(feature);
+			}
+		}
+
 		private PhpTypeCode EmitGetInternal(CodeGenerator/*!*/ codeGenerator, IPlace instance, bool wantRef,
 			ConstructedType constructedType, bool runtimeVisibilityCheck, bool setAliasedFlag)
 		{
@@ -1082,7 +1014,7 @@ namespace PHP.Core.Reflection
 					return codeGenerator.EmitGetStaticPropertyOperator(DeclaringType, this.FullName, null, wantRef);
 				}
 
-				if (!IsAppStatic) Implementor.EmitThreadStaticInit(codeGenerator, constructedType);
+				if (!IsAppStatic) EmitThreadStaticInit(codeGenerator, constructedType);
 
 				// retrieve field value
 				il.Emit(OpCodes.Ldsfld, DType.MakeConstructed(RealField, constructedType));
@@ -1154,7 +1086,7 @@ namespace PHP.Core.Reflection
 
 				if (isRef)
 				{
-					if (!IsAppStatic) Implementor.EmitThreadStaticInit(codeGenerator, constructedType);
+					if (!IsAppStatic) EmitThreadStaticInit(codeGenerator, constructedType);
 
 					// just write the PhpReference to the field upon assignment
 					return delegate(CodeGenerator codeGen, PhpTypeCode stackTypeCode)
@@ -1290,7 +1222,7 @@ namespace PHP.Core.Reflection
 
         internal static void EmitGetterStub(ILEmitter/*!*/ il, PropertyInfo/*!*/ propertyInfo, Type/*!*/ declaringType)
         {
-            var getter = propertyInfo.GetGetMethod(true);
+            var getter = propertyInfo.GetGetMethod(/*false*/);
 
             if (getter == null)
             {
@@ -1331,7 +1263,7 @@ namespace PHP.Core.Reflection
             {
                 il.Emit(OpCodes.Ldstr, declaringType.Name);
                 il.Emit(OpCodes.Ldstr, "set_" + propertyInfo.Name);
-                il.Emit(OpCodes.Call, Methods.PhpException.UndefinedMethodCalled);  // CoreResources.readonly_property_written
+                il.Emit(OpCodes.Call, Methods.PhpException.UndefinedMethodCalled);
                 
                 il.Emit(OpCodes.Ret);
                 return;
@@ -1864,14 +1796,14 @@ namespace PHP.Core.Reflection
 		internal override AssignmentCallback EmitSet(CodeGenerator/*!*/ codeGenerator, IPlace instance, bool isRef,
 			ConstructedType constructedType, bool runtimeVisibilityCheck)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		internal override void EmitUnset(CodeGenerator/*!*/ codeGenerator, IPlace/*!*/ instance,
 			ConstructedType constructedType, bool runtimeVisibilityCheck)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		#endregion

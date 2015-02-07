@@ -915,11 +915,12 @@ namespace PHP.Core
 		{
 			ILEmitter cil;
 			IPlace sc_place;
-
+            
 			if (field.IsStatic)
 			{
+                // (J) even overiding static field is created again in derivating type
 				// there is no initialization taking place if the implementing CLI field does not live in current class
-				if (field.Overrides != null) return;
+				//if (field.Overrides != null) return;
 
 				if (field.IsAppStatic)
 				{
@@ -938,6 +939,9 @@ namespace PHP.Core
 			}
 			else
 			{
+                if (initVal == null && field.Implementor != field.DeclaringType)
+                    return;
+
 				// instance field initialization is emitted into the <InitializeInstanceFields> method
 				cil = field.DeclaringPhpType.Builder.InstanceFieldInitEmitter;
 

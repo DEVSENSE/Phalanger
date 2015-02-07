@@ -127,18 +127,16 @@ namespace PHP.Core.Reflection
 
 		protected struct AttributedValue
 		{
-			public object Value;
-			public PhpMemberAttributes Attributes;
+			public readonly object Value;
+			public readonly PhpMemberAttributes Attributes;
+            public readonly DTypeDesc DeclaringType;
 
-			public AttributedValue(object value, PhpMemberAttributes attributes)
+            public AttributedValue(object value, PhpMemberAttributes attributes, DTypeDesc DeclaringType)
 			{
 				this.Value = value;
 				this.Attributes = attributes;
+                this.DeclaringType = DeclaringType;
 			}
-
-			public AttributedValue(object value)
-				: this(value, PhpMemberAttributes.Public)
-			{ }
 		}
 
 		#endregion
@@ -1912,7 +1910,7 @@ namespace PHP.Core.Reflection
 				}
 
 				yield return new KeyValuePair<VariableName, AttributedValue>
-					(pair.Key, new AttributedValue(property_value, property.MemberAttributes));
+					(pair.Key, new AttributedValue(property_value, property.MemberAttributes, property.DeclaringType));
 			}
 		}
 
@@ -2001,8 +1999,8 @@ namespace PHP.Core.Reflection
 					switch (pair.Value.Attributes & PhpMemberAttributes.VisibilityMask)
 					{
 						case PhpMemberAttributes.Public: prop_name = String.Format("[\"{0}\"]=>", pair.Key); break;
-						case PhpMemberAttributes.Protected: prop_name = String.Format("[\"{0}:protected\"]=>", pair.Key); break;
-						case PhpMemberAttributes.Private: prop_name = String.Format("[\"{0}:private\"]=>", pair.Key); break;
+                        case PhpMemberAttributes.Protected: prop_name = String.Format("[\"{0}\":protected]=>", pair.Key); break;
+                        case PhpMemberAttributes.Private: prop_name = String.Format("[\"{0}\":\"{1}\":private]=>", pair.Key, pair.Value.DeclaringType.MakeSimpleName()); break;
 					}
 
 					ct_props.Add(new KeyValuePair<string, object>(prop_name, pair.Value.Value));
@@ -2013,7 +2011,7 @@ namespace PHP.Core.Reflection
 			int count = ct_props.Count;
 			if (RuntimeFields != null) count += RuntimeFields.Count;
 
-			string type_name = string.Format("object({0})({1})", TypeDesc.MakeFullGenericName(), count);
+            string type_name = string.Format("object({0})#{2} ({1})", TypeDesc.MakeFullGenericName(), count, unchecked((uint)this.GetHashCode()));
 
 			if (visited)
 			{
