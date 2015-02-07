@@ -276,13 +276,39 @@ namespace PHP.Library
 		/// <param name="methodName">The name of the method.</param>
 		/// <returns><B>True</B> if the method given by <paramref name="methodName"/> has been defined for the given
 		/// object <paramref name="obj"/>, <B>false</B> otherwise.</returns>
-		[ImplementsFunction("method_exists")]
-		public static bool MethodExists(DObject obj, string methodName)
+        [ImplementsFunction("method_exists", FunctionImplOptions.NeedsClassContext)]
+		public static bool MethodExists(DTypeDesc caller, object obj, string methodName)
 		{
-			if (obj == null) return false;
+			if (obj == null || string.IsNullOrEmpty(methodName)) return false;
+
+            DTypeDesc dtype;
+            DObject dobj;
+            string str;
+
+            if ((dobj = (obj as DObject)) != null)
+            {
+                dtype = dobj.TypeDesc;
+                if (dtype == null)
+                {
+                    Debug.Fail("DObject.TypeDesc should not be null");
+                    return false;
+                }
+            }
+            else if ((str = PhpVariable.AsString(obj)) != null)
+            {
+                ScriptContext script_context = ScriptContext.CurrentContext;
+                dtype = script_context.ResolveType(str, null, caller, null, ResolveTypeFlags.UseAutoload);
+                if (dtype == null)
+                    return false;
+            }
+            else
+            {
+                // other type names are not handled
+                return false;
+            }
 
 			DRoutineDesc method;
-			return (obj.TypeDesc.GetMethod(new Name(methodName), obj.TypeDesc, out method) != GetMemberResult.NotFound);
+            return (dtype.GetMethod(new Name(methodName), dtype, out method) != GetMemberResult.NotFound);
 		}
 
 		/// <summary>
