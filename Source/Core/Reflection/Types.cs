@@ -2760,8 +2760,24 @@ namespace PHP.Core.Reflection
 					}
 				}
 
-				if (method.Overrides != null)
-					method.ValidateOverride(errors, (KnownRoutine)method.Overrides.Member);
+                if (method.Overrides != null)
+                {
+                    method.ValidateOverride(errors, (KnownRoutine)method.Overrides.Member);
+
+                    //// decreasing amount of arguments:
+                    //// We have to add missing args as hidden args, so we can optimize method calls.
+                    //// In case args could be decreased, we would loose args when calling virtually;
+                    //// class A{function f($a)}
+                    //// class B{function f()}    // <-- loosing $a, we have to add hidden arg, so override in C would be correct
+                    //// class C{function f($a)}  // <-- $a is ArgDefault
+                    //if (method.Overrides.Member.GetType() == typeof(PhpMethod) &&
+                    //    ((PhpMethod)method.Overrides.Member).Signature.ParamCount > method.Signature.ParamCount)
+                    //{
+                    //    // Signature has to be extended with hidden args
+                    //    // ... then we can enable this->foo optimization
+                    //    // last problem is changing return type (object <-> PhpReference)
+                    //}
+                }
 
 				if (method.Implements != null)
 				{
