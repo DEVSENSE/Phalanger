@@ -1661,6 +1661,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 31: // namespace_declaration_statement -> T_NAMESPACE @1 '{' namespace_statement_list_opt '}' 
 {
 			currentNamespace.Statements = (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object;
+			currentNamespace.UpdatePosition(yypos);
 			yyval.Object = currentNamespace;
 			currentNamespace = null;
 		}
@@ -1673,6 +1674,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 33: // namespace_declaration_statement -> T_NAMESPACE namespace_name_list @2 '{' namespace_statement_list_opt '}' 
 {
 			currentNamespace.Statements = (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object;
+			currentNamespace.UpdatePosition(yypos);
 			yyval.Object = currentNamespace;
 			currentNamespace = null;
 		}
@@ -3324,7 +3326,10 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 444: // chain_base -> qualified_static_type_ref T_DOUBLE_COLON keyed_variable 
 { 
-	    yyval.Object = CreateStaticFieldUse(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-3].yyval.Object, (CompoundVarUse)value_stack.array[value_stack.top-1].yyval.Object); 
+		if (value_stack.array[value_stack.top-1].yyval.Object is DirectVarUse && ((DirectVarUse)value_stack.array[value_stack.top-1].yyval.Object).VarName.IsThisVariableName)
+			yyval.Object = value_stack.array[value_stack.top-1].yyval.Object;
+		else
+			yyval.Object = CreateStaticFieldUse(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-3].yyval.Object, (CompoundVarUse)value_stack.array[value_stack.top-1].yyval.Object); 
 	  }
         return;
       case 445: // chain_base_with_function_calls -> chain_base 

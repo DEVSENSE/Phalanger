@@ -562,6 +562,7 @@ namespace_declaration_statement:   /* PHP 5.3 */
 		'{' namespace_statement_list_opt '}' 
 		{
 			currentNamespace.Statements = (List<Statement>)$4;
+			currentNamespace.UpdatePosition(@$);
 			$$ = currentNamespace;
 			currentNamespace = null;
 		}
@@ -573,6 +574,7 @@ namespace_declaration_statement:   /* PHP 5.3 */
 		'{' namespace_statement_list_opt '}' 
 		{
 			currentNamespace.Statements = (List<Statement>)$5;
+			currentNamespace.UpdatePosition(@$);
 			$$ = currentNamespace;
 			currentNamespace = null;
 		}
@@ -2008,7 +2010,10 @@ chain_base:
 		keyed_variable                                    { $$ = $1; }	
 	|	qualified_static_type_ref T_DOUBLE_COLON keyed_variable 
 	  { 
-	    $$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3); 
+		if ($3 is DirectVarUse && ((DirectVarUse)$3).VarName.IsThisVariableName)
+			$$ = $3;	// you know, in PHP ... whatever::$this means $this
+		else
+			$$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3); 
 	  }	
 ;
 
