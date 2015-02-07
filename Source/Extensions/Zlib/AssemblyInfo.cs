@@ -17,12 +17,5 @@ using PHP.Core;
 [assembly: AssemblyTitle("Phalanger Zlib")]
 [assembly: AssemblyDescription("Phalanger Managed Extension - Zlib")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DEVSENSE s.r.o.")]
-[assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright (c) 2005-2010 DEVSENSE s.r.o.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyKeyName("")]
 
 [assembly: PhpLibrary(typeof(PHP.Library.Zlib.ZlibLibraryDescriptor), "zlib", new string[] { "zlib" })]

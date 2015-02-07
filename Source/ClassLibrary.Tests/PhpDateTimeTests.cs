@@ -7,28 +7,32 @@ namespace PHP.Library.Tests
     [TestClass]
     public class PhpDateTimeTests
     {
+        private static TimeZoneInfo/*!*/NepalTimeZone { get { return PhpTimeZone.GetTimeZone("Asia/Katmandu"); } }// = TimeZoneInfo.FindSystemTimeZoneById("Nepal Standard Time");// new _NepalTimeZone();
+        private static TimeZoneInfo/*!*/PacificTimeZone { get { return PhpTimeZone.GetTimeZone("America/Los_Angeles"); } }//  = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");//new _PacificTimeZone();
+        private static TimeZoneInfo/*!*/GmtTimeZone { get { return PhpTimeZone.GetTimeZone("Etc/GMT"); } }//  = TimeZoneInfo.FindSystemTimeZoneById("GTM");
+
         [TestMethod]
         public void TestGetTimeOfDay()
         {
             PhpArray result;
 
-            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 10, 1), PhpTimeZone.PacificTimeZone);
+            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 10, 1), PacificTimeZone);
             Assert.AreEqual((int)result["minuteswest"], 480);
             Assert.AreEqual((int)result["dsttime"], 1);
 
-            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 11, 1), PhpTimeZone.PacificTimeZone);
+            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 11, 1), PacificTimeZone);
             Assert.AreEqual((int)result["minuteswest"], 480);
             Assert.AreEqual((int)result["dsttime"], 1);
 
-            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 11, 1), PhpTimeZone.NepalTimeZone);
+            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 11, 1), NepalTimeZone);
             Assert.AreEqual((int)result["minuteswest"], -345);
             Assert.AreEqual((int)result["dsttime"], 0);
 
-            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 10, 1), PhpTimeZone.GmtTimeZone);
+            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 10, 1), GmtTimeZone);
             Assert.AreEqual((int)result["minuteswest"], 0);
             Assert.AreEqual((int)result["dsttime"], 1);
 
-            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 11, 1), PhpTimeZone.GmtTimeZone);
+            result = PhpDateTime.GetTimeOfDay(new DateTime(2005, 11, 1), GmtTimeZone);
             Assert.AreEqual((int)result["minuteswest"], 0);
             Assert.AreEqual((int)result["dsttime"], 1);
 
@@ -40,8 +44,8 @@ namespace PHP.Library.Tests
         [TestMethod]
         public void TestGetLocalTime()
         {
+#if DEBUG
             PhpArray result1, result2;
-
             PhpTimeZone.CurrentTimeZone = PhpTimeZone.GetTimeZone("UTC");
             DateTime dt = new DateTime(2005, 11, 4, 5, 4, 3, 132);
 
@@ -66,6 +70,7 @@ namespace PHP.Library.Tests
             Assert.AreEqual((int)result1[6], (int)result2["tm_wday"]);
             Assert.AreEqual((int)result1[7], (int)result2["tm_yday"]);
             Assert.AreEqual((int)result1[8], (int)result2["tm_isdst"]);
+#endif
         }
 
         struct StringToTimeCase
@@ -106,14 +111,14 @@ namespace PHP.Library.Tests
         {
             TimeZoneInfo[] all_zones =
 		  {
-		    PhpTimeZone.NepalTimeZone,
-		    PhpTimeZone.PacificTimeZone,
-		    PhpTimeZone.GmtTimeZone
+		    NepalTimeZone,
+		    PacificTimeZone,
+		    GmtTimeZone
 		  };
 
             var utc_zone = DateTimeUtils.UtcTimeZone;
-            var nep_zone = PhpTimeZone.NepalTimeZone;
-            var pac_zone = PhpTimeZone.PacificTimeZone;
+            var nep_zone = NepalTimeZone;
+            var pac_zone = PacificTimeZone;
 
             TimeZoneInfo[] utc_zones = { utc_zone };
             TimeZoneInfo[] nep_zones = { nep_zone };

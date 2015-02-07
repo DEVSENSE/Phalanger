@@ -648,13 +648,6 @@ namespace PHP.Library
             return null;
         }
 
-#if DEBUG
-
-        internal static TimeZoneInfo/*!*/NepalTimeZone { get { return GetTimeZone("Asia/Katmandu"); } }// = TimeZoneInfo.FindSystemTimeZoneById("Nepal Standard Time");// new _NepalTimeZone();
-        internal static TimeZoneInfo/*!*/PacificTimeZone { get { return GetTimeZone("America/Los_Angeles"); } }//  = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");//new _PacificTimeZone();
-        internal static TimeZoneInfo/*!*/GmtTimeZone { get { return GetTimeZone("Etc/GMT"); } }//  = TimeZoneInfo.FindSystemTimeZoneById("GTM");
-#endif
-
         #region date_default_timezone_get, date_default_timezone_set
 
         [ImplementsFunction("date_default_timezone_set")]

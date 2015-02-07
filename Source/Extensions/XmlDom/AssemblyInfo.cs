@@ -16,13 +16,5 @@ using PHP.Core;
 
 [assembly: AssemblyTitle("Phalanger XmlDom")]
 [assembly: AssemblyDescription("Phalanger Managed Extension - XmlDom")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("The Phalanger Project Team")]
-[assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright (c) 2006 Ladislav Prosek")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyKeyName("")]
 
 [assembly: PhpLibrary(typeof(PHP.Library.Xml.XmlDomLibraryDescriptor), "XmlDom", new string[] { "SimpleXML", "dom", "xsl", "libxml", "XMLReader" })]

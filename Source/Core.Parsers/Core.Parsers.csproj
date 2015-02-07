@@ -1,9 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\Build\Common.Build.settings" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{581F1486-5062-459E-BAE6-A41886584F81}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -11,7 +9,6 @@
     <AssemblyName>PhpNetCore.Parsers</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Core\Core.snk</AssemblyOriginatorKeyFile>
     <SccProjectName>SAK</SccProjectName>
@@ -23,26 +20,14 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\PhpNetCore.Parsers.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591,419</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\PhpNetCore.Parsers.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591,419</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -134,40 +119,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>ECHO Copying output to the Deployment folder ...
-
-
-if $(ConfigurationName) == Release (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)\..\..\Deployment\Bin" 1&gt;nul
-
-"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-
-)
-
-
-if $(ConfigurationName) == Debug (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
-
-"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-
-)
-
-
-if $(ConfigurationName) == DebugNoGac (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
-
-)</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>cd "$(ProjectDir)..\.."
-call Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
-  </PropertyGroup>
+  <Import Project="..\Build\Common.Build.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
