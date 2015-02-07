@@ -28,7 +28,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Contains properties of this <see cref="AstNode"/>.
         /// </summary>
-        private readonly PropertyContainer properties;
+        private PropertyContainer properties;
 
         #endregion
 
@@ -39,7 +39,10 @@ namespace PHP.Core.AST
         /// </summary>
         public void SetProperty<T>(T value)
         {
-            this.properties.SetProperty<T>(value);
+            if (value != null)
+                this.properties.SetProperty<T>(value);
+            else
+                this.properties.Remove<T>();
         }
 
         /// <summary>
