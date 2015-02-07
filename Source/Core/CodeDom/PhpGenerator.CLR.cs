@@ -570,7 +570,7 @@ namespace PHP.Core.CodeDom
         /// <summary>
         /// Generates code for the specified compile unit.
         /// </summary>
-        /// <remarks><c>IMPORTS NAMESPACES</c></remarks>
+        // /// <remarks><c>IMPORTS NAMESPACES</c></remarks>
         protected override void GenerateCompileUnit(CodeCompileUnit e)
         {
             GenerateCompileUnitStart(e);
@@ -1415,8 +1415,13 @@ namespace PHP.Core.CodeDom
 
         /// <summary>
         /// Known global types. Used when outputting a type to resolve it properly and fully qualified.
-        /// TODO: This list is never cleared! Should be cleared when starting new bunch of pure scripts.
         /// </summary>
+        /// <remarks>
+        /// This list is never cleared in this instance!
+        /// Cleared automatically when <see cref="PhpCodeProvider"/> creates new instance of <see cref="PhpCodeGenerator"/>.
+        /// 
+        /// This list caches global types introduced within this instance.
+        /// </remarks>
         private List<string>/*!*/globalTypes = new List<string>();
 
         /// <summary>
@@ -2014,7 +2019,7 @@ namespace PHP.Core.CodeDom
         {
             return QuoteSnippetString(value);
         }
-
+        
 #endif
 
         #endregion
