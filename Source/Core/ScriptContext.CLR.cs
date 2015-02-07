@@ -36,7 +36,7 @@ namespace PHP.Core
 	/// The context of an executing script. Contains data associated with a request.
 	/// </summary>
 	[DebuggerTypeProxy(typeof(ScriptContext.DebugView))]
-	public sealed partial class ScriptContext : ILogicalThreadAffinative
+	public sealed partial class ScriptContext : MarshalByRefObject, ILogicalThreadAffinative
 	{
 		#region Initialization of requests and applications
 
@@ -67,12 +67,12 @@ namespace PHP.Core
 			result.IsOutputBuffered = config.OutputControl.OutputBuffering;
 			result.ThrowExceptionOnError = true;
 			result.WorkingDirectory = Path.GetDirectoryName(context.Request.PhysicalPath);
-            if (config.OutputControl.ContentType != null) context.Response.ContentType = config.OutputControl.ContentType;
-            if (config.OutputControl.CharSet != null) context.Response.Charset = config.OutputControl.CharSet;
 
 			result.AutoGlobals.Initialize(config, context);
 
 			ScriptContext.CurrentContext = result;
+
+			Externals.BeginRequest();
 
 			return result;
 		}
@@ -109,6 +109,15 @@ namespace PHP.Core
             if (is_pure && !app_config.Compiler.LanguageFeaturesSet)
                 app_config.Compiler.LanguageFeatures = LanguageFeatures.PureModeDefault;
 
+            // environment settings; modifies the PATH variable to fix LoadLibrary called by native extensions:
+            if (EnvironmentUtils.IsDotNetFramework)
+            {
+                string path = Environment.GetEnvironmentVariable("PATH");
+                path = String.Concat(path, Path.PathSeparator, app_config.Paths.ExtNatives);
+
+                Environment.SetEnvironmentVariable("PATH", path);
+            }
+
             Type main_script;
             if (is_pure)
             {
@@ -122,9 +131,18 @@ namespace PHP.Core
                 app_context.AssemblyLoader.LoadScriptLibrary(System.Reflection.Assembly.GetEntryAssembly(), ".");
             }
 
-            using (ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot))
+            ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot);
+
+            try
             {
                 context.GuardedCall<object, object>(context.GuardedMain, mainRoutine, true);
+                context.GuardedCall<object, object>(context.FinalizeBufferedOutput, null, false);
+                context.GuardedCall<object, object>(context.ProcessShutdownCallbacks, null, false);
+                context.GuardedCall<object, object>(context.FinalizePhpObjects, null, false);
+            }
+            finally
+            {
+                Externals.EndRequest();
             }
         }
 
@@ -203,80 +221,23 @@ namespace PHP.Core
 
             ScriptContext.CurrentContext = result;
 
-            //
+            Externals.BeginRequest();
+
             return result;
         }
 
-        #region InitContext
+		#endregion
 
-        /// <summary>
-        /// Initializes <see cref="ScriptContext"/> for the C#/PHP interoperability.
-        /// </summary>
-        /// <param name="appContext">Application context.</param>
-        /// <returns>New <see cref="ScriptContext"/></returns>
-        /// <remarks>
-        /// Use this method if you want to initialize application in the same way the PHP console/Windows 
-        /// application is initialized. CurrentContext is set, and initialized to simulate request begin and end.
-        /// </remarks>
-        public static ScriptContext/*!*/InitContext(ApplicationContext appContext)
-        {
-            if (appContext == null)
-                appContext = ApplicationContext.Default;
+		#region Constants
 
-            var context = InitApplication(appContext, null, null, null);
-
-            // simulate request lifecycle
-            RequestContext.InvokeRequestBegin();
-            context.FinallyDispose += RequestContext.InvokeRequestEnd;
-
-            //
-            return context;
-        }
-
-        /// <summary>
-        /// Initializes <see cref="ScriptContext"/> for the C#/PHP interoperability.
-        /// </summary>
-        /// <param name="appContext">Application context.</param>
-        /// <param name="output">Output stream.</param>
-        /// <returns>New <see cref="ScriptContext"/></returns>
-        /// <remarks>
-        /// Use this method if you want to initialize application in the same way the PHP console/Windows 
-        /// application is initialized. CurrentContext is set, and initialized to simulate request begin and end.
-        /// </remarks>
-        public static ScriptContext/*!*/InitContext(ApplicationContext appContext, Stream output)
-        {
-            var context = InitContext(appContext);
-
-            // setups output
-            if (output == null)
-                output = Stream.Null;
-
-            context.OutputStream = output;
-            context.Output = new StreamWriter(output);
-
-            return context;
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Constants
-
-        private void InitConstants(DualDictionary<string, object> _constants)
+		private void InitConstants(DualDictionary<string, object> _constants)
 		{
             // Thease constants are here, because they are environment dependent
             // When the code is compiled and assembly is run on another platforms they could be different
 
-            _constants.Add("PHALANGER", PhalangerVersion.Current, false);
+            _constants.Add("PHALANGER", Assembly.GetExecutingAssembly().GetName().Version.ToString(), false);
             _constants.Add("PHP_VERSION", PhpVersion.Current, false);
-            _constants.Add("PHP_MAJOR_VERSION", PhpVersion.Major, false);
-            _constants.Add("PHP_MINOR_VERSION", PhpVersion.Minor, false);
-            _constants.Add("PHP_RELEASE_VERSION", PhpVersion.Release, false);
-            _constants.Add("PHP_VERSION_ID", PhpVersion.Major * 10000 + PhpVersion.Minor * 100 + PhpVersion.Release, false);
-            _constants.Add("PHP_EXTRA_VERSION", PhpVersion.Extra, false);
             _constants.Add("PHP_OS", Environment.OSVersion.Platform == PlatformID.Win32NT ? "WINNT" : "WIN32", false); // TODO: GENERICS (Unix)
-            _constants.Add("PHP_SAPI", (System.Web.HttpContext.Current == null) ? "cli" : "isapi", false);
             _constants.Add("DIRECTORY_SEPARATOR", FullPath.DirectorySeparatorString, false);
             _constants.Add("PATH_SEPARATOR", Path.PathSeparator.ToString(), false);
 
@@ -661,14 +622,28 @@ namespace PHP.Core
 		/// <param name="sourceFile">Script's source file.</param>
 		private ScriptInfo LoadDynamicScriptType(PhpSourceFile/*!*/ sourceFile)
 		{
-            Debug.WriteLine("SC", "LoadDynamicScriptType: '{0}'", sourceFile);
+            RequestContext context = RequestContext.CurrentContext;
 
-            // runtime compiler manages:
-            // - 1. script library
-            // - 2. optionally bin/WebPages.dll
-            // - 3. compiles file from file system if allowed
+            if (context != null)
+			{
+				Debug.WriteLine("SC", "LoadDynamicScriptType: '{0}'", sourceFile);
 
-            return this.ApplicationContext.RuntimeCompilerManager.GetCompiledScript(sourceFile, RequestContext.CurrentContext);
+				// web context //
+				return context.GetCompiledScript(sourceFile);
+			}
+			else
+			{
+                // the script can be only found in the script library
+                var scriptLibraryModule = applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath);
+                if (scriptLibraryModule != null)
+                    return scriptLibraryModule.ScriptInfo;
+                
+                // no such script could be found
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("assembly_script_inclusion_failed",
+				    sourceFile.ToString()/*, msa.GetQualifiedScriptTypeName(sourceFile)*/ ));
+				
+				return null;
+			}
 		}
 
 		#endregion

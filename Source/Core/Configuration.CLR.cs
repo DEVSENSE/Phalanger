@@ -2133,6 +2133,14 @@ namespace PHP.Core
             this.defaultLocal = defaultLocal;
         }
 
+        /// <summary>
+        /// Loads configuration using default <see cref="ApplicationContext"/>.
+        /// </summary>
+        private static void LoadDefault()
+        {
+            Load(ApplicationContext.Default);
+        }
+
 		/// <summary>
 		/// Loads configuration and returns configuration record.
 		/// </summary>
@@ -2193,7 +2201,7 @@ namespace PHP.Core
 			get
 			{
 				// note: more threads can start loading the configuration, but that ok:
-				if (!application.IsLoaded) Load(ApplicationContext.Default);
+                if (!application.IsLoaded) LoadDefault();
 				return application;
 			}
 		}
@@ -2217,7 +2225,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				Load(ApplicationContext.Default);
+                LoadDefault();
 				Debug.Assert(current != null);
 				return current.global;
 			}
@@ -2232,7 +2240,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				Load(ApplicationContext.Default);
+                LoadDefault();
 				Debug.Assert(current != null);
 				return current.defaultLocal;
 			}
