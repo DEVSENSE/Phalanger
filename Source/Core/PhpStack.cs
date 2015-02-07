@@ -188,10 +188,8 @@ namespace PHP.Core
 
 			public bool AllowProtectedCall;
 
-            public DTypeDesc LateStaticBindType;
-
 			public CallState(int argCount, int typeCount, Dictionary<string, object> variables, NamingContext namingContext,
-				string calleeName, bool callback, bool allowProtectedCall, DTypeDesc lateStaticBindType)
+				string calleeName, bool callback, bool allowProtectedCall)
 			{
 				this.ArgCount = argCount;
 				this.TypeCount = typeCount;
@@ -200,7 +198,6 @@ namespace PHP.Core
 				this.CalleeName = calleeName;
 				this.Callback = callback;
 				this.AllowProtectedCall = allowProtectedCall;
-                this.LateStaticBindType = lateStaticBindType;
 			}
 		}
 
@@ -234,12 +231,6 @@ namespace PHP.Core
 		/// </summary>
 		public bool Callback;
 
-        /// <summary>
-        /// Type used to call currently evaluated method.
-        /// </summary>
-        [Emitted]
-        public DTypeDesc LateStaticBindType;
-
 		[Emitted]
 		public NamingContext NamingContext;
 
@@ -248,7 +239,7 @@ namespace PHP.Core
 
 		internal CallState SaveCallState()
 		{
-			return new CallState(ArgCount, TypeArgCount, Variables, NamingContext, CalleeName, Callback, AllowProtectedCall, LateStaticBindType);
+			return new CallState(ArgCount, TypeArgCount, Variables, NamingContext, CalleeName, Callback, AllowProtectedCall);
 		}
 
 		internal void RestoreCallState(CallState old)
@@ -260,7 +251,6 @@ namespace PHP.Core
 			Variables = old.Variables;
 			NamingContext = old.NamingContext;
 			AllowProtectedCall = old.AllowProtectedCall;
-            LateStaticBindType = old.LateStaticBindType;
 		}
 
 		#endregion
@@ -737,38 +727,9 @@ namespace PHP.Core
 
 		#endregion
 
-        #region ExpandFrame
+		#region RemoveFrame, MakeArgsAware, CollectFrame, AddIndirection
 
-        /// <summary>
-        /// Adds additional arguments before arguments currently on stack.
-        /// Used for expanding 'use' parameters of lambda function.
-        /// </summary>
-        internal void ExpandFrame(PhpArray useParams)
-        {
-            if (useParams != null && useParams.Count > 0)
-            {
-                ArgCount += useParams.Count;
-                int new_top = Top + useParams.Count;
-
-                if (new_top > Items.Length) ResizeItems(new_top);
-
-                var stack_offset = new_top - 1;
-
-                using (var enumerator = useParams.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                    {
-                        Items[stack_offset--] = enumerator.CurrentValue;
-                    }
-
-                Top = new_top;
-            }
-        }
-
-        #endregion
-
-        #region RemoveFrame, MakeArgsAware, CollectFrame, AddIndirection
-
-        /// <summary>
+		/// <summary>
 		/// Removes the current open args-unaware frame from the stack.
 		/// </summary>
 		/// <remarks>
@@ -784,9 +745,8 @@ namespace PHP.Core
 			ArgCount = 0;
 			TypeArgCount = 0;
 			Callback = false;
-			Variables = null;
+			 Variables = null;
 			NamingContext = null;
-            //LateStaticBindType = null;
 		}
 
 		/// <summary>
@@ -800,7 +760,6 @@ namespace PHP.Core
 		{
 			Top -= (encodedActualCount & 0xffff) + 1;  // +1 for encoded args count
 			TypesTop -= (encodedActualCount >> 16);
-            //LateStaticBindType = null;
 		}
 
 		/// <summary>
@@ -833,7 +792,7 @@ namespace PHP.Core
 			Callback = false;
 			Variables = null;
 			NamingContext = null;
-            return encoded_args_count;
+			return encoded_args_count;
 		}
 
 		/// <summary>
@@ -1129,21 +1088,5 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-        #region ThrowIfNotArgsaware
-
-        /// <summary>
-        /// Check whether current <see cref="CalleeName"/> matches currently called function.
-        /// </summary>
-        /// <param name="routineName">Currently called function name.</param>
-        /// <exception cref="InvalidOperationException">If currently caled function does not match <see cref="CalleeName"/>.</exception>
-        public void ThrowIfNotArgsaware(string/*!*/routineName)
-        {
-            //if (CalleeName != routineName)
-            //if (Top == 0 && CalleeName == null)
-            //    throw new InvalidOperationException(string.Format(CoreResources.argsaware_routine_needs_args, routineName));
-        }
-
-        #endregion
-    }
+	}
 }

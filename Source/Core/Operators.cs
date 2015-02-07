@@ -1765,7 +1765,7 @@ namespace PHP.Core
                 // object.bytes:
                 return PhpBytes.Concat(Convert.ObjectToPhpBytes(x), (PhpBytes)y);
             }
-            else if (x.GetType() == typeof(PhpStack))
+            else if (x.GetType() == typeof(PhpString))
             {
                 // builder.string:
                 return ((PhpString)x).Append(Convert.ObjectToString(y));
