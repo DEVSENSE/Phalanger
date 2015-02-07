@@ -676,12 +676,12 @@ namespace PHP.Library.Xml
 				}
 				catch (XmlException e)
 				{
-					PhpException.Throw(PhpError.Warning, e.Message);
+                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
 					return false;
 				}
 				catch (IOException e)
 				{
-					PhpException.Throw(PhpError.Warning, e.Message);
+                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
 					return false;
 				}
 			}
@@ -727,12 +727,12 @@ namespace PHP.Library.Xml
 			}
 			catch (XmlException e)
 			{
-				PhpException.Throw(PhpError.Warning, e.Message);
+                PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, null));
 				return false;
 			}
 			catch (IOException e)
 			{
-				PhpException.Throw(PhpError.Warning, e.Message);
+                PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, null));
 				return false;
 			}
 
@@ -768,12 +768,12 @@ namespace PHP.Library.Xml
 				}
 				catch (XmlException e)
 				{
-					PhpException.Throw(PhpError.Warning, e.Message);
+                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
 					return null;
 				}
 				catch (IOException e)
 				{
-					PhpException.Throw(PhpError.Warning, e.Message);
+                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
 					return false;
 				}
 
@@ -820,11 +820,14 @@ namespace PHP.Library.Xml
 		}
 
         /// <summary>
-        /// Prints HTML errors, if any.
+        /// Processes HTML errors, if any.
         /// </summary>
-        /// <param name="htmlDoc"></param>
-        private void CheckHtmlErrors(HtmlAgilityPack.HtmlDocument htmlDoc)
+        /// <param name="htmlDoc"><see cref="HtmlAgilityPack.HtmlDocument"/> instance to process errors from.</param>
+        /// <param name="filename">HTML file name or <c>null</c> if HTML has been loaded from a string.</param>
+        private void CheckHtmlErrors(HtmlAgilityPack.HtmlDocument/*!*/htmlDoc, string filename)
         {
+            Debug.Assert(htmlDoc != null);
+
             foreach (var error in htmlDoc.ParseErrors)
             {
                 switch (error.Code)
@@ -833,16 +836,7 @@ namespace PHP.Library.Xml
                     case HtmlAgilityPack.HtmlParseErrorCode.TagNotOpened:
                         break;
                     default:
-                        string message =
-                            String.Format(
-                                "HTML parse error: ({0}) {1} on line {2}, column {3}.",
-                                error.Code,
-                                error.Reason,
-                                error.Line,
-                                error.LinePosition
-                            );
-
-                        PhpException.Throw(PhpError.Warning, message);
+                        PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, error.Line, error.LinePosition, "(" + error.Code.ToString() + ")" + error.Reason, filename));
                         break;
                 }
             }
@@ -860,7 +854,7 @@ namespace PHP.Library.Xml
             if (string.IsNullOrEmpty(source))
                 return false;
 
-            return loadHTML(new StringReader(source));
+            return loadHTML(new StringReader(source), null);
 		}
 
         /// <summary>
@@ -876,14 +870,14 @@ namespace PHP.Library.Xml
             {
                 if (stream == null) return false;
 
-                return loadHTML(new StreamReader(stream.RawStream));
+                return loadHTML(new StreamReader(stream.RawStream), sourceFile);
             }
 		}
 
         /// <summary>
         /// Load HTML DOM from given <paramref name="stream"/>.
         /// </summary>
-        private object loadHTML(TextReader stream)
+        private object loadHTML(TextReader stream, string filename)
         {
             HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
 
@@ -897,7 +891,7 @@ namespace PHP.Library.Xml
             // load HTML (from string or a stream)
             htmlDoc.Load(stream);
 
-            CheckHtmlErrors(htmlDoc);
+            CheckHtmlErrors(htmlDoc, filename);
 
             // save to string as XML
             using (StringWriter sw = new StringWriter())
@@ -982,13 +976,13 @@ namespace PHP.Library.Xml
 				}
 				catch (XmlException e)
 				{
-					PhpException.Throw(PhpError.Warning, e.Message);
+                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_WARNING, 0, 0, 0, e.Message, schemaFile));
 					return false;
 				}
 				catch (IOException e)
 				{
-					PhpException.Throw(PhpError.Warning, e.Message);
-					return false;
+					PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, schemaFile));
+                    return false;
 				}
 			}
 
@@ -1024,7 +1018,7 @@ namespace PHP.Library.Xml
 			}
 			catch (XmlException e)
 			{
-				PhpException.Throw(PhpError.Warning, e.Message);
+                PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_WARNING, 0, 0, 0, e.Message, null));
 				return false;
 			}
 
