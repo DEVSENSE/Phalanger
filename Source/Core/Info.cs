@@ -279,9 +279,8 @@ namespace PHP.Core
 
 		private static void WriteLogo(TextWriter output)
 		{
-			Version ver = Assembly.GetExecutingAssembly().GetName().Version;
 			output.Write("<h1>Phalanger {0}{1} {2}</h1>",
-                ver.ToString(3),
+                PhalangerVersion.Current,
 #if DEBUG
                 ", DEBUG,",
 #else
@@ -696,6 +695,36 @@ namespace PHP.Core
 	}
 
 	#region Version
+
+    /// <summary>
+    /// Provides version information of Phalanger runtime.
+    /// </summary>
+    public static class PhalangerVersion
+    {
+        /// <summary>
+        /// Current Phalanger version obtained from <see cref="AssemblyFileVersionAttribute"/> or <see cref="AssemblyVersionAtribute"/> of this assembly.
+        /// </summary>
+        public static readonly string/*!*/Current;
+
+        /// <summary>
+        /// Phalanger name obtained from <see cref="AssemblyProductAttribute"/>.
+        /// </summary>
+        public static readonly string/*!*/ProductName;
+
+        static PhalangerVersion()
+        {
+            var/*!*/ass = typeof(PhalangerVersion).Assembly;
+
+            object[] attrsPhalangerVer = ass.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+            Current = attrsPhalangerVer.Length > 0
+                ? ((AssemblyFileVersionAttribute)attrsPhalangerVer[0]).Version
+                : ass.GetName().Version.ToString(4);
+
+            object[] attrsPhalangerProduct = ass.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+            Debug.Assert(attrsPhalangerProduct.Length > 0);
+            ProductName = ((AssemblyProductAttribute)attrsPhalangerProduct[0]).Product;
+        }
+    }
 
 	/// <summary>
 	/// Provides means for working with PHP version as well as the currently supported version.
