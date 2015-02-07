@@ -131,6 +131,7 @@ namespace PHP.Core.AST
 		/// Simple name for methods.
 		/// </summary>
 		private QualifiedName qualifiedName;
+        private QualifiedName? fallbackQualifiedName;
         /// <summary>Simple name for methods.</summary>
         public QualifiedName QualifiedName { get { return qualifiedName; } }
 
@@ -142,11 +143,13 @@ namespace PHP.Core.AST
 		/// </summary>
 		private InlinedFunction inlined = InlinedFunction.None;
 
-		public DirectFcnCall(Position position, QualifiedName qualifiedName, List<ActualParam>/*!*/ parameters,
-	  List<TypeRef>/*!*/ genericParams)
+		public DirectFcnCall(Position position,
+            QualifiedName qualifiedName, QualifiedName? fallbackQualifiedName,
+            List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
 			: base(position, parameters, genericParams)
 		{
-			this.qualifiedName = qualifiedName;
+            this.qualifiedName = qualifiedName;
+            this.fallbackQualifiedName = fallbackQualifiedName;
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Expression.Analyze"]/*'/>
@@ -164,6 +167,7 @@ namespace PHP.Core.AST
             {
 				// method call //
 
+                Debug.Assert(!this.fallbackQualifiedName.HasValue);   // only valid for global function call
                 return AnalyzeMethodCall(analyzer, ref info);
 			}
 		}
@@ -180,10 +184,21 @@ namespace PHP.Core.AST
             Debug.Assert(isMemberOf == null);
 
             // resolve name:
+            
             routine = analyzer.ResolveFunctionName(qualifiedName, position);
 
             if (routine.IsUnknown)
-                Statistics.AST.AddUnknownFunctionCall(qualifiedName);
+            {
+                // note: we've to try following at run time, there can be dynamically added namespaced function matching qualifiedName
+                //// try fallback
+                //if (this.fallbackQualifiedName.HasValue)
+                //{
+                //    routine = analyzer.ResolveFunctionName(this.fallbackQualifiedName.Value, position);
+                //}
+
+                //if (routine.IsUnknown)   // still unknown ?
+                    Statistics.AST.AddUnknownFunctionCall(qualifiedName);
+            }
             // resolve overload if applicable:
             RoutineSignature signature;
             overloadIndex = routine.ResolveOverload(analyzer, callSignature, position, out signature);
@@ -726,17 +741,20 @@ namespace PHP.Core.AST
                 if (isMemberOf != null)
                 {
                     if (routine == null)
-                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, callSignature, access);
+                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
                     else
                         result = routine.EmitCall(
-                            codeGenerator, callSignature,
+                            codeGenerator, null, callSignature,
                             new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
                             null/*TODO when CFG*/, position, access, true);
                 }
                 else
                 {
                     // the node represents a function call:
-                    result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access, false);
+                    result = routine.EmitCall(
+                        codeGenerator, fallbackQualifiedName.HasValue ? fallbackQualifiedName.Value.ToString() : null,
+                        callSignature, null, false, overloadIndex,
+                        null, position, access, false);
                 }
 			}
 
@@ -848,7 +866,7 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("FunctionCall.Indirect");
 
 			PhpTypeCode result;
-			result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, null, nameExpr, callSignature, access);
+			result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, null, null, nameExpr, callSignature, access);
             //EmitReturnValueCopy(codeGenerator.IL, result); // (J) already emitted by EmitRoutineOperatorCall
             
             codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
@@ -1016,7 +1034,7 @@ namespace PHP.Core.AST
 			}
 
 			// class context is unknown or the class is m-decl or completely unknown at compile-time -> call the operator			
-			PhpTypeCode result = method.EmitCall(codeGenerator, callSignature, instance, runtimeVisibilityCheck,
+			PhpTypeCode result = method.EmitCall(codeGenerator, null, callSignature, instance, runtimeVisibilityCheck,
 				overloadIndex, type as ConstructedType, position, access, false/* TODO: __call must be called virtually */);
 
             if (/*method == null || */!method.ReturnValueDeepCopyEmitted)   // (J) Emit Copy only if method is known (=> known PhpRoutine do not emit Copy on return value)
@@ -1089,7 +1107,7 @@ namespace PHP.Core.AST
 		{
 			Statistics.AST.AddNode("StaticMethodCall.Indirect");
 
-			PhpTypeCode result = codeGenerator.EmitRoutineOperatorCall(type, null, null, methodNameVar, callSignature, access);
+			PhpTypeCode result = codeGenerator.EmitRoutineOperatorCall(type, null, null, null, methodNameVar, callSignature, access);
             //EmitReturnValueCopy(codeGenerator.IL, result); // (J) already emitted by EmitRoutineOperatorCall
 
 			// handles return value:

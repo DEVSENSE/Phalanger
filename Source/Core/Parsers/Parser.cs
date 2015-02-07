@@ -415,7 +415,7 @@ namespace PHP.Core.Parsers
 					if ((direct_use = property as DirectVarUse) != null)
 					{
 						QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-                        property = new DirectFcnCall(pos, method_name, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                        property = new DirectFcnCall(pos, method_name, null, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 					}
 					else
 					{
@@ -458,7 +458,7 @@ namespace PHP.Core.Parsers
 				if ((direct_use = property as DirectVarUse) != null)
 				{
 					QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-                    return new DirectFcnCall(pos, method_name, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                    return new DirectFcnCall(pos, method_name, null, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 				}
 
 				if ((indirect_use = property as IndirectVarUse) != null)
@@ -495,6 +495,28 @@ namespace PHP.Core.Parsers
 
 			return member;
 		}
+
+        private DirectFcnCall/*!*/ CreateDirectFcnCall(Position pos, QualifiedName qname, List<ActualParam> args, List<TypeRef> typeArgs)
+        {
+            qname = TranslateNamespace(qname);
+            QualifiedName? fallbackQName = null;
+
+            if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
+                currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0)
+            {
+                // "\foo"
+                fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
+
+                // "namespace\foo"
+                qname = new QualifiedName(qname.Name, currentNamespace.QualifiedName.Namespaces) { IsFullyQualifiedName = true };
+            }
+            else
+            {
+                qname.IsFullyQualifiedName = true;  // just ensure
+            }
+
+            return new DirectFcnCall(pos, qname, fallbackQName, args, typeArgs);
+        }
 
 		private Expression/*!*/ CheckInitializer(Position pos, Expression/*!*/ initializer)
 		{

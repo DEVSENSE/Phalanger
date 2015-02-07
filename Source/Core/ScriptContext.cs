@@ -862,36 +862,40 @@ namespace PHP.Core
 		/// it is dereferenced.
 		/// </remarks>
 		[Emitted]
-		public static PhpReference/*!*/ Call(Dictionary<string, object> localVariables, NamingContext namingContext, object name,
+		public static PhpReference/*!*/ Call(Dictionary<string, object> localVariables, NamingContext namingContext,
+            object name, string fallbackName,
 			ScriptContext/*!*/ context)
 		{
             return PhpVariable.MakeReference(
                     PhpVariable.Copy(
-                        CallInternal(localVariables, namingContext, name, context),
+                        CallInternal(localVariables, namingContext, name, fallbackName, context),
                         CopyReason.ReturnedByCopy));
 		}
 
         [Emitted]
-        public static void CallVoid(Dictionary<string, object> localVariables, NamingContext namingContext, object name,
+        public static void CallVoid(Dictionary<string, object> localVariables, NamingContext namingContext,
+            object name, string fallbackName,
             ScriptContext/*!*/ context)
         {
-            CallInternal(localVariables, namingContext, name, context);
+            CallInternal(localVariables, namingContext, name, fallbackName, context);
         }
 
         [Emitted]
-        public static object CallValue(Dictionary<string, object> localVariables, NamingContext namingContext, object name,
+        public static object CallValue(Dictionary<string, object> localVariables, NamingContext namingContext,
+            object name, string fallbackName,
             ScriptContext/*!*/ context)
         {
             return PhpVariable.Dereference(
                     PhpVariable.Copy(
-                        CallInternal(localVariables, namingContext, name, context),
+                        CallInternal(localVariables, namingContext, name, fallbackName, context),
                         CopyReason.ReturnedByCopy));
         }
 
         /// <summary>
         /// Calls a function which is unknown at compile time. Returns the value directly returned by <see cref="DRoutineDesc.Invoke"/>.
         /// </summary>
-        private static object CallInternal(Dictionary<string, object> localVariables, NamingContext namingContext, object name, ScriptContext/*!*/ context)
+        private static object CallInternal(Dictionary<string, object> localVariables, NamingContext namingContext,
+            object name, string fallbackName, ScriptContext/*!*/ context)
         {
             // <name> should be a string:
             string function_name = PhpVariable.AsString(name);
@@ -926,7 +930,9 @@ namespace PHP.Core
             {
                 DRoutineDesc desc = context.ResolveFunction(function_name, null, true);
 
-                if (desc != null)
+                if ((desc != null) ||   // we've found {function_name}
+                    (fallbackName != null && (desc = context.ResolveFunction(fallbackName, null, true)) != null) // or we've found {fallbackName}
+                    )
                 {
                     // the callee may need table of local variables and/or naming context:
                     context.Stack.Variables = localVariables;
@@ -1398,41 +1404,41 @@ namespace PHP.Core
 			if (localTable.TryGetValue(fullName, out desc) || globalTable.TryGetValue(fullName, out desc))
 				return desc;
 
-			// if we have a naming context, use it
-			if (nameContext != null)
-			{
-				bool debug_mode = Configuration.Application.Compiler.Debug;
-				Desc candidate;
+            //// if we have a naming context, use it
+            //if (nameContext != null)
+            //{
+            //    bool debug_mode = Configuration.Application.Compiler.Debug;
+            //    Desc candidate;
 
-				string[] prefixes = nameContext.Prefixes;
-				for (int i = 0; i < prefixes.Length; i++)
-				{
-					string candidate_name = prefixes[i] + fullName;
+            //    string[] prefixes = nameContext.Prefixes;
+            //    for (int i = 0; i < prefixes.Length; i++)
+            //    {
+            //        string candidate_name = prefixes[i] + fullName;
 
-					// search in ClassDeclarators and application context
-					if (localTable.TryGetValue(candidate_name, out candidate) ||
-						globalTable.TryGetValue(candidate_name, out candidate))
-					{
-						if (debug_mode)
-						{
-							if (desc != null)
-							{
-								// ambiguity
-								PhpException.Throw(PhpError.Error, CoreResources.GetString("ambiguous_name_match",
-									fullName, desc.MakeFullName(), candidate_name));
+            //        // search in ClassDeclarators and application context
+            //        if (localTable.TryGetValue(candidate_name, out candidate) ||
+            //            globalTable.TryGetValue(candidate_name, out candidate))
+            //        {
+            //            if (debug_mode)
+            //            {
+            //                if (desc != null)
+            //                {
+            //                    // ambiguity
+            //                    PhpException.Throw(PhpError.Error, CoreResources.GetString("ambiguous_name_match",
+            //                        fullName, desc.MakeFullName(), candidate_name));
 
-								return null;
-							}
-							else desc = candidate;
-						}
-						else
-						{
-							// release mode: return the first candidate found
-							return candidate;
-						}
-					}
-				}
-			}
+            //                    return null;
+            //                }
+            //                else desc = candidate;
+            //            }
+            //            else
+            //            {
+            //                // release mode: return the first candidate found
+            //                return candidate;
+            //            }
+            //        }
+            //    }
+            //}
 
 			return desc;
 		}
@@ -2607,7 +2613,7 @@ namespace PHP.Core
 				throw new ArgumentNullException("arguments");
 
 			Stack.AddFrame(arguments);
-			return Call(callerLocalVariables, namingContext, functionName, this);
+			return Call(callerLocalVariables, namingContext, functionName, null, this);
 		}
 
 		/// <summary>

@@ -1675,7 +1675,7 @@ linq_into_clause_opt:
 function_call:
 		qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
-		  $$ = new DirectFcnCall(@$, TranslateNamespace((QualifiedName)$1), (List<ActualParam>)$4, (List<TypeRef>)$2); 
+		  $$ = CreateDirectFcnCall(@$, (QualifiedName)$1, (List<ActualParam>)$4, (List<TypeRef>)$2);
 		}
 
 	|	class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 

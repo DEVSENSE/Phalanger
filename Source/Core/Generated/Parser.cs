@@ -2894,7 +2894,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 348: // function_call -> qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 { 
-		  yyval.Object = new DirectFcnCall(yypos, TranslateNamespace((QualifiedName)value_stack.array[value_stack.top-5].yyval.Object), (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object); 
+		  yyval.Object = CreateDirectFcnCall(yypos, (QualifiedName)value_stack.array[value_stack.top-5].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object);
 		}
         return;
       case 349: // function_call -> class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 

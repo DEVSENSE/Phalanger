@@ -842,13 +842,13 @@ namespace PHP.Core
 
 	public sealed class NamingContext
 	{
-		public string[] Prefixes { get { return prefixes; } }
-		private string[] prefixes;
+        //public string[] Prefixes { get { return prefixes; } }
+        //private string[] prefixes;
 
-		public NamingContext(string[] prefixes)
-		{
-			this.prefixes = prefixes;
-		}
+        //public NamingContext(string[] prefixes)
+        //{
+        //    this.prefixes = prefixes;
+        //}
 	}
 
 	#endregion

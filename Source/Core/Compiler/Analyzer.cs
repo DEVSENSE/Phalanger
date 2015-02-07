@@ -12,7 +12,6 @@
 */
 
 using System;
-using System.Linq;
 using System.IO;
 using System.Text;
 using System.Collections;
@@ -24,8 +23,6 @@ using PHP.Core.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
-using PHP.Core.Compiler;
-using PHP.Core.Compiler.AST;
 using System.Reflection.Emit;
 
 #if SILVERLIGHT
@@ -34,84 +31,6 @@ using PHP.CoreCLR;
 
 namespace PHP.Core
 {
-    /// <summary>
-    /// A set of possible types that an expression can result to.
-    /// </summary>
-    /// <remarks>
-    /// <para>This type is used to annotate <see cref="Expression"/>. 
-    /// If an element is annotated with this information, we can emit more efficient code.</para>
-    /// </remarks>
-    public interface IExTypeInfo
-    {
-        /// <summary>
-        /// Enumeration of possible types. 
-        /// If one of them is <see cref="PhpTypeCode.Object"/>, 
-        /// then <see cref="Types"/> contains a collection of 
-        /// possible types of the object.
-        /// </summary>
-        IEnumerable<PhpTypeCode> TypeCodes { get; }
-
-        /// <summary>
-        /// If <see cref="TypeCodes"/> contains <see cref="PhpTypeCode.Object"/>, 
-        /// then this enumerates all the possible types of the object reference.
-        /// </summary>
-        IEnumerable<TypeRef> Types { get; }
-
-        /// <summary>
-        /// If <c>true</c>, then we do not know anything about the type for sure and 
-        /// <see cref="TypeCodes"/> and <see cref="Types"/> contain undefined data.
-        /// </summary>
-        bool IsAnyType { get; }
-
-        /// <summary>
-        /// If <c>true</c>, then we don't know anything about this type, 
-        /// like if <see cref="IsAnyType"/> was <c>true</c>,
-        /// but <see cref="TypeCodes"/> and <see cref="Types"/> contain type hints.
-        /// </summary>
-        /// <remarks>Value of this property really makes sense once <see cref="IsAnyType"/> is <c>true</c>, 
-        /// otherwise value of <see cref="IsTypeHint"/> should always be <c>false</c>.</remarks>
-        bool IsTypeHint { get; }
-
-        /// <summary>
-        /// If <c>true</c>, then for all the <see cref="TypeRef"/> returned by <see cref="Types"/> we 
-        /// have to consider all their subclasses too.
-        /// </summary>
-        /// <remarks>
-        /// Value of this only makes sense when <see cref="TypeCodes"/> contain <see cref="PhpTypeCode.Object"/>.
-        /// </remarks>
-        bool IncludesSubclasses { get; }
-
-        /// <summary>
-        /// This is a shortcut for checking whether <see cref="TypeCodes"/> 
-        /// collection contains given element. Due to internal implementation details, 
-        /// using this method might be faster, then constructing the collection in 
-        /// <see cref="TypeCodes"/> getter.
-        /// </summary>
-        bool HasTypeCode(PhpTypeCode typeCode);
-
-        /// <summary>
-        /// This is a shortcut for checking whether <see cref="Types"/> 
-        /// collection contains given element. Due to internal implementation details, 
-        /// using this method might be faster, then constructing the collection in 
-        /// <see cref="Types"/> getter.
-        /// </summary>
-        bool HasType(TypeRef type);
-
-        /// <summary>
-        /// Returns <c>true</c> if both <see cref="IsAnyType"/> and <see cref="IsTypeHint"/> 
-        /// are <c>false</c> and <see cref="TypeCodes"/> contains only the given type.
-        /// </summary>
-        bool IsOfType(PhpTypeCode typeCode);
-
-        /// <summary>
-        /// Returns <c>true</c> if both <see cref="IsAnyType"/> and <see cref="IsTypeHint"/> 
-        /// are <c>false</c>, <see cref="TypeCodes"/> contains only object and <see cref="Types"/> 
-        /// contains only the given object type. Does not take into account 
-        /// class hierarchy (<see cref="IncludesSubclasses"/>).
-        /// </summary>
-        bool IsOfType(TypeRef type);
-    }
-
 	internal interface IPostAnalyzable
 	{
 		void PostAnalyze(Analyzer/*!*/ analyzer);
@@ -149,8 +68,8 @@ namespace PHP.Core
 		/// </summary>
 		public Expression/*!*/ Literalize()
 		{
-			if (HasValue && !Expression.HasValue())
-				return Expression = LiteralUtils.Create(Expression.Span, Value, Expression.NodeCompiler<IExpressionCompiler>().Access);
+			if (HasValue && !Expression.HasValue)
+				return Expression = Literal.Create(Expression.Position, Value, Expression.Access);
 			else
 				return Expression;
 		}
@@ -167,8 +86,7 @@ namespace PHP.Core
 			return new Evaluation(parent);
 		}
 
-		internal static Evaluation Evaluate(Expression/*!*/ parent,
-            Evaluation eval1, out Expression/*!*/ expr1,
+		internal static Evaluation Evaluate(Expression/*!*/ parent, Evaluation eval1, out Expression/*!*/ expr1,
 			Evaluation eval2, out Expression/*!*/ expr2)
 		{
 			if (eval1.HasValue && eval2.HasValue)
@@ -231,8 +149,8 @@ namespace PHP.Core
 		/// Analyzed AST.
         /// Must be internally modifiable in order to allow partial class declaration to change the sourceUnit during the analysis
 		/// </summary>
-        public CompilationSourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
-        private CompilationSourceUnit sourceUnit; 
+        public SourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
+		private SourceUnit sourceUnit; 
 
 		/// <summary>
 		/// Current scope. Available only during full analysis.
@@ -300,7 +218,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Analyzes the AST of the source unit.
 		/// </summary>
-        internal void Analyze(CompilationSourceUnit/*!*/ sourceUnit)
+		internal void Analyze(SourceUnit/*!*/ sourceUnit)
 		{
 			state = States.FullAnalysisStarted;
 
@@ -341,11 +259,11 @@ namespace PHP.Core
 		/// Builds AST from the given source code string.
 		/// Returns <B>null</B> if the AST cannot be built (new declarations appears in the code).
 		/// </summary>
-        internal Statement[] BuildAst(int positionShift, string/*!*/ sourceCode)
+		internal List<Statement> BuildAst(Position initialPosition, string/*!*/ sourceCode)
 		{
 			Parser.ReductionsCounter counter = new Parser.ReductionsCounter();
 
-            var ast = BuildAst(positionShift, sourceCode, counter);
+            var ast = BuildAst(initialPosition, sourceCode, counter);
 
 			if (counter.FunctionCount + counter.TypeCount + counter.ConstantCount > 0)
 				return null;
@@ -356,11 +274,12 @@ namespace PHP.Core
         /// <summary>
         /// Builds AST from the given source code string. Does not check for declarations in the source code.
         /// </summary>
-        public AST.GlobalCode BuildAst(int positionShift, string/*!*/ sourceCode, Parser.ReductionsCounter counter)
+        public AST.GlobalCode BuildAst(Position initialPosition, string/*!*/ sourceCode, Parser.ReductionsCounter counter)
         {
             StringReader source_reader = new StringReader(sourceCode);
+
             AST.GlobalCode ast = AstBuilder.Parse(sourceUnit, source_reader, ErrorSink, counter,
-                Lexer.LexicalStates.ST_IN_SCRIPTING, context.Config.Compiler.LanguageFeatures, positionShift);
+                initialPosition, Lexer.LexicalStates.ST_IN_SCRIPTING, context.Config.Compiler.LanguageFeatures);
 
             return ast;
         }
@@ -489,6 +408,9 @@ namespace PHP.Core
 			/// <summary>
 			/// Says if the just now analyzed actual parameter shall be passed be reference
 			/// </summary>
+			/// <remarks>
+			/// Called only from <see cref="ActualParam.Analyze"/>.
+			/// </remarks>
 			/// <returns>
 			/// <B>true</B> if the just now analyzed actual parameter shall be passed be reference
 			/// </returns>
@@ -721,7 +643,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <remarks>
 		/// This method is called only from <see cref="LeaveConditionalCode"/> because unreachable code ends 
-		/// at the end of conditional block and from <see cref="GlobalCode"/>.<c>Analyze</c>.
+		/// at the end of conditional block and from <see cref="GlobalCode.Analyze"/> 
 		/// because unreachable declarations in global code are valid.
 		/// </remarks>
 		internal void LeaveUnreachableCode()
@@ -729,7 +651,7 @@ namespace PHP.Core
 			unreachableCode = false;
 		}
 
-        internal void ReportUnreachableCode(Text.Span position)
+		internal void ReportUnreachableCode(Position position)
 		{
 			if (!unreachableCodeReported)
 			{
@@ -749,10 +671,10 @@ namespace PHP.Core
 		{
 			get
 			{
-                if (CurrentRoutine != null)
-                    return CurrentRoutine.Builder.LocalVariables;
-                else
-                    return sourceUnit.Ast.GetVarTable();
+				if (CurrentRoutine != null)
+					return CurrentRoutine.Builder.LocalVariables;
+				else
+					return sourceUnit.Ast.VarTable;
 			}
 		}
 
@@ -763,10 +685,10 @@ namespace PHP.Core
 		{
 			get
 			{
-                if (CurrentRoutine != null)
-                    return CurrentRoutine.Builder.Labels;
-                else
-                    return sourceUnit.Ast.GetLabels();
+				if (CurrentRoutine != null)
+					return CurrentRoutine.Builder.Labels;
+				else
+					return sourceUnit.Ast.Labels;
 			}
 		}
 
@@ -851,10 +773,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Notices the analyzer that function declaration is entered.
 		/// </summary>
-		internal void EnterFunctionDeclaration(PhpRoutine/*!*/ function)
+		internal void EnterFunctionDeclaration(PhpFunction/*!*/ function)
 		{
-            Debug.Assert(function.IsFunction);
-
 			RoutineDeclLoc f = new RoutineDeclLoc(function, locationStack.Count);
 			routineDeclStack.Push(f);
 			locationStack.Push(f);
@@ -904,7 +824,7 @@ namespace PHP.Core
 			LeaveConditionalCode();
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Notices the analyzer that class declaration is entered.
 		/// </summary>
 		internal void EnterTypeDecl(PhpType type)
@@ -980,7 +900,7 @@ namespace PHP.Core
 			locationStack.Pop();
 		}
 
-        internal void AddConstCaseToCurrentSwitch(object value, Text.Span position)
+		internal void AddConstCaseToCurrentSwitch(object value, Position position)
 		{
 			SwitchLocation current_switch = (SwitchLocation)CurrentLocation;
 
@@ -990,7 +910,7 @@ namespace PHP.Core
 				current_switch.ConstCases.Add(value);
 		}
 
-        internal void AddDefaultToCurrentSwitch(Text.Span position)
+		internal void AddDefaultToCurrentSwitch(Position position)
 		{
 			SwitchLocation current_switch = (SwitchLocation)CurrentLocation;
 
@@ -1007,15 +927,14 @@ namespace PHP.Core
 		private Scope GetReferringScope(PhpType referringType, PhpRoutine referringRoutine)
 		{
 			if (referringType != null) return referringType.Declaration.Scope;
-            if (referringRoutine is PhpFunction) return ((PhpFunction)referringRoutine).Declaration.Scope;
-            //if (referringRoutine is PhpLambdaFunction) ...
+			if (referringRoutine != null) return ((PhpFunction)referringRoutine).Declaration.Scope;
 
 			// used for global statements during full analysis:
 			Debug.Assert(currentScope.IsValid, "Scope is available only during full analysis.");
 			return currentScope;
 		}
 
-        public DRoutine/*!*/ ResolveFunctionName(QualifiedName qualifiedName, Text.Span position)
+		public DRoutine/*!*/ ResolveFunctionName(QualifiedName qualifiedName, Position position)
 		{
 			Debug.Assert(currentScope.IsValid, "Scope is available only during full analysis.");
 
@@ -1033,42 +952,27 @@ namespace PHP.Core
 			return result;
 		}
 
-        /// <summary>
-        /// Resolves type based on provided <paramref name="typeName"/>.
-        /// </summary>
-        /// <param name="typeName">Either <see cref="GenericQualifiedName"/> or <see cref="PrimitiveTypeName"/> or <c>null</c> reference.</param>
-        /// <param name="referringType"></param>
-        /// <param name="referringRoutine"></param>
-        /// <param name="position"></param>
-        /// <param name="mustResolve"></param>
-        /// <returns></returns>
-        internal DType ResolveType(object typeName, PhpType referringType, PhpRoutine referringRoutine,
-                Text.Span position, bool mustResolve)
+		public DType ResolveType(object typeNameOrPrimitiveType, PhpType referringType, PhpRoutine referringRoutine,
+				Position position, bool mustResolve)
 		{
-			DType result = null;
+			Debug.Assert(typeNameOrPrimitiveType == null || typeNameOrPrimitiveType is PrimitiveType
+			  || typeNameOrPrimitiveType is GenericQualifiedName);
 
-            if (typeName != null)
-            {
-                if (typeName.GetType() == typeof(GenericQualifiedName))
-                {
-                    result = ResolveTypeName((GenericQualifiedName)typeName,
-                        referringType, referringRoutine, position, mustResolve);
-                }
-                else if (typeName.GetType() == typeof(PrimitiveTypeName))
-                {
-                    result = PrimitiveType.GetByName((PrimitiveTypeName)typeName);
-                }
-                else
-                {
-                    throw new ArgumentException("typeName");
-                }
-            }
+			DType result = typeNameOrPrimitiveType as PrimitiveType;
+			if (result != null)
+				return result;
 
-            return result;
+			if (typeNameOrPrimitiveType != null)
+			{
+				return ResolveTypeName((GenericQualifiedName)typeNameOrPrimitiveType, referringType,
+							referringRoutine, position, mustResolve);
+			}
+
+			return null;
 		}
 
 		public DType/*!*/ ResolveTypeName(QualifiedName qualifiedName, PhpType referringType,
-            PhpRoutine referringRoutine, Text.Span position, bool mustResolve)
+			PhpRoutine referringRoutine, Position position, bool mustResolve)
 		{
 			DType result;
 
@@ -1088,82 +992,55 @@ namespace PHP.Core
 					result = UnknownType.UnknownSelf;
 				}
 			}
-            else if (qualifiedName.IsStaticClassName)
-            {
-                if (referringType != null)
-                {
-                    if (referringType.IsFinal)
-                    {
-                        // we are sure the 'static' == 'self'
-                        result = referringType;
-                    }
-                    else
-                    {
-                        if (referringRoutine != null)
-                            referringRoutine.Properties |= RoutineProperties.LateStaticBinding;
+			else if (qualifiedName.IsParentClassName)
+			{
+				if (referringType != null)
+				{
+					if (referringType.IsInterface)
+					{
+						ErrorSink.Add(Errors.SelfUsedOutOfClass, SourceUnit, position);
+						result = UnknownType.UnknownParent;
+					}
+					else
+					{
+						DType base_type = referringType.Base;
+						if (base_type == null)
+						{
+							ErrorSink.Add(Errors.ClassHasNoParent, SourceUnit, position, referringType.FullName);
+							result = UnknownType.UnknownParent;
+						}
+						else
+						{
+							result = base_type;
+						}
+					}
+				}
+				else
+				{
+					// we are sure the self is used incorrectly when we are in a function:
+					if (referringRoutine != null)
+						ErrorSink.Add(Errors.ParentUsedOutOfClass, SourceUnit, position);
 
-                        result = StaticType.Singleton;
-                    }
-                }
-                else
-                {
-                    // we are sure the static is used incorrectly in function:
-                    //if (referringRoutine != null) // do not allow 'static' in global code:
-                        ErrorSink.Add(Errors.StaticUsedOutOfClass, SourceUnit, position);
+					// global code can be included to the method:
+					result = UnknownType.UnknownParent;
+				}
+			}
+			else
+			{
+				// try resolve the name as a type parameter name:
+				if (qualifiedName.IsSimpleName)
+				{
+					result = ResolveTypeParameterName(qualifiedName.Name, referringType, referringRoutine);
+					if (result != null)
+						return result;
+				}
 
-                    // global code can be included to the method:
-                    result = UnknownType.UnknownStatic;
-                }
-            }
-            else if (qualifiedName.IsParentClassName)
-            {
-                if (referringType != null)
-                {
-                    if (referringType.IsInterface)
-                    {
-                        ErrorSink.Add(Errors.ParentUsedOutOfClass, SourceUnit, position);
-                        result = UnknownType.UnknownParent;
-                    }
-                    else
-                    {
-                        DType base_type = referringType.Base;
-                        if (base_type == null)
-                        {
-                            ErrorSink.Add(Errors.ClassHasNoParent, SourceUnit, position, referringType.FullName);
-                            result = UnknownType.UnknownParent;
-                        }
-                        else
-                        {
-                            result = base_type;
-                        }
-                    }
-                }
-                else
-                {
-                    // we are sure the self is used incorrectly when we are in a function:
-                    if (referringRoutine != null)
-                        ErrorSink.Add(Errors.ParentUsedOutOfClass, SourceUnit, position);
+				Scope referring_scope = GetReferringScope(referringType, referringRoutine);
+				QualifiedName? alias;
+				result = sourceUnit.ResolveTypeName(qualifiedName, referring_scope, out alias, ErrorSink, position, mustResolve);
 
-                    // global code can be included to the method:
-                    result = UnknownType.UnknownParent;
-                }
-            }
-            else
-            {
-                // try resolve the name as a type parameter name:
-                if (qualifiedName.IsSimpleName)
-                {
-                    result = ResolveTypeParameterName(qualifiedName.Name, referringType, referringRoutine);
-                    if (result != null)
-                        return result;
-                }
-
-                Scope referring_scope = GetReferringScope(referringType, referringRoutine);
-                QualifiedName? alias;
-                result = sourceUnit.ResolveTypeName(qualifiedName, referring_scope, out alias, ErrorSink, position, mustResolve);
-
-                ReportUnknownType(result, alias, position);
-            }
+				ReportUnknownType(result, alias, position);
+			}
 
 			return result;
 		}
@@ -1189,7 +1066,7 @@ namespace PHP.Core
 			return result;
 		}
 
-		private void ReportUnknownType(DType/*!*/ type, QualifiedName? alias, Text.Span position)
+		private void ReportUnknownType(DType/*!*/ type, QualifiedName? alias, Position position)
 		{
 			if (type.IsUnknown)
 			{
@@ -1201,55 +1078,41 @@ namespace PHP.Core
 		}
 
 		public DType/*!*/ ResolveTypeName(GenericQualifiedName genericName, PhpType referringType,
-            PhpRoutine referringRoutine, Text.Span position, bool mustResolve)
+			PhpRoutine referringRoutine, Position position, bool mustResolve)
 		{
 			DType type = ResolveTypeName(genericName.QualifiedName, referringType, referringRoutine, position, mustResolve);
-            DTypeDesc[] arguments;
 
-            if (genericName.IsGeneric)
-            {
-                arguments = new DTypeDesc[genericName.GenericParams.Length];
+			DTypeDesc[] arguments = (genericName.GenericParams.Length > 0) ? new DTypeDesc[genericName.GenericParams.Length] : DTypeDesc.EmptyArray;
 
-                for (int i = 0; i < arguments.Length; i++)
-                {
-                    arguments[i] = ResolveType(genericName.GenericParams[i], referringType, referringRoutine, position, mustResolve).TypeDesc;
-                }
-            }
-            else
-            {
-                arguments = DTypeDesc.EmptyArray;
-            }
+			for (int i = 0; i < arguments.Length; i++)
+			{
+				arguments[i] = ResolveType(genericName.GenericParams[i], referringType, referringRoutine, position, mustResolve).TypeDesc;
+			}
 
-            return type.MakeConstructedType(this, arguments, position);
+			return type.MakeConstructedType(this, arguments, position);
 		}
 
 		/// <summary>
 		/// Gets the type for specified attribute type name.
 		/// </summary>
-        public DType/*!*/ ResolveCustomAttributeType(QualifiedName qualifiedName, Scope referringScope, Text.Span position)
+		public DType/*!*/ ResolveCustomAttributeType(QualifiedName qualifiedName, Scope referringScope, Position position)
 		{
 			if (qualifiedName.IsAppStaticAttributeName)
 			{
-                return SpecialCustomAttribute.AppStaticAttribute;
+				return CustomAttribute.AppStaticAttribute;
 			}
 			else if (qualifiedName.IsExportAttributeName)
 			{
-                return SpecialCustomAttribute.ExportAttribute;
+				return CustomAttribute.ExportAttribute;
 			}
-            else if (qualifiedName.IsDllImportAttributeName)
-            {
-                return SpecialCustomAttribute.DllImportAttribute;
-            }
 			else if (qualifiedName.IsOutAttributeName)
 			{
-                return SpecialCustomAttribute.OutAttribute;
+				return CustomAttribute.OutAttribute;
 			}
 			else
 			{
 				QualifiedName? alias;
-                string attrname = qualifiedName.Name.Value;
-                if (!attrname.EndsWith(Name.AttributeNameSuffix)) attrname += Name.AttributeNameSuffix;
-				QualifiedName name = new QualifiedName(new Name(attrname), qualifiedName.Namespaces);
+				QualifiedName name = new QualifiedName(new Name(qualifiedName.Name.Value + "Attribute"), qualifiedName.Namespaces);
 
 				DType type = sourceUnit.ResolveTypeName(name, referringScope, out alias, ErrorSink, position, true);
 
@@ -1278,7 +1141,7 @@ namespace PHP.Core
         /// <param name="checkVisibilityAtRuntime">Will determine if the routine call must be checked for visibility at runtime.</param>
         /// <param name="isCallMethod">Will determine if __call or __callStatic magic methods were found instead.</param>
         /// <returns>The resolved routine. Cannot return <c>null</c>.</returns>
-        public DRoutine/*!*/ ResolveMethod(DType/*!*/ type, Name methodName, Text.Span position,
+		public DRoutine/*!*/ ResolveMethod(DType/*!*/ type, Name methodName, Position position,
 			PhpType referringType, PhpRoutine referringRoutine, bool calledStatically,
             out bool checkVisibilityAtRuntime, out bool isCallMethod)
 		{
@@ -1288,10 +1151,11 @@ namespace PHP.Core
 			// we cannot resolve a method unless we know the inherited members:
 			if (type.IsDefinite)
 			{
-                //// if the method is a constructor, 
-                //KnownType known;
-                //if (methodName.IsConstructName || (known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
-                //    return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
+				KnownType known;
+
+				// the method is a constructor:
+				if (methodName.IsConstructName || (known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
+					return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
 
 				DRoutine routine;
 				GetMemberResult member_result;
@@ -1312,7 +1176,7 @@ namespace PHP.Core
                         (!calledStatically ||   // just to have complete condition here, always false
                         (referringRoutine != null && referringType != null && !referringRoutine.IsStatic &&  // in non-static method
                         type.TypeDesc.IsAssignableFrom(referringType.TypeDesc)) // {CurrentType} is inherited from or equal {type}
-                        ) ? Name.SpecialMethodNames.Call : Name.SpecialMethodNames.CallStatic;
+                        ) ? DObject.SpecialMethodNames.Call : DObject.SpecialMethodNames.CallStatic;
 
                     member_result = type.GetMethod(callMethodName, referringType, out routine);
 
@@ -1325,18 +1189,10 @@ namespace PHP.Core
 					case GetMemberResult.OK:
 						return routine;
 
-                    case GetMemberResult.NotFound:
-                        {
-                            // allow calling CLR constructor:
-                            KnownType known;
-                            if (/*methodName.IsConstructName || */(known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
-                                return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
-
-                            //
-                            if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
-                                ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
-                            return new UnknownMethod(type, methodName.Value);
-                        }
+					case GetMemberResult.NotFound:
+                        if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
+                            ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
+						return new UnknownMethod(type, methodName.Value);
 
 					case GetMemberResult.BadVisibility:
 						{
@@ -1368,7 +1224,8 @@ namespace PHP.Core
 						}
 
 					default:
-                        throw new InvalidOperationException();
+						Debug.Fail();
+						return null;
 				}
 			}
 			else
@@ -1381,7 +1238,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Resolves constructor of the specified type within the current context (location).
 		/// </summary>
-        public DRoutine/*!*/ ResolveConstructor(DType/*!*/ type, Text.Span position, PhpType referringType,
+		public DRoutine/*!*/ ResolveConstructor(DType/*!*/ type, Position position, PhpType referringType,
 			PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
 		{
 			checkVisibilityAtRuntime = false;
@@ -1424,14 +1281,15 @@ namespace PHP.Core
 					}
 
 				default:
-                    throw new InvalidOperationException();
+					Debug.Fail();
+					return null;
 			}
 		}
 
 		/// <summary>
 		/// Resolves static properties.
 		/// </summary>
-		public DProperty/*!*/ ResolveProperty(DType/*!*/ type, VariableName propertyName, Text.Span position, bool staticOnly,
+		public DProperty/*!*/ ResolveProperty(DType/*!*/ type, VariableName propertyName, Position position, bool staticOnly,
 			PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
 		{
 			Debug.Assert(type != null);
@@ -1479,7 +1337,8 @@ namespace PHP.Core
 						}
 
 					default:
-                        throw new InvalidOperationException();
+						Debug.Fail();
+						throw null;
 				}
 			}
 			else
@@ -1490,7 +1349,7 @@ namespace PHP.Core
 		}
 
 		internal DConstant ResolveClassConstantName(DType/*!*/ type, VariableName constantName,
-            Text.Span position, PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
+			Position position, PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
 		{
 			checkVisibilityAtRuntime = false;
 
@@ -1534,7 +1393,8 @@ namespace PHP.Core
 						}
 
 					default:
-                        throw new InvalidOperationException();
+						Debug.Fail();
+						throw null;
 				}
 			}
 			else
@@ -1544,7 +1404,7 @@ namespace PHP.Core
 			}
 		}
 
-        internal DConstant ResolveGlobalConstantName(QualifiedName qualifiedName, Text.Span position)
+		internal DConstant ResolveGlobalConstantName(QualifiedName qualifiedName, Position position)
 		{
 			Debug.Assert(currentScope.IsValid, "Scope is available only during full analysis.");
 
@@ -1573,11 +1433,11 @@ namespace PHP.Core
 
 		public void AddLambdaFcnDeclaration(FunctionDecl decl)
 		{
-            var ast = sourceUnit.Ast;
-			ast.Statements = ArrayUtils.Concat(ast.Statements, decl);
+			sourceUnit.Ast.Statements.Add(decl);
 		}
 
-        internal void SetEntryPoint(PhpRoutine/*!*/ routine, Text.Span position)
+#if !SILVERLIGHT
+		internal void SetEntryPoint(PhpRoutine/*!*/ routine, Position position)
 		{
 			// pure entry point is a static parameterless "Main" method/function:
 			if (!sourceUnit.CompilationUnit.IsPure || !routine.Name.Equals(PureAssembly.EntryPointName)
@@ -1589,13 +1449,19 @@ namespace PHP.Core
 			if (pcu.EntryPoint != null)
 			{
 				ErrorSink.Add(Errors.EntryPointRedefined, SourceUnit, position);
-				ErrorSink.Add(Errors.RelatedLocation, pcu.EntryPoint.SourceUnit, pcu.EntryPoint.Span);
+				ErrorSink.Add(Errors.RelatedLocation, pcu.EntryPoint.SourceUnit, pcu.EntryPoint.Position);
 			}
 			else
 			{
 				pcu.SetEntryPoint(routine);
 			}
 		}
+#else
+		internal void SetEntryPoint(PhpRoutine/*!*/ routine, Position position)
+		{
+			// nothing to do here on silverlight..
+		}
+#endif
 
 		internal static void ValidateLabels(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit,
 			Dictionary<VariableName, Statement>/*!*/ labels)
@@ -1606,11 +1472,11 @@ namespace PHP.Core
 				if (label != null)
 				{
 					if (!label.IsReferred)
-						errors.Add(Warnings.UnusedLabel, sourceUnit, label.Span, entry.Key);
+						errors.Add(Warnings.UnusedLabel, sourceUnit, label.Position, entry.Key);
 				}
 				else
 				{
-					errors.Add(Errors.UndefinedLabel, sourceUnit, entry.Value.Span, entry.Key);
+					errors.Add(Errors.UndefinedLabel, sourceUnit, entry.Value.Position, entry.Key);
 				}
 			}
 		}
