@@ -1777,9 +1777,9 @@ namespace HtmlAgilityPack
 
             // remove starting/ending comment tags
             s = s.Substring(4, s.Length - 7);
-            
+                        
             // ensure comment does not contain '--'
-            s = s.Replace("--", " - -");
+            s = s.Replace("--", "- - ");
 
             // ensure ending char is not '-'
             if (s.Length > 0 && s[s.Length - 1] == '-')
