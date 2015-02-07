@@ -202,12 +202,17 @@ namespace PHP.Core
 			StatStruct result;//  = new StatStruct();
 			uint device = unchecked((uint)(char.ToLower(info.FullName[0]) - 'a')); // index of the disk
 
-			ushort mode = (ushort)BuildMode(info,attributes, path);
+            ushort mode;
 
-			long
-				atime = ToStatUnixTimeStamp(info.LastAccessTimeUtc),
-				mtime = ToStatUnixTimeStamp(info.LastWriteTimeUtc),
-				ctime = ToStatUnixTimeStamp(info.CreationTimeUtc);
+            if (EnvironmentUtils.IsDotNetFramework)
+                mode = (ushort)BuildMode(info, attributes, path);
+            else
+                mode = (ushort)BuildModeSimple(attributes, path);
+
+			long atime,mtime,ctime;
+            atime = ToStatUnixTimeStamp(() => info.LastAccessTimeUtc);
+			mtime = ToStatUnixTimeStamp(() => info.LastWriteTimeUtc);
+			ctime = ToStatUnixTimeStamp(() => info.CreationTimeUtc);
 
 			result.st_dev = device;         // device number 
 			result.st_ino = 0;              // inode number 
@@ -234,8 +239,21 @@ namespace PHP.Core
 		/// Adjusts UTC time of a file by adding Daylight Saving Time difference.
 		/// Makes file times working in the same way as in PHP and Windows Explorer.
 		/// </summary>
-		private static long ToStatUnixTimeStamp(DateTime utcTime)
+		private static long ToStatUnixTimeStamp(Func<DateTime> utcTimeFunc)
 		{
+            DateTime utcTime;
+
+            try
+            {
+                utcTime = utcTimeFunc();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                //On Linux this exception might be thrown if a file metadata are corrupted
+                //just catch it and return 0;
+                return 0;
+            }
+
 			return DateTimeUtils.UtcToUnixTimeStamp(utcTime + DateTimeUtils.GetDaylightTimeDifference(utcTime, DateTime.UtcNow));
 		}
 
@@ -391,6 +409,38 @@ namespace PHP.Core
 
 			return rv;
 		}
+
+        /// <summary>
+        /// Creates the UNIX-like file mode depending on the file or directory attributes.
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        /// <remarks>This is simple version for Mono, where we don't have ACL.</remarks> //TODO: filesystem releated function should use Mono.Unix.Native classes and methods
+        private static FileModeFlags BuildModeSimple(FileAttributes attributes, string path)
+        {
+            // Simulates the UNIX file mode.
+            bool directory = ((attributes & FileAttributes.Directory) > 0);
+            FileModeFlags rv = (directory) ? FileModeFlags.Directory : FileModeFlags.File;
+            rv |= FileModeFlags.Read;
+
+            if (directory)
+            {
+                rv |= FileModeFlags.Execute;
+                rv |= FileModeFlags.Write;
+            }
+            else
+            {
+                if ((attributes & FileAttributes.ReadOnly) == 0)
+                    rv |= FileModeFlags.Write;
+
+                string ext = Path.GetExtension(path).ToLower();
+                if ((ext == ".exe") || (ext == ".com") || (ext == ".bat"))
+                    rv |= FileModeFlags.Execute;
+            }
+
+            return rv;
+        }
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
         public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
