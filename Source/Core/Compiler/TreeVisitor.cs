@@ -372,7 +372,7 @@ namespace PHP.Core.AST
         {
             // nothing
         }
-
+        
         #endregion
 
         #region  Cycle statements
@@ -722,6 +722,15 @@ namespace PHP.Core.AST
 
             // function body
             VisitStatementList(x.Body);
+        }
+
+        /// <summary>
+        /// Visit <see cref="YieldEx"/> expression.
+        /// </summary>
+        virtual public void VisitYieldEx(YieldEx x)
+        {
+            VisitElement(x.KeyExpr);
+            VisitElement(x.ValueExpr);
         }
 
         #endregion

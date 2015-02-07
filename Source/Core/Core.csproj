@@ -198,6 +198,7 @@
     <Compile Include="Compiler\AST\ConstantUse.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\AST\YieldEx.cs" />
     <Compile Include="Compiler\AST\LambdaFunctionExpr.cs" />
     <Compile Include="Compiler\AST\CustomAttributes.cs" />
     <Compile Include="Compiler\AST\DirectVariableUse.cs">

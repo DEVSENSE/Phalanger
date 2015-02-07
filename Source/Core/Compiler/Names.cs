@@ -55,19 +55,19 @@ namespace PHP.Core
 		{
 			get { return value; }
 			set
-			{
-				this.value = value;
-                this.lowerCaseValue = value.ToLower();
-			}
+            {
+                this.value = value;
+                this.hashCode = 0;
+            }
 		}
 		private string/*!*/ value;
+        private int hashCode;
 
 		public string/*!*/ LowercaseValue
 		{
-            get { return lowerCaseValue; }
+            get { return this.Value.ToLowerInvariant(); }
 		}
-		private string/*!*/lowerCaseValue;
-
+		
         #region Special Names
 
 		public static readonly Name[] EmptyNames = new Name[0];
@@ -150,7 +150,7 @@ namespace PHP.Core
 			Debug.Assert(value != null);
 			// TODO (missing from Mono): this.value = value.Normalize();
 			this.value = value;
-            this.lowerCaseValue = value.ToLower();
+            this.hashCode = 0;
 		}
 
         #region Utils
@@ -204,13 +204,16 @@ namespace PHP.Core
 
         public override bool Equals(object obj)
 		{
-			if (!(obj is Name)) return false;
-			return Equals((Name)obj);
+            return (obj != null && obj.GetType() == typeof(Name))
+                ? Equals((Name)obj)
+                : false;
 		}
 
 		public override int GetHashCode()
 		{
-			return lowerCaseValue.GetHashCode();
+			return (this.hashCode != 0)
+                ? (this.hashCode)
+                : (this.hashCode = this.LowercaseValue.GetHashCode());
 		}
 
 		public override string ToString()
@@ -224,7 +227,10 @@ namespace PHP.Core
 
 		public bool Equals(Name other)
 		{
-            return this.lowerCaseValue.Equals(other.lowerCaseValue, StringComparison.Ordinal);
+            return
+                this.Value.Length == other.Value.Length &&
+                this.GetHashCode() == other.GetHashCode() &&
+                this.Value.Equals(other.Value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public static bool operator ==(Name name, Name other)

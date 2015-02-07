@@ -124,7 +124,9 @@ namespace PHP.Core.AST
 	{
         public override Operations Operation { get { return Operations.DirectCall; } }
 
-		/// <summary>
+        #region InlinedFunction
+
+        /// <summary>
 		/// A list of inlined functions.
 		/// </summary>
 		private enum InlinedFunction
@@ -133,7 +135,36 @@ namespace PHP.Core.AST
 			CreateFunction
 		}
 
-		/// <summary>
+        #endregion
+
+        #region Nested class: AnalysisResult
+
+        /// <summary>
+        /// Results of analysis.
+        /// Fields are separated into a class to save memory when just AST is used outside compiler.
+        /// </summary>
+        private sealed class AnalysisResult
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            public DRoutine/*A*/routine;
+            public int/*A*/overloadIndex = DRoutine.InvalidOverloadIndex;
+
+            /// <summary>
+            /// Type of <see cref="VarLikeConstructUse.IsMemberOf"/> if can be resolved statically. Otherwise <c>null</c>.
+            /// </summary>
+            public DType/*A*/isMemberOfType;
+
+            /// <summary>
+            /// An inlined function represented by the node (if any).
+            /// </summary>
+            public InlinedFunction/*A*/inlined = InlinedFunction.None;
+        }
+
+        #endregion
+
+        /// <summary>
 		/// Simple name for methods.
 		/// </summary>
 		private QualifiedName qualifiedName;
@@ -141,13 +172,10 @@ namespace PHP.Core.AST
         /// <summary>Simple name for methods.</summary>
         public QualifiedName QualifiedName { get { return qualifiedName; } }
 
-        private DRoutine routine;
-		private int overloadIndex = DRoutine.InvalidOverloadIndex;
-
         /// <summary>
-        /// Type of <see cref="VarLikeConstructUse.IsMemberOf"/> if can be resolved statically. Otherwise <c>null</c>.
+        /// Results of <see cref="Analyze"/> method call.
         /// </summary>
-        private DType/*A*/isMemberOfType;
+        private AnalysisResult/*!A*/analysis;
 
         /// <summary>
         /// Gets type of <see cref="VarLikeConstructUse.IsMemberOf"/> expression if can be resolved.
@@ -177,11 +205,6 @@ namespace PHP.Core.AST
             return null;
         }
 
-		/// <summary>
-		/// An inlined function represented by the node (if any).
-		/// </summary>
-		private InlinedFunction inlined = InlinedFunction.None;
-
 		public DirectFcnCall(Position position,
             QualifiedName qualifiedName, QualifiedName? fallbackQualifiedName, Position qualifiedNamePosition,
             List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
@@ -195,6 +218,9 @@ namespace PHP.Core.AST
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
             base.Analyze(analyzer, info);
+
+            Debug.Assert(analysis == null);
+            analysis = new AnalysisResult();
 
             if (isMemberOf == null)
             {
@@ -221,12 +247,13 @@ namespace PHP.Core.AST
         private Evaluation AnalyzeFunctionCall(Analyzer/*!*/ analyzer, ref ExInfoFromParent info)
         {
             Debug.Assert(isMemberOf == null);
+            Debug.Assert(analysis != null);
 
             // resolve name:
-            
-            routine = analyzer.ResolveFunctionName(qualifiedName, position);
 
-            if (routine.IsUnknown)
+            analysis.routine = analyzer.ResolveFunctionName(qualifiedName, position);
+
+            if (analysis.routine.IsUnknown)
             {
                 // note: we've to try following at run time, there can be dynamically added namespaced function matching qualifiedName
                 // try fallback
@@ -236,22 +263,22 @@ namespace PHP.Core.AST
                     if (fallbackroutine != null && !fallbackroutine.IsUnknown)
                     {
                         if (fallbackroutine is PhpLibraryFunction)  // we are calling library function directly
-                            routine = fallbackroutine;
+                            analysis.routine = fallbackroutine;
                     }
                 }
 
-                if (routine.IsUnknown)   // still unknown ?
+                if (analysis.routine.IsUnknown)   // still unknown ?
                     Statistics.AST.AddUnknownFunctionCall(qualifiedName);
             }
             // resolve overload if applicable:
             RoutineSignature signature;
-            overloadIndex = routine.ResolveOverload(analyzer, callSignature, position, out signature);
+            analysis.overloadIndex = analysis.routine.ResolveOverload(analyzer, callSignature, position, out signature);
 
-            Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
+            Debug.Assert(analysis.overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
 
-            if (routine is PhpLibraryFunction)
+            if (analysis.routine is PhpLibraryFunction)
             {
-                var opts = ((PhpLibraryFunction)routine).Options;
+                var opts = ((PhpLibraryFunction)analysis.routine).Options;
                 // warning if not supported function call is detected
                 if ((opts & FunctionImplOptions.NotSupported) != 0)
                     analyzer.ErrorSink.Add(Warnings.NotSupportedFunctionCalled, analyzer.SourceUnit, Position, QualifiedName.ToString());
@@ -266,7 +293,7 @@ namespace PHP.Core.AST
             callSignature.Analyze(analyzer, signature, info, false);
 
             // get properties:
-            analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
+            analyzer.AddCurrentRoutineProperty(analysis.routine.GetCallerRequirements());
 
             // replaces the node if its value can be determined at compile-time:
             object value;
@@ -277,18 +304,20 @@ namespace PHP.Core.AST
 
         private bool AnalyzeMethodCallOnKnownType(Analyzer/*!*/ analyzer, ref ExInfoFromParent info, DType type)
         {
+            Debug.Assert(analysis != null);
+
             if (type == null || type.IsUnknown)
                 return false;
 
             bool runtimeVisibilityCheck, isCallMethod;
 
-            routine = analyzer.ResolveMethod(
+            analysis.routine = analyzer.ResolveMethod(
                 type, qualifiedName.Name,
                 Position,
                 analyzer.CurrentType, analyzer.CurrentRoutine, false,
                 out runtimeVisibilityCheck, out isCallMethod);
 
-            if (routine.IsUnknown)
+            if (analysis.routine.IsUnknown)
                 return false;
 
             Debug.Assert(runtimeVisibilityCheck == false);  // can only be set to true if CurrentType or CurrentRoutine are null
@@ -311,15 +340,15 @@ namespace PHP.Core.AST
 
             // resolve overload if applicable:
             RoutineSignature signature;
-            overloadIndex = routine.ResolveOverload(analyzer, callSignature, position, out signature);
+            analysis.overloadIndex = analysis.routine.ResolveOverload(analyzer, callSignature, position, out signature);
 
-            Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
+            Debug.Assert(analysis.overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
 
             // analyze parameters:
             callSignature.Analyze(analyzer, signature, info, false);
 
             // get properties:
-            analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
+            analyzer.AddCurrentRoutineProperty(analysis.routine.GetCallerRequirements());
 
             return true;
         }
@@ -333,14 +362,15 @@ namespace PHP.Core.AST
         private Evaluation AnalyzeMethodCall(Analyzer/*!*/ analyzer, ref ExInfoFromParent info)
         {
             Debug.Assert(isMemberOf != null);
+            Debug.Assert(analysis != null);
 
             // resolve routine if IsMemberOf is resolved statically:
-            this.isMemberOfType = this.GetIsMemberOfType(analyzer);
-            if (this.AnalyzeMethodCallOnKnownType(analyzer, ref info, this.isMemberOfType))
+            analysis.isMemberOfType = this.GetIsMemberOfType(analyzer);
+            if (this.AnalyzeMethodCallOnKnownType(analyzer, ref info, analysis.isMemberOfType))
                 return new Evaluation(this);
             
             // by default, fall back to dynamic method invocation
-            routine = null;
+            analysis.routine = null;
             callSignature.Analyze(analyzer, UnknownSignature.Default, info, false);
 
             return new Evaluation(this);
@@ -364,10 +394,10 @@ namespace PHP.Core.AST
         /// <remarks>Some well-known constructs can be modified to be analyzed and emitted better.</remarks>
         private void AnalyzeSpecial(Analyzer/*!*/ analyzer)
         {
-            if (routine is PhpLibraryFunction)
+            if (analysis.routine is PhpLibraryFunction)
             {
                 // basename(__FILE__, ...) -> basename("actual_file", ...)  // SourceRoot can be ignored in this case
-                if (routine.FullName.EqualsOrdinalIgnoreCase("basename"))
+                if (analysis.routine.FullName.EqualsOrdinalIgnoreCase("basename"))
                     if (callSignature.Parameters.Count > 0)
                     {
                         var path_param = callSignature.Parameters[0];
@@ -388,6 +418,8 @@ namespace PHP.Core.AST
 		/// </returns>
 		private bool TryEvaluate(Analyzer/*!*/ analyzer, out object value)
 		{
+            Debug.Assert(analysis != null);
+
             // special cases, allow some AST transformation:
             this.AnalyzeSpecial(analyzer);
 
@@ -399,13 +431,13 @@ namespace PHP.Core.AST
                 // PhpLibraryFunction with PureFunctionAttribute can be evaluated
                 PhpLibraryFunction lib_function;
 
-                if ((lib_function = routine as PhpLibraryFunction) != null &&
-                    (pureAttribute = PureFunctionAttribute.Reflect(lib_function.Overloads[overloadIndex].Method)) != null)
+                if ((lib_function = analysis.routine as PhpLibraryFunction) != null &&
+                    (pureAttribute = PureFunctionAttribute.Reflect(lib_function.Overloads[analysis.overloadIndex].Method)) != null)
                 {
                     // the method to be used for evaluation
                     MethodInfo evaluableMethod = pureAttribute.CallSpecialMethod ?
                         pureAttribute.SpecialMethod :
-                        lib_function.Overloads[overloadIndex].Method;
+                        lib_function.Overloads[analysis.overloadIndex].Method;
 
                     Debug.Assert(evaluableMethod != null);
 
@@ -511,8 +543,8 @@ namespace PHP.Core.AST
 
                             if (info != null && info.emitDeclareLamdaFunction && info.newRoutine != null)
                             {
-                                this.routine = info.newRoutine;
-                                this.inlined = InlinedFunction.CreateFunction;
+                                analysis.routine = info.newRoutine;
+                                analysis.inlined = InlinedFunction.CreateFunction;
                                 return false;   // 
                             }
 
@@ -797,13 +829,19 @@ namespace PHP.Core.AST
         /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
 		{
-			Debug.Assert(access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown
-				|| access == AccessType.None, "Invalid access type in FunctionCall");
+            Debug.Assert(analysis != null);
+			Debug.Assert(
+                access == AccessType.Read ||
+                access == AccessType.ReadRef ||
+                access == AccessType.ReadUnknown ||
+                access == AccessType.None,
+                "Invalid access type in FunctionCall");
+
 			Statistics.AST.AddNode("FunctionCall.Direct");
 
 			PhpTypeCode result;
 
-			if (inlined != InlinedFunction.None)
+            if (analysis.inlined != InlinedFunction.None)
 			{
 				result = EmitInlinedFunctionCall(codeGenerator);
 			}
@@ -825,7 +863,7 @@ namespace PHP.Core.AST
                     // we will avoid recursion, and divide the chain into smaller pieces.
                     HandleLongChain(codeGenerator);
 
-                    if (routine == null)
+                    if (analysis.routine == null)
                     {
                         //result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
                         result = codeGenerator.CallSitesBuilder.EmitMethodCall(
@@ -836,17 +874,17 @@ namespace PHP.Core.AST
                             callSignature);
                     }
                     else
-                        result = routine.EmitCall(
+                        result = analysis.routine.EmitCall(
                             codeGenerator, null, callSignature,
-                            new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
-                            this.isMemberOfType, position, access, true);
+                            new ExpressionPlace(codeGenerator, isMemberOf), false, analysis.overloadIndex,
+                            analysis.isMemberOfType, position, access, true);
                 }
                 else
                 {
                     // the node represents a function call:
-                    result = routine.EmitCall(
+                    result = analysis.routine.EmitCall(
                         codeGenerator, fallbackFunctionName,
-                        callSignature, null, false, overloadIndex,
+                        callSignature, null, false, analysis.overloadIndex,
                         null, position, access, false);
                 }
 			}
@@ -855,7 +893,7 @@ namespace PHP.Core.AST
             // routine == null => Copy emitted by EmitRoutineOperatorCall
             // routine.ReturnValueDeepCopyEmitted => Copy emitted
             // otherwise emit Copy if we are going to read it by value
-            if (routine != null && !routine.ReturnValueDeepCopyEmitted)
+            if (analysis.routine != null && !analysis.routine.ReturnValueDeepCopyEmitted)
                 EmitReturnValueCopy(codeGenerator.IL, result);
             
             // handles return value:
@@ -902,11 +940,13 @@ namespace PHP.Core.AST
 		/// </summary>
 		private PhpTypeCode EmitInlinedFunctionCall(CodeGenerator/*!*/ codeGenerator)
 		{
-			switch (inlined)
+            Debug.Assert(analysis != null);
+
+            switch (analysis.inlined)
 			{
 				case InlinedFunction.CreateFunction:
 					{
-						PhpFunction php_function = (PhpFunction)routine;
+                        PhpFunction php_function = (PhpFunction)analysis.routine;
 
 						// define builders (not defined earlier as the lambda function it is not in the tables):
 						php_function.DefineBuilders();

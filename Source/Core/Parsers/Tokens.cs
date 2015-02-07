@@ -238,6 +238,7 @@ namespace PHP.Core.Parsers
 		T_FUNCTION = Toks.T_FUNCTION,
 		T_CONST = Toks.T_CONST,
 		T_RETURN = Toks.T_RETURN,
+        T_YIELD = Toks.T_YIELD,
 		T_TRY = Toks.T_TRY,
 		T_CATCH = Toks.T_CATCH,
         T_FINALLY = Toks.T_FINALLY,
