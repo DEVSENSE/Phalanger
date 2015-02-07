@@ -285,7 +285,7 @@ namespace PHP.Library
 			if (!PhpStream.ResolvePath(ref path, out wrapper, CheckAccessMode.FileMayExist, CheckAccessOptions.Empty))
 				return null;
 
-			return wrapper.Open(ref path, "wb", StreamOpenOptions.Temporary, StreamContext.Default);
+			return wrapper.Open(ref path, "w+b", StreamOpenOptions.Temporary, StreamContext.Default);
 		}
 
         /// <summary>
