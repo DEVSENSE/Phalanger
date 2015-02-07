@@ -51,7 +51,11 @@ namespace PHP.Core.Compiler.AST
                         bool hasDefaultCtor = t.GetConstructor(Type.EmptyTypes) != null;
                         foreach (NodeCompilerAttribute attr in attrs)
                         {
-                            dict.Add(attr.AstNodeType, new AstNodeExtension.NodeCompilerInfo(t, hasDefaultCtor, attr.Singleton));
+                            Type compilertype = (t.ContainsGenericParameters)
+                                ? t.MakeGenericType(attr.AstNodeType)
+                                : t;
+
+                            dict.Add(attr.AstNodeType, new AstNodeExtension.NodeCompilerInfo(compilertype, hasDefaultCtor, attr.Singleton));
                         }
                     }
                 }

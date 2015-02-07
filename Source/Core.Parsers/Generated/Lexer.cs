@@ -45,13 +45,9 @@ using System.Collections.Generic;
 		public struct Position
 		{
 			public int Char;
-			public int Line;
-			public int Column;
-			public Position(int ch, int line, int column)
+			public Position(int ch)
 			{
 				this.Char = ch;
-				this.Line = line;
-				this.Column = column;
 			}
 		}
 		private const int NoState = -1;
@@ -127,14 +123,14 @@ using System.Collections.Generic;
 			switch(state)
 			{
 				case 2:
-					// #line 77
+					// #line 75
 					{ 
 						return Tokens.T_INLINE_HTML; 
 					}
 					break;
 					
 				case 3:
-					// #line 109
+					// #line 107
 					{ 
 						if (AllowAspTags)
 						{
@@ -149,7 +145,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 4:
-					// #line 81
+					// #line 79
 					{
 						if (AllowShortTags || TokenLength>2) 
 						{ 
@@ -164,14 +160,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 5:
-					// #line 93
+					// #line 91
 					{ 
 						return Tokens.T_INLINE_HTML; 
 					}
 					break;
 					
 				case 6:
-					// #line 97
+					// #line 95
 					{
 						if (GetTokenChar(1) != '%' || AllowAspTags) 
 						{
@@ -186,7 +182,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 7:
-					// #line 121
+					// #line 119
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return Tokens.T_OPEN_TAG;
@@ -194,12 +190,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 8:
-					// #line 274
+					// #line 272
 					{ return (Tokens)GetTokenChar(0); }
 					break;
 					
 				case 9:
-					// #line 350
+					// #line 348
 					{ 
 						BEGIN(LexicalStates.ST_BACKQUOTE); 
 						return Tokens.T_BACKQUOTE; 
@@ -207,17 +203,17 @@ using System.Collections.Generic;
 					break;
 					
 				case 10:
-					// #line 275
+					// #line 273
 					{ return Tokens.T_STRING; }
 					break;
 					
 				case 11:
-					// #line 277
+					// #line 275
 					{ return Tokens.T_WHITESPACE; }
 					break;
 					
 				case 12:
-					// #line 334
+					// #line 332
 					{ 
 						BEGIN(LexicalStates.ST_DOUBLE_QUOTES); 
 						return (GetTokenChar(0) != '"') ? Tokens.T_BINARY_DOUBLE : Tokens.T_DOUBLE_QUOTES; 
@@ -225,7 +221,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 13:
-					// #line 340
+					// #line 338
 					{ 
 						// Gets here only in the case of unterminated singly-quoted string. That leads usually to an error token,
 						// however when the source code is parsed per-line (as in Visual Studio colorizer) it is important to remember
@@ -237,42 +233,42 @@ using System.Collections.Generic;
 					break;
 					
 				case 14:
-					// #line 278
+					// #line 276
 					{ return Tokens.ParseDecimalNumber; }
 					break;
 					
 				case 15:
-					// #line 276
+					// #line 274
 					{ return Tokens.T_NS_SEPARATOR; }
 					break;
 					
 				case 16:
-					// #line 289
+					// #line 287
 					{ BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); yymore(); break; }
 					break;
 					
 				case 17:
-					// #line 312
+					// #line 310
 					{ yy_push_state(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_LBRACE; }
 					break;
 					
 				case 18:
-					// #line 368
+					// #line 366
 					{ return Tokens.ERROR; }
 					break;
 					
 				case 19:
-					// #line 313
+					// #line 311
 					{ if (!yy_pop_state()) return Tokens.ERROR; return Tokens.T_RBRACE; }
 					break;
 					
 				case 20:
-					// #line 259
+					// #line 257
 					{ return Tokens.T_MOD_EQUAL; }
 					break;
 					
 				case 21:
-					// #line 315
+					// #line 313
 					{
 						if (AllowAspTags) 
 						{
@@ -288,27 +284,27 @@ using System.Collections.Generic;
 					break;
 					
 				case 22:
-					// #line 267
+					// #line 265
 					{ return Tokens.T_SL; }
 					break;
 					
 				case 23:
-					// #line 252
+					// #line 250
 					{ return Tokens.T_IS_SMALLER_OR_EQUAL; }
 					break;
 					
 				case 24:
-					// #line 251
+					// #line 249
 					{ return Tokens.T_IS_NOT_EQUAL; }
 					break;
 					
 				case 25:
-					// #line 225
+					// #line 223
 					{ return Tokens.T_LGENERIC; }
 					break;
 					
 				case 26:
-					// #line 129
+					// #line 127
 					{ 
 						BEGIN(LexicalStates.INITIAL); 
 						return Tokens.T_CLOSE_TAG; 
@@ -316,302 +312,302 @@ using System.Collections.Generic;
 					break;
 					
 				case 27:
-					// #line 144
+					// #line 142
 					{ return Tokens.T_IF; }
 					break;
 					
 				case 28:
-					// #line 155
+					// #line 153
 					{ return Tokens.T_AS; }
 					break;
 					
 				case 29:
-					// #line 250
+					// #line 248
 					{ return Tokens.T_IS_EQUAL; }
 					break;
 					
 				case 30:
-					// #line 245
+					// #line 243
 					{ return Tokens.T_DOUBLE_ARROW; }
 					break;
 					
 				case 31:
-					// #line 328
+					// #line 326
 					{ return Tokens.DoubleQuotedString; }
 					break;
 					
 				case 32:
-					// #line 329
+					// #line 327
 					{ return Tokens.SingleQuotedString; }
 					break;
 					
 				case 33:
-					// #line 253
+					// #line 251
 					{ return Tokens.T_IS_GREATER_OR_EQUAL; }
 					break;
 					
 				case 34:
-					// #line 268
+					// #line 266
 					{ return Tokens.T_SR; }
 					break;
 					
 				case 35:
-					// #line 257
+					// #line 255
 					{ return Tokens.T_DIV_EQUAL; }
 					break;
 					
 				case 36:
-					// #line 290
+					// #line 288
 					{ BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); yymore(); break; }
 					break;
 					
 				case 37:
-					// #line 292
+					// #line 290
 					{ BEGIN(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
 				case 38:
-					// #line 150
+					// #line 148
 					{ return Tokens.T_DO; }
 					break;
 					
 				case 39:
-					// #line 180
+					// #line 178
 					{ return Tokens.T_LOGICAL_OR; }
 					break;
 					
 				case 40:
-					// #line 280
+					// #line 278
 					{ return Tokens.ParseDouble; }
 					break;
 					
 				case 41:
-					// #line 226
+					// #line 224
 					{ return Tokens.T_RGENERIC; }
 					break;
 					
 				case 42:
-					// #line 269
+					// #line 267
 					{ return Tokens.T_DOUBLE_COLON; }
 					break;
 					
 				case 43:
-					// #line 254
+					// #line 252
 					{ return Tokens.T_PLUS_EQUAL; }
 					break;
 					
 				case 44:
-					// #line 246
+					// #line 244
 					{ return Tokens.T_INC; }
 					break;
 					
 				case 45:
-					// #line 255
+					// #line 253
 					{ return Tokens.T_MINUS_EQUAL; }
 					break;
 					
 				case 46:
-					// #line 271
+					// #line 269
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY); return Tokens.T_OBJECT_OPERATOR; }
 					break;
 					
 				case 47:
-					// #line 247
+					// #line 245
 					{ return Tokens.T_DEC; }
 					break;
 					
 				case 48:
-					// #line 256
+					// #line 254
 					{ return Tokens.T_MUL_EQUAL; }
 					break;
 					
 				case 49:
-					// #line 258
+					// #line 256
 					{ return Tokens.T_CONCAT_EQUAL; }
 					break;
 					
 				case 50:
-					// #line 262
+					// #line 260
 					{ return Tokens.T_AND_EQUAL; }
 					break;
 					
 				case 51:
-					// #line 266
+					// #line 264
 					{ return Tokens.T_BOOLEAN_AND; }
 					break;
 					
 				case 52:
-					// #line 263
+					// #line 261
 					{ return Tokens.T_OR_EQUAL; }
 					break;
 					
 				case 53:
-					// #line 265
+					// #line 263
 					{ return Tokens.T_BOOLEAN_OR; }
 					break;
 					
 				case 54:
-					// #line 264
+					// #line 262
 					{ return Tokens.T_XOR_EQUAL; }
 					break;
 					
 				case 55:
-					// #line 272
+					// #line 270
 					{ return Tokens.T_VARIABLE; }
 					break;
 					
 				case 56:
-					// #line 260
+					// #line 258
 					{ return Tokens.T_SL_EQUAL; }
 					break;
 					
 				case 57:
-					// #line 215
+					// #line 213
 					{ return Tokens.T_INT_TYPE; }
 					break;
 					
 				case 58:
-					// #line 331
+					// #line 329
 					{ return Tokens.ErrorInvalidIdentifier; }
 					break;
 					
 				case 59:
-					// #line 194
+					// #line 192
 					{ return Tokens.T_TRY; }
 					break;
 					
 				case 60:
-					// #line 181
+					// #line 179
 					{ return Tokens.T_LOGICAL_AND; }
 					break;
 					
 				case 61:
-					// #line 168
+					// #line 166
 					{ return Tokens.T_NEW; }
 					break;
 					
 				case 62:
-					// #line 210
+					// #line 208
 					{ return Tokens.T_USE; }
 					break;
 					
 				case 63:
-					// #line 248
+					// #line 246
 					{ return Tokens.T_IS_IDENTICAL; }
 					break;
 					
 				case 64:
-					// #line 261
+					// #line 259
 					{ return Tokens.T_SR_EQUAL; }
 					break;
 					
 				case 65:
-					// #line 139
+					// #line 137
 					{ return Tokens.T_EXIT; }
 					break;
 					
 				case 66:
-					// #line 182
+					// #line 180
 					{ return Tokens.T_LOGICAL_XOR; }
 					break;
 					
 				case 67:
-					// #line 151
+					// #line 149
 					{ return Tokens.T_FOR; }
 					break;
 					
 				case 68:
-					// #line 169
+					// #line 167
 					{ return Tokens.T_VAR; }
 					break;
 					
 				case 69:
-					// #line 281
+					// #line 279
 					{ return Tokens.ParseDouble; }
 					break;
 					
 				case 70:
-					// #line 249
+					// #line 247
 					{ return Tokens.T_IS_NOT_IDENTICAL; }
 					break;
 					
 				case 71:
-					// #line 279
+					// #line 277
 					{ return Tokens.ParseHexadecimalNumber; }
 					break;
 					
 				case 72:
-					// #line 282
+					// #line 280
 					{ return Tokens.ParseBinaryNumber; }
 					break;
 					
 				case 73:
-					// #line 239
+					// #line 237
 					{ return Tokens.T_SELF; }
 					break;
 					
 				case 74:
-					// #line 158
+					// #line 156
 					{ return Tokens.T_CASE; }
 					break;
 					
 				case 75:
-					// #line 330
+					// #line 328
 					{ return Tokens.SingleQuotedIdentifier; }
 					break;
 					
 				case 76:
-					// #line 241
+					// #line 239
 					{ return Tokens.T_TRUE; }
 					break;
 					
 				case 77:
-					// #line 183
+					// #line 181
 					{ return Tokens.T_LIST; }
 					break;
 					
 				case 78:
-					// #line 243
+					// #line 241
 					{ return Tokens.T_NULL; }
 					break;
 					
 				case 79:
-					// #line 212
+					// #line 210
 					{ return Tokens.T_GOTO; }
 					break;
 					
 				case 80:
-					// #line 162
+					// #line 160
 					{ return Tokens.T_ECHO; }
 					break;
 					
 				case 81:
-					// #line 147
+					// #line 145
 					{ return Tokens.T_ELSE; }
 					break;
 					
 				case 82:
-					// #line 138
+					// #line 136
 					{ return Tokens.T_EXIT; }
 					break;
 					
 				case 83:
-					// #line 170
+					// #line 168
 					{ return Tokens.T_EVAL; }
 					break;
 					
 				case 84:
-					// #line 291
+					// #line 289
 					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); break; }
 					break;
 					
 				case 85:
-					// #line 214
+					// #line 212
 					{ return Tokens.T_BOOL_TYPE; }
 					break;
 					
 				case 86:
-					// #line 355
+					// #line 353
 					{
 						bool is_binary = GetTokenChar(0) != '<';
 						hereDocLabel = GetTokenSubstring(is_binary ? 4 : 3).Trim();
@@ -627,789 +623,789 @@ using System.Collections.Generic;
 					break;
 					
 				case 87:
-					// #line 164
+					// #line 162
 					{ return Tokens.T_CLASS; }
 					break;
 					
 				case 88:
-					// #line 200
+					// #line 198
 					{ return Tokens.T_CLONE; }
 					break;
 					
 				case 89:
-					// #line 195
+					// #line 193
 					{ return Tokens.T_CATCH; }
 					break;
 					
 				case 90:
-					// #line 141
+					// #line 139
 					{ return Tokens.T_CONST; }
 					break;
 					
 				case 91:
-					// #line 176
+					// #line 174
 					{ return Tokens.T_ISSET; }
 					break;
 					
 				case 92:
-					// #line 216
+					// #line 214
 					{ return Tokens.T_INT64_TYPE; }
 					break;
 					
 				case 93:
-					// #line 163
+					// #line 161
 					{ return Tokens.T_PRINT; }
 					break;
 					
 				case 94:
-					// #line 165
+					// #line 163
 					{ return Tokens.T_TRAIT; }
 					break;
 					
 				case 95:
-					// #line 197
+					// #line 195
 					{ return Tokens.T_THROW; }
 					break;
 					
 				case 96:
-					// #line 184
+					// #line 182
 					{ return Tokens.T_ARRAY; }
 					break;
 					
 				case 97:
-					// #line 179
+					// #line 177
 					{ return Tokens.T_UNSET; }
 					break;
 					
 				case 98:
-					// #line 146
+					// #line 144
 					{ return Tokens.T_ENDIF; }
 					break;
 					
 				case 99:
-					// #line 177
+					// #line 175
 					{ return Tokens.T_EMPTY; }
 					break;
 					
 				case 100:
-					// #line 202
+					// #line 200
 					{ return Tokens.T_FINAL; }
 					break;
 					
 				case 101:
-					// #line 242
+					// #line 240
 					{ return Tokens.T_FALSE; }
 					break;
 					
 				case 102:
-					// #line 143
+					// #line 141
 					{ return Tokens.T_YIELD; }
 					break;
 					
 				case 103:
-					// #line 148
+					// #line 146
 					{ return Tokens.T_WHILE; }
 					break;
 					
 				case 104:
-					// #line 160
+					// #line 158
 					{ return Tokens.T_BREAK; }
 					break;
 					
 				case 105:
-					// #line 230
+					// #line 228
 					{ return Tokens.T_SET; }
 					break;
 					
 				case 106:
-					// #line 229
+					// #line 227
 					{ return Tokens.T_GET; }
 					break;
 					
 				case 107:
-					// #line 296
+					// #line 294
 					{ return Tokens.T_INT32_CAST; }
 					break;
 					
 				case 108:
-					// #line 218
+					// #line 216
 					{ return Tokens.T_STRING_TYPE; }
 					break;
 					
 				case 109:
-					// #line 178
+					// #line 176
 					{ return Tokens.T_STATIC; }
 					break;
 					
 				case 110:
-					// #line 156
+					// #line 154
 					{ return Tokens.T_SWITCH; }
 					break;
 					
 				case 111:
-					// #line 142
+					// #line 140
 					{ return Tokens.T_RETURN; }
 					break;
 					
 				case 112:
-					// #line 211
+					// #line 209
 					{ return Tokens.T_IMPORT; }
 					break;
 					
 				case 113:
-					// #line 238
+					// #line 236
 					{ return Tokens.T_PARENT; }
 					break;
 					
 				case 114:
-					// #line 205
+					// #line 203
 					{ return Tokens.T_PUBLIC; }
 					break;
 					
 				case 115:
-					// #line 228
+					// #line 226
 					{ return Tokens.T_ASSERT; }
 					break;
 					
 				case 116:
-					// #line 175
+					// #line 173
 					{ return Tokens.T_GLOBAL; }
 					break;
 					
 				case 117:
-					// #line 145
+					// #line 143
 					{ return Tokens.T_ELSEIF; }
 					break;
 					
 				case 118:
-					// #line 152
+					// #line 150
 					{ return Tokens.T_ENDFOR; }
 					break;
 					
 				case 119:
-					// #line 217
+					// #line 215
 					{ return Tokens.T_DOUBLE_TYPE; }
 					break;
 					
 				case 120:
-					// #line 220
+					// #line 218
 					{ return Tokens.T_OBJECT_TYPE; }
 					break;
 					
 				case 121:
-					// #line 231
+					// #line 229
 					{ return Tokens.T_CALL; }
 					break;
 					
 				case 122:
-					// #line 302
+					// #line 300
 					{ return Tokens.T_DOUBLE_CAST; }
 					break;
 					
 				case 123:
-					// #line 294
+					// #line 292
 					{ return Tokens.T_INT8_CAST; }
 					break;
 					
 				case 124:
-					// #line 300
+					// #line 298
 					{ return Tokens.T_UINT32_CAST; }
 					break;
 					
 				case 125:
-					// #line 309
+					// #line 307
 					{ return Tokens.T_BOOL_CAST; }
 					break;
 					
 				case 126:
-					// #line 173
+					// #line 171
 					{ return Tokens.T_REQUIRE; }
 					break;
 					
 				case 127:
-					// #line 171
+					// #line 169
 					{ return Tokens.T_INCLUDE; }
 					break;
 					
 				case 128:
-					// #line 203
+					// #line 201
 					{ return Tokens.T_PRIVATE; }
 					break;
 					
 				case 129:
-					// #line 223
+					// #line 221
 					{ return Tokens.T_PARTIAL; }
 					break;
 					
 				case 130:
-					// #line 167
+					// #line 165
 					{ return Tokens.T_EXTENDS; }
 					break;
 					
 				case 131:
-					// #line 134
+					// #line 132
 					{
 					  return Tokens.ErrorNotSupported; 
 					}
 					break;
 					
 				case 132:
-					// #line 159
+					// #line 157
 					{ return Tokens.T_DEFAULT; }
 					break;
 					
 				case 133:
-					// #line 196
+					// #line 194
 					{ return Tokens.T_FINALLY; }
 					break;
 					
 				case 134:
-					// #line 153
+					// #line 151
 					{ return Tokens.T_FOREACH; }
 					break;
 					
 				case 135:
-					// #line 237
+					// #line 235
 					{ return Tokens.T_SLEEP; }
 					break;
 					
 				case 136:
-					// #line 192
+					// #line 190
 					{ return Tokens.T_DIR; }
 					break;
 					
 				case 137:
-					// #line 297
+					// #line 295
 					{ return Tokens.T_INT64_CAST; }
 					break;
 					
 				case 138:
-					// #line 295
+					// #line 293
 					{ return Tokens.T_INT16_CAST; }
 					break;
 					
 				case 139:
-					// #line 307
+					// #line 305
 					{ return Tokens.T_ARRAY_CAST; }
 					break;
 					
 				case 140:
-					// #line 298
+					// #line 296
 					{ return Tokens.T_UINT8_CAST; }
 					break;
 					
 				case 141:
-					// #line 310
+					// #line 308
 					{ return Tokens.T_UNSET_CAST; }
 					break;
 					
 				case 142:
-					// #line 303
+					// #line 301
 					{ return Tokens.T_FLOAT_CAST; }
 					break;
 					
 				case 143:
-					// #line 185
+					// #line 183
 					{ return Tokens.T_CALLABLE; }
 					break;
 					
 				case 144:
-					// #line 161
+					// #line 159
 					{ return Tokens.T_CONTINUE; }
 					break;
 					
 				case 145:
-					// #line 219
+					// #line 217
 					{ return Tokens.T_RESOURCE_TYPE; }
 					break;
 					
 				case 146:
-					// #line 201
+					// #line 199
 					{ return Tokens.T_ABSTRACT; }
 					break;
 					
 				case 147:
-					// #line 149
+					// #line 147
 					{ return Tokens.T_ENDWHILE; }
 					break;
 					
 				case 148:
-					// #line 140
+					// #line 138
 					{ return Tokens.T_FUNCTION; }
 					break;
 					
 				case 149:
-					// #line 190
+					// #line 188
 					{ return Tokens.T_LINE; }
 					break;
 					
 				case 150:
-					// #line 191
+					// #line 189
 					{ return Tokens.T_FILE; }
 					break;
 					
 				case 151:
-					// #line 236
+					// #line 234
 					{ return Tokens.T_WAKEUP; }
 					break;
 					
 				case 152:
-					// #line 304
+					// #line 302
 					{ return Tokens.T_STRING_CAST; }
 					break;
 					
 				case 153:
-					// #line 301
+					// #line 299
 					{ return Tokens.T_UINT64_CAST; }
 					break;
 					
 				case 154:
-					// #line 299
+					// #line 297
 					{ return Tokens.T_UINT16_CAST; }
 					break;
 					
 				case 155:
-					// #line 308
+					// #line 306
 					{ return Tokens.T_OBJECT_CAST; }
 					break;
 					
 				case 156:
-					// #line 305
+					// #line 303
 					{ return Tokens.T_BINARY_CAST; }
 					break;
 					
 				case 157:
-					// #line 221
+					// #line 219
 					{ return Tokens.T_TYPEOF; }
 					break;
 					
 				case 158:
-					// #line 166
+					// #line 164
 					{ return Tokens.T_INSTEADOF; }
 					break;
 					
 				case 159:
-					// #line 198
+					// #line 196
 					{ return Tokens.T_INTERFACE; }
 					break;
 					
 				case 160:
-					// #line 204
+					// #line 202
 					{ return Tokens.T_PROTECTED; }
 					break;
 					
 				case 161:
-					// #line 209
+					// #line 207
 					{ return Tokens.T_NAMESPACE; }
 					break;
 					
 				case 162:
-					// #line 157
+					// #line 155
 					{ return Tokens.T_ENDSWITCH; }
 					break;
 					
 				case 163:
-					// #line 186
+					// #line 184
 					{ return Tokens.T_CLASS_C; }
 					break;
 					
 				case 164:
-					// #line 187
+					// #line 185
 					{ return Tokens.T_TRAIT_C; }
 					break;
 					
 				case 165:
-					// #line 306
+					// #line 304
 					{ return Tokens.T_UNICODE_CAST; }
 					break;
 					
 				case 166:
-					// #line 206
+					// #line 204
 					{ return Tokens.T_INSTANCEOF; }
 					break;
 					
 				case 167:
-					// #line 199
+					// #line 197
 					{ return Tokens.T_IMPLEMENTS; }
 					break;
 					
 				case 168:
-					// #line 154
+					// #line 152
 					{ return Tokens.T_ENDFOREACH; }
 					break;
 					
 				case 169:
-					// #line 233
+					// #line 231
 					{ return Tokens.T_TOSTRING; }
 					break;
 					
 				case 170:
-					// #line 240
+					// #line 238
 					{ return Tokens.T_AUTOLOAD; }
 					break;
 					
 				case 171:
-					// #line 235
+					// #line 233
 					{ return Tokens.T_DESTRUCT; }
 					break;
 					
 				case 172:
-					// #line 189
+					// #line 187
 					{ return Tokens.T_METHOD_C; }
 					break;
 					
 				case 173:
-					// #line 234
+					// #line 232
 					{ return Tokens.T_CONSTRUCT; }
 					break;
 					
 				case 174:
-					// #line 174
+					// #line 172
 					{ return Tokens.T_REQUIRE_ONCE; }
 					break;
 					
 				case 175:
-					// #line 172
+					// #line 170
 					{ return Tokens.T_INCLUDE_ONCE; }
 					break;
 					
 				case 176:
-					// #line 232
+					// #line 230
 					{ return Tokens.T_CALLSTATIC; }
 					break;
 					
 				case 177:
-					// #line 188
+					// #line 186
 					{ return Tokens.T_FUNC_C; }
 					break;
 					
 				case 178:
-					// #line 208
+					// #line 206
 					{ return Tokens.T_NAMESPACE_C; }
 					break;
 					
 				case 179:
-					// #line 285
+					// #line 283
 					{ BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); return Tokens.T_PRAGMA_FILE; }
 					break;
 					
 				case 180:
-					// #line 284
+					// #line 282
 					{ BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); return Tokens.T_PRAGMA_LINE; }
 					break;
 					
 				case 181:
-					// #line 286
+					// #line 284
 					{ BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); return Tokens.T_PRAGMA_DEFAULT_LINE; }
 					break;
 					
 				case 182:
-					// #line 287
+					// #line 285
 					{ BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); return Tokens.T_PRAGMA_DEFAULT_FILE; }
 					break;
 					
 				case 183:
-					// #line 494
+					// #line 492
 					{ return Tokens.T_ENCAPSED_AND_WHITESPACE; }
 					break;
 					
 				case 184:
-					// #line 486
+					// #line 484
 					{ return Tokens.T_ENCAPSED_AND_WHITESPACE; }
 					break;
 					
 				case 185:
-					// #line 477
+					// #line 475
 					{ inString = true; return Tokens.T_STRING; }
 					break;
 					
 				case 186:
-					// #line 487
+					// #line 485
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_DOUBLE_QUOTES; }
 					break;
 					
 				case 187:
-					// #line 476
+					// #line 474
 					{ return Tokens.T_NUM_STRING; }
 					break;
 					
 				case 188:
-					// #line 493
+					// #line 491
 					{ inString = true; return (Tokens)GetTokenChar(0); }
 					break;
 					
 				case 189:
-					// #line 495
+					// #line 493
 					{ return Tokens.T_CHARACTER; }
 					break;
 					
 				case 190:
-					// #line 491
+					// #line 489
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY); inString = true; return Tokens.T_OBJECT_OPERATOR; }
 					break;
 					
 				case 191:
-					// #line 490
+					// #line 488
 					{ yyless(1); return Tokens.T_CHARACTER; }
 					break;
 					
 				case 192:
-					// #line 488
+					// #line 486
 					{ inString = true; return Tokens.T_VARIABLE; }
 					break;
 					
 				case 193:
-					// #line 489
+					// #line 487
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME); return Tokens.T_DOLLAR_OPEN_CURLY_BRACES; }
 					break;
 					
 				case 194:
-					// #line 485
+					// #line 483
 					{ return Tokens.T_BAD_CHARACTER; }
 					break;
 					
 				case 195:
-					// #line 481
+					// #line 479
 					{ inString = true; return (inUnicodeString) ? Tokens.UnicodeCharName : Tokens.T_STRING; }
 					break;
 					
 				case 196:
-					// #line 483
+					// #line 481
 					{ return Tokens.EscapedCharacter; }
 					break;
 					
 				case 197:
-					// #line 480
+					// #line 478
 					{ inString = true; return (inUnicodeString) ? Tokens.UnicodeCharCode : Tokens.T_STRING; }
 					break;
 					
 				case 198:
-					// #line 482
+					// #line 480
 					{ return Tokens.EscapedCharacter; }
 					break;
 					
 				case 199:
-					// #line 478
+					// #line 476
 					{ return Tokens.OctalCharCode; }
 					break;
 					
 				case 200:
-					// #line 484
+					// #line 482
 					{ inString = true; return Tokens.T_STRING; }
 					break;
 					
 				case 201:
-					// #line 492
+					// #line 490
 					{ yy_push_state(LexicalStates.ST_IN_SCRIPTING); yyless(1); return Tokens.T_CURLY_OPEN; }
 					break;
 					
 				case 202:
-					// #line 479
+					// #line 477
 					{ return Tokens.HexCharCode; }
 					break;
 					
 				case 203:
-					// #line 436
+					// #line 434
 					{ yymore(); break; }
 					break;
 					
 				case 204:
-					// #line 437
+					// #line 435
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.SingleQuotedString; }
 					break;
 					
 				case 205:
-					// #line 517
+					// #line 515
 					{ return Tokens.T_ENCAPSED_AND_WHITESPACE; }
 					break;
 					
 				case 206:
-					// #line 510
+					// #line 508
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_BACKQUOTE; }
 					break;
 					
 				case 207:
-					// #line 500
+					// #line 498
 					{ inString = true; return Tokens.T_STRING; }
 					break;
 					
 				case 208:
-					// #line 509
+					// #line 507
 					{ return Tokens.T_ENCAPSED_AND_WHITESPACE; }
 					break;
 					
 				case 209:
-					// #line 499
+					// #line 497
 					{ return Tokens.T_NUM_STRING; }
 					break;
 					
 				case 210:
-					// #line 515
+					// #line 513
 					{ inString = true; return (Tokens)GetTokenChar(0); }
 					break;
 					
 				case 211:
-					// #line 518
+					// #line 516
 					{ return Tokens.T_CHARACTER; }
 					break;
 					
 				case 212:
-					// #line 514
+					// #line 512
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY); inString = true; return Tokens.T_OBJECT_OPERATOR; }
 					break;
 					
 				case 213:
-					// #line 513
+					// #line 511
 					{ yyless(1); return Tokens.T_CHARACTER; }
 					break;
 					
 				case 214:
-					// #line 511
+					// #line 509
 					{ inString = true; return Tokens.T_VARIABLE; }
 					break;
 					
 				case 215:
-					// #line 512
+					// #line 510
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME); return Tokens.T_DOLLAR_OPEN_CURLY_BRACES; }
 					break;
 					
 				case 216:
-					// #line 508
+					// #line 506
 					{ return Tokens.T_BAD_CHARACTER; }
 					break;
 					
 				case 217:
-					// #line 505
+					// #line 503
 					{ return Tokens.EscapedCharacter; }
 					break;
 					
 				case 218:
-					// #line 504
+					// #line 502
 					{ inString = true; return (inUnicodeString) ? Tokens.UnicodeCharName : Tokens.T_STRING; }
 					break;
 					
 				case 219:
-					// #line 506
+					// #line 504
 					{ return Tokens.EscapedCharacter; }
 					break;
 					
 				case 220:
-					// #line 503
+					// #line 501
 					{ inString = true; return (inUnicodeString) ? Tokens.UnicodeCharCode : Tokens.T_STRING; }
 					break;
 					
 				case 221:
-					// #line 501
+					// #line 499
 					{ return Tokens.OctalCharCode; }
 					break;
 					
 				case 222:
-					// #line 507
+					// #line 505
 					{ inString = true; return Tokens.T_STRING; }
 					break;
 					
 				case 223:
-					// #line 516
+					// #line 514
 					{ yy_push_state(LexicalStates.ST_IN_SCRIPTING); yyless(1); return Tokens.T_CURLY_OPEN; }
 					break;
 					
 				case 224:
-					// #line 502
+					// #line 500
 					{ return Tokens.HexCharCode; }
 					break;
 					
 				case 225:
-					// #line 472
+					// #line 470
 					{ return Tokens.T_ENCAPSED_AND_WHITESPACE; }
 					break;
 					
 				case 226:
-					// #line 465
+					// #line 463
 					{ return Tokens.T_ENCAPSED_AND_WHITESPACE; }
 					break;
 					
 				case 227:
-					// #line 457
+					// #line 455
 					{ inString = true; return Tokens.T_STRING; }
 					break;
 					
 				case 228:
-					// #line 456
+					// #line 454
 					{ return Tokens.T_NUM_STRING; }
 					break;
 					
 				case 229:
-					// #line 470
+					// #line 468
 					{ inString = true; return (Tokens)GetTokenChar(0); }
 					break;
 					
 				case 230:
-					// #line 473
+					// #line 471
 					{ return Tokens.T_CHARACTER; }
 					break;
 					
 				case 231:
-					// #line 469
+					// #line 467
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY); inString = true; return Tokens.T_OBJECT_OPERATOR; }
 					break;
 					
 				case 232:
-					// #line 468
+					// #line 466
 					{ yyless(1); return Tokens.T_CHARACTER; }
 					break;
 					
 				case 233:
-					// #line 466
+					// #line 464
 					{ inString = true; return Tokens.T_VARIABLE; }
 					break;
 					
 				case 234:
-					// #line 467
+					// #line 465
 					{ yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME); return Tokens.T_DOLLAR_OPEN_CURLY_BRACES; }
 					break;
 					
 				case 235:
-					// #line 464
+					// #line 462
 					{ return Tokens.T_BAD_CHARACTER; }
 					break;
 					
 				case 236:
-					// #line 461
+					// #line 459
 					{ inString = true; return (inUnicodeString) ? Tokens.UnicodeCharName : Tokens.T_STRING; }
 					break;
 					
 				case 237:
-					// #line 462
+					// #line 460
 					{ return Tokens.EscapedCharacter; }
 					break;
 					
 				case 238:
-					// #line 460
+					// #line 458
 					{ inString = true; return (inUnicodeString) ? Tokens.UnicodeCharCode : Tokens.T_STRING; }
 					break;
 					
 				case 239:
-					// #line 458
+					// #line 456
 					{ return Tokens.OctalCharCode; }
 					break;
 					
 				case 240:
-					// #line 463
+					// #line 461
 					{ inString = true; return Tokens.T_STRING; }
 					break;
 					
 				case 241:
-					// #line 471
+					// #line 469
 					{ yy_push_state(LexicalStates.ST_IN_SCRIPTING); yyless(1); return Tokens.T_CURLY_OPEN; }
 					break;
 					
 				case 242:
-					// #line 459
+					// #line 457
 					{ return Tokens.HexCharCode; }
 					break;
 					
 				case 243:
-					// #line 441
+					// #line 439
 					{
 						if (IsCurrentHeredocEnd(0))
 						{
@@ -1427,7 +1423,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 244:
-					// #line 381
+					// #line 379
 					{
 						yyless(0);
 						if (!yy_pop_state()) return Tokens.ERROR;
@@ -1436,7 +1432,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 245:
-					// #line 374
+					// #line 372
 					{
 						if (!yy_pop_state()) return Tokens.ERROR;
 						inString = (CurrentLexicalState != LexicalStates.ST_IN_SCRIPTING); 
@@ -1446,7 +1442,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 246:
-					// #line 395
+					// #line 393
 					{
 						yyless(0);
 						if (!yy_pop_state()) return Tokens.ERROR;
@@ -1456,7 +1452,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 247:
-					// #line 389
+					// #line 387
 					{
 						if (!yy_pop_state()) return Tokens.ERROR;
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
@@ -1465,52 +1461,52 @@ using System.Collections.Generic;
 					break;
 					
 				case 248:
-					// #line 430
+					// #line 428
 					{ yymore(); break; }
 					break;
 					
 				case 249:
-					// #line 432
+					// #line 430
 					{ yymore(); break; }
 					break;
 					
 				case 250:
-					// #line 431
+					// #line 429
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 251:
-					// #line 424
+					// #line 422
 					{ yymore(); break; }
 					break;
 					
 				case 252:
-					// #line 426
+					// #line 424
 					{ yymore(); break; }
 					break;
 					
 				case 253:
-					// #line 425
+					// #line 423
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 					break;
 					
 				case 254:
-					// #line 404
+					// #line 402
 					{ yymore(); break; }
 					break;
 					
 				case 255:
-					// #line 405
+					// #line 403
 					{ yymore(); break; }
 					break;
 					
 				case 256:
-					// #line 406
+					// #line 404
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_LINE_COMMENT; }
 					break;
 					
 				case 257:
-					// #line 408
+					// #line 406
 					{ 
 					  if (AllowAspTags || GetTokenChar(TokenLength - 2) != '%') 
 					  { 
@@ -2034,35 +2030,9 @@ using System.Collections.Generic;
 			return result;
 		}
 		
-		
 		private void AdvanceEndPosition(int from, int to)
 		{
-			int last_eoln = from - token_end_pos.Column;
-		
-		    for (int i = from; i < to; i++)
-			{
-		        char ch = buffer[i];
-		        
-		        // Line endings supported by Visual Studio:
-		
-		        // CRLF:  Windows, U+000D + U+000A
-		        // LF:    Unix, U+000A
-		        // CR:    Mac, U+000D
-		        // LS:    Line Separator, U+2028
-		        // PS:    Paragraph Separator, U+2029
-		
-		        if ((ch == '\n') || // CRLF, LF
-		            (ch == '\r' && ((i + 1 < buffer.Length) ? buffer[i + 1] : '\0') != '\n') ||    // CR, not CRLF
-		            (ch == (char)0x2028) || 
-		            (ch == (char)0x2029))
-		        {
-		            token_end_pos.Line++;
-		            last_eoln = i;
-		        }
-			}
-		
 			token_end_pos.Char += to - from;
-			token_end_pos.Column = to - last_eoln;
 		}
 		
 		protected static bool IsNewLineCharacter(char ch)
@@ -3838,8 +3808,6 @@ using System.Collections.Generic;
 			
 			// capture token start position:
 			token_start_pos.Char = token_end_pos.Char;
-			token_start_pos.Line = token_end_pos.Line;
-			token_start_pos.Column = token_end_pos.Column;
 			
 			if (acceptCondition[current_state] != AcceptConditions.NotAccept)
 			{

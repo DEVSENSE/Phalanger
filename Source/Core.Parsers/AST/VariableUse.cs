@@ -25,7 +25,7 @@ namespace PHP.Core.AST
     [Serializable]
 	public abstract class VariableUse : VarLikeConstructUse
 	{
-		protected VariableUse(Position p) : base(p) { }
+		protected VariableUse(Text.Span p) : base(p) { }
 	}
 
 	#endregion
@@ -38,7 +38,7 @@ namespace PHP.Core.AST
     [Serializable]
     public abstract class CompoundVarUse : VariableUse
 	{
-		protected CompoundVarUse(Position p) : base(p) { }
+		protected CompoundVarUse(Text.Span p) : base(p) { }
 	}
 
 	#endregion
@@ -51,7 +51,7 @@ namespace PHP.Core.AST
     [Serializable]
     public abstract class SimpleVarUse : CompoundVarUse
 	{
-		protected SimpleVarUse(Position p) : base(p) { }
+        protected SimpleVarUse(Text.Span p) : base(p) { }
 	}
 
 	#endregion

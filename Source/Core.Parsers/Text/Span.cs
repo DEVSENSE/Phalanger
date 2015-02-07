@@ -12,8 +12,8 @@ namespace PHP.Core.Text
     {
         #region Fields
 
-        private readonly int _start;
-        private readonly int _length;
+        private int _start;
+        private int _length;
 
         #endregion
 
@@ -51,9 +51,19 @@ namespace PHP.Core.Text
             }
         }
 
+        /// <summary>
+        /// Gets value determining whether this span represents a valid span.
+        /// </summary>
+        public bool IsValid { get { return _length >= 0; } }
+
+        /// <summary>
+        /// Gets representation of an invalid span.
+        /// </summary>
+        public static Span Invalid { get { return new Span() { _start = 0, _length = -1 }; } }
+
         #endregion
 
-        #region Methods
+        #region Construction
 
         public Span(int start, int length)
         {
@@ -71,6 +81,10 @@ namespace PHP.Core.Text
         {
             return new Span(start, end - start);
         }
+
+        #endregion
+
+        #region Methods
 
         public static Span Combine(Span left, Span right)
         {
@@ -125,6 +139,14 @@ namespace PHP.Core.Text
         public static bool operator !=(Span left, Span right)
         {
             return !(left == right);
+        }
+
+        /// <summary>
+        /// Gets portion of document defined by this <see cref="Span"/>.
+        /// </summary>
+        public string GetText(string document)
+        {
+            return document.Substring(_start, _length);
         }
 
         #endregion

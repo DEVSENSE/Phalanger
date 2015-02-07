@@ -90,25 +90,25 @@ namespace PHP.Core.Compiler.AST
                     // add chunk
                     if (lastChunk == null || lastChunk.HasValue != evaluation.HasValue)
                     {
-                        chunks.Add(lastChunk = new ConcatChunk(expr.Position, evaluation));
+                        chunks.Add(lastChunk = new ConcatChunk(expr.Span, evaluation));
                     }
                     else if (evaluation.HasValue)
                     {
                         lastChunk.Value = Operators.Concat(lastChunk.Value, evaluation.Value);
-                        lastChunk.Position = Position.CombinePositions(lastChunk.Position, expr.Position);
+                        lastChunk.Position = Text.Span.Combine(lastChunk.Position, expr.Span);
                     }
                     else//if (!evaluation.HasValue)
                     {
                         lastChunk.Expressions.Add(evaluation.Expression);
-                        lastChunk.Position = Position.CombinePositions(lastChunk.Position, expr.Position);
+                        lastChunk.Position = Text.Span.Combine(lastChunk.Position, expr.Span);
                     }
                 }
 
                 // there must be at least one expression
                 if (chunks.Count == 0)
                 {
-                    Position position = Position.Invalid;
-                    if (expressions.Count > 0) position = expressions[0].Position;
+                    var position = Text.Span.Invalid;
+                    if (expressions.Count > 0) position = expressions[0].Span;
 
                     chunks.Add(new ConcatChunk(position, string.Empty));
                 }
@@ -161,7 +161,7 @@ namespace PHP.Core.Compiler.AST
             /// </summary>
             private class ConcatChunk
             {
-                public ConcatChunk(Position position, Evaluation evaluation)
+                public ConcatChunk(Text.Span position, Evaluation evaluation)
                 {
                     if ((this.HasValue = evaluation.HasValue) == true)
                         this.Value = evaluation.Value;
@@ -171,7 +171,7 @@ namespace PHP.Core.Compiler.AST
                     this.Position = position;
                 }
 
-                public ConcatChunk(Position position, object value)
+                public ConcatChunk(Text.Span position, object value)
                 {
                     this.HasValue = true;
                     this.Value = value;
@@ -188,7 +188,7 @@ namespace PHP.Core.Compiler.AST
                 /// <summary>
                 /// Position of the <see cref="Value"/> within the source code.
                 /// </summary>
-                public Position Position;
+                public Text.Span Position;
 
                 /// <summary>
                 /// If HasValue is false, list of expression to be emitted.

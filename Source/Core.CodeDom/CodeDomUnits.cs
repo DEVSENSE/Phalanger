@@ -115,13 +115,12 @@ namespace PHP.Core.Reflection {
         /// <param name="file">PHP Source file with the file name &amp; location</param>
         /// <returns>Returns the parsed AST node.</returns>
         public AST.GlobalCode ParseString(string code, Encoding encoding, PhpSourceFile file, LanguageFeatures lang) {
-            PhpScriptSourceUnit srcUnit = new PhpScriptSourceUnit
-                (this, code, file, encoding, 0, 0);
+            PhpScriptSourceUnit srcUnit = new PhpScriptSourceUnit(this, code, file, encoding, 0, 0);
 
-            using(StringReader reader = new StringReader(code)) {
+            using(StringReader reader = new StringReader(code))
+            {
                 Parser parser = new Parser();
-                return parser.Parse(srcUnit, reader, new ParserErrorSink(), this,
-                    Position.Initial, Lexer.LexicalStates.INITIAL, lang);
+                return parser.Parse(srcUnit, reader, new ParserErrorSink(), this, Lexer.LexicalStates.INITIAL, lang);
             }
         }
 

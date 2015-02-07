@@ -51,6 +51,33 @@ namespace PHP.Core.Text
                 return 0;
             }
         }
+
+        /// <summary>
+        /// Gets length of line break character sequence if any.
+        /// </summary>
+        /// <remarks>See <see cref="LengthOfLineBreak(string, int)"/>.</remarks>
+        public static int LengthOfLineBreak(char[] text, int position)
+        {
+            char c = text[position];
+            if (c == '\r')
+            {
+                // \r
+                if (++position >= text.Length || text[position] != '\n')
+                    return 1;
+
+                // \r\n
+                return 2;
+            }
+            else
+            {
+                // \n
+                // unicode line breaks
+                if (c == '\n' || c == '\u0085' || c == '\u2028' || c == '\u2029')
+                    return 1;
+
+                return 0;
+            }
+        }
     }
 
     #endregion

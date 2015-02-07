@@ -38,7 +38,7 @@ namespace PHP.Core.Compiler.AST
 
             public override Evaluation Analyze(LambdaFunctionExpr node, Analyzer analyzer, ExInfoFromParent info)
             {
-                function = new PhpLambdaFunction(node.Signature, analyzer.SourceUnit, node.Position);
+                function = new PhpLambdaFunction(node.Signature, analyzer.SourceUnit, node.Span);
                 function.WriteUp(new TypeSignature(FormalTypeParam.EmptyList).ToPhpRoutineSignature(function));
 
                 SignatureCompiler.AnalyzeMembers(node.Signature, analyzer, function);
@@ -85,7 +85,7 @@ namespace PHP.Core.Compiler.AST
                 this.function.DefineBuilders(typeBuilder);
 
                 //
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
                 if (!codeGenerator.EnterFunctionDeclaration(function))
                     throw new Exception("EnterFunctionDeclaration() failed!");
 

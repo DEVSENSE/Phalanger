@@ -89,7 +89,7 @@ namespace PHP.Core.Compiler.AST
                 PhpRoutine routine = parameter.DeclaringMember as PhpRoutine;
                 PhpType type = (routine != null) ? routine.DeclaringType as PhpType : parameter.DeclaringPhpType;
 
-                parameter.WriteUp(analyzer.ResolveType(node.DefaultType, type, routine, node.Position, false));
+                parameter.WriteUp(analyzer.ResolveType(node.DefaultType, type, routine, node.Span, false));
             }
 
             public bool Merge(FormalTypeParam/*!*/node, ErrorSink/*!*/ errors, FormalTypeParam/*!*/ other)
@@ -99,7 +99,7 @@ namespace PHP.Core.Compiler.AST
                     PhpType declaring_type = (PhpType)parameter.DeclaringMember;
 
                     errors.Add(Errors.PartialDeclarationsDifferInTypeParameter, declaring_type.Declaration.SourceUnit,
-                        node.Position, declaring_type.FullName);
+                        node.Span, declaring_type.FullName);
 
                     return false;
                 }
@@ -184,7 +184,7 @@ namespace PHP.Core.Compiler.AST
                 if (node.TypeParams.Count != other.TypeParams.Count)
                 {
                     errors.Add(Errors.PartialDeclarationsDifferInTypeParameterCount, declaringType.Declaration.SourceUnit,
-                        declaringType.Declaration.Position, declaringType.FullName);
+                        declaringType.Declaration.Span, declaringType.FullName);
 
                     return false;
                 }
@@ -264,7 +264,7 @@ namespace PHP.Core.Compiler.AST
                 QualifiedName qn = (node.Namespace != null) ? new QualifiedName(node.Name, node.Namespace.QualifiedName) : new QualifiedName(node.Name);
                 this.type = new PhpType(
                     qn, node.MemberAttributes, node.PartialKeyword, node.typeSignature,
-                    node.IsConditional, node.Scope, (CompilationSourceUnit)node.SourceUnit, node.Position);
+                    node.IsConditional, node.Scope, (CompilationSourceUnit)node.SourceUnit, node.Span);
 
                 //// add alias for private classes (if not added yet by partial declaration):
                 //if (type.IsPrivate)
@@ -329,15 +329,15 @@ namespace PHP.Core.Compiler.AST
 
                     if (type.IsInterface != aggregate.type.IsInterface)
                     {
-                        analyzer.ErrorSink.Add(Errors.IncompatiblePartialDeclarations, type.Declaration.SourceUnit, type.Declaration.Position, type.FullName);
-                        analyzer.ErrorSink.Add(Errors.RelatedLocation, aggregate.type.Declaration.SourceUnit, aggregate.type.Declaration.Position);
+                        analyzer.ErrorSink.Add(Errors.IncompatiblePartialDeclarations, type.Declaration.SourceUnit, type.Declaration.Span, type.FullName);
+                        analyzer.ErrorSink.Add(Errors.RelatedLocation, aggregate.type.Declaration.SourceUnit, aggregate.type.Declaration.Span);
                         valid = false;
                     }
 
                     if (type.Visibility != aggregate.type.Visibility)
                     {
-                        analyzer.ErrorSink.Add(Errors.ConflictingPartialVisibility, type.Declaration.SourceUnit, type.Declaration.Position, type.FullName);
-                        analyzer.ErrorSink.Add(Errors.RelatedLocation, aggregate.type.Declaration.SourceUnit, aggregate.type.Declaration.Position);
+                        analyzer.ErrorSink.Add(Errors.ConflictingPartialVisibility, type.Declaration.SourceUnit, type.Declaration.Span, type.FullName);
+                        analyzer.ErrorSink.Add(Errors.RelatedLocation, aggregate.type.Declaration.SourceUnit, aggregate.type.Declaration.Span);
                         valid = false;
                     }
 
@@ -349,8 +349,8 @@ namespace PHP.Core.Compiler.AST
                         {
                             if (!base_type.Type.Equals(aggregateBase.Type)) //Edited by Ðonny Jan 07 2009 - missing "!"?
                             {
-                                analyzer.ErrorSink.Add(Errors.PartialDeclarationsDifferInBase, type.Declaration.SourceUnit, type.Declaration.Position, type.FullName);
-                                analyzer.ErrorSink.Add(Errors.RelatedLocation, aggregate.type.Declaration.SourceUnit, aggregate.type.Declaration.Position);
+                                analyzer.ErrorSink.Add(Errors.PartialDeclarationsDifferInBase, type.Declaration.SourceUnit, type.Declaration.Span, type.FullName);
+                                analyzer.ErrorSink.Add(Errors.RelatedLocation, aggregate.type.Declaration.SourceUnit, aggregate.type.Declaration.Span);
                                 valid = false;
                             }
                         }
@@ -401,11 +401,11 @@ namespace PHP.Core.Compiler.AST
             {
                 if (node.BaseClassName.HasValue)
                 {
-                    DType base_type = analyzer.ResolveTypeName(node.BaseClassName.Value, type, null, node.Position, true);
+                    DType base_type = analyzer.ResolveTypeName(node.BaseClassName.Value, type, null, node.Span, true);
 
                     if (base_type.IsGenericParameter)
                     {
-                        analyzer.ErrorSink.Add(Errors.CannotDeriveFromTypeParameter, analyzer.SourceUnit, node.Position,
+                        analyzer.ErrorSink.Add(Errors.CannotDeriveFromTypeParameter, analyzer.SourceUnit, node.Span,
                           base_type.FullName);
                         return null;
                     }
@@ -413,12 +413,12 @@ namespace PHP.Core.Compiler.AST
                     {
                         if (base_type.IsInterface)
                         {
-                            analyzer.ErrorSink.Add(Errors.NonClassExtended, analyzer.SourceUnit, node.Position, base_type.FullName);
+                            analyzer.ErrorSink.Add(Errors.NonClassExtended, analyzer.SourceUnit, node.Span, base_type.FullName);
                             return null;
                         }
                         else if (base_type.IsFinal)
                         {
-                            analyzer.ErrorSink.Add(Errors.FinalClassExtended, analyzer.SourceUnit, node.Position, base_type.FullName);
+                            analyzer.ErrorSink.Add(Errors.FinalClassExtended, analyzer.SourceUnit, node.Span, base_type.FullName);
                             // do not remove the base class to make the further error reports consistent
                         }
                     }
@@ -438,15 +438,15 @@ namespace PHP.Core.Compiler.AST
 
                     if (base_type.IsGenericParameter)
                     {
-                        analyzer.ErrorSink.Add(Errors.CannotDeriveFromTypeParameter, analyzer.SourceUnit, node.Position,
+                        analyzer.ErrorSink.Add(Errors.CannotDeriveFromTypeParameter, analyzer.SourceUnit, node.Span,
                             base_type.FullName);
                     }
                     else if (base_type.IsIdentityDefinite && !base_type.IsInterface)
                     {
                         if (type.IsInterface)
-                            analyzer.ErrorSink.Add(Errors.NonInterfaceExtended, analyzer.SourceUnit, node.Position, base_type.FullName);
+                            analyzer.ErrorSink.Add(Errors.NonInterfaceExtended, analyzer.SourceUnit, node.Span, base_type.FullName);
                         else
-                            analyzer.ErrorSink.Add(Errors.NonInterfaceImplemented, analyzer.SourceUnit, node.Position, base_type.FullName);
+                            analyzer.ErrorSink.Add(Errors.NonInterfaceImplemented, analyzer.SourceUnit, node.Span, base_type.FullName);
                     }
                     else
                     {
@@ -516,7 +516,7 @@ namespace PHP.Core.Compiler.AST
                 type.Declaration.IsUnreachable = analyzer.IsThisCodeUnreachable();
 
                 if (type.Declaration.IsUnreachable)
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
 
                 var attributes = node.Attributes;
                 if (attributes != null)
@@ -554,7 +554,7 @@ namespace PHP.Core.Compiler.AST
                         analyzer.CurrentRoutine == null)
                     {
                         // error, since there is no place for global code in pure mode:
-                        analyzer.ErrorSink.Add(Errors.IncompleteClass, analyzer.SourceUnit, node.Position, node.Name);
+                        analyzer.ErrorSink.Add(Errors.IncompleteClass, analyzer.SourceUnit, node.Span, node.Name);
                         return node;
                     }
 
@@ -567,13 +567,13 @@ namespace PHP.Core.Compiler.AST
                         // declared there conditionally:
                         if (transient_unit.EvalKind == EvalKinds.SyntheticEval)
                         {
-                            analyzer.ErrorSink.Add(Errors.IncompleteClass, analyzer.SourceUnit, node.Position, node.Name);
+                            analyzer.ErrorSink.Add(Errors.IncompleteClass, analyzer.SourceUnit, node.Span, node.Name);
                             return node;
                         }
                     }
 
                     // report the warning, incomplete_class
-                    analyzer.ErrorSink.Add(Warnings.IncompleteClass, analyzer.SourceUnit, node.Position, node.Name);
+                    analyzer.ErrorSink.Add(Warnings.IncompleteClass, analyzer.SourceUnit, node.Span, node.Name);
 
                     // TODO: instead of embedding class source code,
                     // embedd serialized AST, so avoid parsing again in runtime
@@ -638,8 +638,8 @@ namespace PHP.Core.Compiler.AST
                     {
                         codeGenerator.EmitEval(
                             EvalKinds.SyntheticEval,
-                            LiteralUtils.Create(node.Position, this.typeDefinitionCode, AccessType.Read),
-                            node.Position,
+                            LiteralUtils.Create(node.Span, this.typeDefinitionCode, AccessType.Read),
+                            node.Span,
                             (node.Namespace != null) ? node.Namespace.QualifiedName : (QualifiedName?)null, node.validAliases);
                         il.Emit(OpCodes.Pop);
                         il.Emit(OpCodes.Ret);
@@ -650,10 +650,10 @@ namespace PHP.Core.Compiler.AST
                     il = codeGenerator.IL;
 
                     type.IncompleteClassDeclareMethodInfo = method;
-                    type.IncompleteClassDeclarationId = String.Format("{0}${1}:{2}:{3}", type.FullName, unchecked((uint)codeGenerator.SourceUnit.SourceFile.ToString().GetHashCode()), node.Position.FirstLine, node.Position.FirstColumn);
+                    type.IncompleteClassDeclarationId = String.Format("{0}${1}:{2}", type.FullName, unchecked((uint)codeGenerator.SourceUnit.SourceFile.ToString().GetHashCode()), node.Span.Start);
 
                     // sequence point here
-                    codeGenerator.MarkSequencePoint(node.Position);
+                    codeGenerator.MarkSequencePoint(node.Span);
 
                     if (type.Declaration.IsConditional)
                     {
@@ -693,7 +693,7 @@ namespace PHP.Core.Compiler.AST
                     {
                         ILEmitter il = codeGenerator.IL;
 
-                        codeGenerator.MarkSequencePoint(node.Position);
+                        codeGenerator.MarkSequencePoint(node.Span);
 
                         // this class was conditionally declared, so we'll emit code that activates it:
                         type.EmitAutoDeclareOnScriptContext(il, codeGenerator.ScriptContextPlace);
@@ -982,7 +982,7 @@ namespace PHP.Core.Compiler.AST
             internal override void AnalyzeMembers(MethodDecl node, Analyzer analyzer, PhpType declaringType)
             {
                 method = declaringType.AddMethod(node.Name, node.Modifiers, node.Body != null,
-                    node.Signature, node.TypeSignature, node.Position,
+                    node.Signature, node.TypeSignature, node.Span,
                     analyzer.SourceUnit, analyzer.ErrorSink);
 
                 // method redeclared:
@@ -998,7 +998,7 @@ namespace PHP.Core.Compiler.AST
                 SignatureCompiler.AnalyzeMembers(node.Signature, analyzer, method);
                 method.IsDllImport = this.IsDllImport(node.Attributes);
                 if (method.IsDllImport && node.Body != null && node.Body.Count != 0)
-                    analyzer.ErrorSink.Add(Warnings.BodyOfDllImportedFunctionIgnored, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Warnings.BodyOfDllImportedFunctionIgnored, analyzer.SourceUnit, node.Span);
             }
 
             internal override void Analyze(MethodDecl node, Analyzer analyzer)
@@ -1028,7 +1028,7 @@ namespace PHP.Core.Compiler.AST
                     }
                     else if (!method.IsConstructor || method.DeclaringType.Base == null || node.Body == null)
                     {
-                        analyzer.ErrorSink.Add(Errors.UnexpectedParentCtorInvocation, analyzer.SourceUnit, node.Position);
+                        analyzer.ErrorSink.Add(Errors.UnexpectedParentCtorInvocation, analyzer.SourceUnit, node.Span);
                         node.BaseCtorParams = null;
                     }
                     else if (method.DeclaringType.Base.Constructor == null)
@@ -1036,18 +1036,18 @@ namespace PHP.Core.Compiler.AST
                         // base class has no constructor, the default parameterless is silently called (and that does nothing);
                         // report error, if there are any parameters passed to the parameterless ctor:
                         if (node.BaseCtorParams.Count > 0)
-                            analyzer.ErrorSink.Add(Errors.UnexpectedParentCtorInvocation, analyzer.SourceUnit, node.Position);
+                            analyzer.ErrorSink.Add(Errors.UnexpectedParentCtorInvocation, analyzer.SourceUnit, node.Span);
                         node.BaseCtorParams = null;
                     }
                     else
                     {
                         GenericQualifiedName parent_name = new GenericQualifiedName(new QualifiedName(Name.ParentClassName));
                         DirectStMtdCall call_expr = new DirectStMtdCall(
-                            node.Position, parent_name, Position.Invalid,
-                            method.DeclaringType.Base.Constructor.Name, Position.Invalid,
+                            node.Span, parent_name, Text.Span.Invalid,
+                            method.DeclaringType.Base.Constructor.Name, Text.Span.Invalid,
                             node.BaseCtorParams, TypeRef.EmptyList);
 
-                        node.Body.Insert(0, new ExpressionStmt(node.Position, call_expr));
+                        node.Body.Insert(0, new ExpressionStmt(node.Span, call_expr));
                         node.BaseCtorParams = null;
                     }
                 }
@@ -1057,13 +1057,13 @@ namespace PHP.Core.Compiler.AST
                     // note, all constructor overloads reflected from the CLR type are visible as we are in a subclass:
                     if (method.IsConstructor && base_clr_type != null && !base_clr_type.ClrConstructor.HasParameterlessOverload)
                     {
-                        analyzer.ErrorSink.Add(Errors.ExpectingParentCtorInvocation, analyzer.SourceUnit, node.Position);
+                        analyzer.ErrorSink.Add(Errors.ExpectingParentCtorInvocation, analyzer.SourceUnit, node.Span);
                     }
                 }
                 if (method.IsDllImport && !method.IsStatic)
-                    analyzer.ErrorSink.Add(Errors.DllImportMethodMustBeStatic, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Errors.DllImportMethodMustBeStatic, analyzer.SourceUnit, node.Span);
                 if (method.IsDllImport && method.IsAbstract)
-                    analyzer.ErrorSink.Add(Errors.DllImportMethodCannotBeAbstract, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Errors.DllImportMethodCannotBeAbstract, analyzer.SourceUnit, node.Span);
 
                 if (node.Body != null)
                     node.Body.Analyze(analyzer);
@@ -1073,7 +1073,7 @@ namespace PHP.Core.Compiler.AST
                 analyzer.LeaveMethodDeclaration();
 
                 // add entry point if applicable:
-                analyzer.SetEntryPoint(method, node.Position);
+                analyzer.SetEntryPoint(method, node.Span);
             }
 
             private void AnalyzeBaseCtorCallParams(MethodDecl node, Analyzer/*!*/ analyzer, ClrType/*!*/ clrBase)
@@ -1086,16 +1086,16 @@ namespace PHP.Core.Compiler.AST
                 CallSignature call_sig = new CallSignature(node.BaseCtorParams, TypeRef.EmptyList);
 
                 RoutineSignature signature;
-                int overload_index = base_ctor.ResolveOverload(analyzer, call_sig, node.Position, out signature);
+                int overload_index = base_ctor.ResolveOverload(analyzer, call_sig, node.Span, out signature);
 
                 if (overload_index == DRoutine.InvalidOverloadIndex)
                 {
-                    analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, node.Position, clrBase.FullName);
+                    analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, node.Span, clrBase.FullName);
                 }
                 else if (base_ctor.Overloads[overload_index].MandatoryParamCount != call_sig.Parameters.Count)
                 {
                     // invalid argument count passed to the base ctor:
-                    analyzer.ErrorSink.Add(Errors.InvalidArgumentCount, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Errors.InvalidArgumentCount, analyzer.SourceUnit, node.Span);
                 }
 
                 CallSignatureHelpers.Analyze(call_sig, analyzer, signature, AST.ExInfoFromParent.DefaultExInfo, true);
@@ -1228,13 +1228,13 @@ namespace PHP.Core.Compiler.AST
                 // no fields in interface:
                 if (declaringType.IsInterface)
                 {
-                    analyzer.ErrorSink.Add(Errors.FieldInInterface, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Errors.FieldInInterface, analyzer.SourceUnit, node.Span);
                     return;
                 }
 
                 foreach (FieldDecl field in node.Fields)
                 {
-                    PhpField php_field = declaringType.AddField(field.Name, node.Modifiers, field.HasInitVal, field.Position,
+                    PhpField php_field = declaringType.AddField(field.Name, node.Modifiers, field.HasInitVal, field.Span,
                         analyzer.SourceUnit, analyzer.ErrorSink);
 
                     field.AnalyzeMember(analyzer, php_field);
@@ -1368,7 +1368,7 @@ namespace PHP.Core.Compiler.AST
                 foreach (ClassConstantDecl cd in node.Constants)
                 {
                     // the value is filled later by full analysis:
-                    ClassConstant php_constant = declaringType.AddConstant(cd.Name, node.Modifiers, cd.Position, analyzer.SourceUnit,
+                    ClassConstant php_constant = declaringType.AddConstant(cd.Name, node.Modifiers, cd.Span, analyzer.SourceUnit,
                         analyzer.ErrorSink);
 
                     cd.AnalyzeMember(analyzer, php_constant);

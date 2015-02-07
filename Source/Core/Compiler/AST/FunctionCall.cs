@@ -169,7 +169,7 @@ namespace PHP.Core.Compiler.AST
                 Debug.Assert(node.IsMemberOf == null);
 
                 // resolve name:
-                routine = analyzer.ResolveFunctionName(node.QualifiedName, node.Position);
+                routine = analyzer.ResolveFunctionName(node.QualifiedName, node.Span);
 
                 if (routine.IsUnknown)
                 {
@@ -177,7 +177,7 @@ namespace PHP.Core.Compiler.AST
                     // try fallback
                     if (node.FallbackQualifiedName.HasValue)
                     {
-                        var fallbackroutine = analyzer.ResolveFunctionName(node.FallbackQualifiedName.Value, node.Position);
+                        var fallbackroutine = analyzer.ResolveFunctionName(node.FallbackQualifiedName.Value, node.Span);
                         if (fallbackroutine != null && !fallbackroutine.IsUnknown)
                         {
                             if (fallbackroutine is PhpLibraryFunction)  // we are calling library function directly
@@ -190,7 +190,7 @@ namespace PHP.Core.Compiler.AST
                 }
                 // resolve overload if applicable:
                 RoutineSignature signature;
-                overloadIndex = routine.ResolveOverload(analyzer, node.CallSignature, node.Position, out signature);
+                overloadIndex = routine.ResolveOverload(analyzer, node.CallSignature, node.Span, out signature);
 
                 Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
 
@@ -199,11 +199,11 @@ namespace PHP.Core.Compiler.AST
                     var opts = ((PhpLibraryFunction)routine).Options;
                     // warning if not supported function call is detected
                     if ((opts & FunctionImplOptions.NotSupported) != 0)
-                        analyzer.ErrorSink.Add(Warnings.NotSupportedFunctionCalled, analyzer.SourceUnit, node.Position, node.QualifiedName.ToString());
+                        analyzer.ErrorSink.Add(Warnings.NotSupportedFunctionCalled, analyzer.SourceUnit, node.Span, node.QualifiedName.ToString());
 
                     // warning if function requiring locals is detected (performance critical)
                     if ((opts & FunctionImplOptions.NeedsVariables) != 0 && !analyzer.CurrentScope.IsGlobal)
-                        analyzer.ErrorSink.Add(Warnings.UnoptimizedLocalsInFunction, analyzer.SourceUnit, node.Position, node.QualifiedName.ToString());
+                        analyzer.ErrorSink.Add(Warnings.UnoptimizedLocalsInFunction, analyzer.SourceUnit, node.Span, node.QualifiedName.ToString());
 
                 }
 
@@ -229,7 +229,7 @@ namespace PHP.Core.Compiler.AST
                 
                 routine = analyzer.ResolveMethod(
                     type, node.QualifiedName.Name,
-                    node.Position,
+                    node.Span,
                     analyzer.CurrentType, analyzer.CurrentRoutine, false,
                     out runtimeVisibilityCheck, out isCallMethod);
 
@@ -243,20 +243,20 @@ namespace PHP.Core.Compiler.AST
                 {
                     // TODO: generic args
 
-                    var arg1 = new StringLiteral(node.Position, node.QualifiedName.Name.Value);
+                    var arg1 = new StringLiteral(node.Span, node.QualifiedName.Name.Value);
                     var arg2 = node.CallSignature.BuildPhpArray();
 
                     node.CallSignature = new CallSignature(
                         new List<ActualParam>(2) {
-                                new ActualParam(arg1.Position, arg1, false),
-                                new ActualParam(arg2.Position, arg2, false)
+                                new ActualParam(arg1.Span, arg1, false),
+                                new ActualParam(arg2.Span, arg2, false)
                             },
                         new List<TypeRef>());
                 }
 
                 // resolve overload if applicable:
                 RoutineSignature signature;
-                overloadIndex = routine.ResolveOverload(analyzer, node.CallSignature, node.Position, out signature);
+                overloadIndex = routine.ResolveOverload(analyzer, node.CallSignature, node.Span, out signature);
 
                 Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
 
@@ -309,7 +309,7 @@ namespace PHP.Core.Compiler.AST
                             var path_param = node.CallSignature.Parameters[0];
                             var path_expr = path_param.Expression;
                             if (path_expr is PseudoConstUse && ((PseudoConstUse)path_expr).Type == PseudoConstUse.Types.File)
-                                node.CallSignature.Parameters[0] = new ActualParam(path_param.Position, new StringLiteral(path_expr.Position, analyzer.SourceUnit.SourceFile.RelativePath.Path), false);
+                                node.CallSignature.Parameters[0] = new ActualParam(path_param.Span, new StringLiteral(path_expr.Span, analyzer.SourceUnit.SourceFile.RelativePath.Path), false);
                         }
                 }
             }
@@ -424,14 +424,15 @@ namespace PHP.Core.Compiler.AST
                         if (!(analyzer.ErrorSink is EvalErrorSink || analyzer.ErrorSink is WebErrorSink)) // avoid infinite recursion, PhpExceptions in such cases are passed
                             PhpException.ThrowCallbackOverride = (error, message) =>
                             {
+                                var position = new Text.TextSpan(analyzer.SourceUnit, node.Span);
                                 analyzer.ErrorSink.AddInternal(
                                     -2,
                                     message, (error == PhpError.Error || error == PhpError.CoreError || error == PhpError.UserError) ? ErrorSeverity.Error : ErrorSeverity.Warning,
                                     (int)WarningGroups.None,
-                                    analyzer.SourceUnit.GetMappedFullSourcePath(node.Position.FirstLine),
+                                    analyzer.SourceUnit.GetMappedFullSourcePath(position.FirstLine),
                                     new ErrorPosition(
-                                        analyzer.SourceUnit.GetMappedLine(node.Position.FirstLine), node.Position.FirstColumn,
-                                        analyzer.SourceUnit.GetMappedLine(node.Position.LastLine), node.Position.LastColumn),
+                                        analyzer.SourceUnit.GetMappedLine(position.FirstLine), position.FirstColumn,
+                                        analyzer.SourceUnit.GetMappedLine(position.LastLine), position.LastColumn),
                                     true
                                     );
                             };
@@ -773,7 +774,7 @@ namespace PHP.Core.Compiler.AST
                                 result = routine.EmitCall(
                                     codeGenerator, null, node.CallSignature,
                                     new ExpressionPlace(codeGenerator, node.IsMemberOf), false, overloadIndex,
-                                    isMemberOfType, node.Position, access, true);
+                                    isMemberOfType, node.Span, access, true);
                         }
                         else
                         {
@@ -783,7 +784,7 @@ namespace PHP.Core.Compiler.AST
                             result = routine.EmitCall(
                                 codeGenerator, fallbackFunctionName,
                                 node.CallSignature, null, false, overloadIndex,
-                                null, node.Position, access, false);
+                                null, node.Span, access, false);
                         }
                 }
 
@@ -924,7 +925,7 @@ namespace PHP.Core.Compiler.AST
                 analyzer.AnalyzeConstructedType(type);
 
                 if (type.TypeDesc.Equals(DTypeDesc.InterlockedTypeDesc))
-                    analyzer.ErrorSink.Add(Warnings.ClassBehaviorMayBeUnexpected, analyzer.SourceUnit, node.Position, type.FullName);
+                    analyzer.ErrorSink.Add(Warnings.ClassBehaviorMayBeUnexpected, analyzer.SourceUnit, node.Span, type.FullName);
 
                 return new Evaluation(node);
             }
@@ -948,7 +949,7 @@ namespace PHP.Core.Compiler.AST
                 // look for the method:
                 bool isCallMethod;
                 method = analyzer.ResolveMethod(
-                    type, node.MethodName, node.Position, analyzer.CurrentType, analyzer.CurrentRoutine,
+                    type, node.MethodName, node.Span, analyzer.CurrentType, analyzer.CurrentRoutine,
                     true, out runtimeVisibilityCheck, out isCallMethod);
 
                 if (!method.IsUnknown)
@@ -957,7 +958,7 @@ namespace PHP.Core.Compiler.AST
 
                     if (method.IsAbstract)
                     {
-                        analyzer.ErrorSink.Add(Errors.AbstractMethodCalled, analyzer.SourceUnit, node.Position,
+                        analyzer.ErrorSink.Add(Errors.AbstractMethodCalled, analyzer.SourceUnit, node.Span,
                             method.DeclaringType.FullName, method.FullName);
                     }
                 }
@@ -968,20 +969,20 @@ namespace PHP.Core.Compiler.AST
                     // TODO: generic args
 
                     // create new CallSignature({function name},{args})
-                    var arg1 = new StringLiteral(node.Position, node.MethodName.Value);
+                    var arg1 = new StringLiteral(node.Span, node.MethodName.Value);
                     var arg2 = node.CallSignature.BuildPhpArray();
 
                     node.CallSignature = new CallSignature(
                         new List<ActualParam>(2) {
-                                new ActualParam(arg1.Position, arg1, false),
-                                new ActualParam(arg2.Position, arg2, false)
+                                new ActualParam(arg1.Span, arg1, false),
+                                new ActualParam(arg2.Span, arg2, false)
                             },
                         new List<TypeRef>());
                 }
 
                 // analyze the method
                 RoutineSignature signature;
-                overloadIndex = method.ResolveOverload(analyzer, node.CallSignature, node.Position, out signature);
+                overloadIndex = method.ResolveOverload(analyzer, node.CallSignature, node.Span, out signature);
 
                 Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "Each method should have at least one overload");
 
@@ -1014,7 +1015,7 @@ namespace PHP.Core.Compiler.AST
 
                 // class context is unknown or the class is m-decl or completely unknown at compile-time -> call the operator			
                 PhpTypeCode result = method.EmitCall(codeGenerator, null, node.CallSignature, instance, runtimeVisibilityCheck,
-                    overloadIndex, type, node.Position, access, false/* TODO: __call must be called virtually */);
+                    overloadIndex, type, node.Span, access, false/* TODO: __call must be called virtually */);
 
                 if (/*method == null || */!method.ReturnValueDeepCopyEmitted)   // (J) Emit Copy only if method is known (=> known PhpRoutine do not emit Copy on return value)
                     EmitReturnValueCopy(codeGenerator.IL, result);  // only if we are going to read the resulting value

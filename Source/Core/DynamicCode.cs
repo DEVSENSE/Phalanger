@@ -484,7 +484,6 @@ namespace PHP.Core
                             new EvalErrorSink(-prefix.Length, config.Compiler.DisabledWarnings, config.Compiler.DisabledWarningNumbers),
                             scriptContext.WorkingDirectory);
 
-
                         TransientCompilationUnit unit = assembly_builder.Build(code, descriptor, kind, context,
                             scriptContext, referringType, namingContext, entireFile);
 

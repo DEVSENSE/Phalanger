@@ -108,23 +108,19 @@ namespace PHP.Library
             string prefix1, prefix2;
             DynamicCode.GetLamdaFunctionCodePrefixes(function_name, args, out prefix1, out prefix2);
 
-            PHP.Core.Parsers.Position pos_args = callSignature.Parameters[0].Position;
-            PHP.Core.Parsers.Position pos_body = callSignature.Parameters[1].Position;
+            var pos_args = new PHP.Core.Text.TextSpan(analyzer.SourceUnit.LineBreaks, callSignature.Parameters[0].Span);
+            var pos_body = new PHP.Core.Text.TextSpan(analyzer.SourceUnit.LineBreaks, callSignature.Parameters[1].Span);
 
             // function __XXXXXX(<args>){<fill><body>}
             string fill = GetInlinedLambdaCodeFill(pos_args, pos_body);
             string code = String.Concat(prefix2, fill, body, "}");
 
+            // parses function source code:
+            
             // the position of the first character of the parsed code:
             // (note that escaped characters distort position a little bit, which cannot be eliminated so easily)
-            PHP.Core.Parsers.Position pos = PHP.Core.Parsers.Position.Initial;
-            pos.FirstOffset = pos_args.FirstOffset - prefix1.Length + 1;
-            pos.FirstColumn = pos_args.FirstColumn - prefix1.Length + 1;
-            pos.FirstLine = pos_args.FirstLine;
-
-            // parses function source code:
             var counter = new PHP.Core.Parsers.Parser.ReductionsCounter();
-            var ast = analyzer.BuildAst(pos, code, counter);
+            var ast = analyzer.BuildAst(pos_args.Start.Position - prefix1.Length + 1, code, counter);
             if (ast == null || ast.Statements == null)
                 return null;   // the function cannot be parsed
 
@@ -153,7 +149,7 @@ namespace PHP.Library
         /// <param name="args">A position of string literal holding source code for lambda function arguments.</param>
         /// <param name="body">A position of string literal holding source code for the body.</param>
         /// <returns>A string containing spaces and end-of-line characters '\n'.</returns>
-        private static string GetInlinedLambdaCodeFill(PHP.Core.Parsers.Position args, PHP.Core.Parsers.Position body)
+        private static string GetInlinedLambdaCodeFill(PHP.Core.Text.TextSpan args, PHP.Core.Text.TextSpan body)
         {
             int delta_lines = body.FirstLine - args.LastLine;
 
@@ -300,7 +296,7 @@ namespace PHP.Library
                 analyzer.CurrentScope,
                 out alias,
                 null,
-                PHP.Core.Parsers.Position.Invalid,
+                Core.Text.Span.Invalid,
                 false);
 
             if (routine == null || routine.IsUnknown)

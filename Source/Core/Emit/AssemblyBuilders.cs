@@ -209,7 +209,7 @@ namespace PHP.Core.Emit
 
 		/// <summary>
 		/// The argument <paramref name="completeSource" /> determines whether the source code
-		/// is complete PHP script file, which is a case in dynamic includ in Silverlight
+		/// is complete PHP script file, which is a case in dynamic include in Silverlight
 		/// </summary>
 		public TransientCompilationUnit Build(string/*!*/ sourceCode, SourceCodeDescriptor descriptor,
 			EvalKinds kind, CompilationContext/*!*/ context, ScriptContext/*!*/ scriptContext,

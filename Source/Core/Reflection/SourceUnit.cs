@@ -23,12 +23,13 @@ using PHP.Core.AST;
 using PHP.Core.Parsers;
 using PHP.Core.Emit;
 using PHP.Core.Compiler.AST;
+using PHP.Core.Text;
 
 namespace PHP.Core.Reflection
 {
-	#region SourceUnit
+    #region CompilationSourceUnit
 
-	public abstract class CompilationSourceUnit : SourceUnit
+    public abstract class CompilationSourceUnit : SourceUnit
 	{
         public override bool IsPure { get { return this.CompilationUnit.IsPure; } }
 
@@ -55,8 +56,8 @@ namespace PHP.Core.Reflection
 
 		#region Construction
 
-        public CompilationSourceUnit(CompilationUnitBase/*!*/ compilationUnit, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
-            :base(sourceFile, encoding)
+        public CompilationSourceUnit(CompilationUnitBase/*!*/ compilationUnit, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding, ILineBreaks/*!*/lineBreaks)
+            : base(sourceFile, encoding, lineBreaks)
 		{
 			Debug.Assert(compilationUnit != null);
 
@@ -97,7 +98,7 @@ namespace PHP.Core.Reflection
 		/// If the name is fully qualified and is not resolved then then the run-time resolve should be run on the name itself.
 		/// </remarks>
 		private DMember ResolveName(QualifiedName qualifiedName, DeclarationKind kind, Scope currentScope,
-			out QualifiedName? alias, ErrorSink errors, Position position, bool mustResolve)
+            out QualifiedName? alias, ErrorSink errors, Text.Span position, bool mustResolve)
 		{
 			string full_name = null;
 			DMember result;
@@ -108,45 +109,7 @@ namespace PHP.Core.Reflection
 			if (result != null)
 				return result;
 
-            /*  // aliases are resolved in parse-time
-			// try explicit aliases:
-			if (qualifiedName.IsSimpleName)
-			{
-				QualifiedName alias_qualified_name;
-
-				Dictionary<Name, QualifiedName> aliases = null;
-				switch (kind)
-				{
-					case DeclarationKind.Type: aliases = typeAliases; break;
-					case DeclarationKind.Function: aliases = functionAliases; break;
-					case DeclarationKind.Constant: aliases = constantAliases; break;
-				}
-
-				// try alias:
-				if (aliases != null && aliases.TryGetValue(qualifiedName.Name, out alias_qualified_name))
-				{
-					// alias exists //
-
-					full_name = null;
-					result = ResolveExactName(alias_qualified_name, ref full_name, kind, currentScope, mustResolve);
-					if (result != null)
-						return result;
-
-					alias = alias_qualified_name;
-
-					switch (kind)
-					{
-						case DeclarationKind.Type: result = new UnknownType(full_name); break;
-						case DeclarationKind.Function: result = new UnknownFunction(full_name); break;
-						case DeclarationKind.Constant: result = new UnknownGlobalConstant(full_name); break;
-					}
-
-					return result;
-				}
-			}
-            */
-
-			// try imported namespaces:
+            // try imported namespaces:
             if (!qualifiedName.IsFullyQualifiedName && HasImportedNamespaces)
 			{
 				result = null;
@@ -223,19 +186,19 @@ namespace PHP.Core.Reflection
 		}
 
 		public DRoutine ResolveFunctionName(QualifiedName qualifiedName, Scope currentScope, out QualifiedName? alias,
-			ErrorSink errors, Position position, bool mustResolve)
+            ErrorSink errors, Text.Span position, bool mustResolve)
 		{
 			return (DRoutine)ResolveName(qualifiedName, DeclarationKind.Function, currentScope, out alias, errors, position, mustResolve);
 		}
 
 		public DType ResolveTypeName(QualifiedName qualifiedName, Scope currentScope, out QualifiedName? alias,
-			ErrorSink errors, Position position, bool mustResolve)
+			ErrorSink errors, Text.Span position, bool mustResolve)
 		{
 			return (DType)ResolveName(qualifiedName, DeclarationKind.Type, currentScope, out alias, errors, position, mustResolve);
 		}
 
 		public DConstant ResolveConstantName(QualifiedName qualifiedName, Scope currentScope, out QualifiedName? alias,
-			ErrorSink errors, Position position, bool mustResolve)
+            ErrorSink errors, Text.Span position, bool mustResolve)
 		{
 			return (DConstant)ResolveName(qualifiedName, DeclarationKind.Constant, currentScope, out alias, errors, position, mustResolve);
 		}
@@ -245,7 +208,7 @@ namespace PHP.Core.Reflection
 			if (typeName.IsGeneric) return null;
 
 			QualifiedName? alias;
-			DType type = ResolveTypeName(typeName.QualifiedName, Scope.Global, out alias, null, Position.Invalid, false);
+            DType type = ResolveTypeName(typeName.QualifiedName, Scope.Global, out alias, null, Text.Span.Invalid, false);
 
 			ClassConstant constant;
 			if (type != null && type.IsDefinite && type.GetConstant(constantName, null, out constant) == GetMemberResult.OK)
@@ -257,7 +220,7 @@ namespace PHP.Core.Reflection
 		internal DConstant TryResolveGlobalConstantGlobally(QualifiedName qualifiedName)
 		{
 			QualifiedName? alias;
-			return ResolveConstantName(qualifiedName, Scope.Global, out alias, null, Position.Invalid, false);
+            return ResolveConstantName(qualifiedName, Scope.Global, out alias, null, Text.Span.Invalid, false);
 		}
 
 
@@ -313,78 +276,98 @@ namespace PHP.Core.Reflection
 		}
 
 		#endregion
-
 	}
 
 	#endregion
 
 	#region SourceFileUnit
 
-	public sealed class SourceFileUnit : CompilationSourceUnit
+	public sealed class SourceFileUnit : CompilationSourceUnit, Scanner.IScannerHandler
 	{
 		public FileStream Stream { get { return stream; } }
 		private FileStream stream;
 
-		public SourceFileUnit(CompilationUnitBase/*!*/ compilationUnit, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
-			: base(compilationUnit, sourceFile, encoding)
+        /// <summary>
+        /// Gets inner line breaks as ExpandableLineBreaks.
+        /// </summary>
+        private ExpandableLineBreaks ExpandableLineBreaks { get { return (ExpandableLineBreaks)innerLineBreaks; } }
+
+        public SourceFileUnit(CompilationUnitBase/*!*/ compilationUnit, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
+			: base(compilationUnit, sourceFile, encoding, new ExpandableLineBreaks())
 		{
 			Debug.Assert(!(compilationUnit is TransientCompilationUnit) && encoding != null && sourceFile != null);
 		}
 
-		public override string GetSourceCode(Position position)
-		{
-			int length = position.LastOffset - position.FirstOffset + 1;
-
-			byte[] buf = new byte[length];
-			stream.Seek(position.FirstOffset, SeekOrigin.Begin);
-			int real_length = stream.Read(buf, 0, length);
-
-			Debug.Assert(real_length == length);
-
-			return Encoding.GetString(buf, 0, real_length);
-		}
-		
-		/// <summary>
+        /// <summary>
 		/// Keeps stream open.
 		/// </summary>
 		/// <exception cref="InvalidSourceException">Source file cannot be opened for reading.</exception>
-		public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink,
-			Parsers.Position initialPosition, LanguageFeatures features)
+        public override void Parse(ErrorSink errors, IReductionsSink reductionsSink, LanguageFeatures features)
 		{
 			Parser parser = new Parser();
 			StreamReader source_reader;
-			
-			try
-			{
-				stream = new FileStream(sourceFile.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-				source_reader = new StreamReader(stream, encoding, true);
 
-				// if the file contains a byte-order-mark, we must advance the offset in order to 
-				// get correct token positions in lexer (unfortunately, StreamReader skips BOM without
-				// a possibility to detect it from outside, so we have to do that manually):
+            try
+            {
+                stream = new FileStream(sourceFile.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                source_reader = new StreamReader(stream, encoding, true);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidSourceException(sourceFile.FullPath, e);
+            }
 
-				// TODO:
-
-				// initialPosition.FirstOffset += FileSystemUtils.GetByteOrderMarkLength(stream);
-			}
-			catch (Exception e)
-			{
-				throw new InvalidSourceException(sourceFile.FullPath, e);
-			}	
-
-			ast = parser.Parse(this, source_reader, errors, reductionsSink, initialPosition,
-				Lexer.LexicalStates.INITIAL, features);
+			ast = parser.Parse(this, source_reader, errors, reductionsSink, Lexer.LexicalStates.INITIAL, features);
 		}
 
-		public override void Close()
+        public override void Close()
 		{
 			if (stream != null)
 			{
 				stream.Close();
 				stream = null;
 			}
+
+            if (innerLineBreaks.GetType() == typeof(ExpandableLineBreaks))
+                innerLineBreaks = this.ExpandableLineBreaks.Finalize();
 		}
-	}
+
+        public override string GetSourceCode(Text.Span span)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            var source_reader = new StreamReader(stream, encoding, true);
+            var buffer = new char[1024];
+            
+            // seek to span.Start
+            for (int toread = span.Start; toread > 0; toread -= buffer.Length)
+                source_reader.Read(buffer, 0, Math.Min(toread, buffer.Length));
+
+            // read desired span
+            buffer = new char[span.Length];
+            source_reader.Read(buffer, 0, buffer.Length);
+
+            return new string(buffer);
+
+            //byte[] buf = new byte[length];
+            //stream.Seek(position.FirstOffset, SeekOrigin.Begin);
+            //int real_length = stream.Read(buf, 0, length);
+
+            //Debug.Assert(real_length == length);
+
+            //return Encoding.GetString(buf, 0, real_length);
+        }
+
+        #region IScannerHandler Members
+
+        void Scanner.IScannerHandler.OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength)
+        {
+            // update internal ILineBreaks
+            Debug.Assert(innerLineBreaks is ExpandableLineBreaks);
+            this.ExpandableLineBreaks.Expand(buffer, tokenStart, tokenLength);
+        }
+
+        #endregion
+    }
 
 	#endregion
 
@@ -410,8 +393,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		public int Column { get { return column; } }
 		private int column;
-
-
+        
 		/// <summary>
 		/// Initial state of the lexer
 		/// </summary>
@@ -419,7 +401,7 @@ namespace PHP.Core.Reflection
 
 		public SourceCodeUnit(CompilationUnitBase/*!*/ compilationUnit, string/*!*/ code, PhpSourceFile/*!*/ sourceFile,
 			Encoding/*!*/ encoding, int line, int column)
-			: base(compilationUnit, sourceFile, encoding)
+			: base(compilationUnit, sourceFile, encoding, Text.LineBreaks.Create(code))
 		{
 			this.code = code;
 			this.line = line;
@@ -429,35 +411,51 @@ namespace PHP.Core.Reflection
 			this.initialState = Lexer.LexicalStates.ST_IN_SCRIPTING;
 		}
 
-		public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink, Position initialPosition,
-			LanguageFeatures features)
+        public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink, LanguageFeatures features)
 		{
-			Parser parser = new Parser();
+            Parser parser = new Parser();
 
 			using (StringReader source_reader = new StringReader(code))
 			{
-				ast = parser.Parse(this, source_reader, errors, reductionsSink, initialPosition,
-					initialState, features);
+                ast = parser.Parse(this, source_reader, errors, reductionsSink, initialState, features);
 			}
 		}
 
-		public override string GetSourceCode(Position position)
+        public override string GetSourceCode(Text.Span span)
 		{
-			int length = position.LastOffset - position.FirstOffset + 1;
-			return code.Substring(position.FirstOffset, length);
+            return span.GetText(code);
 		}
 
 		public override void Close()
 		{
 
 		}
-	}
+
+        #region ILineBreaks Members
+
+        public override int GetLineFromPosition(int position)
+        {
+            // shift the position
+            return base.GetLineFromPosition(position) + this.Line;
+        }
+
+        public override void GetLineColumnFromPosition(int position, out int line, out int column)
+        {
+            // shift the position
+            base.GetLineColumnFromPosition(position, out line, out column);
+            if (line == 0)
+                column += this.Column;
+            line += this.Line;
+        }
+
+        #endregion
+    }
 
 	#endregion
 
-	#region
+    #region PhpScriptSourceUnit
 
-	/// <summary>
+    /// <summary>
 	/// Represents a source code that is stored in a string, but contains
 	/// a complete PHP script file including the initial marks
 	/// </summary>
@@ -485,28 +483,26 @@ namespace PHP.Core.Reflection
 
 		public VirtualSourceFileUnit(CompilationUnitBase/*!*/ compilationUnit, string/*!*/ code,
 			PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
-			: base(compilationUnit, sourceFile, encoding)
+            : base(compilationUnit, sourceFile, encoding, Text.LineBreaks.Create(code))
 		{
 			this.code = code;
 		}
 
-		public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink, Position initialPosition,
-			LanguageFeatures features)
+        public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink, LanguageFeatures features)
 		{
 			Parser parser = new Parser();
 			parser.AllowGlobalCode = this.allowGlobalCode;
 
 			using (StringReader reader = new StringReader(code))
 			{
-				ast = parser.Parse(this, reader, errors, reductionsSink, initialPosition,
+				ast = parser.Parse(this, reader, errors, reductionsSink,
 					Lexer.LexicalStates.INITIAL, features);
 			}
 		}
 
-		public override string GetSourceCode(Position position)
+        public override string GetSourceCode(Text.Span span)
 		{
-			int length = position.LastOffset - position.FirstOffset + 1;
-			return code.Substring(position.FirstOffset, length);
+            return span.GetText(code);
 		}
 
 		public override void Close()
@@ -580,5 +576,4 @@ namespace PHP.Core.Reflection
 	}
 
 	#endregion
-
 }

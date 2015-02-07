@@ -28,8 +28,8 @@ namespace PHP.Core.AST
 		public Expression VarNameEx { get { return varNameEx; } }
 		internal Expression varNameEx;
 
-		public IndirectVarUse(Position position, int levelOfIndirection, Expression varNameEx)
-			: base(position)
+		public IndirectVarUse(Text.Span span, int levelOfIndirection, Expression varNameEx)
+            : base(span)
 		{
 			Debug.Assert(levelOfIndirection > 0 && varNameEx != null);
 
@@ -39,9 +39,8 @@ namespace PHP.Core.AST
 			}
 			else
 			{
-				Position pos = position;
-				pos.FirstColumn++;
-				this.varNameEx = new IndirectVarUse(pos, --levelOfIndirection, varNameEx);
+                Text.Span varspan = new Text.Span(span.Start + 1, span.Length - 1);
+                this.varNameEx = new IndirectVarUse(varspan, --levelOfIndirection, varNameEx);
 			}
 		}
 

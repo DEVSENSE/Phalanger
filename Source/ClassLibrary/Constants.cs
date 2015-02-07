@@ -76,7 +76,7 @@ namespace PHP.Library
 
             // try global constant:
             QualifiedName? alias;
-            var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
+            var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Text.Span.Invalid, false);
 
             if (constant != null)
             {
@@ -88,7 +88,7 @@ namespace PHP.Library
             string typename, constname;
             if (Name.IsClassMemberSyntax(name, out typename, out constname))
             {
-                var type = analyzer.SourceUnit.ResolveTypeName(new QualifiedName(new Name(typename)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
+                var type = analyzer.SourceUnit.ResolveTypeName(new QualifiedName(new Name(typename)), analyzer.CurrentScope, out alias, null, PHP.Core.Text.Span.Invalid, false);
 
                 if (type != null && !type.IsUnknown)
                 {
