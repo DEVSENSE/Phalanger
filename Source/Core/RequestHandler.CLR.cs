@@ -145,7 +145,7 @@ namespace PHP.Core
 			try { context.Server.ScriptTimeout = Int32.MaxValue; } catch (HttpException) { }
 
             // ensure that Session ID is created
-			RequestContext.EnsureSessionId();
+			RequestContext.EnsureSessionId(context);
 			
 			// default culture:
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;

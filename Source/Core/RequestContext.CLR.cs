@@ -420,9 +420,9 @@ namespace PHP.Core
 		/// Ensures that Session ID is set, so calls to Flush() don't cause issues
 		/// (if flush() is called, session ID can't be set because cookie can't be created).
 		/// </summary>
-		internal static void EnsureSessionId()
+        internal static void EnsureSessionId(HttpContext/*!*/ httpContext)
 		{
-			HttpContext httpContext = HttpContext.Current;
+            Debug.Assert(httpContext != null);
             if (httpContext.Session != null && httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
             {
                 httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
