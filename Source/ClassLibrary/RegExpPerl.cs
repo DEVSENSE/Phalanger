@@ -2187,9 +2187,11 @@ namespace PHP.Library
 		/// Parses escaped sequences: "\[xX][0-9A-Fa-f]{2}", "\[xX]\{[0-9A-Fa-f]{0,4}\}", "\[0-7]{3}", 
 		/// "\[pP]{Unicode Category}"
 		/// </summary>
-		private static bool ParseEscapeCode(Encoding/*!*/ encoding, string/*!*/ str, ref int pos, ref int ch, ref bool escaped)
+		private static bool ParseEscapeCode(
+            //Encoding/*!*/ encoding,
+            string/*!*/ str, ref int pos, ref int ch, ref bool escaped)
 		{
-			Debug.Assert(encoding != null && str != null && pos >= 0 && pos < str.Length && str[pos] == '\\');
+			Debug.Assert(/*encoding != null &&*/ str != null && pos >= 0 && pos < str.Length && str[pos] == '\\');
 
 			if (pos + 3 >= str.Length) return false;
 
@@ -2246,7 +2248,7 @@ namespace PHP.Library
 					number = (number << 3) + digit;
 				}
 				pos += 3;
-				ch = encoding.GetChars(new byte[] { (byte)number })[0];
+                ch = number;//encoding.GetChars(new byte[] { (byte)number })[0];
                 escaped = ch < Char.MaxValue ? IsCharRegexSpecial((char)ch) : false;
 				return true;
 			}
@@ -2350,7 +2352,7 @@ namespace PHP.Library
 				int ch = perlExpr[i];
 
 				escaped = false;
-				if (ch == '\\' && !ParseEscapeCode(encoding, perlExpr, ref i, ref ch, ref escaped))
+				if (ch == '\\' && !ParseEscapeCode(/*encoding,*/ perlExpr, ref i, ref ch, ref escaped))
 				{
 					i++;
 					Debug.Assert(i < perlExpr.Length, "Regex cannot end with backslash.");
