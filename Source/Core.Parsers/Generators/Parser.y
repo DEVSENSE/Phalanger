@@ -153,6 +153,8 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_ENDFOR
 %token T_FOREACH
 %token T_ENDFOREACH
+%token T_DECLARE
+%token T_ENDDECLARE
 %token T_AS
 %token T_SWITCH
 %token T_ENDSWITCH
@@ -361,6 +363,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> heredoc_expr							  // Expression
 %type<Object> for_statement                           // Statement
 %type<Object> foreach_statement                       // Statement
+%type<Object> declare_statement                       // Statement
 %type<Object> while_statement                         // Statement
 %type<Object> elseif_list_opt                         // List<ConditionalStmt>
 %type<Object> elseif_colon_list_opt                   // List<ConditionalStmt>
@@ -1100,6 +1103,10 @@ non_empty_statement:
 		{ 
 			$$ = new GotoStmt(@$, (string)$2); /* PHP6 */ 
 		}
+	|	T_DECLARE '(' declare_list ')' declare_statement
+		{
+			$$ = new DeclareStmt(@$, (Statement)$5);
+		}
 ;
 
 
@@ -1148,6 +1155,16 @@ for_statement:
 foreach_statement:
 		statement																	    { $$ = $1; }
 	|	':' inner_statement_list_opt T_ENDFOREACH ';' { $$ = new BlockStmt(@2, (List<Statement>)$2); }
+;
+
+declare_statement:
+		statement										{ $$ = $1; }
+	|	':' inner_statement_list_opt T_ENDDECLARE ';'	{ $$ = new BlockStmt(@2, (List<Statement>)$2); }
+;
+
+declare_list:
+		identifier '=' constant_inititalizer					{ /*not supported*/ }
+	|	declare_list ',' identifier '=' constant_inititalizer	{ /*not supported*/ }
 ;
 
 switch_case_list:

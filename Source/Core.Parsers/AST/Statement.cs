@@ -270,4 +270,29 @@ namespace PHP.Core.AST
     }
 
     #endregion
+
+    #region DeclareStmt
+
+    [Serializable]
+    public sealed class DeclareStmt : Statement
+    {
+        /// <summary>
+        /// Inner statement.
+        /// </summary>
+        public Statement Statement { get { return this.stmt; } }
+        private readonly Statement/*!*/stmt;
+
+        public DeclareStmt(Text.Span p, Statement statement)
+            : base(p)
+        {
+            this.stmt = statement;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitDeclareStmt(this);
+        }
+    }
+
+    #endregion
 }

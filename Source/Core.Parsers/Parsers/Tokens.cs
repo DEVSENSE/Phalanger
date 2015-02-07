@@ -218,6 +218,8 @@ namespace PHP.Core.Parsers
 		T_ENDFOR = Toks.T_ENDFOR,
 		T_FOREACH = Toks.T_FOREACH,
 		T_ENDFOREACH = Toks.T_ENDFOREACH,
+        T_DECLARE = Toks.T_DECLARE,
+        T_ENDDECLARE = Toks.T_ENDDECLARE,
 		T_AS = Toks.T_AS,
 		T_SWITCH = Toks.T_SWITCH,
 		T_ENDSWITCH = Toks.T_ENDSWITCH,

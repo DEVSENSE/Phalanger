@@ -402,6 +402,31 @@ namespace PHP.Core.Compiler.AST
         }
 
         #endregion
+
+        #region DeclareStmt
+
+        [NodeCompiler(typeof(DeclareStmt), Singleton = true)]
+        sealed class DeclareStmtCompiler : StatementCompiler<DeclareStmt>
+        {
+            internal override Statement Analyze(DeclareStmt node, Analyzer analyzer)
+            {
+                analyzer.ErrorSink.Add(Warnings.NotSupportedFunctionCalled, analyzer.SourceUnit, node.Span, "declare");
+                node.Statement.Analyze(analyzer);
+                return node;
+            }
+
+            protected override void ReportUnreachable(DeclareStmt node, Analyzer analyzer)
+            {
+                node.Statement.ReportUnreachable(analyzer);
+            }
+
+            internal override void Emit(DeclareStmt node, CodeGenerator codeGenerator)
+            {
+                node.Statement.Emit(codeGenerator);
+            }
+        }
+
+        #endregion
     }
 
     #region StatementUtils
