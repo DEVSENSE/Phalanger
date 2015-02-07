@@ -24,7 +24,6 @@ using System.Globalization;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Web.Configuration;
 
 namespace PHP.Library
 {

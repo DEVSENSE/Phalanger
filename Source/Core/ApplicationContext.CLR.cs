@@ -77,21 +77,20 @@ namespace PHP.Core
 
     public sealed partial class AssemblyLoader
     {
-
         /// <summary>
         /// Loads assemblies whose paths or full names are listed in references.
         /// </summary>
         /// <param name="references">Enumeration of paths to or full names of assemblies to load.</param>
         /// <exception cref="ArgumentNullException"><paramref name="references"/> is a <B>null</B> reference.</exception>
         /// <exception cref="ConfigurationErrorsException">An error occured while loading a library.</exception>
-        public void Load(IEnumerable<string>/*!*/ references)
+        public void Load(IEnumerable<CompilationParameters.ReferenceItem>/*!*/ references)
         {
             if (references == null)
                 throw new ArgumentNullException("references");
 
-            foreach (string reference in references)
+            foreach (var reference in references)
             {
-                LoadReference(reference);
+                LoadReference(reference.Reference, reference.LibraryRoot);
             }
         }
 
@@ -99,7 +98,8 @@ namespace PHP.Core
         /// Loads single reference.
         /// </summary>
         /// <param name="reference">Path to or full name of references assembly.</param>
-        private void LoadReference(string reference)
+        /// <param name="libraryRoot">If the reference represents a script library, this optional parameter can move scripts in the loaded library to a subdirectory.</param>
+        private void LoadReference(string reference, string libraryRoot)
         {
             Assembly realAssembly;
 
@@ -121,7 +121,7 @@ namespace PHP.Core
             if (attr is ScriptAssemblyAttribute && ((ScriptAssemblyAttribute)attr).IsMultiScript)
             {
                 //load this as script library
-                LoadScriptLibrary(realAssembly, ".");
+                LoadScriptLibrary(realAssembly, libraryRoot);
 
                 return;
             }
@@ -189,7 +189,7 @@ namespace PHP.Core
                 if (loadedAssemblies.ContainsKey(realAssembly))
                     return loadedAssemblies[realAssembly];
 
-                scriptAssembly = ScriptAssembly.LoadFromAssembly(applicationContext, realAssembly);
+                scriptAssembly = ScriptAssembly.LoadFromAssembly(applicationContext, realAssembly, libraryRoot);
                 loadedAssemblies.Add(realAssembly, scriptAssembly);
             }
 

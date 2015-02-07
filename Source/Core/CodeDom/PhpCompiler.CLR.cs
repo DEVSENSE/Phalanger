@@ -374,7 +374,7 @@ namespace PHP.Core.CodeDom
 			// referenced assemblies
 			foreach (string reference in options.ReferencedAssemblies)
 			{
-				parameters.References.Add(reference);
+                parameters.References.Add(new CompilationParameters.ReferenceItem() { Reference = reference });
 			}
 
 			// referenced resource files

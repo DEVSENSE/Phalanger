@@ -530,7 +530,7 @@ namespace PHP.Core
 
                     string assemblyName = ConfigUtils.OptionalAttribute(child, "assembly");
                     //purposefully disabled (not needed and there are some integrity problems regarding library root)
-                    string libraryRoot = "."; // ConfigUtils.OptionalAttribute(child, "root") ?? "";
+                    string libraryRoot = ConfigUtils.OptionalAttribute(child, "root");
                     string assemblyUrl = ConfigUtils.OptionalAttribute(child, "url");
                     Uri uri = null;
 
