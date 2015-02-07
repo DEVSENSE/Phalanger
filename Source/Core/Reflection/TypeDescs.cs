@@ -2589,7 +2589,7 @@ namespace PHP.Core.Reflection
                                 return false;
 
                             // create DPropertyDesc
-                            property_desc = new DPhpFieldDesc(this, PhpMemberAttributes.Public);
+                            property_desc = new DPhpFieldDesc(this, Enums.GetPropertyAttributes(info));
                             properties.Add(name, property_desc);
 
                             // remember PropertyInfo
