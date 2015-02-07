@@ -240,7 +240,39 @@ namespace PHP.Core
 		#endregion
 	}
 
+    /// <summary>
+    /// Implements equality comparer of objects, using given <see cref="IComparer"/>.
+    /// </summary>
+    public class ObjectEqualityComparer : IEqualityComparer<object>
+    {
+        /// <summary>
+        /// <see cref="IComparer"/> to use.
+        /// </summary>
+        private readonly IComparer/*!*/ comparer;
 
+        public ObjectEqualityComparer(IComparer/*!*/ comparer)
+        {
+            if (comparer == null)
+                throw new ArgumentNullException("comparer");
+
+            this.comparer = comparer;
+        }
+
+        #region IEqualityComparer<object>
+
+        public bool Equals(object x, object y)
+        {
+            return comparer.Compare(x, y) == 0;
+        }
+
+        public int GetHashCode(object obj)
+        {
+            return (obj != null) ? obj.GetHashCode() : 0;
+        }
+
+        #endregion
+    }
+    
 	#endregion
 
 	#region Regular Comparer

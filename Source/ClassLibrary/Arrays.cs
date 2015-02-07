@@ -2736,36 +2736,32 @@ namespace PHP.Library
 				return null;
 			}
 
-			PhpArray result = new PhpArray();
-			PhpArray sorted = (PhpArray)array.Clone();
-
-            ValueComparer comparer;
+			IComparer comparer;
             switch(sortFlags)
             {
                 case ArrayUniqueSortFlags.Regular:
-                    comparer = ValueComparer.Default; break;
+                    comparer = PhpComparer.Default; break;
                 case ArrayUniqueSortFlags.Numeric:
-                    comparer = ValueComparer.Numeric; break;
+                    comparer = PhpNumericComparer.Default; break;
                 case ArrayUniqueSortFlags.String:
-                    comparer = ValueComparer.String; break;
+                    comparer = PhpStringComparer.Default; break;
                 case ArrayUniqueSortFlags.LocaleString:
                 default:
                     PhpException.ArgumentValueNotSupported("sortFlags", (int)sortFlags);
                     return null;
             }
 
-            sorted.Sort(comparer);
+            PhpArray result = new PhpArray(array.Count);
+
+            HashSet<object>/*!*/identitySet = new HashSet<object>(new ObjectEqualityComparer(comparer));
 
             // get only unique values - first found
-            object previous = null;
-			foreach (var entry in sorted)
-			{
-                if (previous == null ||
-                    comparer.Compare(new KeyValuePair<IntStringKey, object>(entry.Key, previous), entry) != 0)
-					result.Add(entry.Key, entry.Value);
-
-                previous = entry.Value;
-			}
+            using (var enumerator = array.GetFastEnumerator())
+                while (enumerator.MoveNext())
+                {
+                    if (identitySet.Add(enumerator.CurrentValue))
+                        result.Add(enumerator.Current);
+                }
 
 			result.InplaceCopyOnReturn = true;
 			return result;
