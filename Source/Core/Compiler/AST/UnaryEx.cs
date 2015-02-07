@@ -326,7 +326,7 @@ namespace PHP.Core.AST
                     o_typecode = expr.Emit(codeGenerator);
                     if (o_typecode != PhpTypeCode.Double)
                     {
-                        codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
+                        codeGenerator.EmitBoxing(o_typecode);
                         il.Emit(OpCodes.Call, Methods.Convert.ObjectToDouble);
                     }
 					returned_typecode = PhpTypeCode.Double;
@@ -358,7 +358,7 @@ namespace PHP.Core.AST
                     o_typecode = expr.Emit(codeGenerator);
                     if (o_typecode != PhpTypeCode.PhpArray)
                     {
-                        codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
+                        codeGenerator.EmitBoxing(o_typecode);
                         il.Emit(OpCodes.Call, Methods.Convert.ObjectToPhpArray);
                     }
 					returned_typecode = PhpTypeCode.PhpArray;
