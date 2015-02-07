@@ -6,6 +6,7 @@ using PHP.Core;
 
 namespace PHP.Library.Xml
 {
+    [ImplementsExtension("libxml")]
     public static class PhpLibXml
     {
         [ImplementsFunction("libxml_clear_errors")]
