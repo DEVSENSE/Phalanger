@@ -59,6 +59,15 @@ namespace PHP.Core.Reflection
 		private RoutineDelegate _arglessStub = null;
 
         /// <summary>
+        /// <see cref="MethodInfo"/> to be called thru .call IL OpCode.
+        /// </summary>
+        /// <remarks>
+        /// By default, it is the Method of <see cref="ArglessStub"/> delegate. In case of emitted <see cref="DynamicMethod"/>,
+        /// we need to remember the original <see cref="DynamicMethod"/> so it can be called within DLR.
+        /// </remarks>
+        internal virtual MethodInfo ArglessStubMethod { get { return this.ArglessStub.Method; } }
+
+        /// <summary>
         /// Internal index used for call cache.
         /// </summary>
         internal int Index = -1;
@@ -312,8 +321,8 @@ namespace PHP.Core.Reflection
 			// TODO: generic arguments
 			return Member.FullName;
 		}
-
-		protected override RoutineDelegate GenerateArglessStub()
+        
+        protected override RoutineDelegate GenerateArglessStub()
 		{
 			ClrMethod clr_method = ClrMethod;
 			Debug.Assert(clr_method != null, "CLR method should be fully reflected");
@@ -343,8 +352,7 @@ namespace PHP.Core.Reflection
 			DynamicMethod stub = new DynamicMethod("<^>." + clr_method.Name.Value, PhpFunctionUtils.DynamicStubAttributes,
 				CallingConventions.Standard, Types.Object[0], Types.Object_PhpStack, this.declaringType.RealType, true);
 #endif
-
-			ILEmitter il = new ILEmitter(stub);
+            ILEmitter il = new ILEmitter(stub);
 
 			IndexedPlace instance = new IndexedPlace(PlaceHolder.Argument, 0);
 			IndexedPlace stack = new IndexedPlace(PlaceHolder.Argument, 1);
@@ -355,8 +363,19 @@ namespace PHP.Core.Reflection
 			// the compiler may get activated:
 			// member = null; 
 
-			return (RoutineDelegate)stub.CreateDelegate(typeof(RoutineDelegate));
+            this.arglessStubMethod = stub;
+            return (RoutineDelegate)stub.CreateDelegate(typeof(RoutineDelegate));
 		}
+
+        private MethodInfo arglessStubMethod = null;
+        internal override MethodInfo ArglessStubMethod
+        {
+            get
+            {
+                var argless = this.ArglessStub; // ensure argless is generated
+                return arglessStubMethod;
+            }
+        }
 
 		// TODO: caller == null when IsProtected == true ?
 
@@ -386,6 +405,8 @@ namespace PHP.Core.Reflection
 		}
 
 		#endregion
+
+        internal override MethodInfo ArglessStubMethod { get { return this.ArglessStub.Method; } }  // ArglessPreStub MethodInfo
 
 		protected override RoutineDelegate GenerateArglessStub()
 		{

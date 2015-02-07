@@ -635,7 +635,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region serialize, unserialize, custom_serialize, custom_unserialize (CLR only)
+		#region serialize, unserialize (CLR only)
 #if !SILVERLIGHT
 
 		/// <summary>
