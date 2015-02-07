@@ -152,11 +152,30 @@ namespace PHP.Core
     [Serializable]
     public struct ErrorPosition
     {
+        /// <summary>
+        /// First line of the error, indexed from 1.
+        /// </summary>
         public int FirstLine;
+        /// <summary>
+        /// First column of the error, indexed from 1.
+        /// </summary>
         public int FirstColumn;
+        /// <summary>
+        /// Last line of the error, indexed from 1.
+        /// </summary>
         public int LastLine;
+        /// <summary>
+        /// Last column of the error, indexed from 1.
+        /// </summary>
         public int LastColumn;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="ErrorPosition"/>.
+        /// </summary>
+        /// <param name="firstLine">First line of the error, indexed from 1.</param>
+        /// <param name="firstColumn">First column of the error, indexed from 1.</param>
+        /// <param name="lastLine">Last line of the error, indexed from 1.</param>
+        /// <param name="lastColumn">Last column of the error, indexed from 1.</param>
         public ErrorPosition(int firstLine, int firstColumn, int lastLine, int lastColumn)
         {
             this.FirstLine = firstLine;
@@ -165,8 +184,14 @@ namespace PHP.Core
             this.LastColumn = lastColumn;
         }
 
+        /// <summary>
+        /// An invalid <see cref="ErrorPosition"/> singleton.
+        /// </summary>
         public static ErrorPosition Invalid = new ErrorPosition(-1, -1, -1, -1);
 
+        /// <summary>
+        /// Whether 
+        /// </summary>
         public bool IsValid
         {
             get { return FirstLine != -1; }
@@ -441,8 +466,8 @@ namespace PHP.Core
                 //
                 full_path = sourceUnit.GetMappedFullSourcePath(mapped_pos.FirstLine);
                 mapped_pos = new ErrorPosition(
-                    sourceUnit.GetMappedLine(mapped_pos.FirstLine), mapped_pos.FirstColumn,
-                    sourceUnit.GetMappedLine(mapped_pos.LastLine), mapped_pos.LastColumn);
+                    sourceUnit.GetMappedLine(mapped_pos.FirstLine) + 1, mapped_pos.FirstColumn + 1,
+                    sourceUnit.GetMappedLine(mapped_pos.LastLine) + 1, mapped_pos.LastColumn + 1);
             }
             else
             {

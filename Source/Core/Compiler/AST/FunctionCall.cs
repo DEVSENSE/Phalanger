@@ -431,8 +431,8 @@ namespace PHP.Core.Compiler.AST
                                     (int)WarningGroups.None,
                                     analyzer.SourceUnit.GetMappedFullSourcePath(position.FirstLine),
                                     new ErrorPosition(
-                                        analyzer.SourceUnit.GetMappedLine(position.FirstLine), position.FirstColumn,
-                                        analyzer.SourceUnit.GetMappedLine(position.LastLine), position.LastColumn),
+                                        analyzer.SourceUnit.GetMappedLine(position.FirstLine) + 1, position.FirstColumn + 1,
+                                        analyzer.SourceUnit.GetMappedLine(position.LastLine) + 1, position.LastColumn + 1),
                                     true
                                     );
                             };
