@@ -61,6 +61,9 @@ namespace PHP.Core.AST
         public object TypeHint { get { return typeHint; } }
 		private object typeHint;
 
+        /// <summary>Position of <see cref="TypeHint"/> if any.</summary>
+        public Position TypeHintPosition { get; internal set; }
+
 		public DType ResolvedTypeHint { get { return resolvedTypeHint; } }
 		private DType resolvedTypeHint;
 
@@ -90,6 +93,7 @@ namespace PHP.Core.AST
 			this.attributes = new CustomAttributes(attributes);
 
 			this.resolvedTypeHint = null;
+            this.TypeHintPosition = Position.Invalid;
 		}
 
 		#endregion

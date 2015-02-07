@@ -1852,13 +1852,13 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { 
 		  Name class_name = new Name((string)value_stack.array[value_stack.top-8].yyval.Object);
 		  
-		  CheckReservedNamesAbsence((GenericQualifiedName?)value_stack.array[value_stack.top-5].yyval.Object, value_stack.array[value_stack.top-5].yypos);
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos);
+		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Position>)value_stack.array[value_stack.top-5].yyval.Object);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)value_stack.array[value_stack.top-4].yyval.Object);
 		  
 		  yyval.Object = new TypeDecl(sourceUnit, CombinePositions(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos), yypos, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(value_stack.array[value_stack.top-3].yypos), 
 				IsCurrentCodeConditional, GetScope(), 
-				(PhpMemberAttributes)(value_stack.array[value_stack.top-12].yyval.Integer | value_stack.array[value_stack.top-11].yyval.Integer), value_stack.array[value_stack.top-10].yyval.Integer != 0, class_name, currentNamespace, 
-				(List<FormalTypeParam>)value_stack.array[value_stack.top-7].yyval.Object, (GenericQualifiedName?)value_stack.array[value_stack.top-5].yyval.Object, (List<GenericQualifiedName>)value_stack.array[value_stack.top-4].yyval.Object, 
+				(PhpMemberAttributes)(value_stack.array[value_stack.top-12].yyval.Integer | value_stack.array[value_stack.top-11].yyval.Integer), value_stack.array[value_stack.top-10].yyval.Integer != 0, class_name, value_stack.array[value_stack.top-8].yypos, currentNamespace, 
+				(List<FormalTypeParam>)value_stack.array[value_stack.top-7].yyval.Object, (Tuple<GenericQualifiedName,Position>)value_stack.array[value_stack.top-5].yyval.Object, (List<KeyValuePair<GenericQualifiedName,Position>>)value_stack.array[value_stack.top-4].yyval.Object, 
 		    (List<TypeMemberDecl>)value_stack.array[value_stack.top-2].yyval.Object, (List<CustomAttribute>)value_stack.array[value_stack.top-13].yyval.Object);
 		    
 		  SetCommentSetHelper(yyval.Object, value_stack.array[value_stack.top-9].yyval.Object);
@@ -1882,7 +1882,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { 
 		  Name class_name = new Name((string)value_stack.array[value_stack.top-7].yyval.Object);
 		  
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)value_stack.array[value_stack.top-4].yyval.Object);
 		  
 			if ((PhpMemberAttributes)value_stack.array[value_stack.top-10].yyval.Integer != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, value_stack.array[value_stack.top-10].yypos);
@@ -1890,8 +1890,9 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		  yyval.Object = new TypeDecl(sourceUnit, CombinePositions(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), yypos, GetHeadingEnd(GetLeftValidPosition(9)), GetBodyStart(value_stack.array[value_stack.top-3].yypos),
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)value_stack.array[value_stack.top-11].yyval.Integer | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
-				value_stack.array[value_stack.top-9].yyval.Integer != 0, class_name, currentNamespace, (List<FormalTypeParam>)value_stack.array[value_stack.top-6].yyval.Object, null, (List<GenericQualifiedName>)value_stack.array[value_stack.top-4].yyval.Object, (List<TypeMemberDecl>)value_stack.array[value_stack.top-2].yyval.Object, 
-				(List<CustomAttribute>)value_stack.array[value_stack.top-12].yyval.Object); 
+				value_stack.array[value_stack.top-9].yyval.Integer != 0, class_name, value_stack.array[value_stack.top-7].yypos, currentNamespace,
+				(List<FormalTypeParam>)value_stack.array[value_stack.top-6].yyval.Object, null, (List<KeyValuePair<GenericQualifiedName,Position>>)value_stack.array[value_stack.top-4].yyval.Object,
+				(List<TypeMemberDecl>)value_stack.array[value_stack.top-2].yyval.Object, (List<CustomAttribute>)value_stack.array[value_stack.top-12].yyval.Object); 
 				
 			SetCommentSetHelper(yyval.Object, value_stack.array[value_stack.top-8].yyval.Object);
 			
@@ -1928,29 +1929,29 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = null; }
         return;
       case 63: // extends_opt -> T_EXTENDS qualified_static_type_ref 
-{ yyval.Object = (GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = new Tuple<GenericQualifiedName,Position>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos); }
         return;
       case 64: // interface_extends_opt -> 
-{ yyval.Object = emptyGenericQualifiedNameList; }
+{ yyval.Object = emptyGenericQualifiedNamePositionList; }
         return;
       case 65: // interface_extends_opt -> T_EXTENDS interface_list 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 66: // implements_opt -> 
-{ yyval.Object = emptyGenericQualifiedNameList; }
+{ yyval.Object = emptyGenericQualifiedNamePositionList; }
         return;
       case 67: // implements_opt -> T_IMPLEMENTS interface_list 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 68: // interface_list -> qualified_static_type_ref 
 { 
-			yyval.Object = NewList<GenericQualifiedName>(value_stack.array[value_stack.top-1].yyval.Object);
+			yyval.Object = NewList<KeyValuePair<GenericQualifiedName,Position>>(new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos));
 		}
         return;
       case 69: // interface_list -> interface_list ',' qualified_static_type_ref 
 { 
 			yyval.Object = value_stack.array[value_stack.top-3].yyval.Object; 
-			ListAdd<GenericQualifiedName>(yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); 
+			ListAdd<KeyValuePair<GenericQualifiedName,Position>>(yyval.Object, new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos)); 
 		}
         return;
       case 70: // type_parameter_list_opt -> T_LGENERIC type_parameter_list T_RGENERIC 
@@ -2424,12 +2425,18 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 185: // formal_parameter -> attributes_opt type_hint_opt reference_opt T_VARIABLE 
 { 
-			yyval.Object = new FormalParam(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-3].yyval.Object, (int)value_stack.array[value_stack.top-2].yyval.Integer == 1, null, (List<CustomAttribute>)value_stack.array[value_stack.top-4].yyval.Object); 
+			yyval.Object = new FormalParam(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-3].yyval.Object, (int)value_stack.array[value_stack.top-2].yyval.Integer == 1, null, (List<CustomAttribute>)value_stack.array[value_stack.top-4].yyval.Object)
+			{
+				TypeHintPosition = value_stack.array[value_stack.top-3].yypos
+			};
 		}
         return;
       case 186: // formal_parameter -> attributes_opt type_hint_opt reference_opt T_VARIABLE '=' constant_inititalizer 
 { 
-			yyval.Object = new FormalParam(value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-5].yyval.Object, (int)value_stack.array[value_stack.top-4].yyval.Integer == 1, (Expression)value_stack.array[value_stack.top-1].yyval.Object, (List<CustomAttribute>)value_stack.array[value_stack.top-6].yyval.Object); 
+			yyval.Object = new FormalParam(value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-5].yyval.Object, (int)value_stack.array[value_stack.top-4].yyval.Integer == 1, (Expression)value_stack.array[value_stack.top-1].yyval.Object, (List<CustomAttribute>)value_stack.array[value_stack.top-6].yyval.Object)
+			{
+				TypeHintPosition = value_stack.array[value_stack.top-5].yypos
+			};
 		}
         return;
       case 187: // type_hint_opt -> 
@@ -3150,7 +3157,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 378: // function_call -> qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 { 
-		  yyval.Object = CreateDirectFcnCall(yypos, (QualifiedName)value_stack.array[value_stack.top-5].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object);
+		  yyval.Object = CreateDirectFcnCall(yypos, (QualifiedName)value_stack.array[value_stack.top-5].yyval.Object, value_stack.array[value_stack.top-5].yypos, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object);
 		}
         return;
       case 379: // function_call -> class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
@@ -3160,7 +3167,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 380: // function_call -> qualified_static_type_ref T_DOUBLE_COLON keyed_variable generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 { 
-		  yyval.Object = new IndirectStMtdCall(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-7].yyval.Object, (CompoundVarUse)value_stack.array[value_stack.top-5].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, 
+		  yyval.Object = new IndirectStMtdCall(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-7].yyval.Object, value_stack.array[value_stack.top-7].yypos, (CompoundVarUse)value_stack.array[value_stack.top-5].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, 
 				(List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object);	
 		}
         return;
@@ -3399,12 +3406,12 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 441: // class_constant -> qualified_static_type_ref T_DOUBLE_COLON identifier 
 { 
-		  yyval.Object = new ClassConstUse(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object); 
+		  yyval.Object = new ClassConstUse(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos); 
 		}
         return;
       case 442: // class_constant -> keyed_variable T_DOUBLE_COLON identifier 
 {
-			yyval.Object = new ClassConstUse(yypos, new IndirectTypeRef(value_stack.array[value_stack.top-3].yypos, (VariableUse)value_stack.array[value_stack.top-3].yyval.Object, TypeRef.EmptyList), (string)value_stack.array[value_stack.top-1].yyval.Object); 
+			yyval.Object = new ClassConstUse(yypos, new IndirectTypeRef(value_stack.array[value_stack.top-3].yypos, (VariableUse)value_stack.array[value_stack.top-3].yyval.Object, TypeRef.EmptyList), (string)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos); 
 		}
         return;
       case 443: // scalar_expr -> constant 
@@ -3513,7 +3520,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		if (value_stack.array[value_stack.top-1].yyval.Object is DirectVarUse && ((DirectVarUse)value_stack.array[value_stack.top-1].yyval.Object).VarName.IsThisVariableName)
 			yyval.Object = value_stack.array[value_stack.top-1].yyval.Object;	// you know, in PHP ... whatever::$this means $this
 		else
-			yyval.Object = CreateStaticFieldUse(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-3].yyval.Object, (CompoundVarUse)value_stack.array[value_stack.top-1].yyval.Object); 
+			yyval.Object = CreateStaticFieldUse(yypos, (GenericQualifiedName)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (CompoundVarUse)value_stack.array[value_stack.top-1].yyval.Object); 
 	  }
         return;
       case 474: // chain_base -> keyed_variable T_DOUBLE_COLON keyed_variable 

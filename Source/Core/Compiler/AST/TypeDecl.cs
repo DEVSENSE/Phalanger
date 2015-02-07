@@ -12,6 +12,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -314,6 +315,11 @@ namespace PHP.Core.AST
 		public Name Name { get { return name; } }
 		private readonly Name name;
 
+        /// <summary>
+        /// Position of <see cref="Name"/> in the source code.
+        /// </summary>
+        public Position NamePosition { get; private set; }
+
 		/// <summary>
 		/// Namespace where the class is declared in.
 		/// </summary>
@@ -333,12 +339,19 @@ namespace PHP.Core.AST
         /// <summary>Name of the base class.</summary>
         public GenericQualifiedName? BaseClassName { get { return baseClassName; } }
 
+        /// <summary>Position of <see cref="BaseClassName"/>.</summary>
+        public Position BaseClassNamePosition { get; private set; }
+
 		/// <summary>
 		/// Implemented interface name indices. 
 		/// </summary>
-		private readonly List<GenericQualifiedName>/*!*/ implementsList;
+		private readonly List<KeyValuePair<GenericQualifiedName, Position>>/*!*/ implementsList;
+
         /// <summary>Implemented interface name indices. </summary>
-        public List<GenericQualifiedName>/*!*/ ImplementsList { get { return implementsList; } }
+        public List<GenericQualifiedName>/*!*/ ImplementsList { get { return this.implementsList.Select(x => x.Key).ToList(); } }
+
+        /// <summary>Positions of <see cref="ImplementsList"/> elements.</summary>
+        public Position[] ImplementsPosition { get { return this.implementsList.Select(x => x.Value).ToArray(); } }
 
 		/// <summary>
 		/// Type parameters.
@@ -395,19 +408,24 @@ namespace PHP.Core.AST
 
 		public TypeDecl(SourceUnit/*!*/ sourceUnit,
 			Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
-			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className,
-			NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, GenericQualifiedName? baseClassName,
-			List<GenericQualifiedName>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
+			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Position classNamePosition,
+			NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Position> baseClassName,
+			List<KeyValuePair<GenericQualifiedName, Position>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
 			List<CustomAttribute> attributes)
 			: base(position)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && members != null);
 
 			this.name = className;
+            this.NamePosition = classNamePosition;
 			this.ns = ns;
 			this.typeSignature = new TypeSignature(genericParams);
-			this.baseClassName = baseClassName;
-			this.implementsList = implementsList;
+            if (baseClassName != null)
+            {
+                this.baseClassName = baseClassName.Item1;
+                this.BaseClassNamePosition = baseClassName.Item2;
+            }
+            this.implementsList = implementsList;
 			this.members = members;
 			this.attributes = new CustomAttributes(attributes);
 			this.entireDeclarationPosition = entireDeclarationPosition;
@@ -591,7 +609,7 @@ namespace PHP.Core.AST
 		{
 			for (int i = 0; i < implementsList.Count; i++)
 			{
-				DType base_type = analyzer.ResolveTypeName(implementsList[i], type, null, position, true);
+                DType base_type = analyzer.ResolveTypeName(implementsList[i].Key, type, null, implementsList[i].Value, true);
 
 				if (base_type.IsGenericParameter)
 				{
@@ -1192,7 +1210,9 @@ namespace PHP.Core.AST
 				else
 				{
 					GenericQualifiedName parent_name = new GenericQualifiedName(new QualifiedName(Name.ParentClassName));
-					DirectStMtdCall call_expr = new DirectStMtdCall(position, parent_name, method.DeclaringType.Base.Constructor.Name,
+					DirectStMtdCall call_expr = new DirectStMtdCall(
+                        position, parent_name, Position.Invalid,
+                        method.DeclaringType.Base.Constructor.Name, Position.Invalid,
 						baseCtorParams, TypeRef.EmptyList);
 
 					body.Insert(0, new ExpressionStmt(position, call_expr));

@@ -590,7 +590,7 @@ namespace PHP.Core
         /// <summary>
         /// Documents an exception thrown by a method.
         /// </summary>
-        public sealed class ExceptionTag : SingleLineTag
+        public sealed class ExceptionTag : TypeVarDescTag
         {
             public const string Name1 = "@exception";
             public const string Name2 = "@throws";
@@ -598,17 +598,17 @@ namespace PHP.Core
             /// <summary>
             /// version
             /// </summary>
-            public string Exception { get { return text; } }
+            public string Exception { get { return this.TypeNames; } }
 
             public ExceptionTag(string tagName, string/*!*/line)
-                : base(tagName, line)
+                : base(tagName, line, false)
             {
 
             }
 
             public override string ToString()
             {
-                return Name1 + " " + this.Exception;
+                return Name2 + " " + this.Exception;
             }
         }
 
@@ -628,6 +628,25 @@ namespace PHP.Core
             public readonly string TypeNames;
 
             /// <summary>
+            /// Starting column of the <see cref="TypeNames"/> within the line of code.
+            /// </summary>
+            private readonly int TypeNamesOffset = -1;
+
+            /// <summary>
+            /// Position of the <see cref="TypeNames"/> information.
+            /// </summary>
+            public ShortPosition TypeNamesPosition
+            {
+                get
+                {
+                    if (this.TypeNamesOffset < 0)
+                        return ShortPosition.Invalid;
+
+                    return new ShortPosition(this.StartPosition.Line, this.StartPosition.Column + this.TypeNamesOffset);
+                }
+            }
+
+            /// <summary>
             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
             /// </summary>
             public string[]/*!!*/TypeNamesArray { get { return string.IsNullOrEmpty(TypeNames) ? ArrayUtils.EmptyStrings : TypeNames.Split(new char[] { TypeNamesSeparator }, StringSplitOptions.RemoveEmptyEntries); } }
@@ -636,6 +655,11 @@ namespace PHP.Core
             /// Optional. Variable name, starts with '$'.
             /// </summary>
             public readonly string VariableName;
+
+            /// <summary>
+            /// Starting column of the <see cref="VariableName"/> within the line of code.
+            /// </summary>
+            private readonly int VariableNameOffset = -1;
 
             /// <summary>
             /// Optional. Element description.
@@ -653,27 +677,33 @@ namespace PHP.Core
 
                 // try to find [type]
                 string word = NextWord(line, ref index);
-                if (word != null && word[0] != '$')
+                if (word != null && IsTypeName(word))
                 {
                     this.TypeNames = word;
+                    this.TypeNamesOffset = index - word.Length;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
 
-                // try to find [$varname]
-                if (word != null && allowVariableName && word[0] == '$')
+                if (allowVariableName)
                 {
-                    this.VariableName = word;
-                    descStart = index;
-                    word = NextWord(line, ref index);
-                }
+                    // try to find [$varname]
+                    if (word != null && word[0] == '$')
+                    {
+                        this.VariableName = word;
+                        this.VariableNameOffset = index - word.Length;
+                        descStart = index;
+                        word = NextWord(line, ref index);
+                    }
 
-                // try to find [type] if it was not found yet
-                if (this.TypeNames == null && word != null && (char.IsLetter(word[0]) || word[0] == '_'))
-                {
-                    this.TypeNames = word;
-                    descStart = index;
-                    word = NextWord(line, ref index);
+                    // try to find [type] if it was not found yet
+                    if (this.TypeNames == null && word != null && IsTypeName(word))
+                    {
+                        this.TypeNames = word;
+                        this.TypeNamesOffset = index - word.Length;
+                        descStart = index;
+                        word = NextWord(line, ref index);
+                    }
                 }
 
                 if (descStart < line.Length)
@@ -698,6 +728,27 @@ namespace PHP.Core
                     return text.Substring(startIndex, index - startIndex);
                 else
                     return null;
+            }
+
+            /// <summary>
+            /// Checks whether given <paramref name="str"/> may be a type name.
+            /// </summary>
+            /// <param name="str">String to check.</param>
+            /// <returns>Whether given string may be a PHP type name.</returns>
+            private static bool IsTypeName(string str)
+            {
+                if (string.IsNullOrEmpty(str))
+                    return false;
+
+                if (str[0] != '_' && !char.IsLetter(str[0]))
+                    return false;
+
+                for (int i = 1; i < str.Length; i++)
+                    if (str[i] != '_' && !char.IsLetterOrDigit(str[i]))
+                        return false;
+
+                // ok
+                return true;
             }
 
             #endregion
