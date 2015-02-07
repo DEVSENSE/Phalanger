@@ -2810,6 +2810,20 @@ namespace PHP.Core
 			}
 		}
 
+        /// <summary>
+        /// Marks a sequence point (see <see cref="MarkSequencePoint"/>) using position of given <paramref name="expression"/>.
+        /// </summary>
+        /// <param name="expression">Expression which position is used to mark sequence point.</param>
+        internal void MarkSequencePoint(Expression/*!*/expression)
+        {
+            Debug.Assert(expression != null);
+            MarkSequencePoint(
+                expression.Position.FirstLine,
+                expression.Position.FirstColumn,
+                expression.Position.LastLine,
+                expression.Position.LastColumn + 1);
+        }
+
 		internal void MarkTransientSequencePoint()
 		{
 			if (context.Config.Compiler.Debug && CompilationUnit.IsTransient)
