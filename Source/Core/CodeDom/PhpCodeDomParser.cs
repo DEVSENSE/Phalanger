@@ -125,7 +125,7 @@ namespace PHP.Core.CodeDom
             /// <returns><see cref="Type"/> if found or null.</returns>
             protected Type GetType(CodeTypeReference t)
             {
-                return Helper.GetType(t, CurrentBlockAliases, imports.ToArray(), owner.references);
+                return Helper.GetType(t, /*CurrentBlockAliases*/null/*J:aliases processed by parser already*/, imports.ToArray(), owner.references);
             }
 
             /// <summary>Returns value indicating if <see cref="NewEx"/> can syntactically be creation of delegate</summary>
@@ -2157,7 +2157,7 @@ namespace PHP.Core.CodeDom
                     if (typeRef.GenericParams.Count == 0 && context != null && context.Class != null && context.Class.Context.Name == CLRName)
                     {
                         //Current class hack
-                        ret = new CodeTypeReference((string.IsNullOrEmpty(currentNamespace) ? "" : currentNamespace.TrimEnd(new char[] { ':' }).Replace(":::", ".") + ".") + CLRName);
+                        ret = new CodeTypeReference(/*(string.IsNullOrEmpty(currentNamespace) ? "" : currentNamespace.TrimEnd(new char[] { ':' }).Replace(":::", ".") + ".") +*/CLRName);
                     }
                     else
                     {
