@@ -200,7 +200,7 @@ namespace PHP.Core.AST
 
                 foreach (var p in useParams)
                 {
-                    // CALL array.SetArrayItem("&$name", "<required>" | "<optional>");
+                    // <stack>.SetArrayItem{Ref}
                     il.Emit(OpCodes.Dup);   // PhpArray
 
                     string variableName = p.Name.Value;
@@ -213,7 +213,12 @@ namespace PHP.Core.AST
                     }
                     else
                     {
+                        // LOAD PhpVariable.Copy( <name>, Assigned )
                         DirectVarUse.EmitLoad(codeGenerator, p.Name);
+                        il.LdcI4((int)CopyReason.Assigned);
+                        il.Emit(OpCodes.Call, Methods.PhpVariable.Copy);
+
+                        // .SetArrayItemExact( <stack>, <stack>, <hashcode> )
                         il.LdcI4(IntStringKey.StringKeyToArrayIndex(variableName));
                         il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemExact_String);
                     }
@@ -227,34 +232,6 @@ namespace PHP.Core.AST
             il.Emit(OpCodes.Newobj, typeof(PHP.Library.SPL.Closure).GetConstructor(new Type[] { typeof(ScriptContext), typeof(RoutineDelegate), typeof(PhpArray), typeof(PhpArray) }));
              
             return PhpTypeCode.Object;
-            //// marks a sequence point if function is declared here (i.e. is m-decl):
-            ////Note: this sequence point goes to the function where this function is declared not to this declared function!
-            //if (!function.IsLambda && function.Declaration.IsConditional)
-            //    codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
-
-            //// emits attributes on the function itself, its return value, type parameters and regular parameters:
-            //attributes.Emit(codeGenerator, this);
-            //signature.Emit(codeGenerator);
-            //typeSignature.Emit(codeGenerator);
-
-            //// prepares code generator for emitting arg-full overload;
-            //// false is returned when the body should not be emitted:
-            //if (!codeGenerator.EnterFunctionDeclaration(function)) return;
-
-            //// emits the arg-full overload:
-            //codeGenerator.EmitArgfullOverloadBody(function, body, entireDeclarationPosition, declarationBodyPosition);
-
-            //// restores original code generator settings:
-            //codeGenerator.LeaveFunctionDeclaration();
-
-            //// emits function declaration (if needed):
-            //// ignore s-decl function declarations except for __autoload;
-            //// __autoload function is declared in order to avoid using callbacks when called:
-            //if (function.Declaration.IsConditional && !function.QualifiedName.IsAutoloadName)
-            //{
-            //    Debug.Assert(!function.IsLambda);
-            //    codeGenerator.EmitDeclareFunction(function);
-            //}
         }
 
         #endregion
