@@ -763,7 +763,7 @@ namespace PHP.Core
 
                 // return the alias if found:
                 QualifiedName alias;
-                if (aliases.TryGetValue(first, out alias))
+                if (aliases != null && aliases.TryGetValue(first, out alias))
                 {
                     if (qname.IsSimpleName)
                     {
