@@ -32,6 +32,9 @@ namespace PHP.Library.Curl
         {
             get { return null; }//TODO: implement through resources
         }
+        
+        internal PhpCurlMultiResource MultiParent { get; set; }
+
 
         /// <summary>
         /// Initialize a new handle of cURL session
@@ -83,6 +86,5 @@ namespace PHP.Library.Curl
             Cookies.FlushCookies(data);
             base.Close();
         }
-
     }
 }
