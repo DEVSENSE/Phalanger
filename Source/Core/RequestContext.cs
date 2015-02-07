@@ -17,6 +17,7 @@ using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 using PHP.Core.Reflection;
 using PHP.Core.Emit;
@@ -73,17 +74,32 @@ namespace PHP.Core
 		/// The resources are disposed of when the request is over.
 		/// <seealso cref="RegisterResource"/><seealso cref="CleanUpResources"/>
 		/// </remarks>
-		private ArrayList resources; // GENERICS: <PhpResource>
+		private LinkedList<PhpResource> resources;
 
 		/// <summary>
 		/// Registers a resource that should be disposed of when the request is over.
 		/// </summary>
 		/// <param name="res">The resource.</param>
-		internal void RegisterResource(PhpResource res)
+		internal LinkedListNode<PhpResource> RegisterResource(PhpResource/*!*/res)
 		{
-			if (resources == null) resources = new ArrayList();
-			resources.Add(res);
+            Debug.Assert(res != null);
+
+            if (resources == null)
+                resources = new LinkedList<PhpResource>();
+
+            return resources.AddFirst(res);
 		}
+
+        /// <summary>
+        /// Unregisters disposed resource.
+        /// </summary>
+        internal void UnregisterResource(LinkedListNode<PhpResource>/*!*/node)
+        {
+            Debug.Assert(node != null);
+            Debug.Assert(this.resources != null);
+
+            this.resources.Remove(node);
+        }
 
 		/// <summary>
 		/// Disposes of <see cref="PhpResource"/>s created during this web request.
@@ -92,11 +108,14 @@ namespace PHP.Core
 		{
 			if (resources != null)
 			{
-				for (int i = 0; i < resources.Count; i++)
-				{
-					((PhpResource)resources[i]).Dispose();
-				}
-				resources = null;
+                for (var p = resources.First; p != null; )
+                {
+                    var next = p.Next;
+                    p.Value.Dispose();
+                    p = next;
+                }
+
+                resources = null;
 			}
 		}
 
