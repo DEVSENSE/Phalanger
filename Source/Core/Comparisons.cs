@@ -552,6 +552,51 @@ namespace PHP.Core
             }
 		}
 
+        /// <summary>
+        /// Compares two objects for equality in a manner of the PHP regular comparison.
+        /// </summary>
+        /// <param name="x">The first object.</param>
+        /// <param name="y">The second object.</param>
+        /// <returns>Whether the values of operands are the same.</returns>
+        /// <remarks>Faster than Compare(x,y) == 0.</remarks>
+        [Emitted]
+        public static bool CompareEq(object x, int y)
+        {
+            if (x == null)
+            {
+                return y == 0;								// y == 0
+            }
+            else if (x.GetType() == typeof(int))
+            {
+                return (int)x == y;
+            }
+            else if (x.GetType() == typeof(long))
+            {
+                return (long)x == (long)y;
+            }
+            else if (x.GetType() == typeof(double))
+            {
+                return (double)x == (double)y;
+            }
+            else if (x.GetType() == typeof(string))
+            {
+                return CompareString((string)x, y) == 0;
+            }
+            else if (x.GetType() == typeof(bool))
+            {
+                return (bool)x == (y != 0);
+            }
+
+            try
+            {
+                return (CompareOp_Nonliterals(x, y) == 0);
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
 		#endregion
 
 		#region Auxiliary comparisons

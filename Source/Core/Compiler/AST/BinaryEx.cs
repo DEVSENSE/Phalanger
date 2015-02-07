@@ -657,8 +657,19 @@ namespace PHP.Core.AST
 			if (equality)
 			{
                 codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));     // x = leftExpr
-                codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));    // y = rightExpr
-				codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq);
+                var right_type = rightExpr.Emit(codeGenerator);             // y = rightExpr
+
+                switch (right_type)
+                {
+                    case PhpTypeCode.Integer:
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq_object_int);
+                        break;
+                    default:
+                        codeGenerator.EmitBoxing(right_type);
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq_object_object);
+                        break;
+                }
+
 				return PhpTypeCode.Boolean;
 			}
 			else
