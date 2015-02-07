@@ -720,8 +720,9 @@ namespace PHP.Core
             cd_context.CallSites = callSites;
             this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
                 sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
-                cd_context.Type.QualifiedName.ToString(),
-                TypeContextPlace/*class_context = TypeContextPlace, can be used in .cctor of call sites container*/);
+                type.QualifiedName.ToString(),
+                TypeContextPlace, /*class_context = TypeContextPlace, can be used in .cctor of call sites container*/
+                type);
 
             //
             locationStack.PushTypeDecl(cd_context);
