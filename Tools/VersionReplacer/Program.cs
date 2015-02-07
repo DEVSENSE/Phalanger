@@ -29,7 +29,6 @@ namespace VersionReplacer
                 };
 
             var result = new StringBuilder();
-            bool changed = false;
             foreach (var line in File.ReadAllLines(fname))
             {
                 if (isvsix)
@@ -39,31 +38,16 @@ namespace VersionReplacer
                         var regex = new Regex(@"<Version>[0-9]+\.[0-9]+\.(.+)</Version>");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
-
-                        changed |= newline != line;
                         continue;
                     }
                 }
                 else if (iscs)
                 {
-                    if (line.Contains("public const string"))
+                    if (line.Contains("public const string Version"))
                     {
-                        var newline = line;
-
-                        if (line.Contains("Version"))
-                        {
-                            var regex = new Regex(@"Version\s+\=\s+""[0-9]+\.[0-9]+\.(.+)""");
-                            newline = (regex.Replace(line, versionChanger));
-                            result.AppendLine(newline);
-                        }
-                        else if (line.Contains("ChangesetNumber"))
-                        {
-                            var regex = new Regex(@"ChangesetNumber\s+\=\s+""(.+)""");
-                            newline = (regex.Replace(line, versionChanger));
-                            result.AppendLine(newline);
-                        }
-
-                        changed |= (newline != line);
+                        var regex = new Regex(@"public\s+const\s+string\s+Version\s+\=\s+""[0-9]+\.[0-9]+\.(.+)""");
+                        var newline = (regex.Replace(line, versionChanger));
+                        result.AppendLine(newline);
                         continue;
                     }
 
@@ -72,8 +56,6 @@ namespace VersionReplacer
                         var regex = new Regex(@"[assembly\:\s+AssemblyFileVersion\(""[0-9]+\.[0-9]+\.[0-9]+\.(.+)""\)");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
-
-                        changed |= newline != line;
                         continue;
                     }
                 }
@@ -82,12 +64,8 @@ namespace VersionReplacer
                 result.AppendLine(line);
             }
 
-            if (changed)
-            {
-                // do not modify the file if not necessary (causing project to rebuild)
-                File.SetAttributes(fname, FileAttributes.Normal);
-                File.WriteAllText(fname, result.ToString());
-            }
+            File.SetAttributes(fname, FileAttributes.Normal);
+            File.WriteAllText(fname, result.ToString());
         }
     }
 }
