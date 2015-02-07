@@ -330,7 +330,7 @@ namespace PHP.Core.Parsers
 		{
 			int i = StringUtils.FirstDifferent(buffer, token_start + startIndex, hereDocLabel, 0, false);
 			return i == hereDocLabel.Length && (buffer[token_start + i] == ';' ||
-				buffer[token_start + i] == '\r' || buffer[token_start + i] == '\n');
+				IsNewLineCharacter(buffer[token_start + i]));
 		}
 
 
