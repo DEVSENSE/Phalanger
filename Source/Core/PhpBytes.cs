@@ -26,7 +26,7 @@ namespace PHP.Core
 	/// </summary>
 	[Serializable]
 	[DebuggerNonUserCode]
-    [DebuggerDisplay("{((IPhpConvertible)this).ToString()}", Type = "string({Length})")]
+    [DebuggerDisplay("\"{this.DebugView(),nq}\"", Type = "binary({Length})")]
 	public sealed class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
 	{
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -190,11 +190,54 @@ namespace PHP.Core
         /// <returns></returns>
         public byte this[int i] { get { return _data[i]; } }
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region DebugView, DumpTo
 
-		/// <summary>
+        /// <summary>
+        /// Debug view of internal data. Non-ASCII characters are escaped.
+        /// </summary>
+        /// <returns>Content of this instance.</returns>
+        private string DebugView()
+        {
+            var output = new System.IO.StringWriter();
+            DumpTo(output);
+            return output.ToString().Replace("\"", "\\\"");
+        }
+
+        /// <summary>
+        /// Dumps internal data, escapes non-ASCII characters.
+        /// </summary>
+        /// <param name="output">Output to dump to.</param>
+        private void DumpTo(System.IO.TextWriter/*!*/output)
+        {
+            Debug.Assert(output != null);
+
+            const string hex_digs = "0123456789abcdef";
+            char[] patch = new char[4] { '\\', 'x', '0', '0' };
+
+            foreach (byte b in ReadonlyData)
+            {
+                // printable characters are outputted normally
+                if (b < 0x7f)
+                {
+                    output.Write((char)b);
+                }
+                else
+                {
+                    patch[2] = hex_digs[(b & 0xf0) >> 4];
+                    patch[3] = hex_digs[(b & 0x0f)];
+
+                    output.Write(patch);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
 		/// Creates a new instance of the <see cref="PhpBytes"/> class.
 		/// </summary>
 		/// <param name="data">The array of bytes.</param>
@@ -357,27 +400,8 @@ namespace PHP.Core
 		/// <param name="output">The output text stream.</param>
 		public void Print(System.IO.TextWriter output)
 		{
-			//output.WriteLine("\"\\x{0}\"", StringUtils.BinToHex(data, "\\x"));
-
-            const string hex_digs = "0123456789abcdef";
-            char[] patch = new char[4]{'\\', 'x', '0', '0'};
-            
-            output.Write("\"");
-            foreach (byte b in ReadonlyData)
-            {
-                // printable characters are outputted normally
-                if (b < 0x7f)
-                {
-                    output.Write((char)b);
-                }
-                else
-                {
-                    patch[2] = hex_digs[(b & 0xf0) >> 4];
-                    patch[3] = hex_digs[(b & 0x0f)];
-
-                    output.Write(patch);
-                }
-            }
+			output.Write("\"");
+            DumpTo(output);
             output.WriteLine("\"");            
 		}
 
