@@ -842,11 +842,14 @@ namespace PHP.Core
 		[Emitted]
 		public static String TryObjectToString(object obj, out bool success)
 		{
-			string s;
 			success = true;
 
-            if ((s = PhpVariable.AsString(obj)) != null) return s;
             if (obj == null) return String.Empty;
+            //if ((s = PhpVariable.AsString(obj)) != null) return s;
+            if (obj.GetType() == typeof(string)) return (string)obj;
+            if (obj.GetType() == typeof(PhpString)) return ((PhpString)obj).ToString();
+            if (obj.GetType() == typeof(PhpBytes)) return ((PhpBytes)obj).ToString();
+
             if (obj.GetType() == typeof(int)) return obj.ToString();
             if (obj.GetType() == typeof(bool)) return ((bool)obj) ? "1" : String.Empty;
             if (obj.GetType() == typeof(double)) return DoubleToString((double)obj);

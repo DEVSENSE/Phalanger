@@ -981,25 +981,27 @@ namespace PHP.Library
 			// using operator ===:
 			if (strict)
 			{
-				foreach (KeyValuePair<IntStringKey, object> entry in haystack)
-				{
-					// dereferences value (because of StrictEquality operator):
-					object val = PhpVariable.Dereference(entry.Value);
+                using (var enumerator = haystack.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                    {
+                        // dereferences value (because of StrictEquality operator):
+                        object val = PhpVariable.Dereference(enumerator.CurrentValue);
 
-					if (Operators.StrictEquality(needle, val))
-						return entry.Key.Object;
-				}
+                        if (Operators.StrictEquality(needle, val))
+                            return enumerator.CurrentKey.Object;
+                    }
 			}
 			else
 			{
 				// using operator ==:
 
-				foreach (KeyValuePair<IntStringKey, object> entry in haystack)
-				{
-					// comparator manages references well:
-					if (PhpComparer./*Default.*/CompareEq(needle, entry.Value))
-						return entry.Key.Object;
-				}
+                using (var enumerator = haystack.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                    {
+                        // comparator manages references well:
+                        if (PhpComparer.CompareEq(needle, enumerator.CurrentValue))
+                            return enumerator.CurrentKey.Object;
+                    }
 			}
 
 			// not found:
@@ -2222,16 +2224,17 @@ namespace PHP.Library
 
 			for (int i = 0; i < arrays.Length; i++)
 			{
-				if (arrays[i] != null)
-				{
-					foreach (KeyValuePair<IntStringKey, object> entry in arrays[i])
-					{
-						if (entry.Key.IsString)
-							result[entry.Key.String] = entry.Value;
-						else
-							result.Add(entry.Value);
-					}
-				}
+                if (arrays[i] != null)
+                {
+                    using (var enumerator = arrays[i].GetFastEnumerator())
+                        while (enumerator.MoveNext())
+                        {
+                            if (enumerator.CurrentKey.IsString)
+                                result[enumerator.CurrentKey] = enumerator.CurrentValue;
+                            else
+                                result.Add(enumerator.CurrentValue);
+                        }
+                }
 			}
 
 			// results is inplace deeply copied if returned to PHP code:
@@ -2850,7 +2853,12 @@ namespace PHP.Library
 			}
 
 			// no need to make a deep copy since keys are immutable objects (strings, ints):
-			return new PhpArray(((IDictionary)array).Keys);
+            var result = new PhpArray(array.Count);
+            using (var enumerator = array.GetFastEnumerator())
+                while (enumerator.MoveNext())
+                    result.AddToEnd(enumerator.CurrentKey.Object);
+
+            return result;
 		}
 
 		/// <summary>
@@ -2891,19 +2899,21 @@ namespace PHP.Library
 
             if (!strict)
             {
-                foreach (KeyValuePair<IntStringKey, object> entry in array)
-                {
-                    if (PhpComparer./*Default.*/CompareEq(entry.Value, searchValue))
-                        result.Add(entry.Key.Object);
-                }
+                using (var enumerator = array.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                    {
+                        if (PhpComparer.CompareEq(enumerator.CurrentValue, searchValue))
+                            result.AddToEnd(enumerator.CurrentKey.Object);
+                    }
             }
             else
             {
-                foreach (KeyValuePair<IntStringKey, object> entry in array)
-                {
-                    if (Operators.StrictEquality(entry.Value, searchValue))
-                        result.Add(entry.Key.Object);
-                }
+                using (var enumerator = array.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                    {
+                        if (Operators.StrictEquality(enumerator.CurrentValue, searchValue))
+                            result.AddToEnd(enumerator.CurrentKey.Object);
+                    }
             }
 
             // no need to make a deep copy since keys are immutable objects (strings, ints):
@@ -2928,8 +2938,11 @@ namespace PHP.Library
 			}
 
 			// references are not dereferenced:
-			PhpArray result = new PhpArray(((IDictionary)array).Values);
-
+            PhpArray result = new PhpArray(array.Count);
+            using (var enumerator = array.GetFastEnumerator())
+                while (enumerator.MoveNext())
+                    result.AddToEnd(enumerator.CurrentValue);
+                
 			// result is inplace deeply copied on return to PHP code:
 			result.InplaceCopyOnReturn = true;
 			return result;
