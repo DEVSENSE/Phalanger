@@ -886,7 +886,7 @@ namespace PHP.Core.Parsers
             }
             else
             {
-                Debug.Assert(item is T);
+                Debug.Assert(item == null || item is T);
                 tlist.Add((T)item);
             }
 
