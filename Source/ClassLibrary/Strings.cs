@@ -1254,6 +1254,18 @@ namespace PHP.Library
         /// Concatenates items of an array into a string separating them by a glue.
         /// </summary>
         /// <param name="pieces">The array to be impleded.</param>
+        /// <returns>The glued string.</returns>
+        /// <exception cref="PhpException">Thrown if neither <paramref name="glue"/> nor <paramref name="pieces"/> is not null and of type <see cref="PhpArray"/>.</exception>
+        [ImplementsFunction("join")]
+        public static string JoinGeneric(PhpArray pieces)
+        {
+            return ImplodeGeneric(pieces);
+        }
+
+        /// <summary>
+        /// Concatenates items of an array into a string separating them by a glue.
+        /// </summary>
+        /// <param name="pieces">The array to be impleded.</param>
         /// <param name="glue">The glue string.</param>
         /// <returns>The glued string.</returns>
         /// <exception cref="PhpException">Thrown if neither <paramref name="glue"/> nor <paramref name="pieces"/> is not null and of type <see cref="PhpArray"/>.</exception>
