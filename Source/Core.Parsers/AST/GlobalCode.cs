@@ -35,7 +35,7 @@ namespace PHP.Core.AST
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
     [Serializable]
-    public sealed class GlobalCode : AstNode
+    public sealed class GlobalCode : AstNode, IHasSourceUnit
     {
         /// <summary>
         /// Array of nodes representing statements in PHP global code

@@ -131,7 +131,7 @@ namespace PHP.Core.AST
 	/// Represents a function declaration.
 	/// </summary>
     [Serializable]
-    public sealed class FunctionDecl : Statement
+    public sealed class FunctionDecl : Statement, IHasSourceUnit
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
@@ -161,7 +161,7 @@ namespace PHP.Core.AST
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
         internal Scope Scope { get; private set; }
-        internal SourceUnit/*!*/ SourceUnit { get; private set; }
+        public SourceUnit/*!*/ SourceUnit { get; private set; }
         
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.

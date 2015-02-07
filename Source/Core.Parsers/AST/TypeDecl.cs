@@ -106,7 +106,7 @@ namespace PHP.Core.AST
 	/// Represents a class or an interface declaration.
 	/// </summary>
     [Serializable]
-    public sealed class TypeDecl : Statement
+    public sealed class TypeDecl : Statement, IHasSourceUnit
 	{
 		#region Properties
 
@@ -199,7 +199,7 @@ namespace PHP.Core.AST
         /// </summary>
         public bool IsConditional { get; private set; }
 
-        internal SourceUnit SourceUnit { get; private set; }
+        public SourceUnit SourceUnit { get; private set; }
         
 		#endregion
 
