@@ -222,6 +222,12 @@ namespace PHP.Core.Emit
 					new object[] { true, true }));
 			}
 
+            //// annotates the assembly with TargetFramework attribute:
+            ////[assembly: TargetFramework(".NETFramework,Version=v4.0", FrameworkDisplayName = ".NET Framework 4")]
+            //builder.SetCustomAttribute(new CustomAttributeBuilder(Constructors.TargetFramework,
+            //    new object[] { ".NETFramework,Version=v4.0" },
+            //    new PropertyInfo[] { Properties.TargetFrameworkAttribute_FrameworkDisplayName }, new object[] { ".NET Framework 4" }));
+
 			// adds builder-specific attributes:
 			SetAttributes();
 
@@ -470,7 +476,7 @@ namespace PHP.Core.Emit
         {
             PureCompilationUnit unit = PureModuleBuilder.PureCompilationUnit;
             Debug.Assert(unit.EntryPoint != null);
-            return unit.EntryPoint.ArgLessInfo;
+            return unit.EntryPoint.ArgFullInfo;
         }
     }
 
@@ -552,7 +558,7 @@ namespace PHP.Core.Emit
 			AssemblyBuilder builder = (AssemblyBuilder)RealModuleBuilder.Assembly;
 
             var ssabuilder = this as SingleScriptAssemblyBuilder;
-            var scriptType = (ssabuilder != null) ? ssabuilder.ModuleBuilder.ScriptType : null; // SAVE THIS TO THE ATTRIBUTE
+            var scriptType = (ssabuilder != null) ? ssabuilder.ModuleBuilder.ScriptType : Types.Void; // SAVE THIS TO THE ATTRIBUTE
 
 			builder.SetCustomAttribute(new CustomAttributeBuilder(Constructors.ScriptAssembly,
                 new object[] { ScriptAssembly.IsMultiScript, scriptType }));
