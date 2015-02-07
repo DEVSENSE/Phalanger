@@ -21,28 +21,13 @@ namespace PHP.Library.Data
         public const int FETCH_ORI_ABS = 4;
         [ImplementsConstant("FETCH_ORI_REL")]
         public const int FETCH_ORI_REL = 5;
-
-
+        
         #region setFetchMode
+        
         [PhpVisible]
         [ImplementsMethod]
         [return: CastToFalse]
-        public object setFetchMode(ScriptContext context, object fetch_to_mode)
-        {
-            return setFetchMode(context, fetch_to_mode, null, null);
-        }
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object setFetchMode(ScriptContext context, object fetch_to_mode, object fetch_to_dest)
-        {
-            return setFetchMode(context, fetch_to_mode, fetch_to_dest, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object setFetchMode(ScriptContext context, object fetch_to_mode, object fetch_to_dest, object fetch_to_args)
+        public object setFetchMode(ScriptContext context, object fetch_to_mode, object fetch_to_dest/*=null*/, object fetch_to_args/*=null*/)
         {
             return false;
         }

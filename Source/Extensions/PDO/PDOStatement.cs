@@ -20,7 +20,7 @@ namespace PHP.Library.Data
             : base(context, true)
         {
             this.m_pdo = pdo;
-            this.setFetchMode(context, (int)PDOFetchType.PDO_FETCH_BOTH);
+            this.setFetchMode(context, (int)PDOFetchType.PDO_FETCH_BOTH, null, null);
         }
 
         public abstract bool ExecuteStatement();
@@ -47,36 +47,20 @@ namespace PHP.Library.Data
         #endregion
 
         #region fetch
-        [PhpVisible]
-        [ImplementsMethod]
-        public object fetch(ScriptContext context)
-        {
-            return this.fetch(context, null, FETCH_ORI_NEXT, 0);
-        }
 
-        [PhpVisible]
-        [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style)
+        private object fetch(ScriptContext context, int fetch_style)
         {
             return this.fetch(context, fetch_style, FETCH_ORI_NEXT, 0);
         }
 
         [PhpVisible]
         [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style, object cursor_orientation)
-        {
-            return this.fetch(context, fetch_style, cursor_orientation, 0);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style, object cursor_orientation, object cursor_offset)
+        public object fetch(ScriptContext context, object fetch_style/*=null*/, object cursor_orientation/*FETCH_ORI_NEXT*/, object cursor_offset/*0*/)
         {
             PDOFetchType ft;
-            if (fetch_style == null)
-            {
+            if (fetch_style == null || fetch_style == Arg.Default)
                 fetch_style = this.m_pdo.getAttribute(context, (int)PDOAttributeType.PDO_ATTR_DEFAULT_FETCH_MODE);
-            }
+            
             int fetch_style_int = PHP.Core.Convert.ObjectToInteger(fetch_style);
             if (!Enum.IsDefined(typeof(PDOFetchType), fetch_style_int))
             {
@@ -88,12 +72,12 @@ namespace PHP.Library.Data
             switch (ft)
             {
                 case PDOFetchType.PDO_FETCH_ASSOC:
-                    return Fetch_Assoc(dr, false);
+                    return Fetch_Assoc(dr, false) ?? (object)false;
                 case PDOFetchType.PDO_FETCH_NUM:
-                    return Fetch_Num(dr);
+                    return Fetch_Num(dr) ?? (object)false;
                 case PDOFetchType.PDO_FETCH_BOTH:
                 case PDOFetchType.PDO_FETCH_USE_DEFAULT:
-                    return Fetch_Assoc(dr, true);
+                    return Fetch_Assoc(dr, true) ?? (object)false;
                 default:
                     throw new NotImplementedException();
             }
@@ -109,38 +93,35 @@ namespace PHP.Library.Data
             return ((PDOStatement)instance).fetch(stack.Context, style, orientation, cursor_offset);
         }
 
-        private static object Fetch_Assoc(IDataReader dr, bool withNum)
+        private static PhpArray Fetch_Assoc(IDataReader dr, bool withNum)
         {
             if (dr.Read())
             {
-                PhpArray arr = new PhpArray();
-                for (int i = 0; i < dr.FieldCount; i++)
+                int fieldCount = dr.FieldCount;
+                PhpArray arr = new PhpArray(fieldCount * (withNum ? 2 : 1));
+
+                for (int i = 0; i < fieldCount; i++)
                 {
                     string fName = dr.GetName(i);
                     object value;
                     if (dr.IsDBNull(i))
-                    {
                         value = null;
-                    }
                     else
-                    {
                         value = dr.GetValue(i);
-                    }
+
                     arr.Add(fName, value);
                     if (withNum)
-                    {
                         arr.Add(i, value);
-                    }
                 }
                 return arr;
             }
             else
             {
-                return false;
+                return null;
             }
         }
 
-        private static object Fetch_Num(IDataReader dr)
+        private static PhpArray Fetch_Num(IDataReader dr)
         {
             if (dr.Read())
             {
@@ -150,7 +131,7 @@ namespace PHP.Library.Data
             }
             else
             {
-                return false;
+                return null;
             }
         }
         #endregion
@@ -307,22 +288,15 @@ namespace PHP.Library.Data
         }
 
         #region bindValue
-        [PhpVisible]
-        [ImplementsMethod]
-        public object bindValue(ScriptContext context, object parameter, object value)
-        {
-            return this.bindValue(context, parameter, value, null);
-        }
 
         [PhpVisible]
         [ImplementsMethod]
-        public object bindValue(ScriptContext context, object parameter, object value, object data_type)
+        public object bindValue(ScriptContext context, object parameter, object value, object data_type/*=null*/)
         {
             PDOParamType? dt = null;
-            if (data_type != null && Enum.IsDefined(typeof(PDOParamType), data_type))
-            {
+            if (data_type != null && data_type != Arg.Default)
                 dt = (PDOParamType)data_type;
-            }
+
             return this.bindValue(parameter, value, dt);
         }
 
@@ -459,22 +433,16 @@ namespace PHP.Library.Data
         #endregion
 
         #region fetchColumn
+        
         [PhpVisible, ImplementsMethod]
-        public object fetchColumn(ScriptContext context)
-        {
-            return this.fetchColumn(context, 0);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchColumn(ScriptContext context, object column_number)
+        public object fetchColumn(ScriptContext context, object column_number/*=0*/)
         {
             object ret = this.fetch(context, PDO.FETCH_NUM);
             if (ret is bool && (bool)ret == false)
-            {
                 return false;
-            }
+            
             PhpArray arr = (PhpArray)ret;
-            int col = PHP.Core.Convert.ObjectToInteger(column_number);
+            int col = (column_number == Arg.Default) ? 0 : PHP.Core.Convert.ObjectToInteger(column_number);
             return arr[col];
         }
 
@@ -507,59 +475,46 @@ namespace PHP.Library.Data
         #endregion
 
         #region fetchAll
+        
         [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context)
-        {
-            return this.fetchAll(context, null, null, null);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style)
-        {
-            return this.fetchAll(context, fetch_style, null, null);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style, object fetch_argument)
-        {
-            return this.fetchAll(context, fetch_style, fetch_argument, null);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style, object fetch_argument, object ctor_args)
+        public object fetchAll(ScriptContext context, object fetch_style/*=null*/, object fetch_argument/*=null*/, object ctor_args/*=null*/)
         {
             PhpArray arr = new PhpArray();
+
             PDOFetchType fetch;
-            if (fetch_style == null)
-            {
+            if (fetch_style == null || fetch_style == Arg.Default)
                 fetch = PDOFetchType.PDO_FETCH_BOTH;
+            else
+                fetch = (PDOFetchType)(int)fetch_style;
+
+            if (fetch == PDOFetchType.PDO_FETCH_COLUMN)
+            {
+                int column = (fetch_argument == null || fetch_argument == Arg.Default) ? 0 : Core.Convert.ObjectToInteger(fetch_argument);
+                while (true)
+                {
+                    var ret = this.fetch(context, (int)PDOFetchType.PDO_FETCH_NUM) as PhpArray;
+                    if (ret == null)
+                        break;
+
+                    arr.AddToEnd(ret[column]);
+                }
             }
             else
             {
-                fetch = (PDOFetchType)fetch_style;
+                while (true)
+                {
+                    object ret = this.fetch(context, (int)fetch);
+                    if ((ret is bool && ((bool)ret) == false) || ret == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        arr.AddToEnd(ret);
+                    }
+                }
             }
 
-            while (true)
-            {
-                switch (fetch)
-                {
-                    case PDOFetchType.PDO_FETCH_BOTH:
-                    case PDOFetchType.PDO_FETCH_ASSOC:
-                    case PDOFetchType.PDO_FETCH_NUM:
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-                object ret = this.fetch(context, fetch);
-                if ((ret is bool && ((bool)ret) == false) || ret == null)
-                {
-                    break;
-                }
-                else
-                {
-                    arr.AddToEnd(ret);
-                }
-            }
             return arr;
         }
 
