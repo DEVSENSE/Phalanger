@@ -16,13 +16,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
 using System.Windows.Browser;
 #else
 using System.Web;
-using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -174,7 +174,7 @@ namespace PHP.Library
         
         /// <summary>
         /// ID of "email" filter.
-        /// Remove all characters except letters, digits and !#$%&amp;'*+-/=?^_`{|}~@.[].
+        /// Remove all characters except letters, digits and !#$%&'*+-/=?^_`{|}~@.[].
         /// </summary>
         [ImplementsConstant("FILTER_SANITIZE_EMAIL")]
         EMAIL = 517,
@@ -250,7 +250,7 @@ namespace PHP.Library
         ENCODE_HIGH = 32,
 
         /// <summary>
-        /// Encode &amp;.
+        /// Encode &.
         /// </summary>
         [ImplementsConstant("FILTER_FLAG_ENCODE_AMP")]
         ENCODE_AMP = 64,
@@ -327,7 +327,7 @@ namespace PHP.Library
     [ImplementsExtension("filter")]
     public static class PhpFiltering
     {
-        #region (NS) filter_input_array, filter_var_array, filter_id, filter_list
+        #region (NS) filter_input_array, filter_input, filter_var_array, filter_id, filter_list
         
         [ImplementsFunction("filter_input_array", FunctionImplOptions.NotSupported)]
         public static object filter_input_array(int type)
@@ -340,6 +340,27 @@ namespace PHP.Library
         /// </summary>
         [ImplementsFunction("filter_input_array", FunctionImplOptions.NotSupported)]
         public static object filter_input_array(int type, object definition)
+        {
+            return false;
+        }
+
+        [ImplementsFunction("filter_input", FunctionImplOptions.NotSupported)]
+        public static object filter_input(int type, string variable_name)
+        {
+            return filter_input(type, variable_name, (int)FilterSanitize.FILTER_DEFAULT, null);
+        }
+
+        [ImplementsFunction("filter_input", FunctionImplOptions.NotSupported)]
+        public static object filter_input(int type, string variable_name, int filter)
+        {
+            return filter_input(type, variable_name, filter, null);
+        }
+
+        /// <summary>
+        /// Gets a specific external variable by name and optionally filters it.
+        /// </summary>
+        [ImplementsFunction("filter_input", FunctionImplOptions.NotSupported)]
+        public static object filter_input(int type, string variable_name, int filter /*= FILTER_DEFAULT*/ , object options)
         {
             return false;
         }
@@ -381,36 +402,6 @@ namespace PHP.Library
 
         #endregion
 
-        #region filter_input
-
-        [ImplementsFunction("filter_input")]
-        public static object filter_input(ScriptContext/*!*/context, FilterInput type, string variable_name)
-        {
-            return filter_input(context, type, variable_name, (int)FilterSanitize.FILTER_DEFAULT, null);
-        }
-
-        [ImplementsFunction("filter_input")]
-        public static object filter_input(ScriptContext/*!*/context, FilterInput type, string variable_name, int filter)
-        {
-            return filter_input(context, type, variable_name, filter, null);
-        }
-
-        /// <summary>
-        /// Gets a specific external variable by name and optionally filters it.
-        /// </summary>
-        [ImplementsFunction("filter_input")]
-        public static object filter_input(ScriptContext/*!*/context, FilterInput type, string variable_name, int filter /*= FILTER_DEFAULT*/ , object options)
-        {
-            var arrayobj = GetArrayByInput(context, type);
-            object value;
-            if (arrayobj == null || !arrayobj.TryGetValue(variable_name, out value))
-                return null;
-
-            return filter_var(value, filter, options);
-        }
-
-        #endregion
-
         #region filter_var, filter_has_var
 
         /// <summary>
@@ -419,45 +410,25 @@ namespace PHP.Library
         [ImplementsFunction("filter_has_var")]
         public static bool filter_has_var(ScriptContext/*!*/context, FilterInput type, string variable_name)
         {
-            var arrayobj = GetArrayByInput(context, type);
-            if (arrayobj != null)
-                return arrayobj.ContainsKey(variable_name);
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// Returns <see cref="PhpArray"/> containing required input.
-        /// </summary>
-        /// <param name="context">CUrrent <see cref="ScriptContext"/>.</param>
-        /// <param name="type"><see cref="FilterInput"/> value.</param>
-        /// <returns>An instance of <see cref="PhpArray"/> or <c>null</c> if there is no such input.</returns>
-        private static PhpArray GetArrayByInput(ScriptContext/*!*/context, FilterInput type)
-        {
-            object arrayobj = null;
-
             switch (type)
             {
                 case FilterInput.Get:
-                    arrayobj = context.AutoGlobals.Get.Value; break;
+                    return context.AutoGlobals.Get.Value is PhpArray && ((PhpArray)context.AutoGlobals.Get.Value).ContainsKey(variable_name);
                 case FilterInput.Post:
-                    arrayobj = context.AutoGlobals.Post.Value; break;
+                    return context.AutoGlobals.Post.Value is PhpArray && ((PhpArray)context.AutoGlobals.Post.Value).ContainsKey(variable_name);
                 case FilterInput.Server:
-                    arrayobj = context.AutoGlobals.Server.Value; break;
+                    return context.AutoGlobals.Server.Value is PhpArray && ((PhpArray)context.AutoGlobals.Server.Value).ContainsKey(variable_name);
                 case FilterInput.Request:
-                    arrayobj = context.AutoGlobals.Request.Value; break;
+                    return context.AutoGlobals.Request.Value is PhpArray && ((PhpArray)context.AutoGlobals.Request.Value).ContainsKey(variable_name);
                 case FilterInput.Env:
-                    arrayobj = context.AutoGlobals.Env.Value; break;
+                    return context.AutoGlobals.Env.Value is PhpArray && ((PhpArray)context.AutoGlobals.Env.Value).ContainsKey(variable_name);
                 case FilterInput.Cookie:
-                    arrayobj = context.AutoGlobals.Cookie.Value; break;
+                    return context.AutoGlobals.Cookie.Value is PhpArray && ((PhpArray)context.AutoGlobals.Cookie.Value).ContainsKey(variable_name);
                 case FilterInput.Session:
-                    arrayobj = context.AutoGlobals.Session.Value; break;
+                    return context.AutoGlobals.Session.Value is PhpArray && ((PhpArray)context.AutoGlobals.Session.Value).ContainsKey(variable_name);
                 default:
-                    return null;
+                    return false;
             }
-
-            // cast arrayobj to PhpArray if possible:
-            return PhpArray.AsPhpArray(arrayobj);
         }
 
         [ImplementsFunction("filter_var")]
@@ -484,13 +455,6 @@ namespace PHP.Library
         {
             switch (filter)
             {
-                //
-                // SANITIZE
-                //
-
-                case (int)FilterSanitize.FILTER_DEFAULT:
-                    return Core.Convert.ObjectToString(variable);
-
                 case (int)FilterSanitize.EMAIL:
                     // Remove all characters except letters, digits and !#$%&'*+-/=?^_`{|}~@.[].
                     return FilterSanitizeString(PHP.Core.Convert.ObjectToString(variable), (c) =>
@@ -500,41 +464,10 @@ namespace PHP.Library
                             c == '?' || c == '^' || c == '_' || c == '`' || c == '{' || c == '|' ||
                             c == '}' || c == '~' || c == '@' || c == '.' || c == '[' || c == ']'));
 
-                //
-                // VALIDATE
-                //
-
                 case (int)FilterValidate.EMAIL:
                     {
                         var str = PHP.Core.Convert.ObjectToString(variable);
                         return RegexUtilities.IsValidEmail(str) ? str : (object)false;
-                    }
-
-                case (int)FilterValidate.INT:
-                    {
-                        int result;
-                        if (int.TryParse((PhpVariable.AsString(variable) ?? string.Empty).Trim(), out result))
-                        {
-                            if (options != null) PhpException.ArgumentValueNotSupported("options", "!null");
-                            return result;  // TODO: options: min_range, max_range
-                        }
-                        else
-                            return false;
-                    }
-                case (int)FilterValidate.REGEXP:
-                    {
-                        PhpArray optarray;
-                        // options = options['options']['regexp']
-                        if ((optarray = PhpArray.AsPhpArray(options)) != null &&
-                            optarray.TryGetValue("options", out options) && (optarray = PhpArray.AsPhpArray(options)) != null &&
-                            optarray.TryGetValue("regexp", out options))
-                        {
-                            if (PerlRegExp.Match(options, variable) > 0)
-                                return variable;
-                        }
-                        else
-                            PhpException.InvalidArgument("options", LibResources.GetString("option_missing", "regexp"));
-                        return false;
                     }
 
                 default:

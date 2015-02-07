@@ -140,6 +140,7 @@
     <Compile Include="Constants.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Filter.cs" />
     <Compile Include="CRC32.cs" />
     <Compile Include="Generated\jsonLexer.cs" />
     <Compile Include="Generated\jsonParser.cs" />
