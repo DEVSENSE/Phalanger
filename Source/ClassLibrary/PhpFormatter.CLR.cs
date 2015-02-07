@@ -364,8 +364,7 @@ namespace PHP.Library
 				{
                     serializedRefs.Add(value, sequenceNumber);
 
-                    //
-                    if (value.GetType() == typeof(ClrObject) || value is IClrValue)
+                    if (value is ClrObject || value is IClrValue)
                         WriteClrObjectInternal(value.RealObject);
                     else
                         WritePhpObjectInternal(value);

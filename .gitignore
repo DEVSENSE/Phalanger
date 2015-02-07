@@ -27,6 +27,9 @@
 .builds
 **/*.dotCover
 *.dynamic.cs
+[Dd]ebug*/
+obj/
+[Rr]elease*/
 
 # Visual C++ cache files
 ipch/
@@ -61,3 +64,23 @@ Thumbs.db
 
 # Folder config file
 Desktop.ini
+
+# Output binaries
+Deployment/Bin/extutil.exe
+Deployment/Bin/MkDynamic.exe
+Deployment/Bin/phpc.exe
+Deployment/Bin/phpconfig.exe
+Deployment/Bin/PhpNetClassLibrary.dll
+Deployment/Bin/PhpNetCore.dll
+Deployment/Bin/PhpNetCore.Utils.dll
+Deployment/Bin/PhpNetCore.xml
+Deployment/Bin/PhpNetMsSql.dll
+Deployment/Bin/PhpNetMsSql.xml
+Deployment/Bin/PhpNetPDO.dll
+Deployment/Bin/PhpNetPDOSQLite.dll
+Deployment/Bin/PhpNetPDOSQLServer.dll
+Deployment/Bin/PhpNetSQLite.dll
+Deployment/Bin/PhpNetXmlDom.dll
+Deployment/Bin/PhpNetXmlDom.xml
+Deployment/Bin/PhpNetZip.dll
+Deployment/Bin/System.Data.SQLite.dll

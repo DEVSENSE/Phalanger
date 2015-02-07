@@ -279,7 +279,7 @@ namespace PHP.Library
             internal TimeZoneInfoItem(string/*!*/phpName, TimeZoneInfo/*!*/info, string abbrevation, bool isAlias)
             {
                 // alter the ID with php-like name
-                if (!phpName.Equals(info.Id, StringComparison.OrdinalIgnoreCase))
+                if (!phpName.EqualsOrdinalIgnoreCase(info.Id))
                     info = TimeZoneInfo.CreateCustomTimeZone(phpName, info.BaseUtcOffset, info.DisplayName, info.StandardName, info.DaylightName, info.GetAdjustmentRules());
 
                 //

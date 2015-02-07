@@ -50,6 +50,42 @@ namespace PHP.Library
     {
         #region preg_last_error
 
+        public enum PregError
+        {
+            [ImplementsConstant("PREG_NO_ERROR")]
+            NoError = 0,
+            [ImplementsConstant("PREG_INTERNAL_ERROR")]
+            InternalError = 1,
+            [ImplementsConstant("PREG_BACKTRACK_LIMIT_ERROR")]
+            BacktrackLimitError = 2,
+            [ImplementsConstant("PREG_RECURSION_LIMIT_ERROR")]
+            RecursionLimitError = 3,
+            [ImplementsConstant("PREG_BAD_UTF8_ERROR")]
+            BadUtf8Error = 4,
+            [ImplementsConstant("PREG_BAD_UTF8_OFFSET_ERROR")]
+            BadUtf8OffsetError = 5
+        }
+
+        public enum PregConst
+        {
+            [ImplementsConstant("PREG_PATTERN_ORDER")]
+            PatternOrder = 1,
+            [ImplementsConstant("PREG_SET_ORDER")]
+            SetOrder = 2,
+            [ImplementsConstant("PREG_OFFSET_CAPTURE")]
+            OffsetCapture = 1 << 8,
+            [ImplementsConstant("PREG_SPLIT_NO_EMPTY")]
+            SplitNoEmpty = 1 << 0,
+            [ImplementsConstant("PREG_SPLIT_DELIM_CAPTURE")]
+            SplitDelimCapture = 1 << 1,
+            [ImplementsConstant("PREG_SPLIT_OFFSET_CAPTURE")]
+            SplitOffsetCapture = 1 << 2,
+            [ImplementsConstant("PREG_REPLACE_EVAL")]
+            ReplaceEval = 1 << 0,
+            [ImplementsConstant("PREG_GREP_INVERT")]
+            GrepInvert = 1 << 0,
+        }
+
         [ImplementsFunction("preg_last_error")]
         public static int LastError()
         {
@@ -438,12 +474,21 @@ namespace PHP.Library
 
 				if (!matchAll)
 				{
-                    for (int i = 0; i <= GetLastSuccessfulGroup(m.Groups); i++)
+                    // Preg numbers groups sequentially, both named and unnamed.
+                    // .Net only numbers unnamed groups.
+                    // So we name unnamed groups (see ConvertRegex) to map correctly.
+				    int lastSuccessfulGroupIndex = GetLastSuccessfulGroup(m.Groups);
+                    var indexGroups = new List<Group>(m.Groups.Count);
+                    var groupNameByIndex = new Dictionary<int, string>(m.Groups.Count);
+                    for (int i = 0; i <= lastSuccessfulGroupIndex; i++)
                     {
-                        AddGroupNameToResult(converter.Regex, matches, i, (ms,groupName) =>
+                        // All groups should be named.
+                        var groupName = GetGroupName(converter.Regex, i);
+
+                        if (!string.IsNullOrEmpty(groupName))
                         {
-                            ms[groupName] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
-                        });
+                            matches[groupName] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
+                        }
 
                         matches[i] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
                     }
@@ -480,6 +525,31 @@ namespace PHP.Library
 
 			return 0;
 		}
+
+        private static string GetGroupName(Regex regex, int index)
+        {
+            var groupName = regex.GroupNameFromNumber(index);
+            if (groupName.StartsWith(PerlRegExpConverter.AnonymousGroupPrefix))
+            {
+                // Anonymous groups: remove it altogether. Its purpose was to order it correctly.
+                Debug.Assert(groupName.Substring(PerlRegExpConverter.AnonymousGroupPrefix.Length) == index.ToString(CultureInfo.InvariantCulture));
+                groupName = string.Empty;
+            }
+            else
+            if (groupName[0] != PerlRegExpConverter.GroupPrefix)
+            {
+                // Indexed groups. Leave as-is.
+                Debug.Assert(groupName == index.ToString(CultureInfo.InvariantCulture));
+                groupName = string.Empty;
+            }
+            else
+            {
+                // Named groups: remove prefix.
+                groupName = (groupName[0] == PerlRegExpConverter.GroupPrefix ? groupName.Substring(1) : groupName);
+            }
+
+            return groupName;
+        }
 
 		#endregion
 
@@ -1096,15 +1166,10 @@ namespace PHP.Library
 
 		#region Helper methods
 
-
-        private static void AddGroupNameToResult(Regex regex,PhpArray matches, int i, Action<PhpArray, string> action)
+        private static void AddGroupNameToResult(Regex regex, PhpArray matches, int i, Action<PhpArray, string> action)
         {
-            // named group?
-            var groupName = regex.GroupNameFromNumber(i);
-            //remove sign from the beginning of the groupName
-            groupName = groupName[0] == PerlRegExpConverter.GroupPrefix ? groupName.Remove(0, 1) : groupName;
-
-            if (!String.IsNullOrEmpty(groupName) && groupName != i.ToString())
+            var groupName = GetGroupName(regex, i);
+            if (!String.IsNullOrEmpty(groupName))
             {
                 action(matches, groupName);
             }
@@ -1555,6 +1620,8 @@ namespace PHP.Library
         /// In order to enable group names starting with number
         /// </summary>
         internal const char GroupPrefix = 'a';
+
+        internal const string AnonymousGroupPrefix = "an0ny_";
 
         /// <summary>
 		/// Regular expression used for matching quantifiers, they are changed ungreedy to greedy and vice versa if
@@ -2121,6 +2188,7 @@ namespace PHP.Library
 			int inner_state = 0;
             HashSet<uint> addedSurrogate2Ranges = null; // cache of already added character pairs valid within character class [], dropped when switching to 0
 
+            int group_number = 0;
 			int i = 0;
 			while (i < perlExpr.Length)
 			{
@@ -2170,13 +2238,41 @@ namespace PHP.Library
                         //  (?'name'...)
                         //  (?<name>...)
                         //  (?P=name)
+                        //  (?:...)
   
 						// If the group is starting here, we need to skip the 'P' character (see state 4)
 						switch (inner_state)
 						{
 							case 0:
                                 if (ch == '(')
+                                {
                                     inner_state = 1;
+
+                                    // Look-ahead and name anonymous groups.
+                                    // This is used to match the order of the results.
+                                    // As perlre doc says:
+                                    // NOTE: While the notation of this construct [grouping] is the same as the similar function in .NET regexes,
+                                    // the behavior is not. In Perl the groups are numbered sequentially regardless of being named or not.
+                                    ++group_number;
+                                    if (i + 1 < perlExpr.Length)
+                                    {
+                                        if (perlExpr[i + 1] != '?')
+                                        {
+                                            ++i;
+                                            result.Append("(?<");
+                                            result.Append(AnonymousGroupPrefix);
+                                            result.Append(group_number);
+                                            result.Append('>');
+                                            continue;
+                                        }
+                                        else
+                                        if (i + 2 < perlExpr.Length && perlExpr[i + 2] == ':')
+                                        {
+                                            // Pseudo-group, don't count.
+                                            --group_number;
+                                        }
+                                    }
+                                }
                                 else if (ch == '\\')
                                     inner_state = 4;
                                 else

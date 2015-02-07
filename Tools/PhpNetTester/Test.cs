@@ -1,19 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Web;
 using System.Text;
 using System.Diagnostics;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
-
 
 namespace PHP.Testing
 {
 	public enum TestResult
 	{
-		Succees, CtError,
+		Succees, CtError, Skipped,
 		UnexpectedOutput, PhpcMisbehaviourScript, CannotCompileExpect, ScriptHangUp, ExpectHangUp, PhpcHangUp,
 		PhpHangUp, PhpMisbehaviour, PhpNotFound, ExpectedWarningNotDisplayed
 	}
@@ -21,34 +21,38 @@ namespace PHP.Testing
 	public enum Directive
 	{
 		None, Expect, ExpectCtError, ExpectCtWarning, ExpectPhp, ExpectExact, File, Config, Comment,
-		NumberOfRuns, AdditionalScripts, Pure, Clr
+        SkipIf, NumberOfRuns, AdditionalScripts, Pure, Clr
 	}
-
 
 	public class Test
 	{
-		protected const int buf_size = 100;
-
-        public readonly string SourcePath;
-        public readonly string SourcePathRelative;
-		private ArrayList script;
+	    private readonly Action<string> log;
+	    private readonly string sourcePath;
+	    private readonly string sourcePathRelative;
+        private List<string> script;
+        private List<string> comment;
+        private List<string> skipIf;
 
 		private TestResult expectedTestResult = TestResult.Succees;
-		private ArrayList expect;
-		private ArrayList expectExact = null;
-		private ArrayList configuration;
-		private ArrayList expectCtError;
-		private ArrayList expectCtWarning;
-		private ArrayList additionalScripts;
+        private List<List<string>> expect;
+        private List<string> expectExact;
+        private List<string> configuration;
+        private List<string> expectCtError;
+        private List<List<string>> expectCtWarning;
+        private List<string> additionalScripts;
 
-        private bool isPure = false, isClr = false;
+	    private bool isPure;
+        private bool isClr;
 
-		public TestResult RealTestResult { get { return realTestResult; } }
-		private TestResult realTestResult;
+        public TestResult RealTestResult { get { return realTestResult; } }
+		private TestResult realTestResult = TestResult.Skipped;
 		private string compilerErrorOutput;
 		private string compilerStdOutput;
 		private string scriptOutput;
 		private bool expectPhp = false;
+	    private bool expectF = false;   // Loose validation.
+        private bool expectRegex = false;   // Loose validation.
+        private bool skipped = false;
 
 		private string expectWhereFailed = null;
 
@@ -62,6 +66,9 @@ namespace PHP.Testing
 		private double phpTime = 0;
 		private int numberOfRuns = 0;
 
+        private const string PHP_FILENAME_SUFIX = "__tmp.phpscript";
+	    private const int TIMEOUT_MS = 30000;
+
 		/// <summary>
 		/// Creates new test according to file specified.
 		/// </summary>
@@ -70,63 +77,75 @@ namespace PHP.Testing
 		/// <param name="clean"><B>True</B>if created files should be deleted.</param>
 		/// <param name="compileOnly"><B>True</B> if only compilation should be performed.</param>
 		public Test(string sourcePath, bool verbose, bool clean, bool compileOnly,
-			bool benchmarks, int defaultNumberOfRuns)
-		{   
-            this.SourcePath = Path.GetFullPath(sourcePath);
+			        bool benchmarks, int defaultNumberOfRuns, Action<string> logger)
+		{
+            this.sourcePath = Path.GetFullPath(sourcePath);
             Uri currentDir = new Uri(Directory.GetCurrentDirectory() + "\\");
-            this.SourcePathRelative = currentDir.MakeRelativeUri(new Uri(this.SourcePath)).ToString();
+            this.sourcePathRelative = currentDir.MakeRelativeUri(new Uri(this.sourcePath)).ToString();
 
             this.verbose = verbose;
 			this.clean = clean;
 			this.compileOnly = compileOnly;
-			this.expect = new ArrayList();
-			this.expectCtWarning = new ArrayList();
+            this.expect = new List<List<string>>();
+            this.expectCtWarning = new List<List<string>>();
 			this.benchmarks = benchmarks;
 			this.numberOfRuns = defaultNumberOfRuns;
+		    this.log = logger ?? Console.WriteLine;
 
-			// overwrites numberOfRuns if there is specified
+		    // overwrites numberOfRuns if there is specified
 			ReadFile();
 
 			if (numberOfRuns < 1 || !benchmarks)
-				numberOfRuns = 1;
+			{
+			    numberOfRuns = 1;
+			}
 		}
 
 		private void ReadFile()
 		{
-			string line;
-			Directive current_directive = Directive.None;
-			ArrayList block = new ArrayList();
+		    var directive = Directive.None;
+			var block = new List<string>();
 
-			using (StreamReader sr = new StreamReader(SourcePath))
+			using (var sr = new StreamReader(sourcePath))
 			{
-				while ((line = sr.ReadLine()) != null)
+			    string line;
+			    while ((line = sr.ReadLine()) != null)
 				{
 					Directive d;
 					if ((d = StringToDirective(ref line)) != Directive.None)
-					{	// next directive
-						if (block.Count > 0 || Utils.CanBeEmptyDirective(current_directive))
+					{
+                        // next directive
+						if (block.Count > 0 || Utils.CanBeEmptyDirective(directive))
 						{
-							SaveBlock(block, current_directive);
-							block = new ArrayList(); // reference is stored, we cannot just call Clear()
+							SaveBlock(block, directive);
+							block = new List<string>(); // reference is stored, we cannot just call Clear()
 						}
-						current_directive = d;
+
+						directive = d;
 						if (line != null && line.Trim().Length > 0) // after directive is some text
-							block.Add(line);
+						{
+						    block.Add(line);
+						}
 					}
 					else
-					{	// still current directive
+					{
+                        // still current directive
 						block.Add(line);
 					}
 				}
 
 				// finish
 				if (block.Count > 0)
-					SaveBlock(block, current_directive);
+				{
+				    SaveBlock(block, directive);
+				}
 			}
 
 			// check if we have all required test parts
 			if (script == null)
-				throw new TestException(String.Format("Test {0} has no [file] section", this.SourcePath));
+			{
+			    throw new TestException(String.Format("Test {0} has no [file] section", this.sourcePath));
+			}
 		}
 
 		/// <summary>
@@ -137,140 +156,92 @@ namespace PHP.Testing
 		/// <returns></returns>
 		private Directive StringToDirective(ref string str)
 		{
-			string str_lower = str.ToLower();
+            // Skip the DONE directive of phpt.
+            if (MatchDirective(ref str, "===done==="))
+		    {
+                return Directive.None;
+		    }
 
-			if (str_lower.StartsWith("--expect--"))
-			{
-				str = str.Substring("--expect--".Length);
-				return Directive.Expect;
-			}
-			if (str_lower.StartsWith("[expect]"))
-			{
-				str = str.Substring("[expect]".Length);
-				return Directive.Expect;
-			}
-
-			if (str_lower.StartsWith("--expect ct-error--"))
-			{
-				str = str.Substring("--expect ct-error--".Length);
-				return Directive.ExpectCtError;
-			}
-			if (str_lower.StartsWith("[expect ct-error]"))
-			{
-				str = str.Substring("[expect ct-error]".Length);
-				return Directive.ExpectCtError;
-			}
-            if (str_lower.StartsWith("[expect errors]"))
+            if (MatchDirective(ref str, "--expect--", "[expect]"))
             {
-                str = str.Substring("[expect errors]".Length);
-                return Directive.ExpectCtError;
+				return Directive.Expect;
+			}
+
+            // In phpt EXPECTF and EXPECTREGEX are used to allow looser validation.
+            if (MatchDirective(ref str, "--expectf--", "[expectf]"))
+            {
+                expectF = true;
+                return Directive.Expect;
             }
 
-			if (str_lower.StartsWith("--expect ct-warning--"))
+            // In phpt EXPECTF and EXPECTREGEX are used to allow looser validation.
+            if (MatchDirective(ref str, "--expectregex--", "[expectregex]"))
+            {
+                expectRegex = true;
+                return Directive.Expect;
+            }
+
+            if (MatchDirective(ref str, "--expect ct-error--", "[expect ct-error]", "--expect errors--", "[expect errors]"))
 			{
-				str = str.Substring("--expect ct-warning--".Length);
-				return Directive.ExpectCtWarning;
+				return Directive.ExpectCtError;
 			}
-			if (str_lower.StartsWith("[expect ct-warning]"))
+
+            if (MatchDirective(ref str, "--expect ct-warning--", "[expect ct-warning]"))
 			{
-				str = str.Substring("[expect ct-warning]".Length);
 				return Directive.ExpectCtWarning;
 			}
 
-			if (str_lower.StartsWith("--file--"))
+            if (MatchDirective(ref str, "--file--", "[file]"))
 			{
-				str = str.Substring("--file--".Length);
-				return Directive.File;
-			}
-			if (str_lower.StartsWith("[file]"))
-			{
-				str = str.Substring("[file]".Length);
 				return Directive.File;
 			}
 
-			if (str_lower.StartsWith("--expect php--"))
+            if (MatchDirective(ref str, "--expect php--", "[expect php]"))
 			{
-				str = str.Substring("--expect php--".Length);
-				return Directive.ExpectPhp;
-			}
-			if (str_lower.StartsWith("[expect php]"))
-			{
-				str = str.Substring("[expect php]".Length);
 				return Directive.ExpectPhp;
 			}
 
-			if (str_lower.StartsWith("--expect exact--"))
+            if (MatchDirective(ref str, "--expect exact--", "[expect exact]"))
 			{
-				str = str.Substring("--expect exact--".Length);
-				return Directive.ExpectExact;
-			}
-			if (str_lower.StartsWith("[expect exact]"))
-			{
-				str = str.Substring("[expect exact]".Length);
 				return Directive.ExpectExact;
 			}
 
-			if (str_lower.StartsWith("--config--"))
+            if (MatchDirective(ref str, "--config--", "[config]"))
 			{
-				str = str.Substring("--config--".Length);
-				return Directive.Config;
-			}
-			if (str_lower.StartsWith("[config]"))
-			{
-				str = str.Substring("[config]".Length);
 				return Directive.Config;
 			}
 
-			if (str_lower.StartsWith("--comment--"))
+            if (MatchDirective(ref str, "--comment--", "[comment]"))
 			{
-				str = str.Substring("--comment--".Length);
-				return Directive.Comment;
-			}
-			if (str_lower.StartsWith("[comment]"))
-			{
-				str = str.Substring("[comment]".Length);
 				return Directive.Comment;
 			}
 
-			if (str_lower.StartsWith("--test--"))
+            if (MatchDirective(ref str, "--test--", "[test]"))
 			{
-				str = str.Substring("--test--".Length);
-				return Directive.Comment;
-			}
-			if (str_lower.StartsWith("[test]"))
-			{
-				str = str.Substring("[test]".Length);
 				return Directive.Comment;
 			}
 
-			if (str_lower.StartsWith("--runs--"))
+            if (MatchDirective(ref str, "--skipif--", "[skipif]"))
+            {
+                return Directive.SkipIf;
+            }
+
+            if (MatchDirective(ref str, "--runs--", "[runs]"))
 			{
-				str = str.Substring("--runs--".Length);
-				return Directive.NumberOfRuns;
-			}
-			if (str_lower.StartsWith("[runs]"))
-			{
-				str = str.Substring("[runs]".Length);
 				return Directive.NumberOfRuns;
 			}
 
-			if (str_lower.StartsWith("--additional scripts--"))
+            if (MatchDirective(ref str, "--additional scripts--", "[additional scripts]"))
 			{
-				str = str.Substring("--additional scripts--".Length);
-				return Directive.AdditionalScripts;
-			}
-			if (str_lower.StartsWith("[additional scripts]"))
-			{
-				str = str.Substring("[additional scripts]".Length);
 				return Directive.AdditionalScripts;
 			}
 
-
-            if (str_lower == "[pure]")
+            if (MatchDirective(ref str, "[pure]"))
             {
                 return Directive.Pure;
             }
-            if (str_lower == "[clr]")
+
+            if (MatchDirective(ref str, "[clr]"))
             {
                 return Directive.Clr;
             }
@@ -278,10 +249,27 @@ namespace PHP.Testing
 			return Directive.None;
 		}
 
-		private void SaveBlock(ArrayList block, Directive directive)
+	    private static bool MatchDirective(ref string str, params string[] directiveNames)
+	    {
+	        foreach (var directiveName in directiveNames)
+	        {
+                if (str.StartsWith(directiveName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    str = str.Substring(directiveName.Length);
+                    return true;
+                }
+
+            }
+
+            return false;
+        }
+
+	    private void SaveBlock(List<string> block, Directive directive)
 		{
-			if (directive == Directive.None || directive == Directive.Comment)
-				return;
+            if (block == null || block.Count == 0 || directive == Directive.None)
+            {
+                return;
+            }
 
             switch (directive)
             {
@@ -291,7 +279,7 @@ namespace PHP.Testing
 
                 case Directive.ExpectCtError:
                     if (this.expectCtError != null)
-                        throw new TestException(String.Format("{0}: [expect ct-error] redefinition", this.SourcePath));
+                        throw new TestException(String.Format("{0}: [expect ct-error] redefinition", this.sourcePath));
                     this.expectedTestResult = TestResult.CtError;
                     this.expectCtError = block;
                     break;
@@ -302,43 +290,56 @@ namespace PHP.Testing
 
                 case Directive.ExpectExact:
                     if (this.expectExact != null)
-                        throw new TestException(String.Format("{0}: [expect exact] redefinition", this.SourcePath));
+                        throw new TestException(String.Format("{0}: [expect exact] redefinition", this.sourcePath));
                     this.expectExact = block;
                     break;
 
                 case Directive.ExpectPhp:
                     if (expectPhp)
-                        throw new TestException(String.Format("{0}: [expect php] specified twice", this.SourcePath));
+                        throw new TestException(String.Format("{0}: [expect php] specified twice", this.sourcePath));
                     expectPhp = true;
                     break;
 
                 case Directive.Config:
                     if (configuration != null)
-                        throw new TestException(String.Format("{0}: [configuration] specified twice", this.SourcePath));
+                        throw new TestException(String.Format("{0}: [configuration] specified twice", this.sourcePath));
                     configuration = block;
                     break;
 
                 case Directive.File:
                     if (this.script != null)
-                        throw new TestException(String.Format("{0}: [script] redefinition", this.SourcePath));
+                        throw new TestException(String.Format("{0}: [script] redefinition", this.sourcePath));
                     this.script = block;
+                    break;
+
+                case Directive.Comment:
+                    if (this.comment != null)
+                        throw new TestException(String.Format("{0}: [test] redefinition", this.sourcePath));
+                    this.comment = block;
+                    break;
+
+                case Directive.SkipIf:
+                    if (this.skipIf != null)
+                        throw new TestException(String.Format("{0}: [skipif] redefinition", this.sourcePath));
+                    this.skipIf = block;
                     break;
 
                 case Directive.NumberOfRuns:
                     if (this.numberOfRuns > 0)
-                        throw new TestException(String.Format("{0}: [runs] redefinition", this.SourcePath));
+                    {
+                        throw new TestException(String.Format("{0}: [runs] redefinition", sourcePath));
+                    }
 
-                    try { this.numberOfRuns = Int32.Parse(Utils.ArrayListToString(block).Trim()); }
-                    catch (FormatException)
-                    { throw new TestException(String.Format("{0}: [runs] invalid value", this.SourcePath)); }
-                    catch (OverflowException)
-                    { throw new TestException(String.Format("{0}: [runs] invalid value", this.SourcePath)); }
+                    if (!Int32.TryParse(Utils.ListToString(block), out numberOfRuns))
+                    {
+                        throw new TestException(String.Format("{0}: [runs] invalid value", sourcePath));  
+                    }
 
                     break;
 
                 case Directive.AdditionalScripts:
                     if (this.additionalScripts != null)
-                        throw new TestException(String.Format("{0}: [additional scripts] redefinition", this.SourcePath));
+                        throw new TestException(String.Format("{0}: [additional scripts] redefinition", this.sourcePath));
                     this.additionalScripts = block;
                     break;
 
@@ -359,9 +360,52 @@ namespace PHP.Testing
 		/// <param name="phpPath">A full path to PHP (original) executable file.</param>
 		public void Run(string loaderPath, string compilerPath, string phpPath)
 		{
-			string compiled_script_path = Path.Combine(Path.GetDirectoryName(SourcePath), String.Concat(Path.GetFileNameWithoutExtension(SourcePath), "_file", ".exe"));
-			string compiled_expect_path = Path.Combine(Path.GetDirectoryName(SourcePath), String.Concat(Path.GetFileNameWithoutExtension(SourcePath), "_expect", ".exe"));
+			string compiled_script_path = Path.Combine(Path.GetDirectoryName(sourcePath), String.Concat(Path.GetFileNameWithoutExtension(sourcePath), "_file", ".exe"));
+			string compiled_expect_path = Path.Combine(Path.GetDirectoryName(sourcePath), String.Concat(Path.GetFileNameWithoutExtension(sourcePath), "_expect", ".exe"));
 			string expect_output;
+
+            if (comment != null)
+            {
+                string name = Utils.ListToString(comment).Trim();
+                if (name.Length > 0)
+                {
+                    log("[" + name + "] ");
+                }
+            }
+
+            // First, if we have a SkipIf block, execute it.
+            if (!compileOnly && skipIf != null && skipIf.Count > 0)
+            {
+                bool realVerbose = verbose;
+                verbose = false;
+                int realNumberOfRuns = numberOfRuns;
+                numberOfRuns = 1;
+
+                // compile and run script
+                if (!Compile(loaderPath, compilerPath, skipIf, compiled_script_path, false))
+                {
+                    // Compile sets realTestResult for compiling script
+                    return;
+                }
+
+                if (!RunCompiledScript(loaderPath, compiled_script_path, out scriptOutput, true))
+                {
+                    realTestResult = TestResult.ScriptHangUp;
+                    if (clean) File.Delete(compiled_script_path);
+                    return;
+                }
+                if (clean) File.Delete(compiled_script_path);
+
+                if (scriptOutput.IndexOf("skip", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    // Skipped test.
+                    skipped = true;
+                    return;
+                }
+
+                verbose = realVerbose;
+                numberOfRuns = realNumberOfRuns;
+            }
 
 			// assume success
 			realTestResult = TestResult.Succees;
@@ -405,7 +449,7 @@ namespace PHP.Testing
 				}
 				if (!CompareOutputsExact(expect_output, scriptOutput, true))
 				{
-					if (verbose) Console.WriteLine(String.Format("Unexpected output, expected exact: {0}", expect_output));
+					if (verbose) log(String.Format("Unexpected output, expected exact: {0}{1}", expect_output, Environment.NewLine));
 					realTestResult = TestResult.UnexpectedOutput;
 					expectWhereFailed = expect_output;
 					return;
@@ -415,7 +459,7 @@ namespace PHP.Testing
 
 			string script_output_cutted = scriptOutput;
 			// compile and run all expect sections
-			foreach (ArrayList e in expect)
+			foreach (List<string> e in expect)
 			{
 				expect_output = Utils.OutputWithoutCompiling(e);
 				if (expect_output == null)
@@ -433,9 +477,10 @@ namespace PHP.Testing
 					}
 					if (clean) File.Delete(compiled_expect_path);
 				}
+
 				if (!CompareOutputsSubstring(expect_output, ref script_output_cutted, true))
 				{
-					if (verbose) Console.WriteLine(String.Format("Unexpected output, expected: {0}", expect_output));
+					if (verbose) log(String.Format("Unexpected output, expected: {0}{1}", expect_output, Environment.NewLine));
 					realTestResult = TestResult.UnexpectedOutput;
 					expectWhereFailed = expect_output;
 					return;
@@ -458,7 +503,7 @@ namespace PHP.Testing
 
 					if (!CompareOutputsExact(php_output, scriptOutput, true))
 					{
-						if (verbose) Console.WriteLine(String.Format("Unexpected output, expected: {0}", php_output));
+						if (verbose) log(String.Format("Unexpected output, expected: {0}{1}", php_output, Environment.NewLine));
 						realTestResult = TestResult.UnexpectedOutput;
 						return;
 					}
@@ -471,36 +516,38 @@ namespace PHP.Testing
 		/// </summary>
 		/// <param name="compilerPath">Full path to phpc.exe</param>
 		/// <returns><c>True</c> if the script has been compiled succesfuly, <c>false</c> otherwise.</returns>
-		private bool Compile(string loaderPath, string compilerPath, ArrayList script, string output, bool isExpect)
+		private bool Compile(string loaderPath, string compilerPath, IEnumerable<string> scriptLines, string output, bool isExpect)
 		{
-			string script_path = Path.Combine(Path.GetDirectoryName(SourcePath), "__input.txt");
-			using (StreamWriter sw = new StreamWriter(script_path))
-			{
-				foreach (string s in script)
-					sw.WriteLine(s);
-				sw.Close();
-			}
+		    string scriptFilename = Path.GetFileNameWithoutExtension(sourcePath) + PHP_FILENAME_SUFIX;
+			string scriptPath = Path.Combine(Path.GetDirectoryName(sourcePath), scriptFilename);
+            Utils.DumpToFile(scriptLines, scriptPath);
 
-			Process compiler = new Process();
-            
-			string rootDir = Path.GetDirectoryName(SourcePath);
-            string arguments = String.Concat("/dw:CompilerStrict /static+ /target:exe /out:\"", output, "\" /root:. /entrypoint:\"", Path.GetFileName(script_path), "\" \"", Path.GetFileName(script_path), "\"");
-            if (isPure) arguments = "/pure+ " + arguments;
-            if (isClr) arguments = "/lang:clr " + arguments;
-            if (isPure || isClr) arguments = "/r:mscorlib /r:\"System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\" " + arguments;
+			string rootDir = Path.GetDirectoryName(sourcePath);
+
+            var sb = new StringBuilder(256);
+            sb.Append(isPure ? "/pure+ " : "");
+            sb.Append(isClr ? "/lang:clr " : "");
+            sb.Append(isPure || isClr ? "/r:mscorlib /r:\"System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\" " : "");
+            sb.Append("/dw:CompilerStrict /static+ /target:exe /out:\"").Append(output).Append("\" ");
+            sb.Append("/root:. /entrypoint:\"").Append(scriptFilename).Append("\" \"").Append(scriptFilename).Append("\"");
 
 			// put additional scripts to command line
 			if (additionalScripts != null)
-			{ // relative to /root: - we do not need to put whole path
-				foreach (object o in additionalScripts)
+			{ 
+                // relative to /root: - we do not need to put whole path
+				foreach (var s in additionalScripts)
 				{
-					string arg = ((string)o).Trim();
+					string arg = s.Trim();
 					if (arg.Length > 0)
-						arguments += String.Concat(" \"", (string)o, "\"");
+					{
+					    sb.Append(" \"").Append(s).Append("\"");
+					}
 				}
 			}
 
-			if (loaderPath != null)
+		    string arguments = sb.ToString();
+            Process compiler = new Process();
+            if (loaderPath != null)
 				compiler.StartInfo = new ProcessStartInfo(loaderPath, String.Format("\"{0}\" {1}", compilerPath, arguments));
 			else
 				compiler.StartInfo = new ProcessStartInfo(compilerPath, arguments);
@@ -510,73 +557,57 @@ namespace PHP.Testing
 			compiler.StartInfo.RedirectStandardError = true;
 			compiler.StartInfo.RedirectStandardOutput = true;
 			compiler.StartInfo.RedirectStandardInput = true;
-			if (verbose) Console.WriteLine("Running phpc compiler with options: {0}", compiler.StartInfo.Arguments);
+			if (verbose) log(string.Format("Running phpc compiler with options: {0}{1}", compiler.StartInfo.Arguments, Environment.NewLine));
 
-			DateTime startTime = System.DateTime.Now;
 			compiler.Start();
 
 			// compiler waits for enter key after work
 			compiler.StandardInput.WriteLine();
 
 			compilerErrorOutput = compiler.StandardError.ReadToEnd();
-			if (!compiler.WaitForExit(30000))
+			if (!compiler.WaitForExit(TIMEOUT_MS))
 			{
 				compiler.Kill();
 				realTestResult = TestResult.PhpcHangUp;
-				if (verbose) Console.WriteLine("Compiler hung up.");
-				if (clean) File.Delete(script_path);
+				if (verbose) log("Compiler hung up." + Environment.NewLine);
+				if (clean) File.Delete(scriptPath);
 				return false;
 			}
-			if (!isExpect) this.compilationTime = compiler.ExitTime.Subtract(startTime).TotalMilliseconds;
-			if (clean) File.Delete(script_path);
+			if (!isExpect) this.compilationTime = compiler.ExitTime.Subtract(compiler.StartTime).TotalMilliseconds;
+			if (clean) File.Delete(scriptPath);
 
-			if (verbose && compilerErrorOutput.Length > 0) Console.WriteLine("phpc error output: {0}", compilerErrorOutput);
+			if (verbose && compilerErrorOutput.Length > 0) log(string.Format("phpc error output: {0}{1}", compilerErrorOutput, Environment.NewLine));
 			compilerStdOutput = compiler.StandardOutput.ReadToEnd();
-			if (verbose && compilerStdOutput.Length > 0) Console.WriteLine("phpc std output: {0}", compilerStdOutput);
+			if (verbose && compilerStdOutput.Length > 0) log(string.Format("phpc std output: {0}{1}", compilerStdOutput, Environment.NewLine));
 
 			if (compiler.ExitCode != 0)
 			{
-				if (verbose) Console.WriteLine("Compiler exited with code: {0}", compiler.ExitCode);
+                if (verbose) log(string.Format("Compiler exited with code: {0}{1}", compiler.ExitCode, Environment.NewLine));
 
 				// do we expect error?
 				if (!isExpect && expectCtError != null)
 				{
                     var errors = compilerErrorOutput.Split(new char[]{'\n'}, StringSplitOptions.RemoveEmptyEntries);
 
-                    int found = 0;
-                    foreach (var errorline in errors)
-                    {
-                        foreach (string expectedstr in expectCtError)
-                            if (errorline.Contains(expectedstr))
-                            {
-                                found++;
-                                break;
-                            }
-                    }
-                    if (found == errors.Length || expectCtError.Count == 0/*just expecting some ct errors*/)
+                    int found = errors.Count(errorline => expectCtError.Any(errorline.Contains));
+				    if (found == errors.Length || expectCtError.Count == 0/*just expecting some ct errors*/)
                     {
                         realTestResult = TestResult.CtError;
                         return false;
                     }
-                    
-                    //if (CompareOutputsSubstring("error", ref comp_output, true) && CompareOutputsSubstring(Utils.ArrayListToString(expectCtError), ref comp_output, true))
-                    //{
-                    //    realTestResult = TestResult.CtError;
-                    //    return false;
-                    //}
 				}
 
 				realTestResult = TestResult.PhpcMisbehaviourScript;
-				if (verbose) Console.WriteLine("Test result: {0}", Utils.ResultToString(realTestResult));
+                if (verbose) log(string.Format("Test result: {0}{1}", Utils.ResultToString(realTestResult), Environment.NewLine));
 				return false;
 			}
 
 			if (!isExpect && expectCtWarning.Count > 0)
 			{
 				string comp_output = compilerErrorOutput;
-				foreach (ArrayList warn in expectCtWarning)
+				foreach (List<string> warn in expectCtWarning)
 				{
-					if (!(CompareOutputsSubstring("warning", ref comp_output, true) && CompareOutputsSubstring(Utils.ArrayListToString(warn), ref comp_output, true)))
+					if (!(CompareOutputsSubstring("warning", ref comp_output, true) && CompareOutputsSubstring(Utils.ListToString(warn), ref comp_output, true)))
 					{
 						realTestResult = TestResult.ExpectedWarningNotDisplayed;
 						return false;
@@ -595,141 +626,215 @@ namespace PHP.Testing
 
 		private bool RunCompiledScript(string loaderPath, string scriptPath, out string output, bool mainScript)
 		{
-			output = null;
-
 			// save configuration if any
 			if (configuration != null)
-				using (StreamWriter sw = new StreamWriter(String.Concat(scriptPath, ".config")))
+			{
+                using (var sw = new StreamWriter(String.Concat(scriptPath, ".config")))
 				{
 					sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 					sw.WriteLine("<configuration>");
 
 					foreach (string s in configuration)
-						sw.WriteLine(s);
+					{
+					    sw.WriteLine(s);
+					}
 
 					sw.WriteLine("</configuration>");
-
 					sw.Close();
 				}
+            }
 
 			// run script
-			Process script = new Process();
+		    bool res = false;
+            using (var script = new Process())
+            {
+                script.StartInfo = loaderPath != null
+                                    ? new ProcessStartInfo(loaderPath, "\"" + scriptPath + "\"")
+                                    : new ProcessStartInfo(scriptPath);
 
-			if (loaderPath != null)
-				script.StartInfo = new ProcessStartInfo(loaderPath, "\"" + scriptPath + "\"");
-			else
-				script.StartInfo = new ProcessStartInfo(scriptPath);
+                script.StartInfo.UseShellExecute = false;
+                script.StartInfo.RedirectStandardOutput = true;
+                script.StartInfo.ErrorDialog = false;
+                script.StartInfo.CreateNoWindow = true;
+                script.StartInfo.RedirectStandardError = true;
+                script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
+                script.EnableRaisingEvents = false;
 
-			script.StartInfo.UseShellExecute = false;
-			script.StartInfo.RedirectStandardOutput = true;
-            script.StartInfo.ErrorDialog = false;
-            script.StartInfo.CreateNoWindow = true;
-            script.StartInfo.RedirectStandardError = true;
-            script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
+                if (verbose)
+                {
+                    log(String.Format("Starting {0}...{1}", scriptPath, Environment.NewLine));
+                }
 
-            script.EnableRaisingEvents = false;
-           
+                res = RunTestProcess(scriptPath, out output, mainScript, script);
+            }
 
-			if (verbose) Console.WriteLine(String.Format("Starting {0}..", scriptPath));
+		    if (verbose)
+		    {
+		        log(string.Format("Script output: {0}{1}", output, Environment.NewLine));
+		    }
 
-			for (int i = 0; i < numberOfRuns; i++)
-			{
-				DateTime start = DateTime.Now;
-				script.Start();
-
-				output = Utils.RemoveCR(script.StandardOutput.ReadToEnd().Trim());
-				if (!script.WaitForExit(30000))
-				{
-					script.Kill();
-					if (verbose) Console.WriteLine(String.Format("Script {0} hung up.", scriptPath));
-					return false;
-				}
-				if (script.ExitCode != 0)
-				{
-					if (verbose) Console.WriteLine(String.Format("Script {0} does not exit properly.", scriptPath));
-                    output = script.StandardError.ReadToEnd();
-					return false;
-				}
-
-				if (!mainScript) break; // only once if it is expect
-				if (i >= PhpNetTester.BenchmarkWarmup) runningTime += script.ExitTime.Subtract(start).TotalMilliseconds;
-			}
-			script.Dispose();
-			if (verbose) Console.WriteLine(String.Concat("Script output: ", output));
-			return true;
+			return res;
 		}
 
-		private bool RunPhp(string phpPath, ArrayList script, out string output)
+	    private bool RunTestProcess(string scriptPath, out string output, bool mainScript, Process script)
+	    {
+	        bool res = false;
+	        output = null;
+            var sb = new StringBuilder(1024);
+	        using (var outputWaitHandle = new AutoResetEvent(false))
+	        {
+	            using (var errorWaitHandle = new AutoResetEvent(false))
+	            {
+	                script.OutputDataReceived += (sender, e) =>
+	                                                    {
+	                                                        if (e.Data == null)
+	                                                        {
+	                                                            outputWaitHandle.Set();
+	                                                        }
+	                                                        else
+	                                                        {
+	                                                            sb.AppendLine(e.Data);
+	                                                        }
+	                                                    };
+	                script.ErrorDataReceived += (sender, e) =>
+	                                                {
+	                                                    if (e.Data == null)
+	                                                    {
+	                                                        errorWaitHandle.Set();
+	                                                    }
+	                                                    else
+	                                                    {
+	                                                        sb.AppendLine(e.Data);
+	                                                    }
+	                                                };
+                    for (int i = 0; i < numberOfRuns; i++)
+                    {
+                        sb.Clear();
+
+                        script.Start();
+                        script.BeginOutputReadLine();
+                        script.BeginErrorReadLine();
+
+	                    if (script.WaitForExit(TIMEOUT_MS) &&
+	                        outputWaitHandle.WaitOne(TIMEOUT_MS) &&
+	                        errorWaitHandle.WaitOne(TIMEOUT_MS))
+	                    {
+                            script.CancelErrorRead();
+                            script.CancelOutputRead();
+	                        output = sb.ToString();
+	                        if (script.ExitCode != 0)
+	                        {
+	                            if (verbose)
+	                            {
+	                                log(string.Format("Script {0} did not exit properly.{1}", scriptPath, Environment.NewLine));
+	                            }
+
+	                            break;
+	                        }
+
+	                        res = true;
+	                    }
+	                    else
+	                    {
+	                        // Timed out.
+                            script.Kill();
+                            script.CancelErrorRead();
+                            script.CancelOutputRead();
+                            output = sb.ToString();
+	                        if (verbose)
+	                        {
+	                            log(string.Format("Script {0} hung up.{1}", scriptPath, Environment.NewLine));
+	                        }
+
+	                        break;
+	                    }
+
+	                    if (!mainScript)
+	                    {
+	                        break;
+	                    }
+
+	                    if (i >= PhpNetTester.BenchmarkWarmup)
+	                    {
+                            runningTime += script.ExitTime.Subtract(script.StartTime).TotalMilliseconds;
+	                    }
+	                }
+	            }
+	        }
+
+	        return res;
+	    }
+
+	    private bool RunPhp(string phpPath, IEnumerable<string> scriptLines, out string output)
 		{
 			output = null;
 
-			string script_path = Path.Combine(Path.GetDirectoryName(SourcePath), "__input.txt");
-			using (StreamWriter sw = new StreamWriter(script_path))
-			{
-				foreach (string s in script)
-					sw.WriteLine(s);
-				sw.Close();
-			}
+            string scriptFilename = Path.GetFileNameWithoutExtension(sourcePath) + PHP_FILENAME_SUFIX;
+            string scriptPath = Path.Combine(Path.GetDirectoryName(sourcePath), scriptFilename);
+            Utils.DumpToFile(scriptLines, scriptPath);
 
 			if (!File.Exists(phpPath))
 			{
 				realTestResult = TestResult.PhpNotFound;
-				if (verbose) Console.WriteLine(Utils.ResultToString(realTestResult));
-				if (clean) File.Delete(script_path);
+				if (verbose) log(Utils.ResultToString(realTestResult) + Environment.NewLine);
+				if (clean) File.Delete(scriptPath);
 				return false;
 			}
 
-            string phpIniPath = new Uri(new Uri(phpPath), "php.ini").LocalPath;// use our custom php.ini, don't use the global one if any
+            // use our custom php.ini, don't use the global one if any
+            string phpIniPath = new Uri(new Uri(phpPath), "php.ini").LocalPath;
 
+            //TODO: Refactor and reuse the improved process execution code.
 			Process php = new Process();
-            php.StartInfo = new ProcessStartInfo(phpPath, String.Concat("-c \"", phpIniPath, "\" \"", script_path, "\""));
+            php.StartInfo = new ProcessStartInfo(phpPath, String.Concat("-c \"", phpIniPath, "\" \"", scriptPath, "\""));
 			php.StartInfo.UseShellExecute = false;
 			php.StartInfo.RedirectStandardOutput = true;
             php.StartInfo.RedirectStandardError = true;
-            php.StartInfo.WorkingDirectory = Path.GetDirectoryName(script_path);
+            php.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
 
 			for (int i = 0; i < numberOfRuns; i++)
 			{
-				DateTime start = DateTime.Now;
 				php.Start();
 
 				output = Utils.RemoveCR(php.StandardOutput.ReadToEnd().Trim());
-				if (!php.WaitForExit(30000))
+				if (!php.WaitForExit(TIMEOUT_MS))
 				{
 					php.Kill();
 					realTestResult = TestResult.PhpHangUp;
-					if (verbose) Console.WriteLine(Utils.ResultToString(realTestResult));
-					if (clean) File.Delete(script_path);
+					if (verbose) log(Utils.ResultToString(realTestResult) + Environment.NewLine);
+					if (clean) File.Delete(scriptPath);
 					return false;
 				}
 
 				if (i >= PhpNetTester.BenchmarkWarmup)
-					this.phpTime += php.ExitTime.Subtract(start).TotalMilliseconds;
+				{
+				    this.phpTime += php.ExitTime.Subtract(php.StartTime).TotalMilliseconds;
+				}
 			}
 
 			php.Dispose();
-			if (clean) File.Delete(script_path);
+			if (clean) File.Delete(scriptPath);
 
-			if (verbose) Console.WriteLine(String.Concat("Php output: ", output));
+			if (verbose) log("Php output: " + output + Environment.NewLine);
 			return true;
         }
 
-
-        #region Comparing outputs (expected (PHP) and real (Phalanger))
+	    #region Comparing outputs (expected (PHP) and real (Phalanger))
 
         /// <summary>
         /// called on every match
         /// </summary>
         /// <param name="match"></param>
         /// <returns>only values in colections are used</returns>
-        internal string CompareModifier( Match match )
+        internal string CompareModifier(Match match)
         {
             string str = null;
-
             foreach (Group gr in match.Groups)
             {
-                if ( gr != match )
+                if (gr != match)
+                {
                     str += gr.Value;
+                }
             }
 
             return str;
@@ -784,40 +889,33 @@ namespace PHP.Testing
 		/// <param name="substring"><c>True</c> if for success is sufficient that <paramref name="expected"/>
 		/// is substring of <paramref name="real"/>.</param>
 		/// <returns><c>True</c> if outputs are same.</returns>
-		private bool CompareOutputsExact(object expected, object real, bool ignoreKnownPhalangerDifferences)
+		private bool CompareOutputsExact(string expected, string real, bool ignoreKnownPhalangerDifferences)
 		{
-			string exp_str = expected as string;
-			string real_str = real as string;
+            expected = expected.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
+            real = real.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
 
-			if (exp_str == null)
-			{
-				Debug.Assert(expected is ArrayList);
-				exp_str = "";
-				foreach (string s in (ArrayList)expected)
-					exp_str += String.Concat(s, "\n");
-			}
-			if (real_str == null)
-			{
-				Debug.Assert(real is ArrayList);
-				real_str = "";
-				foreach (string s in (ArrayList)real)
-					real_str += String.Concat(s, "\n");
-			}
-
-			exp_str = exp_str.Trim();
-			real_str = real_str.Trim();
-
-            if (exp_str == real_str)
+            if (expected == real)
+            {
                 return true;
-            else if (!ignoreKnownPhalangerDifferences)
+            }
+
+            if (!ignoreKnownPhalangerDifferences && !expectF && !expectRegex)
+            {
+                DebugCompareOutput(expected, real);
                 return false;
+            }
 
-            ModifyOutput(ref real_str, ref exp_str);
+            // Here we need to do a fuzzy match.
+            ModifyOutput(ref real, ref expected);
 
-            return (exp_str == real_str);
+            //FIXME: Add scanf and regex parsing.
+            // For now, just do a fuzzy comparison.
+            expected = Utils.RemoveWhitespace(expected);
+            real = Utils.RemoveWhitespace(real);
+            return (expected == real);
 		}
 
-        private bool CompareOutputsSubstring(string expected, ref string real, bool ignoreKnownPhalangerDifferences)
+	    private bool CompareOutputsSubstring(string expected, ref string real, bool ignoreKnownPhalangerDifferences)
 		{
             return CompareOutputsSubstring(expected, ref real, false, ignoreKnownPhalangerDifferences);
 		}
@@ -832,61 +930,64 @@ namespace PHP.Testing
 		/// <returns></returns>
 		private bool CompareOutputsSubstring(string expected, ref string real, bool noCase, bool ignoreKnownPhalangerDifferences)
 		{
+            Debug.Assert(expected != null);
+            Debug.Assert(real != null);
+
+            expected = expected.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
+            real = real.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
+
             if (ignoreKnownPhalangerDifferences)
+            {
                 ModifyOutput(ref real, ref expected);
+            }
 
 			if (noCase)
-                real = real.ToLower();
+			{
+			    real = real.ToLower();
+			}
+
+            //FIXME: Add scanf and regex parsing.
+            // For now, just do a fuzzy comparison.
+            if (expectF || expectRegex)
+            {
+                expected = Utils.RemoveWhitespace(expected);
+                real = Utils.RemoveWhitespace(real);
+            }
+
+            if (expected.Length == 0)
+            {
+                return real.Length == 0;
+            }
 
             int index = real.IndexOf(expected);
-
 			if (index < 0)
-				// not a substring
-				return false;
+			{
+			    DebugCompareOutput(expected, real);
+                
+			    // not a substring
+                return false;
+			}
 
-			real = real.Substring(index + expected.Length);
+		    real = real.Substring(index + expected.Length);
 			return true;
         }
 
-        #endregion
-        /*
-        internal void HighlightDifferences(ref string exp_str, ref string real_str)
-        {
-            if (exp_str == null || real_str == null)
-                return;
+        [Conditional("DEBUG")]
+        private void DebugCompareOutput(string expected, string real)
+	    {
+	        if (verbose)
+	        {
+	            string e = Utils.RemoveWhitespace(expected).ToLowerInvariant();
+	            string r = Utils.RemoveWhitespace(real).ToLowerInvariant();
+	            ModifyOutput(ref r, ref e);
+	            if (r.IndexOf(e, StringComparison.Ordinal) >= 0)
+	            {
+                    log(string.Format("Output has superficial differences from expected.{0}Got: {1}{0}Expected: {2}{0}", Environment.NewLine, r, e));
+	            }
+	        }
+	    }
 
-            string[] exp_lines = exp_str.Split(new char[] { '\n' });
-            string[] real_lines = real_str.Split(new char[] { '\n' });
-
-            int exp_l = 0, real_l = 0;
-
-            int nChanges = 0;
-
-            while ( exp_l < exp_lines.Length && real_l < real_lines.Length )
-            {
-                if (exp_lines[exp_l] != real_lines[real_l])
-                {
-                    ++nChanges;
-                    real_lines[real_l] = String.Concat("<span style='background:white;'>",real_lines[real_l],"</span>");
-                }
-
-                do { exp_l++; }
-                while (exp_l < exp_lines.Length && exp_lines[exp_l].Length == 0);
-
-                do { real_l++; }
-                while (real_l < real_lines.Length && real_lines[real_l].Length == 0);
-            }
-
-            if (nChanges > 0 && nChanges < real_lines.Length)//not all lines highlighted
-            {
-                real_str = null;
-                foreach(string line in real_lines)
-                {
-                    if (real_str != null) real_str += "\n" + line;
-                    else real_str = line;
-                }
-            }
-        }*/
+	    #endregion
 
         /// <summary>
 		/// Writes one row of html table for this test.
@@ -896,15 +997,17 @@ namespace PHP.Testing
         /// <param name="testIndex">The test unique identifier (for the purposes of HTML generation).</param>
 		public void WriteTableRow(TextWriter tw, bool fullLog, int testIndex)
 		{
-            bool displayDetails = (!Succeeded || fullLog || benchmarks);
+            bool displayDetails = (!Succeeded || Skipped || fullLog || benchmarks);
 
             string detailsRowId = "details" + testIndex;
 
-			string classAttr = String.Concat(" class=\"", Succeeded ? "succeeded" : "failed", "\"");
+			string classAttr = String.Concat(" class=\"", Succeeded ? "succeeded" : (Skipped ? "skipped" : "failed"), "\"");
 			tw.WriteLine("<tr class=\"status\">");
 			tw.WriteLine(String.Concat("<td", classAttr, " colspan=\"5\">",
-                "<a", classAttr, " href=\"", SourcePathRelative, "\">", SourcePathRelative, "</a>: <font color=\"", Succeeded ? "green" : "red", "\"><b>", Succeeded ? "SUCCEEDED" : "FAILED", "</b></font>",
-                "</td>"));
+                                        "<a", classAttr, " href=\"", SourcePathRelative, "\">", SourcePathRelative,
+                                        "</a>: <font color=\"", Succeeded ? "green" : (Skipped ? "blue" : "red"), "\"><b>",
+                                        Succeeded ? "SUCCEEDED" : (Skipped ? "SKIPPED" : "FAILED"), "</b></font>",
+                                        "</td>"));
 			tw.WriteLine("</tr>");
 
 			if (displayDetails)
@@ -961,14 +1064,20 @@ namespace PHP.Testing
 		/// </summary>
 		public bool Succeeded
 		{
-			get
-			{
-				if (realTestResult == expectedTestResult)
-					return true;
-
-				return false;
-			}
+			get { return realTestResult == expectedTestResult; }
 		}
 
+        /// <summary>
+        /// Returns true if the test skipped.
+        /// </summary>
+        public bool Skipped
+        {
+            get { return skipped; }
+        }
+
+	    public string SourcePathRelative
+	    {
+	        get { return sourcePathRelative; }
+	    }
 	}
 }
