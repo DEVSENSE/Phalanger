@@ -58,17 +58,31 @@ namespace PHP.Core.Reflection
 		}
 		private RoutineDelegate _arglessStub = null;
 
+        /// <summary>
+        /// Internal index used for call cache.
+        /// </summary>
+        internal int Index = -1;
+        internal static int LastIndex = -1;
+
 		#region Construction
 
 		/// <summary>
 		/// Used by compiler through subclasses (<paramref name="arglessStub"/> is <B>null</B> then).
 		/// Called by a declaring helper at run-time.
 		/// </summary>
-		internal DRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes, RoutineDelegate arglessStub)
+        /// <param name="declaringType">The declaring type. Can be null.</param>
+        /// <param name="memberAttributes">Attributes of the function.</param>
+        /// <param name="arglessStub">The stub to be called. Cannot be null.</param>
+        /// <param name="needsIndex">True to allocate <see cref="Index"/>. Usable for preserved descs, for global functions that can be reused.</param>
+		internal DRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes, RoutineDelegate arglessStub, bool needsIndex)
 			: base(declaringType, memberAttributes)
 		{
 			Debug.Assert(declaringType != null);
 			this._arglessStub = arglessStub;
+
+            // allocate an index, only for preserved descs
+            if (needsIndex) // assign an index only if needed (save indexes, since they cause prealocation of larger BitArray)
+                this.Index = System.Threading.Interlocked.Increment(ref LastIndex);
 		}
 
 		#endregion
@@ -161,7 +175,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler for functions.
 		/// </summary>
 		internal PhpRoutineDesc(DModule/*!*/ declaringModule, PhpMemberAttributes memberAttributes)
-			: base(declaringModule.GlobalType.TypeDesc, memberAttributes, null)
+			: base(declaringModule.GlobalType.TypeDesc, memberAttributes, null, false)
 		{
 			Debug.Assert(declaringModule != null);
 			Debug.Assert((memberAttributes & PhpMemberAttributes.Static) != 0);
@@ -171,7 +185,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler for methods.
 		/// </summary>
 		internal PhpRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes)
-			: base(declaringType, memberAttributes, null)
+			: base(declaringType, memberAttributes, null, false)
 		{
 			Debug.Assert(declaringType != null);
 		}
@@ -181,7 +195,7 @@ namespace PHP.Core.Reflection
 		/// Called by declaring helper emitted on PHP types.
 		/// </summary>
 		internal PhpRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub)
-			: base(declaringType, memberAttributes, arglessStub)
+			: base(declaringType, memberAttributes, arglessStub, false)
 		{
 			Debug.Assert(arglessStub != null);
 		}
@@ -190,8 +204,8 @@ namespace PHP.Core.Reflection
 		/// Creates a descriptor for specified PHP function at run-time if argless stub delegate is available.
 		/// Called by declaring helpers emitted on script or when a callback is created.
 		/// </summary>
-		public PhpRoutineDesc(PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub)
-			: base(UnknownModule.RuntimeModule.GlobalType.TypeDesc, memberAttributes, arglessStub)
+        public PhpRoutineDesc(PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub, bool needsIndex)
+            : base(UnknownModule.RuntimeModule.GlobalType.TypeDesc, memberAttributes, arglessStub, needsIndex)
 		{
 			Debug.Assert(arglessStub != null);
 		}
@@ -205,14 +219,18 @@ namespace PHP.Core.Reflection
 
 		public override string MakeFullName()
 		{
+            if (fullName != null)
+                return fullName;
+
 			if (Member != null)
-				return Member.FullName;
+                return fullName = Member.FullName;
 
 			if (IsMethod)
-				return ArglessStub.Method.Name;
+                return fullName = ArglessStub.Method.Name;
 
-			return GetFullName(ArglessStub.Method, new StringBuilder()).ToString();
+            return fullName = GetFullName(ArglessStub.Method, new StringBuilder()).ToString();
 		}
+        private string fullName;
 
 		public override string MakeFullGenericName()
 		{
@@ -235,7 +253,7 @@ namespace PHP.Core.Reflection
 		/// Used by both fast and full reflectors.
 		/// </summary>
 		internal PhpLibraryFunctionDesc(PhpLibraryModule/*!*/ declaringModule, RoutineDelegate/*!*/ arglessStub)
-			: base(declaringModule.GlobalType.TypeDesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static, arglessStub)
+			: base(declaringModule.GlobalType.TypeDesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static, arglessStub, true)
 		{
 			Debug.Assert(declaringModule != null && arglessStub != null);
 		}
@@ -274,7 +292,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler and full-reflect.
 		/// </summary>
 		public ClrMethodDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes)
-			: base(declaringType, memberAttributes, null)
+			: base(declaringType, memberAttributes, null, false)
 		{
 			Debug.Assert(declaringType != null);
 		}

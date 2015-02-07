@@ -490,7 +490,7 @@ namespace PHP.Core.Reflection
                     PhpMemberAttributes attrs = Enums.GetMemberAttributes(info);
 
                     // this method has not been populated -> create a new PhpRoutineDesc
-                    func_desc = new PhpRoutineDesc(attrs, (RoutineDelegate)Delegate.CreateDelegate(Types.RoutineDelegate, argless_info));
+                    func_desc = new PhpRoutineDesc(attrs, (RoutineDelegate)Delegate.CreateDelegate(Types.RoutineDelegate, argless_info), true);
                     functions.Add(info.Name, func_desc);
 
                     //

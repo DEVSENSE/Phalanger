@@ -417,9 +417,9 @@ namespace PHP.Core.Emit
             public static MethodInfo DeclareFunction { get { if (_DeclareFunction == null) _DeclareFunction = _this.GetMethod("DeclareFunction"); return _DeclareFunction; } }
             public static MethodInfo DeclareLambda { get { if (_DeclareLambda == null) _DeclareLambda = _this.GetMethod("DeclareLambda"); return _DeclareLambda; } }
             
-            public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) }); return _Call; } }
-            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) })); } }
-            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(DRoutineDesc).MakeByRefType(), typeof(PHP.Core.ScriptContext) }); return _Call; } }
+            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(DRoutineDesc).MakeByRefType(), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(DRoutineDesc).MakeByRefType(), typeof(PHP.Core.ScriptContext) })); } }
 
             public static MethodInfo DeclareType_Handle { get { if (_DeclareType_Handle == null) _DeclareType_Handle = _this.GetMethod("DeclareType", new Type[] { typeof(RuntimeTypeHandle), Types.String[0] }); return _DeclareType_Handle; } }
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
@@ -1140,7 +1140,7 @@ namespace PHP.Core.Emit
 		public static ConstructorInfo PhpReference_Void { get { if (_PhpReference_Void == null) _PhpReference_Void = typeof(PhpReference).GetConstructor(Type.EmptyTypes); return _PhpReference_Void; } }
 		public static ConstructorInfo PhpReference_Object { get { if (_PhpReference_Object == null) _PhpReference_Object = typeof(PhpReference).GetConstructor(Types.Object); return _PhpReference_Object; } }
 		public static ConstructorInfo PhpBytes_ByteArray { get { if (_PhpBytes_ByteArray == null) _PhpBytes_ByteArray = typeof(PhpBytes).GetConstructor(new Type[] { typeof(byte[]) }); return _PhpBytes_ByteArray; } }
-        public static ConstructorInfo PhpRoutineDesc_Attr_Delegate { get { if (_PhpRoutineDesc_Attr_Delegate == null) _PhpRoutineDesc_Attr_Delegate = typeof(PhpRoutineDesc).GetConstructor(new Type[] { typeof(PhpMemberAttributes), typeof(RoutineDelegate) }); return _PhpRoutineDesc_Attr_Delegate; } }
+        public static ConstructorInfo PhpRoutineDesc_Attr_Delegate_Bool { get { if (_PhpRoutineDesc_Attr_Delegate == null) _PhpRoutineDesc_Attr_Delegate = typeof(PhpRoutineDesc).GetConstructor(new Type[] { typeof(PhpMemberAttributes), typeof(RoutineDelegate), typeof(bool) }); return _PhpRoutineDesc_Attr_Delegate; } }
 
 		public static ConstructorInfo StdClass_ScriptContext { get { if (_StdClass_ScriptContext == null) _StdClass_ScriptContext = typeof(PHP.Library.stdClass).GetConstructor(Types.ScriptContext); return _StdClass_ScriptContext; } }
         public static ConstructorInfo NamingContext { get { return _NamingContext ?? (_NamingContext = typeof(PHP.Core.NamingContext).GetConstructor(new[] { Types.String[0], Types.Int[0] })); } }

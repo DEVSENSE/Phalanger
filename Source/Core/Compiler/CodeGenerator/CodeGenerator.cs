@@ -1537,11 +1537,12 @@ namespace PHP.Core
             {
                 Debug.Assert(routineNameExpr == null || fallbackRoutineFullname == null);   // (routineNameExpr != null) => (fallbackRoutineFullName == null)
 
-                // LOAD ScriptContext.Call{|Void|Value}(<local variables>, <naming context>, <function name>, context);
+                // LOAD ScriptContext.Call{|Void|Value}(<local variables>, <naming context>, <function name>, ref <hint>, context);
                 this.EmitLoadRTVariablesTable();
                 this.EmitLoadNamingContext();
                 this.EmitName(routineFullName, routineNameExpr, true);
                 if (fallbackRoutineFullname != null) il.Emit(OpCodes.Ldstr, fallbackRoutineFullname); else il.Emit(OpCodes.Ldnull); // fallback fcn name
+                il.Emit(OpCodes.Ldsflda, il.TypeBuilder.DefineField("<callHint>'" + (routineFullName ?? "indirect"), typeof(PHP.Core.Reflection.DRoutineDesc), FieldAttributes.Static | FieldAttributes.Private));
                 this.EmitLoadScriptContext();
 
                 // (J) only necessary copying, dereferencing or reference making:
@@ -3011,13 +3012,14 @@ namespace PHP.Core
                 // LOAD <attributes>;
                 il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
-                // new RoutineDelegate(null, <delegate>)
+                // new RoutineDelegate(null, <delegate>, true)
                 il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
                 il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
+                il.LoadBool(true);
 
                 // new PhpRoutineDesc:
-                il.Emit(OpCodes.Newobj, Constructors.PhpRoutineDesc_Attr_Delegate);
+                il.Emit(OpCodes.Newobj, Constructors.PhpRoutineDesc_Attr_Delegate_Bool);
 
                 // <field> = <STACK>
                 il.Emit(OpCodes.Stsfld, field);

@@ -311,7 +311,7 @@ namespace PHP.Core
 		[Emitted]
 		public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes)
 		{
-			functions[fullName] = new PhpRoutineDesc(memberAttributes, arglessStub);
+			functions[fullName] = new PhpRoutineDesc(memberAttributes, arglessStub, true);
 		}
 
 		/// <summary>
