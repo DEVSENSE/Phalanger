@@ -70,6 +70,11 @@ namespace PHP.Core.Parsers
 				return FirstOffset != -1;
 			}
 		}
+
+        internal static Position CombinePositions(Position first, Position last)
+        {
+            return new Position(first.FirstLine, first.FirstColumn, first.FirstOffset, last.LastLine, last.LastColumn, last.LastOffset);
+        }
 	}
 
 	#endregion

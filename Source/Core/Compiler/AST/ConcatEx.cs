@@ -102,21 +102,28 @@ namespace PHP.Core.AST
                 // add chunk
                 if (lastChunk == null || lastChunk.HasValue != evaluation.HasValue)
                 {
-                    chunks.Add(lastChunk = new ConcatChunk(evaluation));
+                    chunks.Add(lastChunk = new ConcatChunk(expr.Position, evaluation));
                 }
                 else if (evaluation.HasValue)
                 {
                     lastChunk.Value = Operators.Concat(lastChunk.Value, evaluation.Value);
+                    lastChunk.Position = Position.CombinePositions(lastChunk.Position, expr.Position);
                 }
                 else//if (!evaluation.HasValue)
                 {
                     lastChunk.Expressions.Add(evaluation.Expression);
+                    lastChunk.Position = Position.CombinePositions(lastChunk.Position, expr.Position);
                 }
             }
 
             // there must be at least one expression
             if (chunks.Count == 0)
-                chunks.Add(new ConcatChunk(string.Empty));
+            {
+                Position position = Position.Invalid;
+                if (expressions.Count > 0) position = expressions[0].Position;
+
+                chunks.Add(new ConcatChunk(position, string.Empty));
+            }
 
             //
             return chunks;
@@ -133,9 +140,9 @@ namespace PHP.Core.AST
                 if (chunk.HasValue)
                 {
                     if (chunk.Value is PhpBytes)
-                        yield return new BinaryStringLiteral(Position.Invalid, (PhpBytes)chunk.Value, AccessType.Read);
+                        yield return new BinaryStringLiteral(chunk.Position, (PhpBytes)chunk.Value, AccessType.Read);
                     else
-                        yield return new StringLiteral(Position.Invalid, Convert.ObjectToString(chunk.Value), AccessType.Read);
+                        yield return new StringLiteral(chunk.Position, Convert.ObjectToString(chunk.Value), AccessType.Read);
                 }
                 else
                 {
@@ -207,18 +214,21 @@ namespace PHP.Core.AST
         /// </summary>
         private class ConcatChunk
         {
-            public ConcatChunk(Evaluation evaluation)
+            public ConcatChunk(Position position, Evaluation evaluation)
             {
                 if ((this.HasValue = evaluation.HasValue) == true)
                     this.Value = evaluation.Value;
                 else
                     this.Expressions = new List<Expression>() { evaluation.Expression };
+                
+                this.Position = position;
             }
 
-            public ConcatChunk(object value)
+            public ConcatChunk(Position position, object value)
             {
                 this.HasValue = true;
                 this.Value = value;
+                this.Position = position;
             }
 
             public bool HasValue;
@@ -227,6 +237,11 @@ namespace PHP.Core.AST
             /// If HasValue is true, the Value of the chunk.
             /// </summary>
             public object Value;
+
+            /// <summary>
+            /// Position of the <see cref="Value"/> within the source code.
+            /// </summary>
+            public Position Position;
 
             /// <summary>
             /// If HasValue is false, list of expression to be emitted.
