@@ -180,6 +180,12 @@ namespace PHP.Core.AST
 		internal AccessType Access { get { return access; } }
 		protected AccessType access;
 
+        /// <summary>
+        /// Gets or sets possible types that the expression can evaluate to. 
+        /// This memeber might be null and should not be accessed without a null check.
+        /// </summary>
+        internal IExTypeInfo TypeInfo { get; set; }
+
 		protected Expression(Position position) : base(position) { }
 
 		internal virtual Evaluation EvaluatePriorAnalysis(SourceUnit/*!*/ sourceUnit)
