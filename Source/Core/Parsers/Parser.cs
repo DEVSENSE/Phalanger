@@ -643,56 +643,93 @@ namespace PHP.Core.Parsers
 
 		#endregion
 
-		#region Imports
+        //#region Imports
 
-		/// <summary>
-		/// Import of a particular type or function.
-		/// </summary>
-		public void AddImport(Position position, DeclarationKind kind, List<string>/*!*/ names, string aliasName)
-		{
-			QualifiedName qn = new QualifiedName(names, true, true);
-			Name alias = (aliasName != null) ? new Name(aliasName) : qn.Name;
+        ///// <summary>
+        ///// Import of a particular type or function.
+        ///// </summary>
+        //public void AddImport(Position position, DeclarationKind kind, List<string>/*!*/ names, string aliasName)
+        //{
+        //    QualifiedName qn = new QualifiedName(names, true, true);
+        //    Name alias = (aliasName != null) ? new Name(aliasName) : qn.Name;
 
-			switch (kind)
-			{
-				case DeclarationKind.Type:
-					if (!sourceUnit.AddTypeAlias(qn, alias))
-						errors.Add(Errors.ConflictingTypeAliases, SourceUnit, position);
-					break;
+        //    switch (kind)
+        //    {
+        //        case DeclarationKind.Type:
+        //            if (!sourceUnit.AddTypeAlias(qn, alias))
+        //                errors.Add(Errors.ConflictingTypeAliases, SourceUnit, position);
+        //            break;
 
-				case DeclarationKind.Function:
-					if (!sourceUnit.AddFunctionAlias(qn, alias))
-						errors.Add(Errors.ConflictingFunctionAliases, SourceUnit, position);
-					break;
+        //        case DeclarationKind.Function:
+        //            if (!sourceUnit.AddFunctionAlias(qn, alias))
+        //                errors.Add(Errors.ConflictingFunctionAliases, SourceUnit, position);
+        //            break;
 
-				case DeclarationKind.Constant:
-					if (!sourceUnit.AddConstantAlias(qn, alias))
-						errors.Add(Errors.ConflictingConstantAliases, SourceUnit, position);
-					break;
-			}
-		}
+        //        case DeclarationKind.Constant:
+        //            if (!sourceUnit.AddConstantAlias(qn, alias))
+        //                errors.Add(Errors.ConflictingConstantAliases, SourceUnit, position);
+        //            break;
+        //    }
+        //}
 
-		/// <summary>
-		/// Import of a namespace with a qualified name.
-		/// </summary>
-		public void AddImport(List<string>/*!*/ namespaceNames)
-		{
-			sourceUnit.AddImportedNamespace(new QualifiedName(namespaceNames, false, true));
-		}
+        ///// <summary>
+        ///// Import of a namespace with a qualified name.
+        ///// </summary>
+        //public void AddImport(List<string>/*!*/ namespaceNames)
+        //{
+        //    sourceUnit.AddImportedNamespace(new QualifiedName(namespaceNames, false, true));
+        //}
 
-		/// <summary>
-		/// Import of a namespace with a simple name.
-		/// </summary>
-		public void AddImport(string namespaceName)
-		{
-			sourceUnit.AddImportedNamespace(new QualifiedName(Name.EmptyBaseName, new Name[] { new Name(namespaceName) }));
-		}
+        ///// <summary>
+        ///// Import of a namespace with a simple name.
+        ///// </summary>
+        //public void AddImport(string namespaceName)
+        //{
+        //    sourceUnit.AddImportedNamespace(new QualifiedName(Name.EmptyBaseName, new Name[] { new Name(namespaceName) }));
+        //}
 
-		#endregion
+        //#endregion
 
-		#region Helpers
+        #region aliases (use_statement)
 
-		private static readonly List<Statement> emptyStatementList = new List<Statement>(1);
+        /// <summary>
+        /// Add PHP alias (through <c>use</c> keyword).
+        /// </summary>
+        /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
+        private void AddAlias(QualifiedName fullQualifiedName)
+        {
+            AddAlias(fullQualifiedName, fullQualifiedName.Name.Value);
+        }
+
+        /// <summary>
+        /// Add PHP alias (through <c>use</c> keyword).
+        /// </summary>
+        /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
+        /// <param name="alias">If not null, represents the alias name. Otherwise the last component from <paramref name="fullQualifiedName"/> is used.</param>
+        private void AddAlias(QualifiedName fullQualifiedName, string/*!*/alias)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(fullQualifiedName.Name.Value));
+            Debug.Assert(!string.IsNullOrEmpty(alias));
+
+            if (fullQualifiedName.IsFullyQualifiedName) Debug.Fail(@"qualified name within 'use' statement should not start with '\'");
+
+            if (currentNamespace != null)
+            {
+                // add alias into the namespace scope
+            }
+            else
+            {
+                // add alias into the global scope (does not affect namespace scopes)
+            }
+
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private static readonly List<Statement> emptyStatementList = new List<Statement>(1);
 		private static readonly List<GenericQualifiedName> emptyGenericQualifiedNameList = new List<GenericQualifiedName>(1);
 		private static readonly List<FormalParam> emptyFormalParamListIndex = new List<FormalParam>(1);
 		private static readonly List<ActualParam> emptyActualParamListIndex = new List<ActualParam>(1);
