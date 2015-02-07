@@ -427,79 +427,55 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
-            //PhpArray ax, ay;
-            //ax = x as PhpArray;
-            //if (ax != null)              // x is an array
-            //{
-            //    ay = y as PhpArray;
-            //    if (ay != null)            // y is an array
-            //    {
-            //        return ((PhpArray)ax.DeepCopy()).Unite((PhpArray)ay.DeepCopy());
-            //    }
-            //    else                    // y is not an array
-            //    {
-            //        PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //        return 0;
-            //    }
-            //}
-            //else                      // x is not an array
+            double dx, dy;
+            int ix, iy;
+            long lx, ly;
+            Convert.NumberInfo info, o1, o2;
+
+            // converts x and y to numbers:
+            info = (o1 = Convert.ObjectToNumber(x, out ix, out lx, out dx)) | (o2 = Convert.ObjectToNumber(y, out iy, out ly, out dy));
+
+            if ((info & (Convert.NumberInfo.IsPhpArray | Convert.NumberInfo.Unconvertible)) != 0)
             {
-                //// filters unsupported types:
-                //if (y is PhpArray)
-                //{
-                //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-                //    return 0;
-                //}
-
-                double dx, dy;
-                int ix, iy;
-                long lx, ly;
-                Convert.NumberInfo info, o1, o2;
-
-                // converts x and y to numbers:
-                info = (o1 = Convert.ObjectToNumber(x, out ix, out lx, out dx)) | (o2 = Convert.ObjectToNumber(y, out iy, out ly, out dy));
-
-                if ((info & Convert.NumberInfo.Unconvertible) != 0)
+                if (
+                    // one of operands is unconvertible
+                    ((info & Convert.NumberInfo.Unconvertible) != 0) ||
+                    // one of operands is PhpArray
+                    ((o1 & Convert.NumberInfo.IsPhpArray) != (o2 & Convert.NumberInfo.IsPhpArray))
+                    )
                 {
                     PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
                     return 0;
                 }
 
-                if ((info & Convert.NumberInfo.IsPhpArray) != 0)
-                {
-                    // one of operands is PhpArray
-                    if ((o1 & Convert.NumberInfo.IsPhpArray) != (o2 & Convert.NumberInfo.IsPhpArray))
-                    {
-                        PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-                        return 0;
-                    }
+                // both are PhpArray
+                Debug.Assert(x is PhpArray && y is PhpArray);
+                return ((PhpArray)((PhpArray)x).DeepCopy()).Unite((PhpArray)((PhpArray)y).DeepCopy());
+            }
 
-                    // both are PhpArray
-                    Debug.Assert(x is PhpArray && y is PhpArray);
-                    return ((PhpArray)((PhpArray)x).DeepCopy()).Unite((PhpArray)((PhpArray)y).DeepCopy());
-                }
+            // at least one operand is convertible to a double:
+            if ((info & Convert.NumberInfo.Double) != 0)
+                return dx + dy;
 
-                // at least one operand is convertible to a double:
-                if ((info & Convert.NumberInfo.Double) != 0)
-                    return dx + dy;
+            // 
+            long rl = unchecked(lx + ly);
 
-                // 
-                long rl = unchecked(lx + ly);
-
-                if ((lx & LONG_SIGN_MASK) != (rl & LONG_SIGN_MASK) &&   // result has different sign than x
-                    (lx & LONG_SIGN_MASK) == (ly & LONG_SIGN_MASK)      // x and y have the same sign                
-                    )
-                {
-                    // overflow:
-                    return dx + dy;
-                }
-                else
-                {
-                    if (rl >= Int32.MinValue && rl <= Int32.MaxValue)
-                        return (Int32)rl;
-
-                    return rl;
-                }
+            if ((lx & LONG_SIGN_MASK) != (rl & LONG_SIGN_MASK) &&   // result has different sign than x
+                (lx & LONG_SIGN_MASK) == (ly & LONG_SIGN_MASK)      // x and y have the same sign                
+                )
+            {
+                // overflow:
+                return dx + dy;
+            }
+            else
+            {
+                // int to long overflow check
+                int il = unchecked((int)rl);
+	            if ( il == rl )
+                    return il;
+                    
+                // we need long
+                return rl;
             }
         }
 
@@ -516,13 +492,6 @@ namespace PHP.Core
         public static object Add(object x, int y)
         {
             Debug.Assert(!(x is PhpReference));
-
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0;
-            //}
 
             double dx;
             int ix;
@@ -545,9 +514,12 @@ namespace PHP.Core
             {
                 long rl = lx + y;
 
-                if (rl >= Int32.MinValue && rl <= Int32.MaxValue)
-                    return (Int32)rl;
+                // int to long overflow check
+                int il = unchecked((int)rl);
+                if (il == rl)
+                    return il;
 
+                // we need long
                 return rl;
             }
             catch (OverflowException)
@@ -569,13 +541,6 @@ namespace PHP.Core
         public static double Add(object x, double y)
         {
             Debug.Assert(!(x is PhpReference));
-
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
 
             double dx;
             int ix;
@@ -644,9 +609,12 @@ namespace PHP.Core
             }
             else
             {
-                if (rl >= Int32.MinValue && rl <= Int32.MaxValue)
-                    return (Int32)rl;
+                // int to long overflow check
+                int il = unchecked((int)rl);
+                if (il == rl)
+                    return il;
 
+                // we need long
                 return rl;
             }
         }
@@ -691,9 +659,12 @@ namespace PHP.Core
             {
                 long rl = (long)x - ly;
 
-                if (rl >= Int32.MinValue && rl <= Int32.MaxValue)
-                    return (Int32)rl;
+                // int to long overflow check
+                int il = unchecked((int)rl);
+                if (il == rl)
+                    return il;
 
+                // we need long
                 return rl;
             }
             catch (OverflowException)
@@ -879,9 +850,12 @@ namespace PHP.Core
             if (reminder != 0)
                 return dx / dy;
 
-            if (result >= Int32.MinValue && result <= Int32.MaxValue)
-                return (Int32)result;
+            // int to long overflow check
+            int il = unchecked((int)result);
+            if (il == result)
+                return il;
 
+            // we need long
             return result;
         }
 
@@ -933,9 +907,12 @@ namespace PHP.Core
             if (reminder != 0)
                 return dx / y;
 
-            if (result >= Int32.MinValue && result <= Int32.MaxValue)
-                return (Int32)result;
+            // int to long overflow check
+            int il = unchecked((int)result);
+            if (il == result)
+                return il;
 
+            // we need long
             return result;
         }
 
@@ -1023,9 +1000,12 @@ namespace PHP.Core
             if (reminder != 0)
                 return (double)x / dy;
 
-            if (result >= Int32.MinValue && result <= Int32.MaxValue)
-                return (Int32)result;
+            // int to long overflow check
+            int il = unchecked((int)result);
+            if (il == result)
+                return il;
 
+            // we need long
             return result;
         }
 
@@ -1106,9 +1086,12 @@ namespace PHP.Core
             {
                 long rl = lx * ly;
 
-                if (rl >= Int32.MinValue && rl <= Int32.MaxValue)
-                    return (Int32)rl;
+                // int to long overflow check
+                int il = unchecked((int)rl);
+                if (il == rl)
+                    return il;
 
+                // we need long
                 return rl;
             }
             catch (OverflowException)
@@ -1157,9 +1140,12 @@ namespace PHP.Core
             {
                 long rl = lx * y;
 
-                if (rl >= Int32.MinValue && rl <= Int32.MaxValue)
-                    return (Int32)rl;
+                // int to long overflow check
+                int il = unchecked((int)rl);
+                if (il == rl)
+                    return il;
 
+                // we need long
                 return rl;
             }
             catch (OverflowException)
@@ -1258,9 +1244,12 @@ namespace PHP.Core
             }
 
             long result = lx % ly;
-            if (result >= Int32.MinValue && result <= Int32.MaxValue)
-                return (Int32)result;
+            // int to long overflow check
+            int il = unchecked((int)result);
+            if (il == result)
+                return il;
 
+            // we need long
             return result;
         }
 
@@ -1305,9 +1294,12 @@ namespace PHP.Core
             }
 
             long result = lx % y;
-            if (result >= Int32.MinValue && result <= Int32.MaxValue)
-                return (Int32)result;
+            // int to long overflow check
+            int il = unchecked((int)result);
+            if (il == result)
+                return il;
 
+            // we need long
             return result;
         }
 
@@ -1517,9 +1509,12 @@ namespace PHP.Core
                         throw new ArgumentOutOfRangeException("op");
                 }
 
-                if (result >= Int32.MinValue && result <= Int32.MaxValue)
-                    return (Int32)result;
+                // int to long overflow check
+                int il = unchecked((int)result);
+                if (il == result)
+                    return il;
 
+                // we need long
                 return result;
             }
             else
