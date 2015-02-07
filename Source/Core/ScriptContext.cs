@@ -2882,5 +2882,22 @@ namespace PHP.Core
         }
 
 		#endregion
-	}
+
+        #region GlobalScope
+
+        private Utilities.GlobalScope globalScope;
+
+        public Utilities.GlobalScope Globals
+        {
+            get
+            {
+                if (globalScope == null)
+                    globalScope = new Utilities.GlobalScope(this);
+
+                return globalScope;
+            }
+        }
+
+        #endregion
+    }
 }
