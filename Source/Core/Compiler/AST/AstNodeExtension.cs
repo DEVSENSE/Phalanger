@@ -96,9 +96,12 @@ namespace PHP.Core.Compiler.AST
                 var type = data as Type;
                 if (type == null) return;
                 // determine whether NodeCompilerAttribute should have Singleton = true
-                var fields = type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-                if (IsSingleton) Debug.Assert(fields.Length == 0, "Singleton should not have instance fields.");
-                else Debug.Assert(fields.Length != 0 || !type.IsSealed, type.ToString() + "  should be marked as Singleton.");
+                bool hasFields = false;
+                for (var t = type; t != null && t != typeof(Object); t = t.BaseType)
+                    hasFields |= t.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public).Length != 0;
+
+                if (IsSingleton) Debug.Assert(!hasFields, "Singleton should not have instance fields.");
+                else Debug.Assert(hasFields, type.ToString() + " should be marked as Singleton.");
             }
 #endif
         }

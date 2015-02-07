@@ -180,7 +180,7 @@ namespace PHP.Core.Compiler.AST
 
         #region IndirectTypeRef
 
-        [NodeCompiler(typeof(IndirectTypeRef))]
+        [NodeCompiler(typeof(IndirectTypeRef), Singleton = true)]
         sealed class IndirectTypeRefCompiler : TypeRefCompiler<IndirectTypeRef>
         {
             public override DType ResolvedType { get { return null; } }

@@ -27,7 +27,7 @@ namespace PHP.Core.Compiler.AST
     {
         #region JumpStmt
 
-        [NodeCompiler(typeof(JumpStmt))]
+        [NodeCompiler(typeof(JumpStmt), Singleton = true)]
         sealed class JumpStmtCompiler : StatementCompiler<JumpStmt>
         {
             internal override Statement Analyze(JumpStmt node, Analyzer analyzer)
@@ -207,7 +207,7 @@ namespace PHP.Core.Compiler.AST
 
         #region GotoStmt
 
-        [NodeCompiler(typeof(GotoStmt))]
+        [NodeCompiler(typeof(GotoStmt), Singleton = true)]
         sealed class GotoStmtCompiler : StatementCompiler<GotoStmt>
         {
             internal override Statement Analyze(GotoStmt node, Analyzer analyzer)
@@ -260,7 +260,7 @@ namespace PHP.Core.Compiler.AST
 
         #region LabelStmt
 
-        [NodeCompiler(typeof(LabelStmt))]
+        [NodeCompiler(typeof(LabelStmt), Singleton = true)]
         sealed class LabelStmtCompiler : StatementCompiler<LabelStmt>
         {
             internal override Statement Analyze(LabelStmt node, Analyzer analyzer)

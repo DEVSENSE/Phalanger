@@ -22,7 +22,7 @@ namespace PHP.Core.Compiler.AST
 {
     partial class NodeCompilers
     {
-        [NodeCompiler(typeof(UnaryEx), Singleton = true)]
+        [NodeCompiler(typeof(UnaryEx))]
         sealed class UnaryExCompiler : ExpressionCompiler<UnaryEx>
         {
             #region Analysis

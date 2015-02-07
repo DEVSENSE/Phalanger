@@ -247,7 +247,7 @@ namespace PHP.Core.Compiler.AST
             #endregion
         }
 
-        [NodeCompiler(typeof(CaseItem))]
+        [NodeCompiler(typeof(CaseItem), Singleton = true)]
         sealed class CaseItemCompiler : SwitchItemCompiler<CaseItem>
         {
             protected override void Analyze(CaseItem/*!*/node, Analyzer analyzer)
@@ -274,7 +274,7 @@ namespace PHP.Core.Compiler.AST
             }
         }
 
-        [NodeCompiler(typeof(DefaultItem))]
+        [NodeCompiler(typeof(DefaultItem), Singleton = true)]
         sealed class DefaultItemCompiler : SwitchItemCompiler<DefaultItem>
         {
             protected override void Analyze(DefaultItem/*!*/node, Analyzer analyzer)

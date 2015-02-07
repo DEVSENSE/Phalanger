@@ -27,7 +27,7 @@ namespace PHP.Core.Compiler.AST
     {
         #region WhileStmt
 
-        [NodeCompiler(typeof(WhileStmt))]
+        [NodeCompiler(typeof(WhileStmt), Singleton = true)]
         sealed class WhileStmtCompiler : StatementCompiler<WhileStmt>
         {
             internal override Statement Analyze(WhileStmt node, Analyzer analyzer)
@@ -114,7 +114,7 @@ namespace PHP.Core.Compiler.AST
 
         #region ForStmt
 
-        [NodeCompiler(typeof(ForStmt))]
+        [NodeCompiler(typeof(ForStmt), Singleton = true)]
         sealed class ForStmtCompiler : StatementCompiler<ForStmt>
         {
             internal override Statement Analyze(ForStmt node, Analyzer analyzer)
@@ -239,7 +239,7 @@ namespace PHP.Core.Compiler.AST
 
         #region ForeachStmt
 
-        [NodeCompiler(typeof(ForeachVar))]
+        [NodeCompiler(typeof(ForeachVar), Singleton = true)]
         sealed class ForeachVarCompiler : INodeCompiler, IForeachVarCompiler
         {
             public void Analyze(ForeachVar/*!*/node, Analyzer analyzer)
@@ -291,7 +291,7 @@ namespace PHP.Core.Compiler.AST
 
         }
 
-        [NodeCompiler(typeof(ForeachStmt))]
+        [NodeCompiler(typeof(ForeachStmt), Singleton = true)]
         sealed class ForeachStmtCompiler : StatementCompiler<ForeachStmt>
         {
             internal override Statement Analyze(ForeachStmt node, Analyzer analyzer)

@@ -74,7 +74,7 @@ namespace PHP.Core.Compiler.AST
 
         #region BlockStmt
 
-        [NodeCompiler(typeof(BlockStmt))]
+        [NodeCompiler(typeof(BlockStmt), Singleton = true)]
         sealed class BlockStmtCompiler : StatementCompiler<BlockStmt>
         {
             internal override Statement Analyze(BlockStmt node, Analyzer analyzer)
@@ -107,7 +107,7 @@ namespace PHP.Core.Compiler.AST
 
         #region ExpressionStmt
 
-        [NodeCompiler(typeof(ExpressionStmt))]
+        [NodeCompiler(typeof(ExpressionStmt), Singleton = true)]
         sealed class ExpressionStmtCompiler : StatementCompiler<ExpressionStmt>
         {
             internal override Statement Analyze(ExpressionStmt node, Analyzer analyzer)
@@ -181,7 +181,7 @@ namespace PHP.Core.Compiler.AST
 
         #region UnsetStmt
 
-        [NodeCompiler(typeof(UnsetStmt))]
+        [NodeCompiler(typeof(UnsetStmt), Singleton = true)]
         sealed class UnsetStmtCompiler : StatementCompiler<UnsetStmt>
         {
             internal override Statement Analyze(UnsetStmt node, Analyzer analyzer)
@@ -220,7 +220,7 @@ namespace PHP.Core.Compiler.AST
 
         #region GlobalStmt
 
-        [NodeCompiler(typeof(GlobalStmt))]
+        [NodeCompiler(typeof(GlobalStmt), Singleton = true)]
         sealed class GlobalStmtCompiler : StatementCompiler<GlobalStmt>
         {
             internal override Statement Analyze(GlobalStmt node, Analyzer analyzer)
@@ -261,7 +261,7 @@ namespace PHP.Core.Compiler.AST
 
         #region StaticStmt
 
-        [NodeCompiler(typeof(StaticStmt))]
+        [NodeCompiler(typeof(StaticStmt), Singleton = true)]
         sealed class StaticStmtCompiler : StatementCompiler<StaticStmt>
         {
             internal override Statement Analyze(StaticStmt node, Analyzer analyzer)
@@ -290,8 +290,8 @@ namespace PHP.Core.Compiler.AST
 
         #region StaticVarDecl
 
-        [NodeCompiler(typeof(StaticVarDecl))]
-        class StaticVarDeclCompiler : INodeCompiler
+        [NodeCompiler(typeof(StaticVarDecl), Singleton = true)]
+        sealed class StaticVarDeclCompiler : INodeCompiler
         {
             public void Analyze(StaticVarDecl/*!*/node, Analyzer analyzer)
             {

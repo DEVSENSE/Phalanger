@@ -49,13 +49,13 @@ namespace PHP.Core.Compiler.AST
 
     partial class NodeCompilers
     {
-        [NodeCompiler(typeof(IntLiteral), Singleton = true)]
-        [NodeCompiler(typeof(LongIntLiteral), Singleton = true)]
-        [NodeCompiler(typeof(DoubleLiteral), Singleton = true)]
-        [NodeCompiler(typeof(StringLiteral), Singleton = true)]
-        [NodeCompiler(typeof(BinaryStringLiteral), Singleton = true)]
-        [NodeCompiler(typeof(BoolLiteral), Singleton = true)]
-        [NodeCompiler(typeof(NullLiteral), Singleton = true)]
+        [NodeCompiler(typeof(IntLiteral))]
+        [NodeCompiler(typeof(LongIntLiteral))]
+        [NodeCompiler(typeof(DoubleLiteral))]
+        [NodeCompiler(typeof(StringLiteral))]
+        [NodeCompiler(typeof(BinaryStringLiteral))]
+        [NodeCompiler(typeof(BoolLiteral))]
+        [NodeCompiler(typeof(NullLiteral))]
         sealed class LiteralCompiler : ExpressionCompiler<Literal>
         {
             public override PhpTypeCode GetValueTypeCode(Literal node)
