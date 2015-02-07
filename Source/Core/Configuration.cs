@@ -67,6 +67,12 @@ namespace PHP.Core
 		/// </summary>
 		ClrSemantics = 64,
 
+        /// <summary>
+        /// Enables PHP keywords that may be used in C# as class or namespace name, to be used in PHP code too.
+        /// E.g. "List", "Array", "Abstract", ... would not be treated as syntax error when used as a <c>namespace_name_identifier</c> token.
+        /// </summary>
+        CSharpTypeNames = 128,
+
 		/// <summary>
 		/// Features enabled by default in the standard mode. Corresponds to the currently supported version of PHP 
 		/// <seealso cref="PhpVersion.Current"/>.
@@ -80,7 +86,7 @@ namespace PHP.Core
 
 		Php4 = ShortOpenTags,
 		Php5 = Php4 | V5Keywords,
-		PhpClr = Php5 | UnicodeSemantics | TypeKeywords | Linq | ClrSemantics | AspTags
+        PhpClr = Php5 | UnicodeSemantics | TypeKeywords | Linq | ClrSemantics | AspTags | CSharpTypeNames
 	}
 
 	#endregion
