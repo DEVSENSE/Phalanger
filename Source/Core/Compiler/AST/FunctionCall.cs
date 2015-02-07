@@ -145,12 +145,12 @@ namespace PHP.Core.AST
 		private int overloadIndex = DRoutine.InvalidOverloadIndex;
 
         /// <summary>
-        /// Type of <see cref="IsMemberOf"/> if can be resolved statically. Otherwise <c>null</c>.
+        /// Type of <see cref="VarLikeConstructUse.IsMemberOf"/> if can be resolved statically. Otherwise <c>null</c>.
         /// </summary>
         private DType/*A*/isMemberOfType;
 
         /// <summary>
-        /// Gets type of <see cref="IsMemberOf"/> expression if can be resolved.
+        /// Gets type of <see cref="VarLikeConstructUse.IsMemberOf"/> expression if can be resolved.
         /// </summary>
         /// <param name="analyzer">Analyzer.</param>
         /// <returns><see cref="DType"/> or <c>null</c> reference if type could not be resolved.</returns>
