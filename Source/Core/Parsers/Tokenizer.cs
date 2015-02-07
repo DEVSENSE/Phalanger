@@ -350,6 +350,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_FILE:                 // __FILE__
 					case Tokens.T_LINE:                 // __LINE__
                     case Tokens.T_DIR:                  // __DIR__
+                    case Tokens.T_CALLABLE:             // callable
 						tokenCategory = TokenCategory.Keyword;
 						return token;
 
