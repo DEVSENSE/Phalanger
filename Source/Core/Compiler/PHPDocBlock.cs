@@ -84,11 +84,16 @@ namespace PHP.Core
                         {
                             var f1 = t.GetField("Name1");
                             var f2 = t.GetField("Name2");
+                            var f3 = t.GetField("Name3");
+
                             if (f1 != null && f2 != null)
                             {
                                 var factory = CreateElementFactory(t);
                                 elementFactories.Add(TagNameHelper(f1), factory);
                                 elementFactories.Add(TagNameHelper(f2), factory);
+
+                                if (f3 != null)
+                                    elementFactories.Add(TagNameHelper(f3), factory);
                             }
                             else
                             {
@@ -1104,16 +1109,18 @@ namespace PHP.Core
         /// </summary>
         public sealed class PropertyTag : TypeVarDescTag
         {
-            public const string Name = "@property";
+            public const string Name1 = "@property";
+            public const string Name2 = "@property-read";
+            public const string Name3 = "@property-write";
 
-            public PropertyTag(string/*!*/line)
-                : base(Name, line, true)
+            public PropertyTag(string tagName, string/*!*/line)
+                : base(tagName, line, true)
             {
             }
 
             public override string ToString()
             {
-                return Name + " " + this.TypeNames;
+                return Name1 + " " + this.TypeNames;
             }
         }
 
