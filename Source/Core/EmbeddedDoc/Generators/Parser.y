@@ -108,16 +108,19 @@ element_block:
 	;
 	
 element:
-	T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute
+	T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute whitespace_nl compound_attribute
 		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Param, new DocParamElement($3 as DocTypeAttribute, $5 as DocIdentifierAttribute, $7 as DocCompoundAttribute)); }
 	|
-	T_ELEMENT_PARAM T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute
+	T_ELEMENT_PARAM T_WHITESPACE identifier_attribute whitespace_nl compound_attribute
 		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Param, new DocParamElement(null, $3 as DocIdentifierAttribute, $5 as DocCompoundAttribute)); }
 	|
-	T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE compound_attribute
+	T_ELEMENT_RETURN T_WHITESPACE type_attribute whitespace_nl compound_attribute
 		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Return, new DocReturnElement($3 as DocTypeAttribute, $5 as DocCompoundAttribute)); }
 	|
-	T_ELEMENT_VAR T_WHITESPACE type_attribute T_WHITESPACE compound_attribute
+	T_ELEMENT_RETURN whitespace_nl compound_attribute
+		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Return, new DocReturnElement(null, $3 as DocCompoundAttribute)); }
+	|
+	T_ELEMENT_VAR T_WHITESPACE type_attribute whitespace_nl compound_attribute
 		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Var, new DocVarElement($3 as DocTypeAttribute, $5 as DocCompoundAttribute)); }
 	|
 	T_ELEMENT_ACCESS T_WHITESPACE access_modifier compound_attribute
@@ -136,9 +139,14 @@ element:
 	;
 	
 whitespace_option:
-	whitespace_option T_WHITESPACE
-	|
-	/* EMPTY */
+		whitespace_option T_WHITESPACE
+	|	whitespace_option T_NEWLINE
+	|	/* EMPTY */
+	;
+
+whitespace_nl:
+		T_WHITESPACE
+	|	T_NEWLINE
 	;
 	
 access_modifier:
