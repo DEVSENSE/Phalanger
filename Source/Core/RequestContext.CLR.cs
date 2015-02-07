@@ -478,9 +478,9 @@ namespace PHP.Core
 			GlobalConfiguration global = Configuration.Global;
 			PhpArray variables = null;
 
-			// removes dummy item keeping the session alive:
-			if (httpContext.Session[AspNetSessionHandler.PhpNetSessionVars] as string == AspNetSessionHandler.DummySessionItem)
-				httpContext.Session.Remove(AspNetSessionHandler.PhpNetSessionVars);
+            //// removes dummy item keeping the session alive:
+            //if (httpContext.Session[AspNetSessionHandler.PhpNetSessionVars] as string == AspNetSessionHandler.DummySessionItem)
+            //    httpContext.Session.Remove(AspNetSessionHandler.PhpNetSessionVars);
 
 			// loads an array of session variables using the current session handler:
 			variables = scriptContext.Config.Session.Handler.Load(scriptContext, httpContext);
@@ -532,9 +532,9 @@ namespace PHP.Core
 			{
 				if (!abandon)
 				{
-					// if ASP.NET session state is empty then adds a dump item to preserve the session:
-					if (httpContext.Session.Count == 0)
-						httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
+                    //// if ASP.NET session state is empty then adds a dump item to preserve the session:
+                    //if (httpContext.Session.Count == 0)
+                    //    httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
 				}
 				else
 				{
