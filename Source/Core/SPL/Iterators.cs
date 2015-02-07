@@ -17,59 +17,60 @@ using PHP.Core;
 using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.SPL
 {
-	/// <summary>
-	/// Built-in marker interface.
-	/// </summary>
-	[ImplementsType]
-	public interface Traversable
-	{ }
+    /// <summary>
+    /// Built-in marker interface.
+    /// </summary>
+    [ImplementsType]
+    public interface Traversable
+    { }
 
-	/// <summary>
-	/// Interface for external iterators or objects that can iterate themselves internally.
-	/// </summary>
-	/// <remarks>
-	/// Note that contrary to the .NET framework enumerating interfaces,
-	/// calling <c>rewind</c> positions the iterator on the first element, so <c>next</c>
-	/// shall not be called until the first element is retrieved.
-	/// </remarks>
-	[ImplementsType]
-	public interface Iterator : Traversable
-	{
-		/// <summary>
-		/// Rewinds the iterator to the first element.
-		/// </summary>
-		[ImplementsMethod]
-		object rewind(ScriptContext context);
+    /// <summary>
+    /// Interface for external iterators or objects that can iterate themselves internally.
+    /// </summary>
+    /// <remarks>
+    /// Note that contrary to the .NET framework enumerating interfaces,
+    /// calling <c>rewind</c> positions the iterator on the first element, so <c>next</c>
+    /// shall not be called until the first element is retrieved.
+    /// </remarks>
+    [ImplementsType]
+    public interface Iterator : Traversable
+    {
+        /// <summary>
+        /// Rewinds the iterator to the first element.
+        /// </summary>
+        [ImplementsMethod]
+        object rewind(ScriptContext context);
 
-		/// <summary>
-		/// Moves forward to next element.
-		/// </summary>
-		[ImplementsMethod]
-		object next(ScriptContext context);
+        /// <summary>
+        /// Moves forward to next element.
+        /// </summary>
+        [ImplementsMethod]
+        object next(ScriptContext context);
 
-		/// <summary>
-		/// Checks if there is a current element after calls to <see cref="rewind"/> or <see cref="next"/>.
-		/// </summary>
+        /// <summary>
+        /// Checks if there is a current element after calls to <see cref="rewind"/> or <see cref="next"/>.
+        /// </summary>
         /// <returns><c>bool</c>.</returns>
-		[ImplementsMethod]
-		object valid(ScriptContext context);
+        [ImplementsMethod]
+        object valid(ScriptContext context);
 
-		/// <summary>
-		/// Returns the key of the current element.
-		/// </summary>
-		[ImplementsMethod]
-		object key(ScriptContext context);
+        /// <summary>
+        /// Returns the key of the current element.
+        /// </summary>
+        [ImplementsMethod]
+        object key(ScriptContext context);
 
-		/// <summary>
-		/// Returns the current element (value).
-		/// </summary>
-		[ImplementsMethod]
-		[AllowReturnValueOverride]
-		object current(ScriptContext context);
-	}
+        /// <summary>
+        /// Returns the current element (value).
+        /// </summary>
+        [ImplementsMethod]
+        [AllowReturnValueOverride]
+        object current(ScriptContext context);
+    }
 
     /// <summary>
     /// The Seekable iterator.
@@ -85,28 +86,28 @@ namespace PHP.Library.SPL
         object seek(ScriptContext context, object position);
     }
 
-	/// <summary>
-	/// Interface to create an external iterator.
-	/// </summary>
-	/// <remarks>
-	/// This interface contains only arg-less stubs as signatures should not be restricted.
-	/// </remarks>
-	[ImplementsType]
-	public interface IteratorAggregate : Traversable
-	{
-		/// <summary>
-		/// Returns an <see cref="Iterator"/> or another <see cref="IteratorAggregate"/> for
-		/// the implementing object.
-		/// </summary>
-		[ImplementsMethod]
-		object getIterator(ScriptContext context);
-	}
+    /// <summary>
+    /// Interface to create an external iterator.
+    /// </summary>
+    /// <remarks>
+    /// This interface contains only arg-less stubs as signatures should not be restricted.
+    /// </remarks>
+    [ImplementsType]
+    public interface IteratorAggregate : Traversable
+    {
+        /// <summary>
+        /// Returns an <see cref="Iterator"/> or another <see cref="IteratorAggregate"/> for
+        /// the implementing object.
+        /// </summary>
+        [ImplementsMethod]
+        object getIterator(ScriptContext context);
+    }
 
     /// <summary>
     /// Classes implementing OuterIterator can be used to iterate over iterators.
     /// </summary>
     [ImplementsType]
-	public interface OuterIterator : Iterator
+    public interface OuterIterator : Iterator
     {
         /// <summary>
         /// Returns the inner iterator for the current iterator entry.
@@ -151,7 +152,7 @@ namespace PHP.Library.SPL
         private bool isObjectIterator { get { return this.dobj != null; } }
 
         private bool isValid = false;
-        
+
         #endregion
 
         #region Constructor
@@ -177,8 +178,8 @@ namespace PHP.Library.SPL
             {
                 // throw an PHP.Library.SPL.InvalidArgumentException if anything besides an array or an object is given.
                 var e = new InvalidArgumentException(context, true);
-				e.__construct(context, null, 0, null);
-				throw new PhpUserException(e);
+                e.__construct(context, null, 0, null);
+                throw new PhpUserException(e);
             }
 
             // move first:
@@ -306,6 +307,7 @@ namespace PHP.Library.SPL
             return ((ArrayIterator)instance).rewind(stack.Context);
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static object next(object instance, PhpStack stack)
         {
             stack.RemoveFrame();
@@ -490,7 +492,7 @@ namespace PHP.Library.SPL
             {
                 // php_error_docref(NULL TSRMLS_CC, E_RECOVERABLE_ERROR, "Cannot append properties to objects, use %s::offsetSet() instead", Z_OBJCE_P(object)->name);
             }
-            
+
             return null;
         }
 
@@ -663,16 +665,16 @@ namespace PHP.Library.SPL
         #region Serialization (CLR only)
 #if !SILVERLIGHT
 
-		/// <summary>
-		/// Deserializing constructor.
-		/// </summary>
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
         protected ArrayIterator(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+            : base(info, context)
+        {
+        }
 
 #endif
-		#endregion
+        #endregion
     }
 
     [ImplementsType]
@@ -728,6 +730,7 @@ namespace PHP.Library.SPL
             return ((EmptyIterator)instance).rewind(stack.Context);
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static object next(object instance, PhpStack stack)
         {
             stack.RemoveFrame();
@@ -800,15 +803,249 @@ namespace PHP.Library.SPL
         #region Serialization (CLR only)
 #if !SILVERLIGHT
 
-		/// <summary>
-		/// Deserializing constructor.
-		/// </summary>
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
         protected EmptyIterator(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+            : base(info, context)
+        {
+        }
 
 #endif
-		#endregion
-}
+        #endregion
+    }
+
+    [ImplementsType]
+    public class IteratorIterator : PhpObject, OuterIterator, Iterator, Traversable
+    {
+        /// <summary>
+        /// Object to iterate on.
+        /// </summary>
+        private DObject/*!*/iterator;
+
+        /// <summary>
+        /// Enumerator over the <see cref="iterator"/>.
+        /// </summary>
+        private IDictionaryEnumerator/*!*/enumerator;
+
+        /// <summary>
+        /// Wheter the <see cref="enumerator"/> is in valid state (initialized and not at the end).
+        /// </summary>
+        private bool isValid = false;
+
+        [ImplementsMethod]
+        public object __construct(ScriptContext/*!*/context, object/*Traversable*/ iterator, [Optional]object classname)
+        {
+            this.iterator = iterator as DObject;    // iterator.RealObject is Traversable ?
+            if (this.iterator != null)
+            {
+                if (classname != null && classname != Arg.Default &&
+                    !(this.iterator.RealObject is SPL.Iterator)    // downcast only if it is not an Iterator instance
+                    )
+                {
+                    var downcast = context.ResolveType(PhpVariable.AsString(classname), null, this.iterator.TypeDesc, null, ResolveTypeFlags.ThrowErrors);
+
+                    if (downcast == null || // not found
+                        !downcast.IsAssignableFrom(this.iterator.TypeDesc) ||    // not base
+                        !DTypeDesc.Create(typeof(Traversable)).IsAssignableFrom(downcast))   // not Traversable
+                    {
+                        // TODO: error
+                        // zend_throw_exception(spl_ce_LogicException, "Class to downcast to not found or not base class or does not implement Traversable", 0 TSRMLS_CC);
+
+                        this.iterator = null;
+                    }
+                    else
+                    {
+                        //if (DTypeDesc.Create(typeof(IteratorAggregate)).IsAssignableFrom(downcast))
+                        //{
+                        //    // {downcast} is IteratorAggregate
+                        //    context.Stack.AddFrame();
+                        //    var result = this.iterator.InvokeMethod("getIterator", null, context);
+
+                        //    if (result == null || !(result is DObject) || !(((DObject)result).RealObject is Traversable))
+                        //    {
+                        //        //zend_throw_exception_ex(spl_ce_LogicException, 0 TSRMLS_CC, "%s::getIterator() must return an object that implements Traversable", ce->name);
+                        //        this.iterator = null;
+                        //    }
+                        //    else
+                        //    {
+                        //        this.iterator = (DObject)result;
+                        //    }
+                        //}
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+            else
+            {
+                // TODO: error
+            }
+
+            //rewind(context);  // not in PHP, performance reasons (foreach causes rewind() itself)
+
+            return null;
+        }
+
+        #region OuterIterator
+
+        [ImplementsMethod]
+        public object getInnerIterator(ScriptContext context)
+        {
+            return this.iterator;
+        }
+
+        #endregion
+
+        #region Iterator
+
+        [ImplementsMethod]
+        public object rewind(ScriptContext context)
+        {
+            if (iterator != null)
+            {
+                // we can make use of standard foreach enumerator
+                enumerator = iterator.GetForeachEnumerator(true, false, null);
+
+                isValid = enumerator.MoveNext();
+            }
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public object next(ScriptContext context)
+        {
+            if (enumerator == null)
+                rewind(context);    // init iterator first (this skips the first element as on PHP)
+
+            if (enumerator != null) // enumerator can be still null, if iterator is null
+                isValid = enumerator.MoveNext();
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public object valid(ScriptContext context)
+        {
+            return isValid;
+        }
+
+        [ImplementsMethod]
+        public object key(ScriptContext context)
+        {
+            return (enumerator != null && isValid) ? enumerator.Key : null;
+        }
+
+        [ImplementsMethod]
+        public object current(ScriptContext context)
+        {
+            return (enumerator != null && isValid) ? enumerator.Current : null;
+        }
+
+        #endregion
+
+        #region Implementation details
+
+        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public IteratorIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public IteratorIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __construct(object instance, PhpStack stack)
+        {
+            object iterator = stack.PeekValue(1);
+            object classname = stack.PeekValueOptional(2);
+            stack.RemoveFrame();
+            return ((IteratorIterator)instance).__construct(stack.Context, iterator, classname);
+        }
+
+        #endregion
+
+        #region interface OuterIterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getInnerIterator(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((OuterIterator)instance).getInnerIterator(stack.Context);
+        }
+
+        #endregion
+
+        #region interface Iterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).rewind(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).next(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).valid(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).current(stack.Context);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected IteratorIterator(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
 }
