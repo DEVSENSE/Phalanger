@@ -447,6 +447,7 @@ namespace PHP.Core.AST
         }
         virtual public void VisitClassConstUse(ClassConstUse x)
         {
+            VisitElement(x.TypeRef);
             VisitConstantUse(x);
         }
         virtual public void VisitPseudoConstUse(PseudoConstUse x)
