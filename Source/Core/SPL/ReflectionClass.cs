@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Collections.Generic;
 
 namespace PHP.Library.SPL
 {
@@ -34,7 +35,7 @@ namespace PHP.Library.SPL
         /// <summary>
         /// Resolved <see cref="DTypeDesc"/> of reflected type.
         /// </summary>
-        protected DTypeDesc typedesc;
+        internal DTypeDesc typedesc;
 
         #region Constants
 
@@ -465,6 +466,79 @@ namespace PHP.Library.SPL
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getParentClass(stack.Context);
         }
+        #endregion
+
+        #region getConstructor, getMethods, getProperties
+
+        [ImplementsMethod]
+        public virtual object getConstructor(ScriptContext/*!*/context)
+        {
+            if (typedesc == null)
+                return false;
+
+            DRoutineDesc method;
+
+            if (typedesc.GetMethod(DObject.SpecialMethodNames.Construct, null, out method) == GetMemberResult.NotFound)
+                return false;
+
+            // construct new ReflectionClass with resolved TypeDesc
+            return new ReflectionMethod(context, true)
+            {
+                dtype = typedesc,
+                method = method,
+            };
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getConstructor(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getConstructor(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object getMethods(ScriptContext/*!*/context, object filter = null)
+        {
+            if (typedesc == null)
+                return false;
+
+            if (filter != null && filter != Arg.Default)
+                PhpException.ArgumentValueNotSupported("filter", filter);
+
+            PhpArray result = new PhpArray();
+            foreach (KeyValuePair<Name, DRoutineDesc> method in typedesc.EnumerateMethods())
+            {
+                result.Add(new ReflectionMethod(context, true)
+                {
+                    dtype = method.Value.DeclaringType,
+                    method = method.Value,
+                });
+            }
+            return result;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getMethods(object instance, PhpStack stack)
+        {
+            var filter = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getMethods(stack.Context, filter);
+        }
+
+        [ImplementsMethod]
+        public virtual object getProperties(ScriptContext/*!*/context, object filter = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getProperties(object instance, PhpStack stack)
+        {
+            var filter = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getProperties(stack.Context, filter);
+        }
+
         #endregion
     }
 }
