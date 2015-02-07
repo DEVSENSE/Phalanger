@@ -2534,6 +2534,7 @@ namespace PHP.Core
 
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
         private OrderedDictionary(SerializationInfo/*!*/info, StreamingContext context)
+            :this(null, 0)
 		{
             if (info == null)
                 throw new ArgumentNullException();
