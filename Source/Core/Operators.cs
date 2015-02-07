@@ -3467,10 +3467,10 @@ namespace PHP.Core
             else
             {
                 // search in RT fields
-                OrderedHashtable<string>.Element element = null;
-                if (obj.RuntimeFields != null && (element = obj.RuntimeFields.GetElement(name)) != null)
+                var namekey = new IntStringKey(name);
+                if (obj.RuntimeFields != null && obj.RuntimeFields.TryGetValue(namekey, out old_val))
                 {
-                    old_val = element.Value;
+                    // old_val
                 }
                 else
                 {
@@ -3484,9 +3484,9 @@ namespace PHP.Core
 
                 if (!Object.ReferenceEquals(value, old_val))
                 {
-                    if (obj.RuntimeFields == null) obj.RuntimeFields = new OrderedHashtable<string>();
-                    if (element != null) element.Value = value;
-                    else obj.RuntimeFields[name] = value;
+                    if (obj.RuntimeFields == null) obj.RuntimeFields = new PhpArray();
+                    
+                    obj.RuntimeFields[namekey] = value;
                 }
             }
 
@@ -3621,10 +3621,11 @@ namespace PHP.Core
             else
             {
                 // search in RT fields
-                OrderedHashtable<string>.Element element = null;
-                if (obj.RuntimeFields != null && (element = obj.RuntimeFields.GetElement(name)) != null)
+
+                var namekey = new IntStringKey(name);
+                if (obj.RuntimeFields != null && obj.RuntimeFields.TryGetValue(namekey, out old_val))
                 {
-                    old_val = element.Value;
+                    //old_val = element.Value;
                 }
                 else
                 {
@@ -3638,9 +3639,9 @@ namespace PHP.Core
 
                 if (!Object.ReferenceEquals(value, old_val))
                 {
-                    if (obj.RuntimeFields == null) obj.RuntimeFields = new OrderedHashtable<string>();
-                    if (element != null) element.Value = value;
-                    else obj.RuntimeFields[name] = value;
+                    if (obj.RuntimeFields == null) obj.RuntimeFields = new PhpArray();
+                    
+                    obj.RuntimeFields[name] = value;
                 }
             }
 

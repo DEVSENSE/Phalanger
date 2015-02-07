@@ -378,7 +378,7 @@ namespace PHP.Library.Data
 			Debug.Assert(currentRowIndex >= 0 && currentRowIndex < RowCount);
 
 			object[] oa = (object[])CurrentSet.Rows[currentRowIndex];
-			OrderedHashtable<string> runtimeFields = new OrderedHashtable<string>(FieldCount);
+			var runtimeFields = new PhpArray(FieldCount);
 			for (int i = 0; i < FieldCount; i++)
 			{
                 runtimeFields[CurrentSet.Names[i]] = oa[i];

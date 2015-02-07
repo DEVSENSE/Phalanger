@@ -439,7 +439,7 @@ namespace PHP.Core
 
 			// Integer, Double, Boolean, String, PhpBytes, PhpResource:
 			obj = new stdClass(context);
-			obj.RuntimeFields = new OrderedHashtable<string>(null, 1);
+            obj.RuntimeFields = new PhpArray();
 			obj.RuntimeFields.Add("scalar", var);
 			return obj;
 		}
@@ -2064,19 +2064,19 @@ namespace PHP.Core
         {
             Debug.Assert(array != null, "Argument 'array' cannot be null!");
 
-            var runtimeFields = new OrderedHashtable<string>(null, array.Count);
-            //foreach (KeyValuePair<IntStringKey, object> pair in array)
-            using (var enumerator = array.GetFastEnumerator())
-                while (enumerator.MoveNext())
-                {
-                    // add elements directly into the hashtable (no duplicity check, since array is already valid)
-                    runtimeFields.Add(enumerator.CurrentKey.Object.ToString(), PhpVariable.Copy(enumerator.CurrentValue, CopyReason.Assigned));
-                }
+            //var runtimeFields = new PhpArray(array.Count);
+            ////foreach (KeyValuePair<IntStringKey, object> pair in array)
+            //using (var enumerator = array.GetFastEnumerator())
+            //    while (enumerator.MoveNext())
+            //    {
+            //        // add elements directly into the hashtable (no duplicity check, since array is already valid)
+            //        runtimeFields.Add(enumerator.CurrentKey.Object.ToString(), PhpVariable.Copy(enumerator.CurrentValue, CopyReason.Assigned));
+            //    }
 
             // create a new stdClass with runtime fields:
             return new stdClass(context)
             {
-                RuntimeFields = runtimeFields
+                RuntimeFields = new PhpArray(array, true)
             };
         }
 

@@ -30,7 +30,6 @@ using PHP.CoreCLR;
 #else
 using System.Web;
 using System.Collections.Specialized;
-using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -424,42 +423,6 @@ namespace PHP.Library
             //PhpException.FunctionNotSupported();    // see remarks, remove specified header (can be cookie, content-type, content-encoding or any other header)
 
             // TODO: cookies, session
-        }
-
-        /// <summary>
-        /// http_response_code will get the current status code.
-        /// </summary>
-        /// <returns>Current status code</returns>
-        [ImplementsFunction("http_response_code")]
-        public static int HttpResponseCode()
-        {
-            HttpContext context;
-            if (EnsureHttpContext(out context))
-            {
-                return context.Response.StatusCode;
-            }
-
-            return -1;  // FALSE ?
-        }
-
-        /// <summary>
-        /// http_response_code will set the current status code.
-        /// </summary>
-        /// <param name="status">New status code.</param>
-        /// <returns>Current status code.</returns>
-        [ImplementsFunction("http_response_code")]
-        public static int HttpResponseCode(int status)
-        {
-            HttpContext context;
-            if (EnsureHttpContext(out context))
-            {
-                var oldstatus = context.Response.StatusCode;
-                context.Response.StatusCode = status;
-
-                return oldstatus;
-            }
-
-            return -1;  // FALSE ?
         }
 
 		#endregion
