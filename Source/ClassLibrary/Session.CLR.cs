@@ -24,6 +24,8 @@ using System.Globalization;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Web.Configuration;
+using System.Security.Cryptography;
 
 namespace PHP.Library
 {
@@ -178,7 +180,7 @@ namespace PHP.Library
 			{
 				if (file != null)
 				{
-					result = file.ReadMaximumBytes();
+                    result = file.ReadBinaryContents(-1);
 					file.Close();
 				}
 			}
@@ -1480,10 +1482,7 @@ namespace PHP.Library
 		[ImplementsFunction("session_name")]
 		public static string Name()
 		{
-			HttpContext context;
-			if (!Web.EnsureHttpContext(out context)) return null;
-
-			return AspNetSessionHandler.AspNetSessionName;
+            return Name(null);
 		}
 
 		/// <summary>
@@ -1494,11 +1493,19 @@ namespace PHP.Library
 		[ImplementsFunction("session_name")]
 		public static string Name(string newName)
 		{
-			HttpContext context;
-			if (!Web.EnsureHttpContext(out context)) return null;
+            RequestContext request_context;
+            if (!Web.EnsureRequestContext(out request_context)) return null;
 
-			PhpException.FunctionNotSupported(PhpError.Notice);
-			return AspNetSessionHandler.AspNetSessionName;
+            var/*!*/handler = request_context.ScriptContext.Config.Session.Handler;
+            Debug.Assert(handler != null);
+
+            var oldName = handler.GetSessionName(request_context);
+            if (newName != null)
+            {
+                handler.SetSessionName(request_context, newName);
+            }
+			
+			return oldName;
 		}
 
 		/// <summary>
@@ -1582,9 +1589,7 @@ namespace PHP.Library
 
             if (delete_old_session)
             {
-                PhpArray session = PhpReference.AsPhpArray(request_context.ScriptContext.AutoGlobals.Session);
-                if (session != null)
-                    session.Clear();
+                // TODO: delete old session file
             }
 
             // regenerate SessionID
