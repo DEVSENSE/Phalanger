@@ -1870,7 +1870,7 @@ namespace PHP.Library
 			get
 			{
 				if (_posixCharClasses == null)
-					_posixCharClasses = new Regex("^\\[:(^)?(alpha|alnum|ascii|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit):]", RegexOptions.Singleline);
+					_posixCharClasses = new Regex("^\\[:(^)?(alpha|alnum|ascii|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit):]", RegexOptions.Singleline | RegexOptions.Compiled);
 				return _posixCharClasses;
 			}
 		}
@@ -2342,9 +2342,13 @@ namespace PHP.Library
 			// (we need to make a difference here because second "-" shouldn't be expanded)
 			bool leaving_range = false;
 
+            // remember the last character added in the character class, so in state 3 we can expand the range as properly as possible
+            int range_from_character = -1; 
+
 			bool escaped = false;
 			int state = 0;
 			int inner_state = 0;
+            HashSet<uint> addedSurrogate2Ranges = null; // cache of already added character pairs valid within character class [], dropped when switching to 0
 
 			int i = 0;
 			while (i < perlExpr.Length)
@@ -2730,6 +2734,7 @@ namespace PHP.Library
 						{
 							result.Append('\\');
                             Append(result, ch);
+                            range_from_character = ch;
 							state = 2;
 							break;
 						}
@@ -2749,10 +2754,11 @@ namespace PHP.Library
 						break;
 
 					case 2: // inside of character class
-						if (escaped)
+                        if (escaped)
 						{
-							result.Append('\\');
+                            result.Append('\\');
                             Append(result, ch);
+                            range_from_character = ch;
 							leaving_range = false;
 							break;
 						}
@@ -2776,26 +2782,37 @@ namespace PHP.Library
 								throw new ArgumentException(/*TODO*/ "POSIX character classes negation not supported.");
 
 							result.Append(chars);
+                            range_from_character = -1;  // -1 means, it is not rangable :)
 							i += match.Length - 1; // +1 is added just behind the switch
 							break;
 						}
 
-						if (ch == ']')
-							state = 0;
-                        if (ch == '-')
+                        if (ch == ']')
+                        {
+                            addedSurrogate2Ranges = null;   // drop the cache of ranges
+                            state = 0;
+                        }
+                        
+                        // append <ch>
+                        range_from_character = ch;
+
+						if (ch == '-')
                             result.Append("\\x2d");
                         else
-                        {
                             AppendEscaped(result, ch);
-                        }
-						break;
+
+                        break;
 
 					case 3: // range previous character was '-'
 						if (!escaped && ch == ']')
 						{
+                            if (range_from_character > char.MaxValue)
+                                throw new ArgumentException("Cannot range from an UTF-32 character to unknown.");
+                            
 							result.Append("-]");
-							state = 0;
-							break;
+                            addedSurrogate2Ranges = null;   // drop the cache of ranges
+                            state = 0;
+                            break;
 						}
 
                         //string range;
@@ -2809,11 +2826,47 @@ namespace PHP.Library
                         //    }
                         //}
                         //PosixRegExp.BracketExpression.EscapeBracketExpressionSpecialChars(result, range); // left boundary is duplicated, but doesn't matter...
-                        result.Append('-');
-                        AppendEscaped(result, ch);
+
+                        if (addedSurrogate2Ranges == null)
+                            addedSurrogate2Ranges = new HashSet<uint>();    // initialize the cache of already added character ranges, invalidated at the end of character class
+
+                        if (ch != range_from_character)
+                        {
+                            // <from>-<ch>:
+
+                            // 1. <utf16>-<utf16>
+                            // 2. <utf16>-<utf32>
+                            // 3. <utf32>-<utf32>
+
+                            if (range_from_character <= char.MaxValue)
+                            {
+                                if (ch <= char.MaxValue)
+                                {
+                                    // 1.
+                                    result.Append('-');
+                                    AppendEscaped(result, ch);
+                                }
+                                else
+                                {
+                                    // 2.
+                                    result.Append('-');
+                                    AppendEscaped(result, char.MaxValue);
+                                    
+                                    // count <char.MaxValue+1>-<ch>
+                                    CountUTF32Range(result, char.MaxValue + 1, ch, addedSurrogate2Ranges);
+                                }
+                            }
+                            else
+                            {
+                                // 3. utf32 range
+                                result.Length -= 2;
+                                CountUTF32Range(result, range_from_character, ch, addedSurrogate2Ranges);
+                            }
+                        }
 
 						state = 2;
 						leaving_range = true;
+                        range_from_character = -1;
 						break;
 				}
 
@@ -2848,7 +2901,10 @@ namespace PHP.Library
         {
             Debug.Assert(sb != null);
 
-            sb.Append(@"\u" + ((int)ch).ToString("X4"));
+            if (ch <= Char.MaxValue)
+                sb.Append(@"\u" + ((int)ch).ToString("X4"));
+            else
+                sb.Append(Char.ConvertFromUtf32(ch));
         }
 
         #region Conversion of possesive quantifiers
@@ -3101,32 +3157,135 @@ namespace PHP.Library
             return state;
         }
 
-
-		/// <summary>
-		/// Simple version of 'PosixRegExp.BracketExpression.CountRange' function. Generates string
-		/// with all characters in specified range, but uses unicode encoding.
-		/// </summary>
-		/// <param name="f">Lower bound</param>
-		/// <param name="t">Upper bound</param>
-		/// <param name="range">Returned string</param>
-		/// <returns>Returns false if lower bound is larger than upper bound</returns>
-		private static bool CountUnicodeRange(char f, char t, out string range)
-		{
-			range = "";
-			if (f > t) return false;
-			StringBuilder sb = new StringBuilder(t - f);
-			for (char c = f; c <= t; c++) sb.Append(c);
-			range = sb.ToString();
-			return true;
-		}
-
         #endregion
 
+        ///// <summary>
+        ///// Simple version of 'PosixRegExp.BracketExpression.CountRange' function. Generates string
+        ///// with all characters in specified range, but uses unicode encoding.
+        ///// </summary>
+        ///// <param name="f">Lower bound</param>
+        ///// <param name="t">Upper bound</param>
+        ///// <param name="range">Returned string</param>
+        ///// <returns>Returns false if lower bound is larger than upper bound</returns>
+        //private static bool CountUnicodeRange(char f, char t, out string range)
+        //{
+        //    range = "";
+        //    if (f > t) return false;
+        //    StringBuilder sb = new StringBuilder(t - f);
+        //    for (char c = f; c <= t; c++) sb.Append(c);
+        //    range = sb.ToString();
+        //    return true;
+        //}
+
         /// <summary>
-		/// Modifies regular expression so it matches only at the beginning of the string.
-			/// </summary>
-		/// <param name="expr">Regular expression to modify.</param>
-		private static void ModifyRegExpAnchored(ref string expr)
+        /// Ranges characters from <paramref name="chFrom"/> up to <paramref name="chTo"/> inclusive, where characters are UTF32.
+        /// We will only list every from surrogate pair once (same result as writing all the characters one by one).
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="chFrom"></param>
+        /// <param name="chTo"></param>
+        /// <param name="addedSurrogate2Ranges">Cache of already added character pairs to avoid duplicitous character ranges.</param>
+        private static void CountUTF32Range(StringBuilder/*!*/sb, int chFrom, int chTo, HashSet<uint>/*!*/addedSurrogate2Ranges)
+        {
+            Debug.Assert(addedSurrogate2Ranges != null);
+            Debug.Assert(chFrom > Char.MaxValue);
+            Debug.Assert(chTo > Char.MaxValue);
+            
+            //
+            chFrom -= char.MaxValue + 1;
+            chTo -= char.MaxValue + 1;
+
+            // whether the range of the same surrogate1 starts
+            bool start = true;
+
+            // range UTF32 characters
+            for (; chFrom <= chTo; chFrom++)
+            {
+                // current UTF32 character "<a1><a2>":
+                char a1 = (char)(chFrom / 1024 + 55296);    // surrogate pair [1]
+                char a2 = (char)(chFrom % 1024 + 56320);    // surrogate pair [2]
+
+                //var str = new string(new char[] { a1, a2 });  // single UTF32 character
+
+                // output:
+                if (start)  // first character from the range of the same surrogate1
+                {
+                    start = false;
+                    // "<a1><a2>"
+                    
+                    // try to compress <a1>:
+
+                    // convert "-ab" to "-b", where a+1 == b
+                    if (sb.Length >= 2 &&
+                        sb[sb.Length - 1] + 1 == a1 &&
+                        sb[sb.Length - 2] == '-' &&
+                        (sb.Length < 3 || sb[sb.Length - 3] != '\\'))    // '-' is not escaped
+                    {
+                        sb[sb.Length - 1] = a1; // extend the range
+                    }
+                    // convert "abc" to "a-c", where a+2 == b+1 == c
+                    else if (sb.Length >= 2 &&
+                            sb[sb.Length - 1] + 1 == a1 &&
+                            sb[sb.Length - 2] + 2 == a1)
+                    {
+                        // a,b,c are all UTF32 surrogate1
+                        sb[sb.Length - 1] = '-';
+                        sb.Append(a1);
+                    }
+                    else
+                    {
+                        sb.Append(a1);
+                    }
+
+                    //
+                    sb.Append(a2);
+                }
+                else if ((chFrom + 1) > chTo || a1 != (char)((chFrom + 1) / 1024 + 55296)) // finish the range (end of the range || different next surrogate1)
+                {
+                    AddCharacterRangeChecked(sb, a2, addedSurrogate2Ranges);
+                    start = true;
+                }
+                else
+                {
+                    // in range ...
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds "-<paramref name="chTo"/>" iff there is not the same character range in the result already. Otherwise the last character form <paramref name="sb"/> is removed.
+        /// </summary>
+        /// <param name="sb"><see cref="StringBuilder"/> with lower bound of the range already added.</param>
+        /// <param name="chTo">Upper bound of the range.</param>
+        /// <param name="addedSurrogate2Ranges">Cache of already added character pairs.</param>
+        /// <remarks>Assumes there is starting character at the end of <paramref name="sb"/>.</remarks>
+        private static void AddCharacterRangeChecked(StringBuilder/*!*/sb, char chTo, HashSet<uint>/*!*/addedSurrogate2Ranges)
+        {
+            Debug.Assert(addedSurrogate2Ranges != null);
+            Debug.Assert(sb.Length > 0);
+
+            char previous = sb[sb.Length - 1];  // the lower bound already in the result
+            uint print = (uint)previous | ((uint)chTo << 16); // the "hash" of the character range to be inserted
+
+            if (addedSurrogate2Ranges.Add(print))   // is the <print> range not in the result yet?
+            {
+                // and of the range with the same surrogate1
+                // "<previous>-<chTo>" wil be in the <sb>
+                sb.Append('-');
+                sb.Append(chTo);
+            }
+            else
+            {
+                // "<previous>-<chTo>" already in the result, just "remove" the last character from the <sb>
+                sb.Length--;
+            }
+        }
+
+        /// <summary>
+        /// Modifies regular expression so it matches only at the beginning of the string.
+        /// </summary>
+        /// <param name="expr">Regular expression to modify.</param>
+        private static void ModifyRegExpAnchored(ref string expr)
 		{
 			// anchored means regular expression should match only at the beginning of the string
 			// => add ^ at the beginning if there is no one.
