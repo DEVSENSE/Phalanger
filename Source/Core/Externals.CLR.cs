@@ -559,10 +559,10 @@ namespace PHP.Core
             Count
         }
 
-		/// <summary>
-		/// If <B>true</B>, the extension should be loaded as isolated, otherwise it should collocate.
-		/// </summary>
-		private bool isolated;
+        ///// <summary>
+        ///// If <B>true</B>, the extension should be loaded as isolated, otherwise it should collocate.
+        ///// </summary>
+        //private bool isolated;
 
 		/// <summary>
 		/// The attribute which decorates the managed wrapper.
@@ -606,14 +606,14 @@ namespace PHP.Core
 			{ return extensionPath; }
 		}
 
-		/// <summary>
-		/// Returns <B>true</B>, if the extension should be loaded as isolated, <B>false</B> if it should collocate.
-		/// </summary>
-		public bool Isolated
-		{
-			get
-			{ return isolated; }
-		}
+        ///// <summary>
+        ///// Returns <B>true</B>, if the extension should be loaded as isolated, <B>false</B> if it should collocate.
+        ///// </summary>
+        //public bool Isolated
+        //{
+        //    get
+        //    { return isolated; }
+        //}
 
 		/// <summary>
 		/// Returns <B>true</B>, if the extension should perform eager request init (currently used only for GTK).
@@ -641,10 +641,10 @@ namespace PHP.Core
 			}
 		}
 
-		/// <summary>
-		/// A collection of isolated extensions. Keys are file names (without the trailing <c>.DLL</c>).
-		/// </summary>
-        internal static Dictionary<string, ExtensionLibraryDescriptor> isolatedExtensions = new Dictionary<string, ExtensionLibraryDescriptor>();
+        ///// <summary>
+        ///// A collection of isolated extensions. Keys are file names (without the trailing <c>.DLL</c>).
+        ///// </summary>
+        //internal static Dictionary<string, ExtensionLibraryDescriptor> isolatedExtensions = new Dictionary<string, ExtensionLibraryDescriptor>();
 
 		/// <summary>
 		/// A collection of collocated extensions. Keys are file names (without the trailing <c>.DLL</c>).
@@ -673,6 +673,7 @@ namespace PHP.Core
 		/// Called when library loading is finished and descriptor is initialized.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Extension already loaded.</exception>
+        /// <exception cref="NotSupportedException">An attempt to load the extension in isolated mode, which is not supported anymore.</exception>
 		internal protected override void Loaded(PhpLibraryAttribute/*!*/ assemblyAttribute,
 			LibraryConfigStore configStore)
 		{
@@ -682,10 +683,14 @@ namespace PHP.Core
 			this.extensionPath = Configuration.GetPathsNoLoad().ExtNatives;
 
             if (configStore != null && configStore.Attributes != null)
-			{
-				XmlAttribute attr = configStore.Attributes["isolated"];
-				isolated = (attr != null && attr.Value == "true");
-			}
+            {
+                var attr = configStore.Attributes["isolated"];
+                if (attr != null && attr.Value == "true")
+                {
+                    // this.isolated = true;
+                    throw new NotSupportedException(CoreResources.isolated_extensions_unsupported);
+                }
+            }
 
 			if (!ServerMode)
 			{
@@ -693,11 +698,11 @@ namespace PHP.Core
 
 				try
 				{
-					if (Isolated)
-					{
-						isolatedExtensions.Add(file_name, this);
-					}
-					else
+                    //if (Isolated)
+                    //{
+                    //    isolatedExtensions.Add(file_name, this);
+                    //}
+                    //else
 					{
 						collocatedExtensions.Add(file_name, this);
                         collocatedExtensionsByName.Add(assemblyAttribute.Name, true);
@@ -915,7 +920,7 @@ namespace PHP.Core
 	/// wrappers - there is no overhead at all.
 	/// </para>
 	/// </remarks>
-	public sealed class RequestCookie : MarshalByRefObject, ILogicalThreadAffinative, ISponsor
+	public static /*sealed*/ class RequestCookie /*: MarshalByRefObject, ILogicalThreadAffinative, ISponsor*/
 	{
 		/// <summary>
 		/// A delegate with <see cref="IExternals.GetInstanceUrl"/> signature. Used for asynchronous calls.
@@ -939,48 +944,48 @@ namespace PHP.Core
 		internal delegate object InvokeMethodDelegate(string moduleName, string className, string methodName,
 			ref PhpObject self, ref object[] args, int[] refInfo, string workingDir);
 
-		/// <summary>
-		/// Creates a new <see cref="RequestCookie"/> and sets the <see cref="extMan"/> field to a proxy
-		/// to <c>ExtManager</c>.
-		/// </summary>
-		/// <remarks>All calls in this request's context should be made through <see cref="extMan"/> and
-		/// not the general proxy (<see cref="Externals.RemoteExtMan"/>).
-		/// </remarks>
-		private RequestCookie()
-		{
-			CallContext.SetData(threadSlotName, this);
+        ///// <summary>
+        ///// Creates a new <see cref="RequestCookie"/> and sets the <see cref="extMan"/> field to a proxy
+        ///// to <c>ExtManager</c>.
+        ///// </summary>
+        ///// <remarks>All calls in this request's context should be made through <see cref="extMan"/> and
+        ///// not the general proxy (<see cref="Externals.RemoteExtMan"/>).
+        ///// </remarks>
+        //private RequestCookie()
+        //{
+            //CallContext.SetData(threadSlotName, this);
 
-			bool savedSuppressLauncher = LauncherClientChannelSinkProvider.SuppressLauncher;
-			string url = Externals.GetInstanceUrl(this);
-			LauncherClientChannelSinkProvider.SuppressLauncher = savedSuppressLauncher;
+            //bool savedSuppressLauncher = LauncherClientChannelSinkProvider.SuppressLauncher;
+            //string url = Externals.GetInstanceUrl(this);
+            //LauncherClientChannelSinkProvider.SuppressLauncher = savedSuppressLauncher;
 
-			extMan = (IExternals)RemotingServices.Connect(typeof(IExternals), url);
-		}
+            //extMan = (IExternals)RemotingServices.Connect(typeof(IExternals), url);
+        //}
 
-		/// <summary>
-		/// Tries to call the <see cref="Terminator"/>.
-		/// </summary>
-		~RequestCookie()
-		{
-			try
-			{
-				if (Terminator != null)
-				{
-					LauncherClientChannelSinkProvider.SuppressLauncher = true;
-					Terminator.Terminate();
-				}
-			}
-			catch (Exception)
-			{ }
-		}
+        ///// <summary>
+        ///// Tries to call the <see cref="Terminator"/>.
+        ///// </summary>
+        //~RequestCookie()
+        //{
+        //    try
+        //    {
+        //        if (Terminator != null)
+        //        {
+        //            LauncherClientChannelSinkProvider.SuppressLauncher = true;
+        //            Terminator.Terminate();
+        //        }
+        //    }
+        //    catch (Exception)
+        //    { }
+        //}
 
-		/// <summary>
-		/// Requests a sponsoring client to renew the lease for the associated <c>Request</c> object.
-		/// /// </summary>
-		public TimeSpan Renewal(ILease lease)
-		{
-			return TimeSpan.FromSeconds(10);
-		}
+        ///// <summary>
+        ///// Requests a sponsoring client to renew the lease for the associated <c>Request</c> object.
+        ///// /// </summary>
+        //public TimeSpan Renewal(ILease lease)
+        //{
+        //    return TimeSpan.FromSeconds(10);
+        //}
 
 		public static object ConvertObjectToString(object arg)
 		{
@@ -1021,32 +1026,32 @@ namespace PHP.Core
 			return ret_value;
 		}
 
-		/// <summary>
-		/// Invoked from <c>ExtManager</c> in order to call a (user or system) function. See <c>call_user_function</c>,
-		/// <c>call_user_function_ex</c>, <c>zend_call_function</c> Zend API.
-		/// </summary>
-		/// <param name="target">Designation of the function/method to call.</param>
-		/// <param name="args">Arguments to be passed to the function.</param>
-		/// <returns>Return value of the function.</returns>
-		/// <remarks>
-		/// <p>
-		/// Obsolete: The reason why self is <c>ref</c> is that we need Remoting to
-		/// serialize and transfer the new state of the instance back to the caller.
-		/// </p>
-		/// <p>
-		/// The state is not transferred at all for user-classes (that are usually used for callbacks).
-		/// </p>
-		/// </remarks>
-		public object CallFunction(PhpCallback target, ref object[] args)
-		{
-			this.callbackTarget = target;
-			this.callbackArgs = args;
+        ///// <summary>
+        ///// Invoked from <c>ExtManager</c> in order to call a (user or system) function. See <c>call_user_function</c>,
+        ///// <c>call_user_function_ex</c>, <c>zend_call_function</c> Zend API.
+        ///// </summary>
+        ///// <param name="target">Designation of the function/method to call.</param>
+        ///// <param name="args">Arguments to be passed to the function.</param>
+        ///// <returns>Return value of the function.</returns>
+        ///// <remarks>
+        ///// <p>
+        ///// Obsolete: The reason why self is <c>ref</c> is that we need Remoting to
+        ///// serialize and transfer the new state of the instance back to the caller.
+        ///// </p>
+        ///// <p>
+        ///// The state is not transferred at all for user-classes (that are usually used for callbacks).
+        ///// </p>
+        ///// </remarks>
+        //public object CallFunction(PhpCallback target, ref object[] args)
+        //{
+        //    this.callbackTarget = target;
+        //    this.callbackArgs = args;
 
-			callbackInvoked.Set();
-			callbackHandled.WaitOne();
+        //    callbackInvoked.Set();
+        //    callbackHandled.WaitOne();
 
-			return this.callbackRetValue;
-		}
+        //    return this.callbackRetValue;
+        //}
 
 		/// <summary>
 		/// Checks whether the function/method designated by <paramref name="callback"/> is callable.
@@ -1059,596 +1064,596 @@ namespace PHP.Core
 			return callback.Bind(true);
 		}
 
-		/// <summary>
-		/// Checks whether the function/method designated by <paramref name="callback"/> is callable.
-		/// </summary>
-		/// <param name="callback">The callback.</param>
-		/// <returns><B>true</B> if the <paramref name="callback"/> is callable, <B>false</B> otherwise.
-		/// </returns>
-		/// <remarks>
-		/// The call is delegated to the static method <see cref="CheckCallbackDirect"/> (Remoting reason).
-		/// </remarks>
-		public bool CheckCallback(PhpCallback callback)
-		{
-			return CheckCallbackDirect(callback);
-		}
+        ///// <summary>
+        ///// Checks whether the function/method designated by <paramref name="callback"/> is callable.
+        ///// </summary>
+        ///// <param name="callback">The callback.</param>
+        ///// <returns><B>true</B> if the <paramref name="callback"/> is callable, <B>false</B> otherwise.
+        ///// </returns>
+        ///// <remarks>
+        ///// The call is delegated to the static method <see cref="CheckCallbackDirect"/> (Remoting reason).
+        ///// </remarks>
+        //public bool CheckCallback(PhpCallback callback)
+        //{
+        //    return CheckCallbackDirect(callback);
+        //}
 
-		/// <summary>
-		/// Associates the calling thread with a new instance of <see cref="RequestCookie"/> if it has not been
-		/// done before.
-		/// </summary>
-		/// <returns>The instance of <see cref="RequestCookie"/> associated with current thread.</returns>
-		internal static RequestCookie EnsureCookieExists()
-		{
-			RequestCookie cookie = (RequestCookie)CallContext.GetData(threadSlotName);
-			if (cookie != null)
-			{
-				return cookie;
-			}
-			else
-			{
-				cookie = new RequestCookie();
-				return cookie;
-			}
-		}
+        ///// <summary>
+        ///// Associates the calling thread with a new instance of <see cref="RequestCookie"/> if it has not been
+        ///// done before.
+        ///// </summary>
+        ///// <returns>The instance of <see cref="RequestCookie"/> associated with current thread.</returns>
+        //internal static RequestCookie EnsureCookieExists()
+        //{
+        //    RequestCookie cookie = (RequestCookie)CallContext.GetData(threadSlotName);
+        //    if (cookie != null)
+        //    {
+        //        return cookie;
+        //    }
+        //    else
+        //    {
+        //        cookie = new RequestCookie();
+        //        return cookie;
+        //    }
+        //}
 
-		/// <summary>
-		/// Returns true if a <see cref="RequestCookie"/> instance is associated with the calling thread.
-		/// </summary>
-		/// <returns><B>true</B> if a <see cref="RequestCookie"/> instance is associated with the calling
-		/// thread, <B>false</B> otherwise.</returns>
-		internal static bool CookieExists()
-		{
-			return CallContext.GetData(threadSlotName) != null;
-		}
+        ///// <summary>
+        ///// Returns true if a <see cref="RequestCookie"/> instance is associated with the calling thread.
+        ///// </summary>
+        ///// <returns><B>true</B> if a <see cref="RequestCookie"/> instance is associated with the calling
+        ///// thread, <B>false</B> otherwise.</returns>
+        //internal static bool CookieExists()
+        //{
+        //    return CallContext.GetData(threadSlotName) != null;
+        //}
 
-		/// <summary>
-		/// Returns the <see cref="RequestCookie"/> that is associated with current thread or <B>null</B>.
-		/// </summary>
-		/// <returns>The <see cref="RequestCookie"/> instance associated with current thread or <B>null</B>.
-		/// </returns>
-		public static RequestCookie GetCurrentThreadCookie()
-		{
-			return (RequestCookie)CallContext.GetData(threadSlotName);
-		}
+        ///// <summary>
+        ///// Returns the <see cref="RequestCookie"/> that is associated with current thread or <B>null</B>.
+        ///// </summary>
+        ///// <returns>The <see cref="RequestCookie"/> instance associated with current thread or <B>null</B>.
+        ///// </returns>
+        //public static RequestCookie GetCurrentThreadCookie()
+        //{
+        //    return (RequestCookie)CallContext.GetData(threadSlotName);
+        //}
 
-		/// <summary>
-		/// Frees named data slot used to hold the association of calling thread and a
-		/// <see cref="RequestCookie"/> instance.
-		/// </summary>
-		internal static void FreeCookie()
-		{
-			CallContext.FreeNamedDataSlot(threadSlotName);
-		}
+        ///// <summary>
+        ///// Frees named data slot used to hold the association of calling thread and a
+        ///// <see cref="RequestCookie"/> instance.
+        ///// </summary>
+        //internal static void FreeCookie()
+        //{
+        //    CallContext.FreeNamedDataSlot(threadSlotName);
+        //}
 
-		/// <summary>
-		/// Gets a delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeFunction"/> method.
-		/// </summary>
-		/// <returns>The delegate.</returns>
-		internal InvokeFunctionDelegate InvokeFunction
-		{
-            get
-            {
-                return invokeFunctionDelegate ?? (invokeFunctionDelegate = new InvokeFunctionDelegate(extMan.InvokeFunction));
-            }
-		}
+        ///// <summary>
+        ///// Gets a delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeFunction"/> method.
+        ///// </summary>
+        ///// <returns>The delegate.</returns>
+        //internal InvokeFunctionDelegate InvokeFunction
+        //{
+        //    get
+        //    {
+        //        return invokeFunctionDelegate ?? (invokeFunctionDelegate = new InvokeFunctionDelegate(extMan.InvokeFunction));
+        //    }
+        //}
 
-		/// <summary>
-		/// Gets a delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeMethod"/> method.
-		/// </summary>
-		/// <returns>The delegate.</returns>
-		internal InvokeMethodDelegate InvokeMethod
-		{
-			get
-			{
-                return invokeMethodDelegate ?? (invokeMethodDelegate = new InvokeMethodDelegate(extMan.InvokeMethod));
-			}
-		}
+        ///// <summary>
+        ///// Gets a delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeMethod"/> method.
+        ///// </summary>
+        ///// <returns>The delegate.</returns>
+        //internal InvokeMethodDelegate InvokeMethod
+        //{
+        //    get
+        //    {
+        //        return invokeMethodDelegate ?? (invokeMethodDelegate = new InvokeMethodDelegate(extMan.InvokeMethod));
+        //    }
+        //}
 
-		/// <summary>
-		/// Waits for completion of the asynchronous call associated with <paramref name="asyncResult"/> while
-		/// handling callbacks from ExtManager. PHP exceptions that occured within an external function should be
-		/// rethrown in the same thread that initiated the call in order to be able to walk the call stack
-		/// efficiently.
-		/// </summary>
-		/// <param name="asyncResult">An <see cref="IAsyncResult"/> associated with the remote call.</param>
-		internal void HandleCallbacks(IAsyncResult asyncResult)
-		{
-			WaitHandle[] wait_handles = new WaitHandle[] { asyncResult.AsyncWaitHandle, exceptionRaised, callbackInvoked };
+        ///// <summary>
+        ///// Waits for completion of the asynchronous call associated with <paramref name="asyncResult"/> while
+        ///// handling callbacks from ExtManager. PHP exceptions that occured within an external function should be
+        ///// rethrown in the same thread that initiated the call in order to be able to walk the call stack
+        ///// efficiently.
+        ///// </summary>
+        ///// <param name="asyncResult">An <see cref="IAsyncResult"/> associated with the remote call.</param>
+        //internal void HandleCallbacks(IAsyncResult asyncResult)
+        //{
+        //    WaitHandle[] wait_handles = new WaitHandle[] { asyncResult.AsyncWaitHandle, exceptionRaised, callbackInvoked };
 
-			while (true)
-			{
-				switch (WaitHandle.WaitAny(wait_handles))
-				{
-					case 1:
-						{
-							// an exception was raised
-							try
-							{
-								PhpException.Throw(error, message);
-							}
-							finally
-							{
-								exceptionHandled.Set();
-							}
-							continue;
-						}
+        //    while (true)
+        //    {
+        //        switch (WaitHandle.WaitAny(wait_handles))
+        //        {
+        //            case 1:
+        //                {
+        //                    // an exception was raised
+        //                    try
+        //                    {
+        //                        PhpException.Throw(error, message);
+        //                    }
+        //                    finally
+        //                    {
+        //                        exceptionHandled.Set();
+        //                    }
+        //                    continue;
+        //                }
 
-					case 2:
-						{
-							// a callback was invoked
-							try
-							{
-								callbackRetValue = CallFunctionDirect(callbackTarget, callbackArgs);
-							}
-							finally
-							{
-								callbackHandled.Set();
-							}
-							continue;
-						}
-				}
-				break;
-			}
-		}
+        //            case 2:
+        //                {
+        //                    // a callback was invoked
+        //                    try
+        //                    {
+        //                        callbackRetValue = CallFunctionDirect(callbackTarget, callbackArgs);
+        //                    }
+        //                    finally
+        //                    {
+        //                        callbackHandled.Set();
+        //                    }
+        //                    continue;
+        //                }
+        //        }
+        //        break;
+        //    }
+        //}
 
-		/// <summary>
-		/// To be called from <c>ExtManager</c> when a PHP exception occurs.
-		/// </summary>
-		/// <param name="error">The error type.</param>
-		/// <param name="message">The error message.</param>
-		public void ExceptionCallback(PhpError error, string message)
-		{
-			this.error = error;
-			this.message = message;
+        ///// <summary>
+        ///// To be called from <c>ExtManager</c> when a PHP exception occurs.
+        ///// </summary>
+        ///// <param name="error">The error type.</param>
+        ///// <param name="message">The error message.</param>
+        //public void ExceptionCallback(PhpError error, string message)
+        //{
+        //    this.error = error;
+        //    this.message = message;
 
-			exceptionRaised.Set();
-			exceptionHandled.WaitOne();
-		}
+        //    exceptionRaised.Set();
+        //    exceptionHandled.WaitOne();
+        //}
 
 		#region Fields
 
-		/// <summary>
-		/// A terminator containing the method to be called when this instance of
-		/// <see cref="RequestCookie"/> is finalized.
-		/// </summary>
-		public IRequestTerminator Terminator = null;
+        ///// <summary>
+        ///// A terminator containing the method to be called when this instance of
+        ///// <see cref="RequestCookie"/> is finalized.
+        ///// </summary>
+        //public IRequestTerminator Terminator = null;
 
-		/// <summary>
-		/// Thread slot name used by <see cref="RequestCookie"/>.
-		/// </summary>
-		private const string threadSlotName = "RequestCookie";
+        ///// <summary>
+        ///// Thread slot name used by <see cref="RequestCookie"/>.
+        ///// </summary>
+        //private const string threadSlotName = "RequestCookie";
 
-		/// <summary>
-		/// Delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeFunction"/>.
-		/// </summary>
-		private InvokeFunctionDelegate invokeFunctionDelegate = null;
+        ///// <summary>
+        ///// Delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeFunction"/>.
+        ///// </summary>
+        //private InvokeFunctionDelegate invokeFunctionDelegate = null;
 
-		/// <summary>
-		/// Delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeMethod"/>.
-		/// </summary>
-		private InvokeMethodDelegate invokeMethodDelegate = null;
+        ///// <summary>
+        ///// Delegate to <see cref="extMan"/>'s <see cref="IExternals.InvokeMethod"/>.
+        ///// </summary>
+        //private InvokeMethodDelegate invokeMethodDelegate = null;
 
-		/// <summary>
-		/// An event that is set when an exception callback occured within an external function.
-		/// <seealso cref="HandleCallbacks"/>
-		/// </summary>
-		private AutoResetEvent exceptionRaised = new AutoResetEvent(false);
+        ///// <summary>
+        ///// An event that is set when an exception callback occured within an external function.
+        ///// <seealso cref="HandleCallbacks"/>
+        ///// </summary>
+        //private AutoResetEvent exceptionRaised = new AutoResetEvent(false);
 
-		/// <summary>
-		/// An event that is set when a function callback occured within an external function.
-		/// <seealso cref="HandleCallbacks"/>
-		/// </summary>
-		private AutoResetEvent callbackInvoked = new AutoResetEvent(false);
+        ///// <summary>
+        ///// An event that is set when a function callback occured within an external function.
+        ///// <seealso cref="HandleCallbacks"/>
+        ///// </summary>
+        //private AutoResetEvent callbackInvoked = new AutoResetEvent(false);
 
-		/// <summary>
-		/// An event that is set when an exception callback handling is finished.
-		/// <seealso cref="HandleCallbacks"/>
-		/// </summary>
-		private AutoResetEvent exceptionHandled = new AutoResetEvent(false);
+        ///// <summary>
+        ///// An event that is set when an exception callback handling is finished.
+        ///// <seealso cref="HandleCallbacks"/>
+        ///// </summary>
+        //private AutoResetEvent exceptionHandled = new AutoResetEvent(false);
 
-		/// <summary>
-		/// An event that is set when a function callback handling is finished.
-		/// <seealso cref="HandleCallbacks"/>
-		/// </summary>
-		private AutoResetEvent callbackHandled = new AutoResetEvent(false);
+        ///// <summary>
+        ///// An event that is set when a function callback handling is finished.
+        ///// <seealso cref="HandleCallbacks"/>
+        ///// </summary>
+        //private AutoResetEvent callbackHandled = new AutoResetEvent(false);
 
-		/// <summary>
-		/// Type of the error that occured within an external function.
-		/// </summary>
-		/// <remarks>
-		/// Information about the error is passed from the callback thread to the calling thread
-		/// via this field and via <see cref="message"/>.
-		/// </remarks>
-		private volatile PhpError error;
+        ///// <summary>
+        ///// Type of the error that occured within an external function.
+        ///// </summary>
+        ///// <remarks>
+        ///// Information about the error is passed from the callback thread to the calling thread
+        ///// via this field and via <see cref="message"/>.
+        ///// </remarks>
+        //private volatile PhpError error;
 
-		/// <summary>
-		/// Error message of the error that occured within an external function.
-		/// </summary>
-		/// <remarks>
-		/// Information about the error is passed from the callback thread to the calling thread
-		/// via this field and via <see cref="error"/>.
-		/// </remarks>
-		private volatile string message;
+        ///// <summary>
+        ///// Error message of the error that occured within an external function.
+        ///// </summary>
+        ///// <remarks>
+        ///// Information about the error is passed from the callback thread to the calling thread
+        ///// via this field and via <see cref="error"/>.
+        ///// </remarks>
+        //private volatile string message;
 
-		/// <summary>
-		/// The target of a callback invoked from an external function.
-		/// </summary>
-		/// <remarks>
-		/// Information about the callback is passed from the callback thread to the calling thread
-		/// via this field and via <see cref="callbackArgs"/> and in the opposite direction via
-		/// <see cref="callbackRetValue"/>.
-		/// </remarks>
-		private volatile PhpCallback callbackTarget;
+        ///// <summary>
+        ///// The target of a callback invoked from an external function.
+        ///// </summary>
+        ///// <remarks>
+        ///// Information about the callback is passed from the callback thread to the calling thread
+        ///// via this field and via <see cref="callbackArgs"/> and in the opposite direction via
+        ///// <see cref="callbackRetValue"/>.
+        ///// </remarks>
+        //private volatile PhpCallback callbackTarget;
 
-		/// <summary>
-		/// The arguments of a callback invoked from an external function.
-		/// </summary>
-		/// <remarks>
-		/// Information about the callback is passed from the callback thread to the calling thread
-		/// via this field and via <see cref="callbackTarget"/> and in the opposite direction via
-		/// <see cref="callbackRetValue"/>.
-		/// </remarks>
-		private volatile object[] callbackArgs;
+        ///// <summary>
+        ///// The arguments of a callback invoked from an external function.
+        ///// </summary>
+        ///// <remarks>
+        ///// Information about the callback is passed from the callback thread to the calling thread
+        ///// via this field and via <see cref="callbackTarget"/> and in the opposite direction via
+        ///// <see cref="callbackRetValue"/>.
+        ///// </remarks>
+        //private volatile object[] callbackArgs;
 
-		/// <summary>
-		/// The return value of a callback invoked from an external function.
-		/// </summary>
-		/// <remarks>
-		/// Information about the callback is passed from the callback thread to the calling thread
-		/// via <see cref="callbackTarget"/> and via <see cref="callbackArgs"/> and in the opposite direction
-		/// via this field.
-		/// </remarks>
-		private volatile object callbackRetValue;
+        ///// <summary>
+        ///// The return value of a callback invoked from an external function.
+        ///// </summary>
+        ///// <remarks>
+        ///// Information about the callback is passed from the callback thread to the calling thread
+        ///// via <see cref="callbackTarget"/> and via <see cref="callbackArgs"/> and in the opposite direction
+        ///// via this field.
+        ///// </remarks>
+        //private volatile object callbackRetValue;
 
-		/// <summary>
-		/// Proxy to the particular instance of <c>ExtManager</c> that is associated with current request.
-		/// </summary>
-		internal readonly IExternals extMan;
-
-		#endregion
-	}
-
-	#endregion
-
-	#region LauncherClientChannelSinkProvider and LauncherClientChannelSink
-
-	/// <summary>
-	/// Provides a channel sink that launches <c>ExtManager</c> process whenever a remote call 
-	/// is made and <c>ExtManager</c> is not running.
-	/// </summary>
-	internal class LauncherClientChannelSinkProvider : IClientChannelSinkProvider
-	{
-		/// <summary>
-		/// If <B>true</B>, <see cref="LauncherClientChannelSink"/> won't try to launch <c>ExtManager</c>.
-		/// When calling something in a request context, you want the instance that maintains that context,
-		/// or nothing. Fresh instance of <c>ExtManager</c> would be of no use.
-		/// </summary>
-		[ThreadStatic]
-		public static bool SuppressLauncher;
-
-		/// <summary>
-		/// Next channel sink provider in the chain.
-		/// </summary>
-		private IClientChannelSinkProvider next;
-
-		/// <summary>
-		/// Channel sink that launches <c>ExtManager</c> process whenever a remote call is made
-		/// and <c>ExtManager</c> is not running.
-		/// </summary>
-		private class LauncherClientChannelSink : IClientChannelSink
-		{
-			#region Fields
-
-			/// <summary>
-			/// Number of milliseconds to wait for the <c>ExtManager</c> to start up.
-			/// </summary>
-			private const uint waitTimeout = 15000;
-
-			/// <summary>
-			/// Retry count when trying to launch the ExtManager.
-			/// </summary>
-			private const int retryCount = 3;
-
-			/// <summary>
-			/// Next sink in the sink chain.
-			/// </summary>
-			private IClientChannelSink nextSink;
-
-			#endregion
-
-			/// <summary>
-			/// Creates a new <see cref="LauncherClientChannelSink"/>.
-			/// </summary>
-			/// <param name="nextSink">Next sink in the sink chain.</param>
-			public LauncherClientChannelSink(IClientChannelSink nextSink)
-			{
-				this.nextSink = nextSink;
-			}
-
-			#region IChannelSinkBase implementation
-
-			/// <summary>
-			/// Gets a dictionary through which properties on the sink can be accessed.
-			/// </summary>
-			/// <remarks>
-			/// The call is passed-through to the next channel sink.
-			/// </remarks>
-			public IDictionary Properties
-			{
-				get { return nextSink == null ? null : nextSink.Properties; }
-			}
-
-			#endregion
-
-			#region IClientChannelSink implementation
-
-			/// <summary>
-			/// Gets the next client channel sink in the client sink chain.
-			/// </summary>
-			public IClientChannelSink NextChannelSink
-			{
-				get { return nextSink; }
-			}
-
-			/// <summary>
-			/// Returns the <see cref="Stream"/> onto which the provided message is to be serialized.
-			/// </summary>
-			/// <param name="msg">The <see cref="IMethodCallMessage"/> containing details about the method call.
-			/// </param>
-			/// <param name="headers">The headers to add to the outgoing message heading to the server.</param>
-			/// <returns>The <see cref="Stream"/> onto which the provided message is to be serialized.</returns>
-			public Stream GetRequestStream(IMessage msg, ITransportHeaders headers)
-			{
-				if (nextSink != null)
-				{
-					return nextSink.GetRequestStream(msg, headers);
-				}
-				else return null;
-			}
-
-			/// <summary>
-			/// Requests asynchronous processing of a method call on the current sink.
-			/// </summary>
-			/// <param name="sinkStack">A stack of channel sinks that called this sink.</param>
-			/// <param name="msg">The message to process.</param>
-			/// <param name="headers">The headers to add to the outgoing message heading to the
-			/// server.</param>
-			/// <param name="stream">The stream headed to the transport sink.</param>
-			public void AsyncProcessRequest(IClientChannelSinkStack sinkStack,
-				IMessage msg, ITransportHeaders headers, Stream stream)
-			{
-				// don't try to launch ExtMan when calling in a request's context
-				if (LauncherClientChannelSinkProvider.SuppressLauncher)
-				{
-					try
-					{
-						if (nextSink != null) nextSink.AsyncProcessRequest(sinkStack, msg, headers, stream);
-						return;
-					}
-					catch (RemotingException ex)
-					{
-						// throw meaningful exceptions instead
-						throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
-					}
-					catch (System.Net.Sockets.SocketException ex)
-					{
-						throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
-					}
-				}
-
-				int tryCount = retryCount;
-
-				if (nextSink != null)
-				{
-					while (tryCount-- > 0)
-					{
-						// pass thru
-						try
-						{
-							nextSink.AsyncProcessRequest(sinkStack, msg, headers, stream);
-							return;
-						}
-
-						catch (RemotingException ex)
-						{
-							Debug.WriteLine("EXTERNALS", "Exception caught in AsyncProcessMessage: " + ex.Message);
-							Debug.WriteLine("EXTERNALS", "Trying to launch ExtManager...");
-							LaunchExtManager();
-
-							// reset the request stream!
-							stream.Seek(0, SeekOrigin.Begin);
-						}
-						catch (System.Net.Sockets.SocketException ex)
-						{
-							throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
-						}
-					}
-				}
-
-				// unable to launch ExtManager :-(
-				throw new RemotingTimeoutException(CoreResources.GetString("unable_to_launch_extmanager"));
-			}
-
-			/// <summary>
-			/// Requests asynchronous processing of a response to a method call on the current sink.
-			/// </summary>
-			/// <param name="sinkStack">A stack of sinks that called this sink.</param>
-			/// <param name="state">Information generated on the request side that is associated with 
-			/// this sink.</param>
-			/// <param name="headers">The headers retrieved from the server response stream.</param>
-			/// <param name="stream">The stream coming back from the transport sink.</param>
-			public void AsyncProcessResponse(IClientResponseChannelSinkStack sinkStack,
-				object state, ITransportHeaders headers, Stream stream)
-			{
-				// unsupported by the underlying transports sink anyway
-				if (nextSink != null)
-				{
-					nextSink.AsyncProcessResponse(sinkStack, state, headers, stream);
-				}
-			}
-
-			/// <summary>
-			/// Requests message processing from the current sink.
-			/// </summary>
-			/// <param name="msg">The message to process.</param>
-			/// <param name="requestHeaders">The headers to add to the outgoing message heading to the
-			/// server.</param>
-			/// <param name="requestStream">The stream headed to the transport sink.</param>
-			/// <param name="responseHeaders">When this method returns, contains an <see cref="ITransportHeaders"/> 
-			/// interface that holds the headers that the server returned.</param>
-			/// <param name="responseStream">When this method returns, contains a <see cref="Stream"/> coming back from 
-			/// the transport sink.</param>
-			public void ProcessMessage(IMessage msg, ITransportHeaders requestHeaders,
-				Stream requestStream, out ITransportHeaders responseHeaders, out Stream responseStream)
-			{
-				// don't try to launch ExtMan when calling in a request's context
-				if (LauncherClientChannelSinkProvider.SuppressLauncher)
-				{
-					try
-					{
-						if (nextSink != null) nextSink.ProcessMessage(msg, requestHeaders, requestStream,
-												  out responseHeaders, out responseStream);
-						else
-						{
-							responseHeaders = null;
-							responseStream = null;
-						}
-						return;
-					}
-					catch (RemotingException ex)
-					{
-						// throw meaningful exceptions instead
-						throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
-					}
-					catch (System.Net.Sockets.SocketException ex)
-					{
-						throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
-					}
-				}
-
-				int tryCount = retryCount;
-
-				if (nextSink != null)
-				{
-					while (tryCount-- > 0)
-					{
-						// pass thru
-						try
-						{
-							nextSink.ProcessMessage(msg, requestHeaders, requestStream,
-								out responseHeaders, out responseStream);
-							return;
-						}
-
-						catch (RemotingException ex)
-						{
-							Debug.WriteLine("EXTERNALS", "Exception caught in ProcessMessage: " + ex.Message);
-							Debug.WriteLine("EXTERNALS", "Trying to launch ExtManager...");
-							LaunchExtManager();
-
-							// reset the request stream!
-							requestStream.Seek(0, SeekOrigin.Begin);
-						}
-						catch (System.Net.Sockets.SocketException ex)
-						{
-							throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
-						}
-					}
-				}
-
-				// unable to launch ExtManager :-(
-				throw new RemotingTimeoutException(CoreResources.GetString("unable_to_launch_extmanager"));
-			}
-
-			#endregion
-
-			/// <summary>
-			/// Launches the <c>ExtManager</c> process and waits until it starts listening.
-			/// </summary>
-			/// <returns><B>true</B> if the process was successfully started, <B>false</B> otherwise.</returns>
-			private bool LaunchExtManager()
-			{
-				string eventName = "Global\\PHPNET_ExtManager_launch_event";
-				IntPtr eventHandle = IntPtr.Zero;
-
-				try
-				{
-					eventHandle = ShmNative.CreateEvent(ShmNative.securityAttributes, true, false, eventName);
-					if (eventHandle == IntPtr.Zero)
-					{
-						throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),
-							CoreResources.GetString("could_not_create_event"));
-					}
-
-					if (Marshal.GetLastWin32Error() != ShmNative.ERROR_ALREADY_EXISTS)
-					{
-						try
-						{
-							// we created this event -> launch the process
-							Process proc = Process.Start(Path.Combine(Configuration.Application.Paths.ExtManager,
-								Externals.ExtManagerExe), eventName);
-						}
-						catch (ArgumentException ex)
-						{
-							Debug.WriteLine("EXTERNALS", ex.Message);
-							return false;
-						}
-					}
-
-					// wait until ExtManager starts listening
-					uint waitResult = ShmNative.WaitForSingleObject(eventHandle, waitTimeout);
-
-					if (waitResult != ShmNative.WAIT_OBJECT_0)
-					{
-						throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),
-							CoreResources.GetString("timeout_waiting_for_extmanager"));
-					}
-				}
-				catch (System.ComponentModel.Win32Exception ex)
-				{
-					Debug.WriteLine("EXTERNALS", ex.Message);
-					return false;
-				}
-				finally
-				{
-					if (eventHandle != IntPtr.Zero) ShmNative.CloseHandle(eventHandle);
-				}
-
-				return true;
-			}
-		}
-
-		#region IClientChannelSinkProvider implementation
-
-		/// <summary>
-		/// This method is called by the channel to create a sink chain.
-		/// </summary>
-		/// <param name="channel">Channel for which the current sink chain is being constructed.</param>
-		/// <param name="url">The URL of the object to connect to.</param>
-		/// <param name="remoteChannelData">A channel data object describing a channel on the remote server.</param>
-		/// <returns>The first sink of the newly formed channel sink chain.</returns>
-		public IClientChannelSink CreateSink(IChannelSender channel, string url, object remoteChannelData)
-		{
-			IClientChannelSink nextSink = null;
-			if (Next != null) nextSink = Next.CreateSink(channel, url, remoteChannelData);
-
-			return new LauncherClientChannelSink(nextSink);
-		}
-
-		/// <summary>
-		/// Gets or sets the next sink provider in the channel sink provider chain.
-		/// </summary>
-		public IClientChannelSinkProvider Next
-		{
-			get { return next; }
-			set { next = value; }
-		}
+        ///// <summary>
+        ///// Proxy to the particular instance of <c>ExtManager</c> that is associated with current request.
+        ///// </summary>
+        //internal readonly IExternals extMan;
 
 		#endregion
 	}
 
 	#endregion
+
+    //#region LauncherClientChannelSinkProvider and LauncherClientChannelSink
+
+    ///// <summary>
+    ///// Provides a channel sink that launches <c>ExtManager</c> process whenever a remote call 
+    ///// is made and <c>ExtManager</c> is not running.
+    ///// </summary>
+    //internal class LauncherClientChannelSinkProvider : IClientChannelSinkProvider
+    //{
+    //    /// <summary>
+    //    /// If <B>true</B>, <see cref="LauncherClientChannelSink"/> won't try to launch <c>ExtManager</c>.
+    //    /// When calling something in a request context, you want the instance that maintains that context,
+    //    /// or nothing. Fresh instance of <c>ExtManager</c> would be of no use.
+    //    /// </summary>
+    //    [ThreadStatic]
+    //    public static bool SuppressLauncher;
+
+    //    /// <summary>
+    //    /// Next channel sink provider in the chain.
+    //    /// </summary>
+    //    private IClientChannelSinkProvider next;
+
+    //    /// <summary>
+    //    /// Channel sink that launches <c>ExtManager</c> process whenever a remote call is made
+    //    /// and <c>ExtManager</c> is not running.
+    //    /// </summary>
+    //    private class LauncherClientChannelSink : IClientChannelSink
+    //    {
+    //        #region Fields
+
+    //        /// <summary>
+    //        /// Number of milliseconds to wait for the <c>ExtManager</c> to start up.
+    //        /// </summary>
+    //        private const uint waitTimeout = 15000;
+
+    //        /// <summary>
+    //        /// Retry count when trying to launch the ExtManager.
+    //        /// </summary>
+    //        private const int retryCount = 3;
+
+    //        /// <summary>
+    //        /// Next sink in the sink chain.
+    //        /// </summary>
+    //        private IClientChannelSink nextSink;
+
+    //        #endregion
+
+    //        /// <summary>
+    //        /// Creates a new <see cref="LauncherClientChannelSink"/>.
+    //        /// </summary>
+    //        /// <param name="nextSink">Next sink in the sink chain.</param>
+    //        public LauncherClientChannelSink(IClientChannelSink nextSink)
+    //        {
+    //            this.nextSink = nextSink;
+    //        }
+
+    //        #region IChannelSinkBase implementation
+
+    //        /// <summary>
+    //        /// Gets a dictionary through which properties on the sink can be accessed.
+    //        /// </summary>
+    //        /// <remarks>
+    //        /// The call is passed-through to the next channel sink.
+    //        /// </remarks>
+    //        public IDictionary Properties
+    //        {
+    //            get { return nextSink == null ? null : nextSink.Properties; }
+    //        }
+
+    //        #endregion
+
+    //        #region IClientChannelSink implementation
+
+    //        /// <summary>
+    //        /// Gets the next client channel sink in the client sink chain.
+    //        /// </summary>
+    //        public IClientChannelSink NextChannelSink
+    //        {
+    //            get { return nextSink; }
+    //        }
+
+    //        /// <summary>
+    //        /// Returns the <see cref="Stream"/> onto which the provided message is to be serialized.
+    //        /// </summary>
+    //        /// <param name="msg">The <see cref="IMethodCallMessage"/> containing details about the method call.
+    //        /// </param>
+    //        /// <param name="headers">The headers to add to the outgoing message heading to the server.</param>
+    //        /// <returns>The <see cref="Stream"/> onto which the provided message is to be serialized.</returns>
+    //        public Stream GetRequestStream(IMessage msg, ITransportHeaders headers)
+    //        {
+    //            if (nextSink != null)
+    //            {
+    //                return nextSink.GetRequestStream(msg, headers);
+    //            }
+    //            else return null;
+    //        }
+
+    //        /// <summary>
+    //        /// Requests asynchronous processing of a method call on the current sink.
+    //        /// </summary>
+    //        /// <param name="sinkStack">A stack of channel sinks that called this sink.</param>
+    //        /// <param name="msg">The message to process.</param>
+    //        /// <param name="headers">The headers to add to the outgoing message heading to the
+    //        /// server.</param>
+    //        /// <param name="stream">The stream headed to the transport sink.</param>
+    //        public void AsyncProcessRequest(IClientChannelSinkStack sinkStack,
+    //            IMessage msg, ITransportHeaders headers, Stream stream)
+    //        {
+    //            // don't try to launch ExtMan when calling in a request's context
+    //            if (LauncherClientChannelSinkProvider.SuppressLauncher)
+    //            {
+    //                try
+    //                {
+    //                    if (nextSink != null) nextSink.AsyncProcessRequest(sinkStack, msg, headers, stream);
+    //                    return;
+    //                }
+    //                catch (RemotingException ex)
+    //                {
+    //                    // throw meaningful exceptions instead
+    //                    throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
+    //                }
+    //                catch (System.Net.Sockets.SocketException ex)
+    //                {
+    //                    throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
+    //                }
+    //            }
+
+    //            int tryCount = retryCount;
+
+    //            if (nextSink != null)
+    //            {
+    //                while (tryCount-- > 0)
+    //                {
+    //                    // pass thru
+    //                    try
+    //                    {
+    //                        nextSink.AsyncProcessRequest(sinkStack, msg, headers, stream);
+    //                        return;
+    //                    }
+
+    //                    catch (RemotingException ex)
+    //                    {
+    //                        Debug.WriteLine("EXTERNALS", "Exception caught in AsyncProcessMessage: " + ex.Message);
+    //                        Debug.WriteLine("EXTERNALS", "Trying to launch ExtManager...");
+    //                        LaunchExtManager();
+
+    //                        // reset the request stream!
+    //                        stream.Seek(0, SeekOrigin.Begin);
+    //                    }
+    //                    catch (System.Net.Sockets.SocketException ex)
+    //                    {
+    //                        throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
+    //                    }
+    //                }
+    //            }
+
+    //            // unable to launch ExtManager :-(
+    //            throw new RemotingTimeoutException(CoreResources.GetString("unable_to_launch_extmanager"));
+    //        }
+
+    //        /// <summary>
+    //        /// Requests asynchronous processing of a response to a method call on the current sink.
+    //        /// </summary>
+    //        /// <param name="sinkStack">A stack of sinks that called this sink.</param>
+    //        /// <param name="state">Information generated on the request side that is associated with 
+    //        /// this sink.</param>
+    //        /// <param name="headers">The headers retrieved from the server response stream.</param>
+    //        /// <param name="stream">The stream coming back from the transport sink.</param>
+    //        public void AsyncProcessResponse(IClientResponseChannelSinkStack sinkStack,
+    //            object state, ITransportHeaders headers, Stream stream)
+    //        {
+    //            // unsupported by the underlying transports sink anyway
+    //            if (nextSink != null)
+    //            {
+    //                nextSink.AsyncProcessResponse(sinkStack, state, headers, stream);
+    //            }
+    //        }
+
+    //        /// <summary>
+    //        /// Requests message processing from the current sink.
+    //        /// </summary>
+    //        /// <param name="msg">The message to process.</param>
+    //        /// <param name="requestHeaders">The headers to add to the outgoing message heading to the
+    //        /// server.</param>
+    //        /// <param name="requestStream">The stream headed to the transport sink.</param>
+    //        /// <param name="responseHeaders">When this method returns, contains an <see cref="ITransportHeaders"/> 
+    //        /// interface that holds the headers that the server returned.</param>
+    //        /// <param name="responseStream">When this method returns, contains a <see cref="Stream"/> coming back from 
+    //        /// the transport sink.</param>
+    //        public void ProcessMessage(IMessage msg, ITransportHeaders requestHeaders,
+    //            Stream requestStream, out ITransportHeaders responseHeaders, out Stream responseStream)
+    //        {
+    //            // don't try to launch ExtMan when calling in a request's context
+    //            if (LauncherClientChannelSinkProvider.SuppressLauncher)
+    //            {
+    //                try
+    //                {
+    //                    if (nextSink != null) nextSink.ProcessMessage(msg, requestHeaders, requestStream,
+    //                                              out responseHeaders, out responseStream);
+    //                    else
+    //                    {
+    //                        responseHeaders = null;
+    //                        responseStream = null;
+    //                    }
+    //                    return;
+    //                }
+    //                catch (RemotingException ex)
+    //                {
+    //                    // throw meaningful exceptions instead
+    //                    throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
+    //                }
+    //                catch (System.Net.Sockets.SocketException ex)
+    //                {
+    //                    throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
+    //                }
+    //            }
+
+    //            int tryCount = retryCount;
+
+    //            if (nextSink != null)
+    //            {
+    //                while (tryCount-- > 0)
+    //                {
+    //                    // pass thru
+    //                    try
+    //                    {
+    //                        nextSink.ProcessMessage(msg, requestHeaders, requestStream,
+    //                            out responseHeaders, out responseStream);
+    //                        return;
+    //                    }
+
+    //                    catch (RemotingException ex)
+    //                    {
+    //                        Debug.WriteLine("EXTERNALS", "Exception caught in ProcessMessage: " + ex.Message);
+    //                        Debug.WriteLine("EXTERNALS", "Trying to launch ExtManager...");
+    //                        LaunchExtManager();
+
+    //                        // reset the request stream!
+    //                        requestStream.Seek(0, SeekOrigin.Begin);
+    //                    }
+    //                    catch (System.Net.Sockets.SocketException ex)
+    //                    {
+    //                        throw new RemotingException(CoreResources.GetString("unable_to_connect_extmanager"), ex);
+    //                    }
+    //                }
+    //            }
+
+    //            // unable to launch ExtManager :-(
+    //            throw new RemotingTimeoutException(CoreResources.GetString("unable_to_launch_extmanager"));
+    //        }
+
+    //        #endregion
+
+    //        /// <summary>
+    //        /// Launches the <c>ExtManager</c> process and waits until it starts listening.
+    //        /// </summary>
+    //        /// <returns><B>true</B> if the process was successfully started, <B>false</B> otherwise.</returns>
+    //        private bool LaunchExtManager()
+    //        {
+    //            string eventName = "Global\\PHPNET_ExtManager_launch_event";
+    //            IntPtr eventHandle = IntPtr.Zero;
+
+    //            try
+    //            {
+    //                eventHandle = ShmNative.CreateEvent(ShmNative.securityAttributes, true, false, eventName);
+    //                if (eventHandle == IntPtr.Zero)
+    //                {
+    //                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),
+    //                        CoreResources.GetString("could_not_create_event"));
+    //                }
+
+    //                if (Marshal.GetLastWin32Error() != ShmNative.ERROR_ALREADY_EXISTS)
+    //                {
+    //                    try
+    //                    {
+    //                        // we created this event -> launch the process
+    //                        Process proc = Process.Start(Path.Combine(Configuration.Application.Paths.ExtManager,
+    //                            Externals.ExtManagerExe), eventName);
+    //                    }
+    //                    catch (ArgumentException ex)
+    //                    {
+    //                        Debug.WriteLine("EXTERNALS", ex.Message);
+    //                        return false;
+    //                    }
+    //                }
+
+    //                // wait until ExtManager starts listening
+    //                uint waitResult = ShmNative.WaitForSingleObject(eventHandle, waitTimeout);
+
+    //                if (waitResult != ShmNative.WAIT_OBJECT_0)
+    //                {
+    //                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),
+    //                        CoreResources.GetString("timeout_waiting_for_extmanager"));
+    //                }
+    //            }
+    //            catch (System.ComponentModel.Win32Exception ex)
+    //            {
+    //                Debug.WriteLine("EXTERNALS", ex.Message);
+    //                return false;
+    //            }
+    //            finally
+    //            {
+    //                if (eventHandle != IntPtr.Zero) ShmNative.CloseHandle(eventHandle);
+    //            }
+
+    //            return true;
+    //        }
+    //    }
+
+    //    #region IClientChannelSinkProvider implementation
+
+    //    /// <summary>
+    //    /// This method is called by the channel to create a sink chain.
+    //    /// </summary>
+    //    /// <param name="channel">Channel for which the current sink chain is being constructed.</param>
+    //    /// <param name="url">The URL of the object to connect to.</param>
+    //    /// <param name="remoteChannelData">A channel data object describing a channel on the remote server.</param>
+    //    /// <returns>The first sink of the newly formed channel sink chain.</returns>
+    //    public IClientChannelSink CreateSink(IChannelSender channel, string url, object remoteChannelData)
+    //    {
+    //        IClientChannelSink nextSink = null;
+    //        if (Next != null) nextSink = Next.CreateSink(channel, url, remoteChannelData);
+
+    //        return new LauncherClientChannelSink(nextSink);
+    //    }
+
+    //    /// <summary>
+    //    /// Gets or sets the next sink provider in the channel sink provider chain.
+    //    /// </summary>
+    //    public IClientChannelSinkProvider Next
+    //    {
+    //        get { return next; }
+    //        set { next = value; }
+    //    }
+
+    //    #endregion
+    //}
+
+    //#endregion
 
     #region ObjectWrapper
 
@@ -1679,18 +1684,18 @@ namespace PHP.Core
 	{
 		#region Fields
 
-		/// <summary>
-		/// Proxy to the <c>ExtManager</c> that hosts &quot;isolated&quot; extensions.
-		/// </summary>
-		private static IExternals RemoteExtMan
-		{
-			get
-			{
-				if (!extMansInitialized) InitializeExtMans();
-				return _remoteExtMan;
-			}
-		}
-		private static IExternals _remoteExtMan = null;
+        ///// <summary>
+        ///// Proxy to the <c>ExtManager</c> that hosts &quot;isolated&quot; extensions.
+        ///// </summary>
+        //private static IExternals RemoteExtMan
+        //{
+        //    get
+        //    {
+        //        if (!extMansInitialized) InitializeExtMans();
+        //        return _remoteExtMan;
+        //    }
+        //}
+        //private static IExternals _remoteExtMan = null;
 
         /// <summary>
 		/// Get the <c>ExtManager</c> that hosts &quot;collocated&quot; extensions.
@@ -1733,20 +1738,20 @@ namespace PHP.Core
 		/// </summary>
 		private static bool extMansInitialized = false;
 
-		/// <summary>
-		/// Remoting channel.
-		/// </summary>
-		private static IChannel channel;
+        ///// <summary>
+        ///// Remoting channel.
+        ///// </summary>
+        //private static IChannel channel;
 
-		/// <summary>
-		/// The URL used to connect to ExtManager's well-known section.
-		/// </summary>
-		private const string generalUrl = "shm://phalanger/ExtManager";
+        ///// <summary>
+        ///// The URL used to connect to ExtManager's well-known section.
+        ///// </summary>
+        //private const string generalUrl = "shm://phalanger/ExtManager";
 
-		/// <summary>
-		/// Name of the <c>ExtManager</c> executable.
-		/// </summary>
-		public const string ExtManagerExe = "ExtManager.exe";
+        ///// <summary>
+        ///// Name of the <c>ExtManager</c> executable.
+        ///// </summary>
+        //public const string ExtManagerExe = "ExtManager.exe";
 
 		/// <summary>
 		/// Suffix of wrapper assembly names.
@@ -1830,14 +1835,14 @@ namespace PHP.Core
 				// make sure that configuration is loaded
 				Configuration.Load(ApplicationContext.Default);
 
-				if (ExtensionLibraryDescriptor.isolatedExtensions.Count > 0)
-				{
-					if (!Configuration.Application.Paths.ExtManager.DirectoryExists)
-						throw new ConfigurationErrorsException(CoreResources.GetString("extmanager_path_not_configured"));
+                //if (ExtensionLibraryDescriptor.isolatedExtensions.Count > 0)
+                //{
+                //    if (!Configuration.Application.Paths.ExtManager.DirectoryExists)
+                //        throw new ConfigurationErrorsException(CoreResources.GetString("extmanager_path_not_configured"));
 
-					InitSharedMemoryChannel();
-					// extensions are loaded lazily when GetInstanceUrl is invoked		
-				}
+                //    InitSharedMemoryChannel();
+                //    // extensions are loaded lazily when GetInstanceUrl is invoked		
+                //}
 
 				if (ExtensionLibraryDescriptor.collocatedExtensions.Count > 0)
 				{
@@ -1854,32 +1859,32 @@ namespace PHP.Core
 			}
 		}
 
-		/// <summary>
-		/// Initializes Remoting infrastructure for &quot;isolated&quot; extensions.
-		/// </summary>
-		/// <returns>Remote Extension Manager.</returns>
-		/// <remarks>
-		/// Although we're calling here <see cref="RemotingServices.Connect"/>, there is
-		/// no communication taking place, so far. That's why it is correct to perform these
-		/// operations in static constructor though the <c>ExtManager</c> might not be running, yet.
-		/// </remarks>
-		private static void InitSharedMemoryChannel()
-		{
-			// Binary formatter -> Launcher sink -> Transport channel
-			BinaryClientFormatterSinkProvider client_formatter_provider = new BinaryClientFormatterSinkProvider();
-			client_formatter_provider.Next = new LauncherClientChannelSinkProvider();
+        ///// <summary>
+        ///// Initializes Remoting infrastructure for &quot;isolated&quot; extensions.
+        ///// </summary>
+        ///// <returns>Remote Extension Manager.</returns>
+        ///// <remarks>
+        ///// Although we're calling here <see cref="RemotingServices.Connect"/>, there is
+        ///// no communication taking place, so far. That's why it is correct to perform these
+        ///// operations in static constructor though the <c>ExtManager</c> might not be running, yet.
+        ///// </remarks>
+        //private static void InitSharedMemoryChannel()
+        //{
+        //    // Binary formatter -> Launcher sink -> Transport channel
+        //    BinaryClientFormatterSinkProvider client_formatter_provider = new BinaryClientFormatterSinkProvider();
+        //    client_formatter_provider.Next = new LauncherClientChannelSinkProvider();
 
-			// set full deserialization level for the server formatter (new to Framework 1.1)
-			BinaryServerFormatterSinkProvider server_formatter_provider = new BinaryServerFormatterSinkProvider();
-			server_formatter_provider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+        //    // set full deserialization level for the server formatter (new to Framework 1.1)
+        //    BinaryServerFormatterSinkProvider server_formatter_provider = new BinaryServerFormatterSinkProvider();
+        //    server_formatter_provider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
 
-			// create an shm channel and register it
-			channel = new ShmChannel(null, client_formatter_provider, server_formatter_provider);
-			ChannelServices.RegisterChannel(channel, false);
+        //    // create an shm channel and register it
+        //    channel = new ShmChannel(null, client_formatter_provider, server_formatter_provider);
+        //    ChannelServices.RegisterChannel(channel, false);
 
-			// get a proxy to ExtManager object from across the shm channel
-			_remoteExtMan = (IExternals)RemotingServices.Connect(typeof(IExternals), generalUrl);
-		}
+        //    // get a proxy to ExtManager object from across the shm channel
+        //    _remoteExtMan = (IExternals)RemotingServices.Connect(typeof(IExternals), generalUrl);
+        //}
 
 		/// <summary>
 		/// Initializes the collocated ExtSupport.
@@ -1974,51 +1979,51 @@ namespace PHP.Core
                     { }
                 }
 
-			// notify the isolated ExtManager
-            if (_remoteExtMan != null)
-			{
-				RequestCookie cookie = RequestCookie.GetCurrentThreadCookie();
-				if (cookie != null)
-				{
-					try
-					{
-						LauncherClientChannelSinkProvider.SuppressLauncher = true;
-						cookie.extMan.EndRequest();
-					}
-					catch (Exception)
-					{ }
-					RequestCookie.FreeCookie();
-				}
-			}
+            //// notify the isolated ExtManager
+            //if (_remoteExtMan != null)
+            //{
+            //    RequestCookie cookie = RequestCookie.GetCurrentThreadCookie();
+            //    if (cookie != null)
+            //    {
+            //        try
+            //        {
+            //            LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //            cookie.extMan.EndRequest();
+            //        }
+            //        catch (Exception)
+            //        { }
+            //        RequestCookie.FreeCookie();
+            //    }
+            //}
 		}
 
-		/// <summary>
-		/// Returns the private URL of the current remote <c>ExtManager</c>.
-		/// </summary>
-		/// <returns>The instance (private) URL for the remote <c>ExtManager</c>.</returns>
-		internal static string GetInstanceUrl(RequestCookie cookie)
-		{
-			LauncherClientChannelSinkProvider.SuppressLauncher = false;
+        ///// <summary>
+        ///// Returns the private URL of the current remote <c>ExtManager</c>.
+        ///// </summary>
+        ///// <returns>The instance (private) URL for the remote <c>ExtManager</c>.</returns>
+        //internal static string GetInstanceUrl(RequestCookie cookie)
+        //{
+        //    LauncherClientChannelSinkProvider.SuppressLauncher = false;
 
-			RequestCookie.GetInstanceUrlDelegate remote_delegate =
-				new RequestCookie.GetInstanceUrlDelegate(RemoteExtMan.GetInstanceUrl);
+        //    RequestCookie.GetInstanceUrlDelegate remote_delegate =
+        //        new RequestCookie.GetInstanceUrlDelegate(RemoteExtMan.GetInstanceUrl);
 
-			// invoke the corresponding proxy method asynchronously
-			IAsyncResult asyncResult = remote_delegate.BeginInvoke(generalUrl, Configuration.Application,
-				ExtensionLibraryDescriptor.isolatedExtensions, null, null);
+        //    // invoke the corresponding proxy method asynchronously
+        //    IAsyncResult asyncResult = remote_delegate.BeginInvoke(generalUrl, Configuration.Application,
+        //        ExtensionLibraryDescriptor.isolatedExtensions, null, null);
 
-			string ret_val;
-			try
-			{
-				// wait for completion of the remote call and handle exception callbacks
-				cookie.HandleCallbacks(asyncResult);
-			}
-			finally
-			{
-				ret_val = remote_delegate.EndInvoke(asyncResult);
-			}
-			return ret_val;
-		}
+        //    string ret_val;
+        //    try
+        //    {
+        //        // wait for completion of the remote call and handle exception callbacks
+        //        cookie.HandleCallbacks(asyncResult);
+        //    }
+        //    finally
+        //    {
+        //        ret_val = remote_delegate.EndInvoke(asyncResult);
+        //    }
+        //    return ret_val;
+        //}
 
 		#endregion
 
@@ -2053,34 +2058,34 @@ namespace PHP.Core
                 ret_value = (extman = LocalExtMan(descriptor.ExtVersion)).
                     InvokeFunction(moduleName, functionName, ref args_copy, refInfo, context.WorkingDirectory);
             }
-            else if (RemoteExtMan != null)
-            {
-                // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
-                // because the reference to RequestCookie must be in the CallContext before the request stream is created
-                // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
-                LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //else if (RemoteExtMan != null)
+            //{
+            //    // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
+            //    // because the reference to RequestCookie must be in the CallContext before the request stream is created
+            //    // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
 
-                // one instance of InvokeFunctionDelegate pointing to the right InvokeFunction method is cached in RequestCookie
-                RequestCookie cookie = RequestCookie.EnsureCookieExists();
+            //    // one instance of InvokeFunctionDelegate pointing to the right InvokeFunction method is cached in RequestCookie
+            //    RequestCookie cookie = RequestCookie.EnsureCookieExists();
 
-                extman = cookie.extMan;     // used IExternals
-                object[] args_copy = args;  // avoid modifying caller's args array if there are no byref parameters
+            //    extman = cookie.extMan;     // used IExternals
+            //    object[] args_copy = args;  // avoid modifying caller's args array if there are no byref parameters
 
-                // invoke the corresponding proxy method asynchronously
-                IAsyncResult async_result;
-                async_result = cookie.InvokeFunction.BeginInvoke(
-                    moduleName, functionName, ref args_copy, refInfo, context.WorkingDirectory, null, null);
+            //    // invoke the corresponding proxy method asynchronously
+            //    IAsyncResult async_result;
+            //    async_result = cookie.InvokeFunction.BeginInvoke(
+            //        moduleName, functionName, ref args_copy, refInfo, context.WorkingDirectory, null, null);
 
-                try
-                {
-                    // wait for completion of the remote call and handle exception callbacks
-                    cookie.HandleCallbacks(async_result);
-                }
-                finally
-                {
-                    ret_value = cookie.InvokeFunction.EndInvoke(ref args_copy, async_result);
-                }
-            }
+            //    try
+            //    {
+            //        // wait for completion of the remote call and handle exception callbacks
+            //        cookie.HandleCallbacks(async_result);
+            //    }
+            //    finally
+            //    {
+            //        ret_value = cookie.InvokeFunction.EndInvoke(ref args_copy, async_result);
+            //    }
+            //}
             else
             {
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_external_module_called", functionName, moduleName));
@@ -2131,36 +2136,36 @@ namespace PHP.Core
                     InvokeMethod(moduleName, className, methodName, ref new_self, ref args_copy, refInfo, context.WorkingDirectory);
 
             }
-            else if (RemoteExtMan != null)
-            {
-                // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
-                // because the reference to RequestCookie  must be in the CallContext before the request stream is created
-                // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
-                LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //else if (RemoteExtMan != null)
+            //{
+            //    // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
+            //    // because the reference to RequestCookie  must be in the CallContext before the request stream is created
+            //    // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
 
-                // one instance of InvokeMethodDelegate pointing to the right InvokeMethod method is cached in RequestCookie
-                RequestCookie cookie = RequestCookie.EnsureCookieExists();
+            //    // one instance of InvokeMethodDelegate pointing to the right InvokeMethod method is cached in RequestCookie
+            //    RequestCookie cookie = RequestCookie.EnsureCookieExists();
 
-                extman = cookie.extMan;
-                object[] args_copy = args;  // avoid modifying caller's args array if there are no byref parameters
+            //    extman = cookie.extMan;
+            //    object[] args_copy = args;  // avoid modifying caller's args array if there are no byref parameters
 
-                // invoke the corresponding proxy method asynchronously
-                IAsyncResult async_result;
-                async_result = cookie.InvokeMethod.BeginInvoke(
-                    moduleName, className, methodName, ref self, ref args_copy, refInfo, context.WorkingDirectory, null, null);
+            //    // invoke the corresponding proxy method asynchronously
+            //    IAsyncResult async_result;
+            //    async_result = cookie.InvokeMethod.BeginInvoke(
+            //        moduleName, className, methodName, ref self, ref args_copy, refInfo, context.WorkingDirectory, null, null);
 
-                new_self = null;
-                try
-                {
-                    // wait for completion of the remote call and handle exception callbacks
-                    cookie.HandleCallbacks(async_result);
-                }
-                finally
-                {
-                    // fetch the return value and the new instance state
-                    ret_value = cookie.InvokeMethod.EndInvoke(ref new_self, ref args_copy, async_result);
-                }
-            }
+            //    new_self = null;
+            //    try
+            //    {
+            //        // wait for completion of the remote call and handle exception callbacks
+            //        cookie.HandleCallbacks(async_result);
+            //    }
+            //    finally
+            //    {
+            //        // fetch the return value and the new instance state
+            //        ret_value = cookie.InvokeMethod.EndInvoke(ref new_self, ref args_copy, async_result);
+            //    }
+            //}
             else
             {
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_external_module_called", String.Format("{0}::{1}", className, methodName), moduleName));
@@ -2380,120 +2385,120 @@ namespace PHP.Core
 
         #endregion
 
-        #region Isolated function/method wrapper
+        //#region Isolated function/method wrapper
 
-        private class IsolatedExternalFunction : MarshalByRefObject, IExternalFunction
-        {
-            string moduleName, functionName;
+        //private class IsolatedExternalFunction : MarshalByRefObject, IExternalFunction
+        //{
+        //    string moduleName, functionName;
 
-            public IsolatedExternalFunction(string moduleName, string functionName)
-            {
-                this.moduleName = moduleName;
-                this.functionName = functionName;
-            }
+        //    public IsolatedExternalFunction(string moduleName, string functionName)
+        //    {
+        //        this.moduleName = moduleName;
+        //        this.functionName = functionName;
+        //    }
 
-            #region IExternalFunction Members
+        //    #region IExternalFunction Members
 
-            public object Invoke(PhpObject self, ref object[] args, int[] refInfo, string workingDir)
-            {
-                // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
-                // because the reference to RequestCookie  must be in the CallContext before the request stream is created
-                // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
-                LauncherClientChannelSinkProvider.SuppressLauncher = true;
+        //    public object Invoke(PhpObject self, ref object[] args, int[] refInfo, string workingDir)
+        //    {
+        //        // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
+        //        // because the reference to RequestCookie  must be in the CallContext before the request stream is created
+        //        // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
+        //        LauncherClientChannelSinkProvider.SuppressLauncher = true;
 
-                // one instance of InvokeMethodDelegate pointing to the right InvokeMethod method is cached in RequestCookie
-                RequestCookie cookie = RequestCookie.EnsureCookieExists();
+        //        // one instance of InvokeMethodDelegate pointing to the right InvokeMethod method is cached in RequestCookie
+        //        RequestCookie cookie = RequestCookie.EnsureCookieExists();
 
-                // invoke the corresponding proxy method asynchronously
-                object[] args_copy = args;  // keep args unchanged, Invoke
-                IAsyncResult async_result;
-                async_result = cookie.InvokeFunction.BeginInvoke(
-                    moduleName, functionName, ref args_copy, refInfo, workingDir, null, null);
+        //        // invoke the corresponding proxy method asynchronously
+        //        object[] args_copy = args;  // keep args unchanged, Invoke
+        //        IAsyncResult async_result;
+        //        async_result = cookie.InvokeFunction.BeginInvoke(
+        //            moduleName, functionName, ref args_copy, refInfo, workingDir, null, null);
 
-                object ret;
-                try
-                {
-                    // wait for completion of the remote call and handle exception callbacks
-                    cookie.HandleCallbacks(async_result);
-                }
-                finally
-                {
-                    // fetch the return value and the new instance state
-                    ret = cookie.InvokeFunction.EndInvoke(ref args_copy, async_result);
-                }
+        //        object ret;
+        //        try
+        //        {
+        //            // wait for completion of the remote call and handle exception callbacks
+        //            cookie.HandleCallbacks(async_result);
+        //        }
+        //        finally
+        //        {
+        //            // fetch the return value and the new instance state
+        //            ret = cookie.InvokeFunction.EndInvoke(ref args_copy, async_result);
+        //        }
 
-                return ret;
-            }
+        //        return ret;
+        //    }
 
-            public IExternals ExtManager
-            {
-                get
-                {
-                    RequestCookie cookie = RequestCookie.EnsureCookieExists();
-                    return cookie.extMan;
-                }
-            }
+        //    public IExternals ExtManager
+        //    {
+        //        get
+        //        {
+        //            RequestCookie cookie = RequestCookie.EnsureCookieExists();
+        //            return cookie.extMan;
+        //        }
+        //    }
 
-            #endregion
-        }
+        //    #endregion
+        //}
 
-        private class IsolatedExternalMethod : MarshalByRefObject, IExternalFunction
-        {
-            string moduleName, className, functionName;
+        //private class IsolatedExternalMethod : MarshalByRefObject, IExternalFunction
+        //{
+        //    string moduleName, className, functionName;
 
-            public IsolatedExternalMethod(string moduleName, string className, string functionName)
-            {
-                this.moduleName = moduleName;
-                this.className = className;
-                this.functionName = functionName;
-            }
+        //    public IsolatedExternalMethod(string moduleName, string className, string functionName)
+        //    {
+        //        this.moduleName = moduleName;
+        //        this.className = className;
+        //        this.functionName = functionName;
+        //    }
 
-            #region IExternalFunction Members
+        //    #region IExternalFunction Members
 
-            public object Invoke(PhpObject self, ref object[] args, int[] refInfo, string workingDir)
-            {
-                // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
-                // because the reference to RequestCookie  must be in the CallContext before the request stream is created
-                // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
-                LauncherClientChannelSinkProvider.SuppressLauncher = true;
+        //    public object Invoke(PhpObject self, ref object[] args, int[] refInfo, string workingDir)
+        //    {
+        //        // note: it is not possible to place the call to EnsureCookieExists to the launcher sink's ProcessMessage,
+        //        // because the reference to RequestCookie  must be in the CallContext before the request stream is created
+        //        // by the binary formatter which happens before launcher sink's ProcessMessage is eventually called
+        //        LauncherClientChannelSinkProvider.SuppressLauncher = true;
 
-                // one instance of InvokeMethodDelegate pointing to the right InvokeMethod method is cached in RequestCookie
-                RequestCookie cookie = RequestCookie.EnsureCookieExists();
+        //        // one instance of InvokeMethodDelegate pointing to the right InvokeMethod method is cached in RequestCookie
+        //        RequestCookie cookie = RequestCookie.EnsureCookieExists();
 
-                // invoke the corresponding proxy method asynchronously
-                object[] args_copy = args;  // keep args unchanged, Invoke
-                IAsyncResult async_result;
-                async_result = cookie.InvokeMethod.BeginInvoke(
-                    moduleName, className, functionName, ref self, ref args_copy, refInfo, workingDir, null, null);
+        //        // invoke the corresponding proxy method asynchronously
+        //        object[] args_copy = args;  // keep args unchanged, Invoke
+        //        IAsyncResult async_result;
+        //        async_result = cookie.InvokeMethod.BeginInvoke(
+        //            moduleName, className, functionName, ref self, ref args_copy, refInfo, workingDir, null, null);
 
-                object ret;
-                try
-                {
-                    // wait for completion of the remote call and handle exception callbacks
-                    cookie.HandleCallbacks(async_result);
-                }
-                finally
-                {
-                    // fetch the return value and the new instance state
-                    ret = cookie.InvokeMethod.EndInvoke(ref self, ref args_copy, async_result);
-                }
+        //        object ret;
+        //        try
+        //        {
+        //            // wait for completion of the remote call and handle exception callbacks
+        //            cookie.HandleCallbacks(async_result);
+        //        }
+        //        finally
+        //        {
+        //            // fetch the return value and the new instance state
+        //            ret = cookie.InvokeMethod.EndInvoke(ref self, ref args_copy, async_result);
+        //        }
 
-                return ret;
-            }
+        //        return ret;
+        //    }
 
-            public IExternals ExtManager
-            {
-                get
-                {
-                    RequestCookie cookie = RequestCookie.EnsureCookieExists();
-                    return cookie.extMan;
-                }
-            }
+        //    public IExternals ExtManager
+        //    {
+        //        get
+        //        {
+        //            RequestCookie cookie = RequestCookie.EnsureCookieExists();
+        //            return cookie.extMan;
+        //        }
+        //    }
 
-            #endregion
-        }
+        //    #endregion
+        //}
 
-        #endregion
+        //#endregion
 
         /// <summary>
         /// Get proper external function proxy, that calls the function/method directly.
@@ -2512,13 +2517,13 @@ namespace PHP.Core
                 IExternals extMan = LocalExtMan(descriptor.ExtVersion);
                 return new CollocatedExternalFunction(extMan.GetFunctionProxy(moduleName, className, functionName), extMan);
             }
-            else if (RemoteExtMan != null)
-            {
-                // isolated function proxy, invoking asynchronously
-                return (className == null) ?
-                    (IExternalFunction)new IsolatedExternalFunction(moduleName, functionName) :
-                    (IExternalFunction)new IsolatedExternalMethod(moduleName, className, functionName);
-            }
+            //else if (RemoteExtMan != null)
+            //{
+            //    // isolated function proxy, invoking asynchronously
+            //    return (className == null) ?
+            //        (IExternalFunction)new IsolatedExternalFunction(moduleName, functionName) :
+            //        (IExternalFunction)new IsolatedExternalMethod(moduleName, className, functionName);
+            //}
             else
             {
                 // module was not found
@@ -2888,12 +2893,12 @@ namespace PHP.Core
                 if ((wrapper = extman.Value.GetStreamWrapper(scheme)) != null)
                     break;
 
-            // try collocated extension
-			if (wrapper == null && RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				wrapper = RequestCookie.EnsureCookieExists().extMan.GetStreamWrapper(scheme);
-			}
+            //// try collocated extension
+            //if (wrapper == null && RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    wrapper = RequestCookie.EnsureCookieExists().extMan.GetStreamWrapper(scheme);
+            //}
 
             // put into the cache
 			if (wrapper != null)
@@ -2915,12 +2920,12 @@ namespace PHP.Core
 		{
             ArrayList schemes = new ArrayList();
 
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				ICollection remote_schemes = RequestCookie.EnsureCookieExists().extMan.GetStreamWrapperSchemes();
-                if (remote_schemes != null) schemes.AddRange(remote_schemes);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    ICollection remote_schemes = RequestCookie.EnsureCookieExists().extMan.GetStreamWrapperSchemes();
+            //    if (remote_schemes != null) schemes.AddRange(remote_schemes);
+            //}
 
             foreach (var extman in LocalExtMans)
             {
@@ -2941,19 +2946,19 @@ namespace PHP.Core
 		/// <include file='Doc/Externals.xml' path='doc/method[@name="GetStartupErrors"]/*'/>
 		public static ICollection GetStartupErrors()
 		{
-			ICollection remote_errors = null;
+            //ICollection remote_errors = null;
 			ICollection local_errors = null;
 
             ArrayList errors = new ArrayList();
 
-            // collect errors from remote ext manager
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				remote_errors = RequestCookie.EnsureCookieExists().extMan.GetStartupErrors();
-                if (remote_errors!=null)
-                    errors.AddRange(remote_errors);	
-			}
+            //// collect errors from remote ext manager
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    remote_errors = RequestCookie.EnsureCookieExists().extMan.GetStartupErrors();
+            //    if (remote_errors!=null)
+            //        errors.AddRange(remote_errors);	
+            //}
 
             // collect errors from local ext managers
             foreach(var extman in LocalExtMans)
@@ -2978,30 +2983,30 @@ namespace PHP.Core
             foreach (var extman in LocalExtMans)
                 allinfo.Append(extman.Value.PhpInfo());
 			
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
 
-				RequestCookie cookie = RequestCookie.EnsureCookieExists();
-				RequestCookie.PhpInfoDelegate remoteDelegate =
-					new PHP.Core.RequestCookie.PhpInfoDelegate(cookie.extMan.PhpInfo);
+            //    RequestCookie cookie = RequestCookie.EnsureCookieExists();
+            //    RequestCookie.PhpInfoDelegate remoteDelegate =
+            //        new PHP.Core.RequestCookie.PhpInfoDelegate(cookie.extMan.PhpInfo);
 
-				// invoke the corresponding proxy method asynchronously
-				IAsyncResult asyncResult = remoteDelegate.BeginInvoke(null, null);
+            //    // invoke the corresponding proxy method asynchronously
+            //    IAsyncResult asyncResult = remoteDelegate.BeginInvoke(null, null);
 
-				string ret_val;
-				try
-				{
-					// wait for completion of the remote call and handle exception callbacks
-					cookie.HandleCallbacks(asyncResult);
-				}
-				finally
-				{
-					ret_val = remoteDelegate.EndInvoke(asyncResult);
-				}
+            //    string ret_val;
+            //    try
+            //    {
+            //        // wait for completion of the remote call and handle exception callbacks
+            //        cookie.HandleCallbacks(asyncResult);
+            //    }
+            //    finally
+            //    {
+            //        ret_val = remoteDelegate.EndInvoke(asyncResult);
+            //    }
 
-                allinfo.Append(ret_val);
-			}
+            //    allinfo.Append(ret_val);
+            //}
 			
             //
             return allinfo.ToString();
@@ -3015,17 +3020,17 @@ namespace PHP.Core
 		{
 			ArrayList modules = new ArrayList();
 
-            // isolated modules
-			if (RemoteExtMan != null)
-			{
-                ICollection remote_modules = null;
+            //// isolated modules
+            //if (RemoteExtMan != null)
+            //{
+            //    ICollection remote_modules = null;
                 
-                LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				remote_modules = RequestCookie.EnsureCookieExists().extMan.GetModules(internalNames);
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    remote_modules = RequestCookie.EnsureCookieExists().extMan.GetModules(internalNames);
 
-                if (remote_modules != null)
-                    modules.AddRange(remote_modules);
-			}
+            //    if (remote_modules != null)
+            //        modules.AddRange(remote_modules);
+            //}
 
             // collated modules
             foreach (var extman in LocalExtMans)
@@ -3058,11 +3063,11 @@ namespace PHP.Core
                 }
 			}
 
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.GetModuleVersion(moduleName, internalName, out loaded);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.GetModuleVersion(moduleName, internalName, out loaded);
+            //}
 
 			loaded = false;
 			return null;
@@ -3085,11 +3090,11 @@ namespace PHP.Core
                 }
 			}
 
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.GetFunctionsByModule(moduleName, internalName);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.GetFunctionsByModule(moduleName, internalName);
+            //}
 
 			return null;
 		}
@@ -3111,11 +3116,11 @@ namespace PHP.Core
                 }
 			}
 
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.GetClassesByModule(moduleName, internalName);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.GetClassesByModule(moduleName, internalName);
+            //}
 
 			return null;
 		}
@@ -3126,13 +3131,13 @@ namespace PHP.Core
 		/// <include file='Doc/Externals.xml' path='doc/method[@name="GenerateManagedWrapper"]/*'/>
 		public static string GenerateManagedWrapper(string moduleName)
 		{
-			// is the extension isolated?
-			if (ExtensionLibraryDescriptor.isolatedExtensions.ContainsKey(moduleName) && RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.GenerateManagedWrapper(moduleName);
-			}
-			else
+            //// is the extension isolated?
+            //if (ExtensionLibraryDescriptor.isolatedExtensions.ContainsKey(moduleName) && RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.GenerateManagedWrapper(moduleName);
+            //}
+            //else
 			{
 				// let the local ExtManager generate the wrapper
 				lock (initCollocationMutex)
@@ -3169,11 +3174,11 @@ namespace PHP.Core
                 if (extman.Value.IniSet(varName, newValue, out oldValue))
                     return true;
             
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.IniSet(varName, newValue, out oldValue);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.IniSet(varName, newValue, out oldValue);
+            //}
 
 			oldValue = null;
 			return false;
@@ -3189,11 +3194,11 @@ namespace PHP.Core
                 if (extman.Value.IniGet(varName, out value))
                     return true;
 			
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.IniGet(varName, out value);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.IniGet(varName, out value);
+            //}
 
 			value = null;
 			return false;
@@ -3209,11 +3214,11 @@ namespace PHP.Core
                 if (extman.Value.IniRestore(varName))
                     return true;
 			
-			if (RemoteExtMan != null)
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.IniRestore(varName);
-			}
+            //if (RemoteExtMan != null)
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.IniRestore(varName);
+            //}
 
 			return false;
 		}
@@ -3237,11 +3242,11 @@ namespace PHP.Core
                         if (result != null) break;
                     }
                 }
-                else if (RemoteExtMan != null)
-                {
-                    LauncherClientChannelSinkProvider.SuppressLauncher = true;
-                    result = RequestCookie.EnsureCookieExists().extMan.IniGetAll(extension);
-                }
+                //else if (RemoteExtMan != null)
+                //{
+                //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+                //    result = RequestCookie.EnsureCookieExists().extMan.IniGetAll(extension);
+                //}
 
                 if (result == null)
                     PhpException.Throw(PhpError.Warning, CoreResources.GetString("unable_to_find_extension", extension));
@@ -3253,12 +3258,12 @@ namespace PHP.Core
                 // options for all extensions are requested
                 PhpArray entries = new PhpArray();
 
-                if (RemoteExtMan != null)
-                {
-                    LauncherClientChannelSinkProvider.SuppressLauncher = true;
-                    PhpArray remote_entries = RequestCookie.EnsureCookieExists().extMan.IniGetAll(extension);
-                    if (remote_entries != null) foreach (var x in remote_entries) entries.Add(x);
-                }
+                //if (RemoteExtMan != null)
+                //{
+                //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+                //    PhpArray remote_entries = RequestCookie.EnsureCookieExists().extMan.IniGetAll(extension);
+                //    if (remote_entries != null) foreach (var x in remote_entries) entries.Add(x);
+                //}
 
                 foreach (var extman in LocalExtMans)
                 {
@@ -3276,13 +3281,13 @@ namespace PHP.Core
 		/// <include file='Doc/Externals.xml' path='doc/method[@name="IniOptionExists"]/*'/>
 		public static bool IniOptionExists(string moduleName, string varName)
 		{
-			// is the extension isolated?
-            if (RemoteExtMan != null && ExtensionLibraryDescriptor.isolatedExtensions.ContainsKey(moduleName))
-			{
-				LauncherClientChannelSinkProvider.SuppressLauncher = true;
-				return RequestCookie.EnsureCookieExists().extMan.IniOptionExists(moduleName, varName);
-			}
-			else
+            //// is the extension isolated?
+            //if (RemoteExtMan != null && ExtensionLibraryDescriptor.isolatedExtensions.ContainsKey(moduleName))
+            //{
+            //    LauncherClientChannelSinkProvider.SuppressLauncher = true;
+            //    return RequestCookie.EnsureCookieExists().extMan.IniOptionExists(moduleName, varName);
+            //}
+            //else
 			{
 				// let the local ExtManager generate the wrapper
                 foreach (var extman in LocalExtMans)

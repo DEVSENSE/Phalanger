@@ -2062,4 +2062,7 @@ non-infringement.
   <data name="argsaware_routine_needs_args" xml:space="preserve">
     <value>Function '{0}'() is ArgsAware. It requires to be called via ArgLess stub, but was called via ArgFull. It requires arguments to be loaded on PhpStack.</value>
   </data>
+  <data name="isolated_extensions_unsupported" xml:space="preserve">
+    <value>Isolated extensions are not supported anymore.</value>
+  </data>
 </root>
