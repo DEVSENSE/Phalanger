@@ -147,16 +147,11 @@ namespace PHP.Core.AST
 
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
-		/// <summary>
-		/// Implemented interface name indices. 
-		/// </summary>
-        internal readonly List<KeyValuePair<GenericQualifiedName, Text.Span>>/*!*/ implementsList;
-
-        /// <summary>Implemented interface name indices. </summary>
-        public List<GenericQualifiedName>/*!*/ ImplementsList { get { return this.implementsList.Select(x => x.Key).ToList(); } }
+		/// <summary>Implemented interface name indices. </summary>
+        public GenericQualifiedName[]/*!!*/ ImplementsList { get; private set; }
 
         /// <summary>Positions of <see cref="ImplementsList"/> elements.</summary>
-        public Text.Span[] ImplementsPosition { get { return this.implementsList.Select(x => x.Value).ToArray(); } }
+        public Text.Span[]/*!!*/ImplementsListPosition { get; private set; }
 
 		/// <summary>
 		/// Type parameters.
@@ -214,7 +209,7 @@ namespace PHP.Core.AST
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Text.Span> baseClassName,
-            List<KeyValuePair<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
+            List<Tuple<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
 			List<CustomAttribute> attributes)
             : base(span)
 		{
@@ -234,8 +229,17 @@ namespace PHP.Core.AST
             this.Scope = scope;
             this.SourceUnit = sourceUnit;
             this.IsConditional = isConditional;
-            this.implementsList = implementsList;
-			this.members = members;
+            if (implementsList == null || implementsList.Count == 0)
+            {
+                this.ImplementsList = EmptyArray<GenericQualifiedName>.Instance;
+                this.ImplementsListPosition = EmptyArray<Text.Span>.Instance;
+            }
+            else
+            {
+                this.ImplementsList = implementsList.Select(x => x.Item1).ToArray();
+                this.ImplementsListPosition = implementsList.Select(x => x.Item2).ToArray();
+            }
+            this.members = members;
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
 			this.entireDeclarationPosition = entireDeclarationPosition;

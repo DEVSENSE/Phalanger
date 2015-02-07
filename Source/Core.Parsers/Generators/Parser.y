@@ -400,8 +400,8 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> type_ref                                // TypeRef!
 %type<Object> type_ref_list                           // List<TypeRef>
 %type<Object> qualified_static_type_ref               // GenericQualifiedName
-%type<Object> interface_list                          // List<KeyValuePair<GenericQualifiedName,Text.Span>>
-%type<Object> interface_extends_opt                  // List<KeyValuePair<GenericQualifiedName,Text.Span>>
+%type<Object> interface_list                          // List<Tuple<GenericQualifiedName,Text.Span>>
+%type<Object> interface_extends_opt                  // List<Tuple<GenericQualifiedName,Text.Span>>
 %type<Object> variable_name                           
 
 %type<Object> generic_dynamic_args_opt                // List<TypeRef>!
@@ -677,12 +677,12 @@ class_declaration_statement:
 			member_attr |= PhpMemberAttributes.Trait | PhpMemberAttributes.Abstract;
 		  
 		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Text.Span>)$9);
-		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Text.Span>>)$10);
+		  CheckReservedNamesAbsence((List<Tuple<GenericQualifiedName,Text.Span>>)$10);
 		  
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
 				member_attr, $4 != 0, class_name, @6, currentNamespace, 
-				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Text.Span>)$9, (List<KeyValuePair<GenericQualifiedName,Text.Span>>)$10, 
+				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Text.Span>)$9, (List<Tuple<GenericQualifiedName,Text.Span>>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
 		  SetCommentSetHelper($$, class_entry.Item2);
@@ -707,7 +707,7 @@ class_declaration_statement:
 	  { 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Text.Span>>)$9);
+		  CheckReservedNamesAbsence((List<Tuple<GenericQualifiedName,Text.Span>>)$9);
 		  
 			if ((PhpMemberAttributes)$3 != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, @3);
@@ -716,7 +716,7 @@ class_declaration_statement:
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
 				$4 != 0, class_name, @6, currentNamespace,
-				(List<FormalTypeParam>)$7, null, (List<KeyValuePair<GenericQualifiedName,Text.Span>>)$9,
+				(List<FormalTypeParam>)$7, null, (List<Tuple<GenericQualifiedName,Text.Span>>)$9,
 				(List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1); 
 				
 			SetCommentSetHelper($$, $5);
@@ -766,13 +766,13 @@ implements_opt:
 interface_list:
 		qualified_static_type_ref						
 		{ 
-			$$ = NewList<KeyValuePair<GenericQualifiedName,Text.Span>>(new KeyValuePair<GenericQualifiedName,Text.Span>((GenericQualifiedName)$1, @1));
+			$$ = NewList<Tuple<GenericQualifiedName,Text.Span>>(new Tuple<GenericQualifiedName,Text.Span>((GenericQualifiedName)$1, @1));
 		}		
 		
 	|	interface_list ',' qualified_static_type_ref	
 		{ 
 			$$ = $1; 
-			ListAdd<KeyValuePair<GenericQualifiedName,Text.Span>>($$, new KeyValuePair<GenericQualifiedName,Text.Span>((GenericQualifiedName)$3, @3)); 
+			ListAdd<Tuple<GenericQualifiedName,Text.Span>>($$, new Tuple<GenericQualifiedName,Text.Span>((GenericQualifiedName)$3, @3)); 
 		}
 ;
 

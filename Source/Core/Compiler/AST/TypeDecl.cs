@@ -287,7 +287,7 @@ namespace PHP.Core.Compiler.AST
 
                 // all types are known:
                 DTypeDesc base_type = ResolveBaseType(analyzer);
-                List<DTypeDesc> base_interfaces = new List<DTypeDesc>(node.ImplementsList.Count);
+                List<DTypeDesc> base_interfaces = new List<DTypeDesc>(node.ImplementsList.Length);
                 ResolveBaseInterfaces(analyzer, base_interfaces);
 
                 // pre-analyze the other versions (include partial types merging):
@@ -429,10 +429,12 @@ namespace PHP.Core.Compiler.AST
 
             private void ResolveBaseInterfaces(Analyzer/*!*/ analyzer, List<DTypeDesc>/*!*/ interfaces)
             {
-                var implementsList = node.implementsList;
-                for (int i = 0; i < node.ImplementsList.Count; i++)
+                var implementsList = node.ImplementsList;
+                var implementsSpan = node.ImplementsListPosition;
+
+                for (int i = 0; i < implementsList.Length; i++)
                 {
-                    DType base_type = analyzer.ResolveTypeName(implementsList[i].Key, type, null, implementsList[i].Value, true);
+                    DType base_type = analyzer.ResolveTypeName(implementsList[i], type, null, implementsSpan[i], true);
 
                     if (base_type.IsGenericParameter)
                     {

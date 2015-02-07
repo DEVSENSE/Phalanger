@@ -1889,12 +1889,12 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 			member_attr |= PhpMemberAttributes.Trait | PhpMemberAttributes.Abstract;
 		  
 		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Text.Span>)value_stack.array[value_stack.top-5].yyval.Object);
-		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object);
+		  CheckReservedNamesAbsence((List<Tuple<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object);
 		  
 		  yyval.Object = new TypeDecl(sourceUnit, CombinePositions(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos), yypos, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(value_stack.array[value_stack.top-3].yypos), 
 				IsCurrentCodeConditional, GetScope(), 
 				member_attr, value_stack.array[value_stack.top-10].yyval.Integer != 0, class_name, value_stack.array[value_stack.top-8].yypos, currentNamespace, 
-				(List<FormalTypeParam>)value_stack.array[value_stack.top-7].yyval.Object, (Tuple<GenericQualifiedName,Text.Span>)value_stack.array[value_stack.top-5].yyval.Object, (List<KeyValuePair<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object, 
+				(List<FormalTypeParam>)value_stack.array[value_stack.top-7].yyval.Object, (Tuple<GenericQualifiedName,Text.Span>)value_stack.array[value_stack.top-5].yyval.Object, (List<Tuple<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object, 
 		    (List<TypeMemberDecl>)value_stack.array[value_stack.top-2].yyval.Object, (List<CustomAttribute>)value_stack.array[value_stack.top-13].yyval.Object);
 		    
 		  SetCommentSetHelper(yyval.Object, class_entry.Item2);
@@ -1918,7 +1918,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 { 
 		  Name class_name = new Name((string)value_stack.array[value_stack.top-7].yyval.Object);
 		  
-		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object);
+		  CheckReservedNamesAbsence((List<Tuple<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object);
 		  
 			if ((PhpMemberAttributes)value_stack.array[value_stack.top-10].yyval.Integer != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, value_stack.array[value_stack.top-10].yypos);
@@ -1927,7 +1927,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)value_stack.array[value_stack.top-11].yyval.Integer | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
 				value_stack.array[value_stack.top-9].yyval.Integer != 0, class_name, value_stack.array[value_stack.top-7].yypos, currentNamespace,
-				(List<FormalTypeParam>)value_stack.array[value_stack.top-6].yyval.Object, null, (List<KeyValuePair<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object,
+				(List<FormalTypeParam>)value_stack.array[value_stack.top-6].yyval.Object, null, (List<Tuple<GenericQualifiedName,Text.Span>>)value_stack.array[value_stack.top-4].yyval.Object,
 				(List<TypeMemberDecl>)value_stack.array[value_stack.top-2].yyval.Object, (List<CustomAttribute>)value_stack.array[value_stack.top-12].yyval.Object); 
 				
 			SetCommentSetHelper(yyval.Object, value_stack.array[value_stack.top-8].yyval.Object);
@@ -1981,13 +1981,13 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
         return;
       case 70: // interface_list -> qualified_static_type_ref 
 { 
-			yyval.Object = NewList<KeyValuePair<GenericQualifiedName,Text.Span>>(new KeyValuePair<GenericQualifiedName,Text.Span>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos));
+			yyval.Object = NewList<Tuple<GenericQualifiedName,Text.Span>>(new Tuple<GenericQualifiedName,Text.Span>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos));
 		}
         return;
       case 71: // interface_list -> interface_list ',' qualified_static_type_ref 
 { 
 			yyval.Object = value_stack.array[value_stack.top-3].yyval.Object; 
-			ListAdd<KeyValuePair<GenericQualifiedName,Text.Span>>(yyval.Object, new KeyValuePair<GenericQualifiedName,Text.Span>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos)); 
+			ListAdd<Tuple<GenericQualifiedName,Text.Span>>(yyval.Object, new Tuple<GenericQualifiedName,Text.Span>((GenericQualifiedName)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos)); 
 		}
         return;
       case 72: // type_parameter_list_opt -> T_LGENERIC type_parameter_list T_RGENERIC 
