@@ -646,7 +646,7 @@ namespace PHP.Core
             {
                 Debug.Assert(line.StartsWith(tagName));
 
-                // [type] [$varname] [description]
+                // [type] [$varname] [type] [description]
 
                 int index = tagName.Length; // current index within line
                 int descStart = index;  // start of description, moved when [type] or [$varname] found
@@ -665,6 +665,15 @@ namespace PHP.Core
                 {
                     this.VariableName = word;
                     descStart = index;
+                    word = NextWord(line, ref index);
+                }
+
+                // try to find [type] if it was not found yet
+                if (this.TypeNames == null && word != null && (char.IsLetter(word[0]) || word[0] == '_'))
+                {
+                    this.TypeNames = word;
+                    descStart = index;
+                    word = NextWord(line, ref index);
                 }
 
                 if (descStart < line.Length)
@@ -1012,7 +1021,7 @@ namespace PHP.Core
             public const string Name = "@var";
 
             public VarTag(string/*!*/line)
-                : base(Name, line, false)
+                : base(Name, line, true)
             {
             }
 
