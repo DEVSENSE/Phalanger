@@ -63,9 +63,9 @@ namespace PHP.Core
         /// <summary>
 		/// If this flag is <B>true</B> the array will be copied inplace by the immediate <see cref="Copy"/> call.
 		/// </summary>
-		public bool InplaceCopyOnReturn { get { return inplaceCopyOnReturn; } set { inplaceCopyOnReturn = value; } }
-		private bool inplaceCopyOnReturn = false;
-
+        [Emitted]
+        public bool InplaceCopyOnReturn { get { return this.table.InplaceCopyOnReturn; } set { this.table.InplaceCopyOnReturn = value; } }
+		
 		/// <summary>
 		/// Intrinsic enumerator associated with the array. Initialized lazily.
 		/// </summary>
@@ -518,12 +518,11 @@ namespace PHP.Core
 
 		public object Copy(CopyReason reason)
 		{
-			if (reason == CopyReason.ReturnedByCopy && inplaceCopyOnReturn)
+            if (reason == CopyReason.ReturnedByCopy && this.InplaceCopyOnReturn)
 			{
-                Debug.Assert(!this.table.IsShared, "Inplace copied arrays should not be shared, check it!");
+                this.table.InplaceCopyOnReturn = false; // copiesCount = 0
+                this.table.Share();                     // copiesCount = 1 => underlaying table is shared and its values will be copied lazily if necessary
 
-				inplaceCopyOnReturn = false;
-				this.InplaceDeepCopy();
 				return this;
 			}
 			else

@@ -2149,13 +2149,18 @@ namespace PHP.Core
 
         #endregion
 
-        #region Public: IsShared, Share, Unshare, ThrowIfShared
+        #region Public: IsShared, Share, Unshare, ThrowIfShared, InplaceCopyOnReturn
 
         /// <summary>
         /// True iff the data structure is shared by more PhpHashtable instances and must not be modified.
         /// </summary>
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsShared { get { return this.copiesCount > 0; } }
+
+        /// <summary>
+        /// Remember whether this instance and its owner (<see cref="PhpArray"/>) can be recycled upon returning by value from a function.
+        /// </summary>
+        internal bool InplaceCopyOnReturn { get { return this.copiesCount < 0; } set { this.copiesCount = value ? -1 : 0; } }
 
         /// <summary>
         /// Marks this instance as shared (<see cref="IsShared"/>) and returns itself.
