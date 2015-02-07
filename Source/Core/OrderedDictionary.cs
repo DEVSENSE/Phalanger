@@ -2198,12 +2198,21 @@ namespace PHP.Core
             this.listHead = _merge_sort(comparer, _entries, this.listHead, count, out next);
             Debug.Assert(next < 0);
 
+            OrderedDictionary other_table;
+
             foreach (var other_array in arrays)
             {
                 // total number of elements in diff list:
-                count = (other_array != null) ? other_array.Count : 0;
-
-                var other_table = other_array.table;
+                if (other_array != null)
+                {
+                    count = other_array.Count;
+                    other_table = other_array.table;
+                }
+                else
+                {
+                    count = 0;
+                    other_table = null;
+                }
 
                 // result is empty - either the list is differentiated with itself or intersected with an empty set:
                 if (other_table == this && op == SetOperations.Difference || count == 0 && op == SetOperations.Intersection)
@@ -2218,6 +2227,8 @@ namespace PHP.Core
                 // skip operation (nothing new can be added):
                 if (other_table == this && op == SetOperations.Intersection || count == 0 && op == SetOperations.Difference)
                     continue;
+
+                Debug.Assert(other_table != null);
 
                 // sorts other_head's list (doesn't modify Prevs and keeps list cyclic):
                 other_table.listHead = _merge_sort(comparer, other_table.entries, other_table.listHead, count, out next);
