@@ -166,26 +166,19 @@ namespace PHP.Core
 		/// Determines whether there are multiple scripts stored in the assembly.
 		/// </summary>
 		public bool IsMultiScript { get { return isMultiScript; } }
-		private bool isMultiScript;
+		private readonly bool isMultiScript;
 
-		public ScriptAssemblyAttribute(bool isMultiScript)
+        /// <summary>
+        /// <see cref="Type"/> of a <c>&lt;Script&gt;</c> class in case of SingleScriptAssembly.
+        /// </summary>
+        public Type SSAScriptType { get { return ssaScriptType; } }
+        private readonly Type ssaScriptType;
+
+		public ScriptAssemblyAttribute(bool isMultiScript, Type ssaScriptType)
 		{
 			this.isMultiScript = isMultiScript;
+            this.ssaScriptType = ssaScriptType;
 		}
-
-		/* TODO: Not needed?
-		public static ScriptAssemblyAttribute/*!* / Reflect(CustomAttributeData/*!* / data)
-		{
-			if (data == null)
-				throw new ArgumentNullException("data");
-
-			switch (data.ConstructorArguments.Count)
-			{
-				case 1: return new ScriptAssemblyAttribute((bool)data.ConstructorArguments[0].Value);
-			}
-
-			throw new ArgumentException();
-		}*/
 
 		internal new static ScriptAssemblyAttribute Reflect(Assembly/*!*/ assembly)
 		{

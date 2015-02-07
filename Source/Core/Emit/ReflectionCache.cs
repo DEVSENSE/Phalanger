@@ -1132,7 +1132,7 @@ namespace PHP.Core.Emit
         public static ConstructorInfo ScriptDeclares { get { return _ScriptDeclares ?? (_ScriptDeclares = typeof(ScriptDeclaresAttribute).GetConstructor(new Type[] { typeof(int[]) })); } }
 		public static ConstructorInfo PhpRoutineProperties { get { if (_Routine == null)             _Routine = typeof(RoutineAttribute).GetConstructor(Types.RoutineProperties); return _Routine; } }
 		public static ConstructorInfo PhpEvalId { get { if (_PhpEvalId == null)           _PhpEvalId = typeof(PhpEvalIdAttribute).GetConstructor(Types.Int); return _PhpEvalId; } }
-		public static ConstructorInfo ScriptAssembly { get { if (_ScriptAssembly == null)    _ScriptAssembly = typeof(ScriptAssemblyAttribute).GetConstructor(new Type[] { typeof(bool) }); return _ScriptAssembly; } }
+        public static ConstructorInfo ScriptAssembly { get { return _ScriptAssembly ?? (_ScriptAssembly = typeof(ScriptAssemblyAttribute).GetConstructor(new Type[] { typeof(bool), typeof(Type) })); } }
 		public static ConstructorInfo PurePhpAssembly { get { if (_PurePhpAssembly == null)    _PurePhpAssembly = typeof(PurePhpAssemblyAttribute).GetConstructor(new Type[] { typeof(string[]) }); return _PurePhpAssembly; } }
 		public static ConstructorInfo PhpPublicField { get { if (_PhpPublicField == null)    _PhpPublicField = typeof(PhpPublicFieldAttribute).GetConstructor(Types.String_Bool_Bool); return _PhpPublicField; } }
         public static ConstructorInfo UnknownTypeDesc { get { return _UnknownTypeDesc ?? (_UnknownTypeDesc = typeof(UnknownTypeDesc).GetConstructor(Type.EmptyTypes)); } }

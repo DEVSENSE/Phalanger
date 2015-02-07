@@ -865,18 +865,15 @@ namespace PHP.Core
             SingleScriptAssembly ssa = (SingleScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly);
 
             // find type <Script>
-            Type[] types = ssa.RealModule.FindTypes(delegate(Type type, object _)
-            {
-                return (type.Name == ScriptModule.ScriptTypeName);
-            }, null);
+            var scriptType = ssa.GetScriptType();
 
-            if (types.Length == 1)
+            if (scriptType != null)
             {
                 // recursively check (and load) included assemblies
                 // (includees and includers are set for all loaded CacheEntries except the 
                 // inclusion to the currently loaded script - this is set later)
                 Dictionary<string, CacheEntry> temporaryCache = new Dictionary<string, CacheEntry>();
-                if (LoadIncludeesRecursive(ns, types[0], ssa.RealModule, false, null, temporaryCache))
+                if (LoadIncludeesRecursive(ns, scriptType, ssa.RealModule, false, null, temporaryCache))
                 {
                     cache_entry = temporaryCache[ns];   // cached SSA is OK, reuse it
 
