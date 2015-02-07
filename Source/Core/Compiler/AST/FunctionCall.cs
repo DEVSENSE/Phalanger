@@ -858,6 +858,7 @@ namespace PHP.Core.Compiler.AST
                             php_function.DefineBuilders();
 
                             // LOAD PhpFunction.DeclareLamda(context,<delegate>);
+                            Debug.Assert(php_function.ArgLessInfo != null); 
                             codeGenerator.EmitDeclareLamdaFunction(php_function.ArgLessInfo);
 
                             // bake (not baked later as the lambda function it is not in the tables):

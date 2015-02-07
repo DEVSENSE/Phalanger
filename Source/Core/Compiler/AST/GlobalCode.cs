@@ -74,19 +74,18 @@ namespace PHP.Core.Compiler.AST
                     PrependedInclusion.Analyze(analyzer, info);
                 }
 
-                var statements = ast.Statements;
-                for (int i = 0; i < statements.Length; i++)
+                for (int i = 0; i < ast.Statements.Length; i++) // NOTE: ast.Statements may change during analysis, iterate in this way!
                 {
-                    if (analyzer.IsThisCodeUnreachable() && statements[i].IsDeclaration)
+                    if (analyzer.IsThisCodeUnreachable() && ast.Statements[i].IsDeclaration)
                     {
                         //unreachable declarations in global code are valid
                         analyzer.LeaveUnreachableCode();
-                        statements[i] = statements[i].Analyze(analyzer);
+                        ast.Statements[i] = ast.Statements[i].Analyze(analyzer);
                         analyzer.EnterUnreachableCode();
                     }
                     else
                     {
-                        statements[i] = statements[i].Analyze(analyzer);
+                        ast.Statements[i] = ast.Statements[i].Analyze(analyzer);
                     }
                 }
 
