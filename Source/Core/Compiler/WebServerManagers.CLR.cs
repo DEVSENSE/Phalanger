@@ -390,9 +390,19 @@ namespace PHP.Core
 
 			assembly_builder.Save();
 
-            if (!SaveOnlyAssembly)
+            string ns = ScriptModule.GetSubnamespace(unit.SourceUnit.SourceFile.RelativePath, false);
+
+            if (SaveOnlyAssembly)
             {
-                // We only add the assembly into the cache, if it wass built and loaded into memory.
+                // assembly not loaded into memory yet (we need to load from fs to not break debugging)
+                string file = assembly_builder.Assembly.Path;
+
+                CacheEntry entry;
+                LoadSSA(ns, file, out entry);
+            }
+            else
+            {
+                // We only add the assembly into the cache, if it was built and loaded into memory.
                 // Otherwise the assembly has to be reloaded from the disk.
                 // This is because of debugging, since we don't want to load dynamic assemblies into memory, which breaks debug symbols.
 
@@ -409,7 +419,7 @@ namespace PHP.Core
                     inclusions[j++] = ScriptModule.GetSubnamespace(new RelativePath(0, inclusion.Includee.RelativeSourcePath), false);
 
                 // adds dependencies on the source file and the included assemblies:
-                SetCacheEntry(ScriptModule.GetSubnamespace(unit.SourceUnit.SourceFile.RelativePath, false),
+                SetCacheEntry(ns,
                     new CacheEntry(
                         assembly_builder.SingleScriptAssembly.GetScriptType(),
                         assembly_builder.SingleScriptAssembly, context.RequestTimestamp, includers, inclusions, true), true, true);
@@ -832,31 +842,7 @@ namespace PHP.Core
                 {
                     Debug.WriteLine("WSSM", "Loading from ASP.NET Temporary files.");
 
-                    // load assembly (ssa)
-                    Assembly assembly = Assembly.LoadFrom(file);
-                    SingleScriptAssembly ssa = (SingleScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly);
-
-                    // find type <Script>
-                    Type[] types = ssa.RealModule.FindTypes(delegate(Type type, object _)
-                    {
-                        return (type.Name == ScriptModule.ScriptTypeName);
-                    }, null);
-                    if (types.Length != 1) continue;
-
-                    // recursively check (and load) included assemblies
-                    // (includees and includers are set for all loaded CacheEntries except the 
-                    // inclusion to the currently loaded script - this is set later)
-                    Dictionary<string, CacheEntry> temporaryCache = new Dictionary<string, CacheEntry>();
-                    if (LoadIncludeesRecursive(ns, types[0], ssa.RealModule, false, null, temporaryCache))
-                    {
-                        cache_entry = temporaryCache[ns];   // cached SSA is OK, reuse it
-
-                        foreach (KeyValuePair<string, CacheEntry> entryTmp in temporaryCache)
-                            if (entryTmp.Value != null)
-                                SetCacheEntry(entryTmp.Key, entryTmp.Value, false, false);
-
-                        return true;
-                    }
+                    return LoadSSA(ns, file, out cache_entry);
                 }
                 else
                 {
@@ -866,12 +852,44 @@ namespace PHP.Core
                         File.Delete(file);
                         File.Delete(Path.ChangeExtension(file, ".pdb"));
                     }
-                    catch
-                    {
-                        // nop //
-                    }
+                    catch{ /*nop*/ }
                 }
             }
+            cache_entry = default(CacheEntry);
+            return false;
+        }
+
+        private bool LoadSSA(string ns, string assemblyfile, out CacheEntry cache_entry)
+        {
+            // load assembly (ssa)
+            Assembly assembly = Assembly.LoadFrom(assemblyfile);
+            SingleScriptAssembly ssa = (SingleScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly);
+
+            // find type <Script>
+            Type[] types = ssa.RealModule.FindTypes(delegate(Type type, object _)
+            {
+                return (type.Name == ScriptModule.ScriptTypeName);
+            }, null);
+
+            if (types.Length == 1)
+            {
+                // recursively check (and load) included assemblies
+                // (includees and includers are set for all loaded CacheEntries except the 
+                // inclusion to the currently loaded script - this is set later)
+                Dictionary<string, CacheEntry> temporaryCache = new Dictionary<string, CacheEntry>();
+                if (LoadIncludeesRecursive(ns, types[0], ssa.RealModule, false, null, temporaryCache))
+                {
+                    cache_entry = temporaryCache[ns];   // cached SSA is OK, reuse it
+
+                    foreach (KeyValuePair<string, CacheEntry> entryTmp in temporaryCache)
+                        if (entryTmp.Value != null)
+                            SetCacheEntry(entryTmp.Key, entryTmp.Value, false, false);
+
+                    return true;
+                }
+            }
+
+            // otherwise
             cache_entry = default(CacheEntry);
             return false;
         }
@@ -1123,18 +1141,9 @@ namespace PHP.Core
 				CacheEntry cache_entry;
                 if (ScriptAssemblyBuilder.CompileScripts(new PhpSourceFile[] { sourceFile }, null, null, context))
                 {
-                    if (SaveOnlyAssembly)
-                    {
-                        // assembly is not reflected nor loaded into memory, we have to load it from the disk
-                        if (TryLoadTemporaryCompiledNoLock(ns, sourceFile, out cache_entry))
-                            return cache_entry.ScriptInfo;
-                    }
-                    else
-                    {
-                        // assembly should be already added into the cache by Persist() method
-                        if (TryGetCachedEntry(ns, out cache_entry))
-                            return cache_entry.ScriptInfo;
-                    }
+                    // assembly should be already added into the cache by Persist() method
+                    if (TryGetCachedEntry(ns, out cache_entry))
+                        return cache_entry.ScriptInfo;
                 }
 
                 return null;
