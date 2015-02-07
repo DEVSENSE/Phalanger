@@ -1611,27 +1611,21 @@ namespace HtmlAgilityPack
 
                     if (_ownerdocument.OptionOutputAsXml)
                     {
-                        if (name.Length > 0)
+                        if (string.IsNullOrWhiteSpace(name))    // not an empty/whitespace string
+                            break;
+                        
+                        if (name[0] == '?')
                         {
-                            if (name[0] == '?')
-                            {
-                                // forget this one, it's been done at the document level
-                                break;
-                            }
-
-                            if (name.Trim().Length == 0)
-                            {
-                                break;
-                            }
-                            name = HtmlDocument.GetXmlName(name);
-                        }
-                        else
-                        {
+                            // forget this one, it's been done at the document level
                             break;
                         }
+                        
+                        name = HtmlDocument.GetXmlName(name);
                     }
 
-                    outText.Write("<" + name);
+                    // write "<name":
+                    outText.Write('<');
+                    outText.Write(name);
                     WriteAttributes(outText, false);
 
                     if (!HasChildNodes)
@@ -1657,7 +1651,9 @@ namespace HtmlAgilityPack
                         }
                         else
                         {
-                            outText.Write("></" + name + ">");
+                            outText.Write("></");
+                            outText.Write(name);
+                            outText.Write(">");
                         }
                     }
                     else

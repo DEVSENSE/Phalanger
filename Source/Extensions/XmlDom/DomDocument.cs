@@ -709,21 +709,42 @@ namespace PHP.Library.Xml
 			}
 			else static_call = false;
 
-            instance._isHtmlDocument = false;
+            var result = instance.loadXMLInternal(xmlString, options, false);
+            return static_call ? instance : (object)result;
+		}
 
-			try
+        /// <summary>
+        /// Loads provided XML string into this <see cref="DOMDocument"/>.
+        /// </summary>
+        /// <param name="xmlString">String representing XML document.</param>
+        /// <param name="options">PHP options.</param>
+        /// <param name="isHtml">Whether the <paramref name="xmlString"/> represents XML generated from HTML document (then it may contain some invalid XML characters).</param>
+        /// <returns></returns>
+        private bool loadXMLInternal(string xmlString, int options, bool isHtml)
+        {
+            this._isHtmlDocument = isHtml;
+
+            var stream = new StringReader(xmlString);
+
+            try
 			{
-				if (instance._validateOnParse)
-				{
-					// create a validating XML reader
-					XmlReaderSettings settings = new XmlReaderSettings();
+                XmlReaderSettings settings = new XmlReaderSettings();
+
+                // validating XML reader
+                if (this._validateOnParse)
 #pragma warning disable 618
-					settings.ValidationType = ValidationType.Auto;
+                    settings.ValidationType = ValidationType.Auto;
 #pragma warning restore 618
-                    
-					instance.XmlDocument.Load(XmlReader.Create(new StringReader(xmlString), settings));
-				}
-				else instance.XmlDocument.LoadXml(xmlString);
+
+                // do not check invalid characters in HTML (XML)
+                if (isHtml)
+                    settings.CheckCharacters = false;
+
+                // load the document
+                this.XmlDocument.Load(XmlReader.Create(stream, settings));
+
+                // done
+                return true;
 			}
 			catch (XmlException e)
 			{
@@ -735,9 +756,7 @@ namespace PHP.Library.Xml
                 PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, null));
 				return false;
 			}
-
-			return (static_call ? instance : (object)true);
-		}
+        }
 		
 		/// <summary>
 		/// Saves the XML document to the specified stream.
@@ -899,14 +918,7 @@ namespace PHP.Library.Xml
                 htmlDoc.Save(sw);
 
                 // load as XML
-                try
-                {
-                    return loadXML(this, sw.ToString(), 0);
-                }
-                finally
-                {
-                    this._isHtmlDocument = true;
-                }
+                return this.loadXMLInternal(sw.ToString(), 0, true);
             }
         }
 
