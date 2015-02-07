@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library.Xml
 {
@@ -43,7 +42,6 @@ namespace PHP.Library.Xml
 
 		private bool _formatOutput;
 		private bool _validateOnParse;
-        internal bool _isHtmlDocument;
 
 		/// <summary>
 		/// Returns &quot;#document&quot;.
@@ -655,8 +653,6 @@ namespace PHP.Library.Xml
 			}
 			else static_call = false;
 
-            instance._isHtmlDocument = false;
-
 			using (PhpStream stream = PhpStream.Open(fileName, "rt"))
 			{
 				if (stream == null) return false;
@@ -677,12 +673,12 @@ namespace PHP.Library.Xml
 				}
 				catch (XmlException e)
 				{
-                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
+					PhpException.Throw(PhpError.Warning, e.Message);
 					return false;
 				}
 				catch (IOException e)
 				{
-                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
+					PhpException.Throw(PhpError.Warning, e.Message);
 					return false;
 				}
 			}
@@ -710,54 +706,33 @@ namespace PHP.Library.Xml
 			}
 			else static_call = false;
 
-            var result = instance.loadXMLInternal(xmlString, options, false);
-            return static_call ? instance : (object)result;
-		}
-
-        /// <summary>
-        /// Loads provided XML string into this <see cref="DOMDocument"/>.
-        /// </summary>
-        /// <param name="xmlString">String representing XML document.</param>
-        /// <param name="options">PHP options.</param>
-        /// <param name="isHtml">Whether the <paramref name="xmlString"/> represents XML generated from HTML document (then it may contain some invalid XML characters).</param>
-        /// <returns></returns>
-        private bool loadXMLInternal(string xmlString, int options, bool isHtml)
-        {
-            this._isHtmlDocument = isHtml;
-
-            var stream = new StringReader(xmlString);
-
-            try
+			try
 			{
-                XmlReaderSettings settings = new XmlReaderSettings();
-
-                // validating XML reader
-                if (this._validateOnParse)
+				if (instance._validateOnParse)
+				{
+					// create a validating XML reader
+					XmlReaderSettings settings = new XmlReaderSettings();
 #pragma warning disable 618
-                    settings.ValidationType = ValidationType.Auto;
+					settings.ValidationType = ValidationType.Auto;
 #pragma warning restore 618
 
-                // do not check invalid characters in HTML (XML)
-                if (isHtml)
-                    settings.CheckCharacters = false;
-
-                // load the document
-                this.XmlDocument.Load(XmlReader.Create(stream, settings));
-
-                // done
-                return true;
+					instance.XmlDocument.Load(XmlReader.Create(new StringReader(xmlString), settings));
+				}
+				else instance.XmlDocument.LoadXml(xmlString);
 			}
 			catch (XmlException e)
 			{
-                PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, null));
+				PhpException.Throw(PhpError.Warning, e.Message);
 				return false;
 			}
 			catch (IOException e)
 			{
-                PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, null));
+				PhpException.Throw(PhpError.Warning, e.Message);
 				return false;
 			}
-        }
+
+			return (static_call ? instance : (object)true);
+		}
 		
 		/// <summary>
 		/// Saves the XML document to the specified stream.
@@ -788,12 +763,12 @@ namespace PHP.Library.Xml
 				}
 				catch (XmlException e)
 				{
-                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
+					PhpException.Throw(PhpError.Warning, e.Message);
 					return null;
 				}
 				catch (IOException e)
 				{
-                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, fileName));
+					PhpException.Throw(PhpError.Warning, e.Message);
 					return false;
 				}
 
@@ -839,109 +814,40 @@ namespace PHP.Library.Xml
 			}
 		}
 
-        /// <summary>
-        /// Processes HTML errors, if any.
-        /// </summary>
-        /// <param name="htmlDoc"><see cref="HtmlAgilityPack.HtmlDocument"/> instance to process errors from.</param>
-        /// <param name="filename">HTML file name or <c>null</c> if HTML has been loaded from a string.</param>
-        private void CheckHtmlErrors(HtmlAgilityPack.HtmlDocument/*!*/htmlDoc, string filename)
-        {
-            Debug.Assert(htmlDoc != null);
-
-            foreach (var error in htmlDoc.ParseErrors)
-            {
-                switch (error.Code)
-                {
-                    case HtmlAgilityPack.HtmlParseErrorCode.EndTagNotRequired:
-                    case HtmlAgilityPack.HtmlParseErrorCode.TagNotOpened:
-                        break;
-                    default:
-                        PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, error.Line, error.LinePosition, "(" + error.Code.ToString() + ")" + error.Reason, filename));
-                        break;
-                }
-            }
-        }
-
-		/// <summary>
-        /// Loads HTML from a string.
-		/// </summary>
-        /// <param name="source">
-        /// String containing HTML document.
-        /// </param>
-		[PhpVisible]
-        public object loadHTML(string source)
-		{
-            if (string.IsNullOrEmpty(source))
-                return false;
-
-            return loadHTML(new StringReader(source), null);
-		}
-
-        /// <summary>
-        /// Loads HTML from a file.
-        /// </summary>
-        /// <param name="sourceFile">
-        /// Path to a file containing HTML document.
-        /// </param>
-		[PhpVisible]
-		public object loadHTMLFile(string sourceFile)
-		{
-            using (PhpStream stream = PhpStream.Open(sourceFile, "rt"))
-            {
-                if (stream == null) return false;
-
-                return loadHTML(new StreamReader(stream.RawStream), sourceFile);
-            }
-		}
-
-        /// <summary>
-        /// Load HTML DOM from given <paramref name="stream"/>.
-        /// </summary>
-        private object loadHTML(TextReader stream, string filename)
-        {
-            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
-
-            // setup HTML parser
-            htmlDoc.OptionOutputAsXml = true;
-            //htmlDoc.OptionOutputOriginalCase = true;  // NOTE: we need lower-cased names because of XPath queries
-            //htmlDoc.OptionFixNestedTags = true;
-            htmlDoc.OptionCheckSyntax = false;
-            htmlDoc.OptionUseIdAttribute = false;   // only needed when XPath navigator is used on htmlDoc
-            htmlDoc.OptionWriteEmptyNodes = true;
-            
-            // load HTML (from string or a stream)
-            htmlDoc.Load(stream);
-
-            CheckHtmlErrors(htmlDoc, filename);
-
-            // save to string as XML
-            using (StringWriter sw = new StringWriter())
-            {
-                htmlDoc.Save(sw);
-
-                // load as XML
-                return this.loadXMLInternal(sw.ToString(), 0, true);
-            }
-        }
-
 		/// <summary>
 		/// Not implemented (TODO: need an HTML parser for this).
 		/// </summary>
 		[PhpVisible]
-		public object saveHTML()
+		public void loadHTML(string source)
 		{
-            //TODO: use the HTML parse to same HTML
-            return saveXML(null);
+			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
 		}
 
 		/// <summary>
 		/// Not implemented (TODO: need an HTML parser for this).
 		/// </summary>
 		[PhpVisible]
-        public object saveHTMLFile(string file)
-        {            
-            //TODO: use the HTML parse to same HTML
-            return save(file, 0);
+		public void loadHTMLFile(string source)
+		{
+			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
+		}
+
+		/// <summary>
+		/// Not implemented (TODO: need an HTML parser for this).
+		/// </summary>
+		[PhpVisible]
+		public void saveHTML()
+		{
+			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
+		}
+
+		/// <summary>
+		/// Not implemented (TODO: need an HTML parser for this).
+		/// </summary>
+		[PhpVisible]
+		public void saveHTMLFile(string file)
+		{
+			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
 		}
 
 		#endregion
@@ -990,13 +896,13 @@ namespace PHP.Library.Xml
 				}
 				catch (XmlException e)
 				{
-                    PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_WARNING, 0, 0, 0, e.Message, schemaFile));
+					PhpException.Throw(PhpError.Warning, e.Message);
 					return false;
 				}
 				catch (IOException e)
 				{
-					PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_ERROR, 0, 0, 0, e.Message, schemaFile));
-                    return false;
+					PhpException.Throw(PhpError.Warning, e.Message);
+					return false;
 				}
 			}
 
@@ -1032,7 +938,7 @@ namespace PHP.Library.Xml
 			}
 			catch (XmlException e)
 			{
-                PhpLibXml.IssueXmlError(new PhpLibXml.XmlError(PhpLibXml.LIBXML_ERR_WARNING, 0, 0, 0, e.Message, null));
+				PhpException.Throw(PhpError.Warning, e.Message);
 				return false;
 			}
 
