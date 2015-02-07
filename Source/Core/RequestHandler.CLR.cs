@@ -169,6 +169,11 @@ namespace PHP.Core
                     // A user code or compiler have reported a fatal error.
                     // We don't want to propagate the exception to web server.
                 }
+                catch (InvalidSourceException)
+                {
+                    // the source file could not be found neither in a script library and file system
+                    context.Response.StatusCode = 404;
+                }
             }
 		}
 
