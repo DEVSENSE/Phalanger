@@ -820,8 +820,8 @@ namespace PHP.Core.Parsers
             Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(fullQualifiedName.IsFullyQualifiedName);
 
-            if (sourceUnit.CompilationUnit.IsTransient)
-                throw new NotImplementedException("Adding an alias from within eval is not supported.");
+            //if (sourceUnit.CompilationUnit.IsTransient)   // J: supported, as it is in PHP. Simply within this transient sourceUnit
+            //    throw new NotImplementedException("Adding an alias from within eval is not supported.");
             
             // check if it aliases itself:
             QualifiedName qualifiedAlias = new QualifiedName(
