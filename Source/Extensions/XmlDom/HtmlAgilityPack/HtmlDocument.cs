@@ -294,7 +294,7 @@ namespace HtmlAgilityPack
         /// </summary>
         /// <param name="html">The input string to encode. May not be null.</param>
         /// <returns>The encoded string.</returns>
-        public static string HtmlEncode(string html)
+        public static string HtmlEncode(string html, AttributeValueQuote attrQuote)
         {
             if (html == null)
                 throw new ArgumentNullException("html");
@@ -328,6 +328,17 @@ namespace HtmlAgilityPack
                 else if (c == '"')
                 {
                     str.Append("&quot;");
+                }
+                else if (c == '\'')
+                {
+                    if (attrQuote == AttributeValueQuote.SingleQuote)
+                    {
+                        str.Append("&#39;");    // straight quote mark/apostrophe
+                    }
+                    else
+                    {
+                        str.Append(c);
+                    }
                 }
                 else if (IsXmlCharData(c))
                 {
