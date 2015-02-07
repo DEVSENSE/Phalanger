@@ -65,6 +65,8 @@ namespace PHP.Core
 		}
 		private string/*!*/lowerCaseValue;
 
+        #region Special Names
+
 		public static readonly Name[] EmptyNames = new Name[0];
 		public static readonly Name EmptyBaseName = new Name("");
 		public static readonly Name SelfClassName = new Name("self");
@@ -81,8 +83,6 @@ namespace PHP.Core
 		public static readonly Name OutName = new Name("Out");
 		public static readonly Name DeclareHelperName = new Name("<Declare>");
 		public static readonly Name LambdaFunctionName = new Name("<Lambda>");
-
-		#region Special Names
 
 		public bool IsCloneName
 		{
@@ -128,9 +128,55 @@ namespace PHP.Core
             this.lowerCaseValue = value.ToLower();
 		}
 
-		#region Basic Overrides
+        #region Utils
 
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Separator of class name and its static field in a form of <c>CLASS::MEMBER</c>.
+        /// </summary>
+        public const string ClassMemberSeparator = "::";
+
+        /// <summary>
+        /// Splits the <paramref name="value"/> into class name and member name if it is double-colon separated.
+        /// </summary>
+        /// <param name="value">Full name.</param>
+        /// <param name="className">Will contain the class name fragment if the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>. Otherwise <c>null</c>.</param>
+        /// <param name="memberName">Will contain the member name fragment if the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>. Otherwise it contains original <paramref name="value"/>.</param>
+        /// <returns>True iff the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>.</returns>
+        public static bool IsClassMemberSyntax(string/*!*/value, out string className, out string memberName)
+        {
+            Debug.Assert(value != null);
+            Debug.Assert(QualifiedName.Separator == ":::" && !value.Contains(QualifiedName.Separator)); // be aware of deprecated namespace syntax
+
+            int separator;
+            if ((separator = value.IndexOf(ClassMemberSeparator)) >= 0)
+            {
+                className = value.Remove(separator);
+                memberName = value.Substring(separator + ClassMemberSeparator.Length);
+                return true;
+            }
+            else
+            {
+                className = null;
+                memberName = value;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines if given <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>.
+        /// </summary>
+        /// <param name="value">Full name.</param>
+        /// <returns>True iff the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>.</returns>
+        public static bool IsClassMemberSyntax(string value)
+        {
+            return value != null && value.Contains(ClassMemberSeparator);
+        }
+
+        #endregion
+
+        #region Basic Overrides
+
+        public override bool Equals(object obj)
 		{
 			if (!(obj is Name)) return false;
 			return Equals((Name)obj);

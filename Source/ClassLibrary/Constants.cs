@@ -83,11 +83,9 @@ namespace PHP.Library
             }
             
             // try class constant:
-            if (name.Contains("::"))
+            string typename, constname;
+            if (Name.IsClassMemberSyntax(name, out typename, out constname))
             {
-                var typename = name.Substring(0, name.IndexOf("::"));
-                var constname = name.Substring(typename.Length + 2);
-
                 var type = analyzer.SourceUnit.ResolveTypeName(new QualifiedName(new Name(typename)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
 
                 if (type != null && !type.IsUnknown)
