@@ -10,7 +10,7 @@ namespace PHP.Library.Data
 {
     public sealed class PhpSQLiteDbConnection : PhpDbConnection
     {
-        internal SQLiteConnection Connection { get { return (SQLiteConnection)connection; } }
+        internal SQLiteConnection SqLiteConnection { get { return (SQLiteConnection)connection; } }
 
         /// <summary>
         /// Server.
