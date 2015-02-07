@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
+using System.Diagnostics;
 
 namespace HtmlAgilityPack
 {
@@ -289,12 +290,93 @@ namespace HtmlAgilityPack
         public static string HtmlEncode(string html)
         {
             if (html == null)
-            {
                 throw new ArgumentNullException("html");
-            }
+            
             // replace & by &amp; but only once!
-            Regex rx = new Regex("&(?!(amp;)|(lt;)|(gt;)|(quot;))", RegexOptions.IgnoreCase);
-            return rx.Replace(html, "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
+            StringBuilder str = new StringBuilder(html.Length);// new StringBuilder(htmlAmpRegex.Replace(html, "&amp;"));
+            //return str.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").ToString();
+            for (int i = 0; i < html.Length; i++)
+            {
+                var c = html[i];
+                if (c == '&')
+                {
+                    // allowed: lt; gt; amp; quot;
+                    if (StartsWithHelperOrdinalIgnoreCase(html, "amp;", i + i) ||
+                        StartsWithHelperOrdinalIgnoreCase(html, "lt;", i + i) ||
+                        StartsWithHelperOrdinalIgnoreCase(html, "gt;", i + i) ||
+                        StartsWithHelperOrdinalIgnoreCase(html, "quot;", i + i))
+                        str.Append(c);
+                    else
+                        // otherwise convert & to &amp;
+                        str.Append("&amp;");
+                }
+                else if (c == '<')
+                {
+                    str.Append("&lt;");
+                }
+                else if (c == '>')
+                {
+                    str.Append("&gt;");
+                }
+                else if (c == '"')
+                {
+                    str.Append("&quot;");
+                }
+                else if (IsXmlCharData(c))
+                {
+                    str.Append(c);
+                }
+                else
+                {
+                    // invalid XML data character
+                    // TODO: warning
+                    str.Append(' ');
+                }
+            }
+
+            //
+            return str.ToString();
+        }
+
+        /// <summary>
+        /// Checks whether given <paramref name="c"/> is valid XML data character.
+        /// </summary>
+        /// <param name="c">Character to check.</param>
+        /// <remarks>See <c>XmlCharType.bin</c> resource file within <c>System.Xml.dll</c>.
+        /// 5th bit of each byte is flag determining this validity of corresponding character.</remarks>
+        private static bool IsXmlCharData(char c)
+        {
+            return c >= 32 || c == 9 || c == 10 || c == 13;
+        }
+
+        private static bool StartsWithHelperOrdinalIgnoreCase(string/*!*/str, string/*!*/data, int at)
+        {
+            Debug.Assert(str != null);
+            Debug.Assert(data != null);
+
+            if (at + data.Length > str.Length)
+                return false;
+            
+            int stri = at;
+            int datai = 0;
+            for (; datai < data.Length; ++datai, ++stri)
+            {
+                char a = str[stri];
+                char b = data[datai];
+                if (a != b && UpperCaseOrdinal(a) != UpperCaseOrdinal(b))
+                    return false;
+            }
+
+            return true;
+        }
+
+        //private static readonly Regex/*!*/htmlAmpRegex = new Regex("&(?!(amp;)|(lt;)|(gt;)|(quot;))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        private static char UpperCaseOrdinal(char c)
+        {
+            if (c >= 'a' && c <= 'z') return (char)(c - ('a' - 'A'));
+
+            return c;
         }
 
         /// <summary>
@@ -304,11 +386,7 @@ namespace HtmlAgilityPack
         /// <returns>true if if the specified character is considered as a whitespace character.</returns>
         public static bool IsWhiteSpace(int c)
         {
-            if ((c == 10) || (c == 13) || (c == 32) || (c == 9))
-            {
-                return true;
-            }
-            return false;
+            return (c == 9) || (c == 10) || (c == 13) || (c == 32);
         }
 
         /// <summary>

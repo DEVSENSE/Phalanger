@@ -1773,7 +1773,21 @@ namespace HtmlAgilityPack
         internal static string GetXmlComment(HtmlCommentNode comment)
         {
             string s = comment.Comment;
-            return s.Substring(4, s.Length - 7).Replace("--", " - -");
+            Debug.Assert(s.StartsWith("<!--"));
+            Debug.Assert(s.EndsWith("-->"));
+
+            // remove starting/ending comment tags
+            s = s.Substring(4, s.Length - 7);
+            
+            // ensure comment does not contain '--'
+            s = s.Replace("--", " - -");
+
+            // ensure ending char is not '-'
+            if (s.Length > 0 && s[s.Length - 1] == '-')
+                s += ' ';
+            
+            //
+            return s;
         }
 
         internal static void WriteAttributes(XmlWriter writer, HtmlNode node)
