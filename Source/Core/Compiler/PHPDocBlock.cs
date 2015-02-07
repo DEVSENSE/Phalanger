@@ -982,6 +982,213 @@ namespace PHP.Core
             }
         }
 
+        /// <summary>
+        /// Dynamic property description within a class.
+        /// </summary>
+        public sealed class PropertyTag : TypeVarDescTag
+        {
+            public const string Name = "@property";
+
+            public PropertyTag(string/*!*/line)
+                : base(Name, line, true)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + this.TypeNames;
+            }
+        }
+
+        /// <summary>
+        /// Dynamic method description within a class.
+        /// </summary>
+        public sealed class MethodTag : Element
+        {
+            public const string Name = "@method";
+
+            /// <summary>
+            /// Optional. Type names separated by '|'.
+            /// </summary>
+            public readonly string TypeNames;
+
+            /// <summary>
+            /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
+            /// </summary>
+            public string[]/*!!*/TypeNamesArray { get { return string.IsNullOrEmpty(TypeNames) ? ArrayUtils.EmptyStrings : TypeNames.Split(new char[] { TypeVarDescTag.TypeNamesSeparator }, StringSplitOptions.RemoveEmptyEntries); } }
+
+            /// <summary>
+            /// Array of method parameters;
+            /// </summary>
+            public readonly AST.FormalParam[]/*!*/Parameters;
+
+            /// <summary>
+            /// Method name.
+            /// </summary>
+            public readonly string MethodName;
+
+            /// <summary>
+            /// Optional. Element description.
+            /// </summary>
+            public string Description { get; private set; }
+
+            public MethodTag(string/*!*/tagName, string/*!*/line)
+            {
+                Debug.Assert(line.StartsWith(tagName));
+
+                // [type] name() [name(params ...)] [description]
+
+                int index = tagName.Length; // current index within line
+                int descStart = index;  // start of description, moved when [type] or [name] found
+
+                // try to find [type]
+                string word = NextWord(line, ref index);
+                if (word != null && !word.EndsWith("()", StringComparison.Ordinal))
+                {
+                    this.TypeNames = word;
+                    descStart = index;
+                    word = NextWord(line, ref index);
+                }
+
+                // name()
+                if (word != null && word.EndsWith("()", StringComparison.Ordinal))
+                {
+                    this.MethodName = word.Remove(word.Length - 2);
+                    descStart = index;
+                    word = NextWord(line, ref index);
+                }
+
+                // name(params ...)
+                while (descStart < line.Length && char.IsWhiteSpace(line[descStart]))
+                    descStart++;    // skip whitespaces
+
+                this.Parameters = null;
+
+                if (this.MethodName == null)
+                {
+                    int nameStart = descStart;
+                    while (descStart < line.Length && line[descStart] != '(' && char.IsLetterOrDigit(line[descStart]))
+                        descStart++;
+                    if (descStart > nameStart)
+                        this.MethodName = line.Substring(nameStart, descStart - nameStart);
+                }
+
+                if (string.IsNullOrEmpty(this.MethodName))
+                    return;
+
+                int paramsFrom = descStart + this.MethodName.Length;
+                if (paramsFrom < line.Length && line.IndexOf(this.MethodName, descStart, StringComparison.Ordinal) == descStart && line[paramsFrom] == '(')
+                {
+                    // "name(" found
+                    int paramsEnd = line.IndexOf(')', paramsFrom);
+                    if (paramsEnd > 0)
+                    {
+                        descStart = paramsEnd + 1;
+                        string[] paramsDecl = line.Substring(paramsFrom + 1, paramsEnd - paramsFrom - 1).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (paramsDecl != null && paramsDecl.Length > 0)
+                        {
+                            this.Parameters = new AST.FormalParam[paramsDecl.Length];
+                            for (int i = 0; i < paramsDecl.Length; i++)
+                                this.Parameters[i] = ParseParam(paramsDecl[i]);
+                        }
+                    }
+                }
+                if (this.Parameters == null) this.Parameters = new AST.FormalParam[0];
+
+                if (descStart < line.Length)
+                    this.Description = line.Substring(descStart).TrimStart(null/*default whitespace characters*/);
+            }
+
+            /// <summary>
+            /// Parses parameter description in a form of [type][$name][=initializer].
+            /// </summary>
+            /// <param name="paramDecl"></param>
+            /// <returns></returns>
+            private static AST.FormalParam/*!*/ParseParam(string/*!*/paramDecl)
+            {
+                Debug.Assert(!string.IsNullOrEmpty(paramDecl));
+                
+                string typehint = null;
+                string paramname = null;
+                bool byref = false;
+                
+                int i = 0;
+                var word = NextWord(paramDecl, ref i);
+                if (word != null)
+                {
+                    // [type]
+                    if (word.Length > 0 && word[0] != '$')
+                    {
+                        typehint = word;
+                        word = NextWord(paramDecl, ref i);
+                    }
+
+                    // [$name][=initializer]
+                    if (word != null && word.Length > 0 && word[0] == '$')
+                    {
+                        int eqIndex = word.IndexOf('=');
+                        paramname = ((eqIndex == -1) ? word : word.Remove(eqIndex));
+
+                        byref = paramname.IndexOf('&') != -1;
+                        paramname = paramname.TrimStart(new char[]{ '$', '&'});
+                    }
+                }
+
+                return new AST.FormalParam(Parsers.Position.Invalid, paramname, typehint, byref, null, new List<AST.CustomAttribute>());
+            }
+
+            #region Helpers
+
+            private static string NextWord(string/*!*/text, ref int index)
+            {   
+                // skip whitespaces:
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                    index++;
+
+                // read word:
+                int startIndex = index;
+                while (index < text.Length && !char.IsWhiteSpace(text[index]))
+                    index++;
+
+                // cut off the word:
+                if (startIndex < index)
+                    return text.Substring(startIndex, index - startIndex);
+                else
+                    return null;
+            }
+
+            #endregion
+
+            internal override void ParseLine(string line, out Element next)
+            {
+                next = null;
+
+                // add the line into description:
+                Description = string.IsNullOrWhiteSpace(Description) ? line : (Description + NewLineString + line);
+            }
+
+            internal override void OnEndParsing()
+            {
+                base.OnEndParsing();
+                
+                if (this.Description != null)
+                    this.Description = this.Description.Trim();
+            }
+
+            internal override bool IsEmpty
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(this.TypeNames) && string.IsNullOrEmpty(this.MethodName) && string.IsNullOrWhiteSpace(this.Description);
+                }
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + this.MethodName + "()\n" + this.Description;
+            }
+        }
+
         public sealed class VersionTag : SingleLineTag
         {
             public const string Name = "@version";
