@@ -1278,8 +1278,7 @@ namespace PHP.Core
                 if (string.IsNullOrEmpty(this.MethodName))
                     return;
 
-                if (paramsFrom > 0)
-                if (paramsFrom < line.Length && line[paramsFrom] == '(')
+                if (paramsFrom > 0 && paramsFrom < line.Length && line[paramsFrom] == '(')
                 {
                     // "name(" found
                     int paramsEnd = line.IndexOf(')', paramsFrom);
@@ -1295,7 +1294,7 @@ namespace PHP.Core
                         }
                     }
                 }
-                if (this.Parameters == null) this.Parameters = new AST.FormalParam[0];
+                if (this.Parameters == null) this.Parameters = EmptyArray<AST.FormalParam>.Instance;
 
                 if (descStart < line.Length)
                     this.Description = line.Substring(descStart).TrimStart(null/*default whitespace characters*/);
@@ -1449,7 +1448,7 @@ namespace PHP.Core
         /// <summary>
         /// Empty singleton <see cref="Element"/> array.
         /// </summary>
-        private static readonly Element[]/*!*/EmptyElements = new Element[0];
+        private static Element[]/*!*/EmptyElements { get { return EmptyArray<Element>.Instance; } }
 
         /// <summary>
         /// Original PHPDoc text, including comment tags.
