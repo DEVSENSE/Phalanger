@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using PHP.Core;
 using PHP.Core.Reflection;
 using System.ComponentModel;
@@ -143,7 +144,7 @@ namespace PHP.Library.SPL
         private bool isArrayIterator { get { return this.array != null; } }
 
         private DObject dobj;
-        private IDictionaryEnumerator dobjEnumerator;
+        private IEnumerator<KeyValuePair<object, object>> dobjEnumerator;
         private bool isObjectIterator { get { return this.dobj != null; } }
 
         private bool isValid = false;
@@ -167,7 +168,7 @@ namespace PHP.Library.SPL
             }
             else if ((this.dobj = array as DObject) != null)
             {
-                this.dobjEnumerator = dobj.GetForeachEnumerator(true, false, null);
+                // this.dobjEnumerator = dobj.InstancePropertyIterator(null, false); // instantiated in rewind()
             }
             else
             {
@@ -493,7 +494,7 @@ namespace PHP.Library.SPL
             }
             else if (isObjectIterator)
             {
-                dobjEnumerator.Reset();
+                this.dobjEnumerator = dobj.InstancePropertyIterator(null, false);   // we have to create new enumerator (or implement InstancePropertyIterator.Reset)
                 this.isValid = dobjEnumerator.MoveNext();
             }
 
@@ -523,7 +524,7 @@ namespace PHP.Library.SPL
             if (isArrayIterator)
                 return arrayEnumerator.Current.Key.Object;
             else if (isObjectIterator)
-                return dobjEnumerator.Key;
+                return dobjEnumerator.Current.Key;
 
             return false;
         }
@@ -534,7 +535,7 @@ namespace PHP.Library.SPL
             if (isArrayIterator)
                 return arrayEnumerator.Current.Value;
             else if (isObjectIterator)
-                return dobjEnumerator.Value;
+                return dobjEnumerator.Current.Value;
 
             return false;
         }
