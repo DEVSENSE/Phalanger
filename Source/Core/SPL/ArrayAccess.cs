@@ -114,10 +114,10 @@ namespace PHP.Library.SPL
         #region SplFixedArray
 
         /// <summary>
-        /// Constructs an <see cref="ArrayIterator"/> object.
+        /// Constructs an <see cref="SplFixedArray"/> object.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="array">The array or object to be iterated on.</param>
+        /// <param name="size">The initial array size.</param>
         /// <returns></returns>
         [ImplementsMethod]
         public virtual object __construct(ScriptContext/*!*/context, [Optional] object size /*= 0*/)
