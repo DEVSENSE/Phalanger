@@ -2034,4 +2034,7 @@ non-infringement.
   <data name="namespace_keyword_outside_namespace" xml:space="preserve">
     <value>Namespace keyword used outside namespace declaration</value>
   </data>
+  <data name="alias_in_use" xml:space="preserve">
+    <value>Cannot use {1} as {2} because the name is already in use</value>
+  </data>
 </root>

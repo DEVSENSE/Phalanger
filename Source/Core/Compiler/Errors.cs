@@ -887,6 +887,7 @@ namespace PHP.Core
 		public static readonly ErrorInfo CircularBaseInterfaceDependency = new ErrorInfo(2031, "circular_base_interface_dependency", ErrorSeverity.FatalError);
         public static readonly ErrorInfo MethodMustTakeExacArgsCount = new ErrorInfo(2032, "method_must_take_exact_args_count", ErrorSeverity.FatalError);
 
+        public static readonly ErrorInfo AliasAlreadyInUse = new ErrorInfo(2040, "alias_in_use", ErrorSeverity.FatalError);
 	}
 
 	#endregion

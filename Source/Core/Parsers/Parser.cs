@@ -693,6 +693,17 @@ namespace PHP.Core.Parsers
         #region aliases (use_statement)
 
         /// <summary>
+        /// Dictionary of PHP aliases for the current scope.
+        /// </summary>
+        private Dictionary<string, QualifiedName>/*!*/ CurrentScopeAliases
+        {
+            get
+            {
+                return (currentNamespace != null) ? currentNamespace.Aliases : this.sourceUnit.Aliases;
+            }
+        }
+
+        /// <summary>
         /// Add PHP alias (through <c>use</c> keyword).
         /// </summary>
         /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
@@ -710,19 +721,87 @@ namespace PHP.Core.Parsers
         {
             Debug.Assert(!string.IsNullOrEmpty(fullQualifiedName.Name.Value));
             Debug.Assert(!string.IsNullOrEmpty(alias));
+            Debug.Assert(fullQualifiedName.IsFullyQualifiedName);
+            
+            // check if it aliases itself:
+            QualifiedName qualifiedAlias = new QualifiedName(
+                new Name(alias),
+                (currentNamespace != null) ? currentNamespace.QualifiedName : new QualifiedName(Name.EmptyBaseName));
 
-            if (fullQualifiedName.IsFullyQualifiedName) Debug.Fail(@"qualified name within 'use' statement should not start with '\'");
-
-            if (currentNamespace != null)
+            if (fullQualifiedName == qualifiedAlias) return;    // ignore
+            
+            // add the alias:
+            
+            // check for alias duplicity:
+            if (!CurrentScopeAliases.ContainsKey(alias))
             {
-                // add alias into the namespace scope
+                // TODO: check if there is no conflict with some class delcaration
+
+                // add alias into the scope
+                CurrentScopeAliases.Add(alias, fullQualifiedName);
+            }
+            else
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos, fullQualifiedName.NamespacePhpName, alias);
+        }
+
+        /// <summary>
+        /// Translate the name using defined aliases. Any first part of the <see cref="QualifiedName"/> will be translated.
+        /// </summary>
+        /// <param name="qname">The name to translate.</param>
+        /// <returns>Translated qualified name.</returns>
+        /// <remarks>Fully qualified names are not translated.</remarks>
+        private QualifiedName TranslateAny(QualifiedName qname)
+        {
+            if (qname.IsFullyQualifiedName) return qname;
+
+            // get first part of the qualified name:
+            string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
+
+            // return the alias if found:
+            return TranslateAlias(first, qname);
+        }
+
+        /// <summary>
+        /// Translate the name using defined aliases. Only namespace part of the <see cref="QualifiedName"/> will be translated. The <see cref="QualifiedName.Name"/> part will not.
+        /// </summary>
+        /// <param name="qname">The name to translate.</param>
+        /// <returns>Translated qualified name.</returns>
+        /// <remarks>Fully qualified names are not translated.</remarks>
+        private QualifiedName TranslateNamespace(QualifiedName qname)
+        {
+            if (qname.IsFullyQualifiedName) return qname;
+
+            if (qname.IsSimpleName)
+            {
+                // no namespace part, return not fully qualified simple name (function or constant), has to be handled during analysis:
+                return qname;
             }
             else
             {
-                // add alias into the global scope (does not affect namespace scopes)
+                return TranslateAlias(qname.Namespaces[0].Value, qname);
             }
+        }
 
-            throw new NotImplementedException();
+        /// <summary>
+        /// Translate given <paramref name="key"/> into aliased <see cref="QualifiedName"/>.
+        /// If no such alias is found, return <paramref name="default"/>.
+        /// </summary>
+        /// <param name="key">Alias to translate.</param>
+        /// <param name="default">Default <see cref="QualifiedName"/> if given alias is not found.</param>
+        /// <returns>Translated <see cref="QualifiedName"/>.</returns>
+        /// <remarks>Always returns fully qualified name.</remarks>
+        private QualifiedName TranslateAlias(string key, QualifiedName @default)
+        {
+            Debug.Assert(!@default.IsFullyQualifiedName);
+
+            // return the alias if found:
+            QualifiedName alias;
+            return CurrentScopeAliases.TryGetValue(key, out alias)
+                ? alias     // alias was found
+                : ((currentNamespace != null)
+                    ? new QualifiedName(@default, currentNamespace.QualifiedName)                           // join currentNamespace with @default
+                    : new QualifiedName(@default.Name, @default.Namespaces) { IsFullyQualifiedName = true } // make @default fully qualified name
+                  );
         }
 
         #endregion

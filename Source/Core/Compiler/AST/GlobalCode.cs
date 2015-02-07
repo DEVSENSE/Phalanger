@@ -240,6 +240,12 @@ namespace PHP.Core.AST
 		public QualifiedName QualifiedName { get { return qualifiedName; } }
 		private QualifiedName qualifiedName;
 
+        /// <summary>
+        /// Dictionary of PHP aliases.
+        /// </summary>
+        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
+        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+        
 		public bool IsAnonymous { get { return isAnonymous; } }
 		private readonly bool isAnonymous;
 

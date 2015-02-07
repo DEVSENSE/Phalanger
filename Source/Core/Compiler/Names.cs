@@ -433,7 +433,7 @@ namespace PHP.Core
         /// <summary>
         /// <c>True</c> if this represents fully qualified name (absolute namespace).
         /// </summary>
-        public bool IsFullyQualifiedName { get { return isFullyQualifiedName; } }
+        public bool IsFullyQualifiedName { get { return isFullyQualifiedName; } internal set { isFullyQualifiedName = value; } }
         private bool isFullyQualifiedName;
 
         #endregion
@@ -778,7 +778,7 @@ namespace PHP.Core
 		{
 			if (!this.name.Equals(other.name)) return false;
 
-			if (this.namespaces.Length != other.namespaces.Length) return false;
+            if (this.namespaces.Length != other.namespaces.Length) return false;
 
 			for (int i = 0; i < namespaces.Length; i++)
 			{
