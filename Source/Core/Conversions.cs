@@ -132,7 +132,9 @@ namespace PHP.Core
 
 			if (value.GetType() == typeof(decimal))
 			{
-				decimal decimal_value = (decimal)value;
+                decimal decimal_value = (decimal)value;
+                if (Decimal.Truncate(decimal_value) != decimal_value)
+                    return Decimal.ToDouble(decimal_value);
 				if (decimal_value >= Int32.MinValue && decimal_value <= Int32.MaxValue)
 					return Decimal.ToInt32(decimal_value);
 				else if (decimal_value >= Int64.MinValue && decimal_value <= Int64.MaxValue)
