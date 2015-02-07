@@ -636,6 +636,14 @@ namespace PHP.Core.Reflection
 			AddDeclaration(parser.ErrorSink, node.GetGlobalConstant(), constants);
 		}
 
+        public void NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+        {
+        }
+
+        public void LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+        {
+        }
+
 		private void AddDeclaration(ErrorSink/*!*/ errors, IDeclaree/*!*/ member, Dictionary<QualifiedName, Declaration>/*!*/ table)
 		{
 			Declaration existing;

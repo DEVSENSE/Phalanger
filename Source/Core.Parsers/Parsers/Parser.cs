@@ -37,6 +37,8 @@ namespace PHP.Core.Parsers
 		void FunctionDeclarationReduced(Parser/*!*/ parser, FunctionDecl/*!*/ decl);
 		void TypeDeclarationReduced(Parser/*!*/ parser, TypeDecl/*!*/ decl);
 		void GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl);
+        void NamespaceDeclReduced(Parser/*!*/ parser, NamespaceDecl/*!*/ decl);
+        void LambdaFunctionReduced(Parser/*!*/ parser, LambdaFunctionExpr/*!*/ decl);
 	}
 
     // Due to a MCS bug, it has to be in the other partial class in generated (Generated/Parser.cs)
@@ -60,7 +62,7 @@ namespace PHP.Core.Parsers
 	{
 		#region Reductions Sinks
 
-		public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
+        public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
 
 		private sealed class _NullReductionsSink : IReductionsSink
 		{
@@ -79,49 +81,57 @@ namespace PHP.Core.Parsers
 			void IReductionsSink.GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl)
 			{
 			}
-		}
+
+            void IReductionsSink.NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+            {
+            }
+
+            void IReductionsSink.LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+            {
+            }
+        }
 
 		public sealed class ReductionsCounter : IReductionsSink
 		{
-			public int InclusionCount { get { return inclusionCount; } }
-			private int inclusionCount;
+			public int InclusionCount { get { return _inclusionCount; } }
+			private int _inclusionCount = 0;
 
-			public int FunctionCount { get { return functionCount; } }
-			private int functionCount;
+			public int FunctionCount { get { return _functionCount; } }
+			private int _functionCount = 0;
 
-			public int TypeCount { get { return typeCount; } }
-			private int typeCount;
+			public int TypeCount { get { return _typeCount; } }
+			private int _typeCount = 0;
 
-			public int ConstantCount { get { return constantCount; } }
-			private int constantCount;
+			public int ConstantCount { get { return _constantCount; } }
+			private int _constantCount = 0;
 
-			public ReductionsCounter()
+            void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
 			{
-				this.inclusionCount = 0;
-				this.functionCount = 0;
-				this.typeCount = 0;
-				this.constantCount = 0;
-			}
-
-			void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
-			{
-				this.inclusionCount++;
+				_inclusionCount++;
 			}
 
 			void IReductionsSink.FunctionDeclarationReduced(Parser/*!*/ parser, FunctionDecl/*!*/ decl)
 			{
-				this.functionCount++;
+				_functionCount++;
 			}
 
 			void IReductionsSink.TypeDeclarationReduced(Parser/*!*/ parser, TypeDecl/*!*/ decl)
 			{
-				this.typeCount++;
+				_typeCount++;
 			}
 
 			void IReductionsSink.GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl)
 			{
-				this.constantCount++;
+				_constantCount++;
 			}
+
+            void IReductionsSink.NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+            {
+            }
+
+            void IReductionsSink.LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+            {
+            }
 		}
 
 		#endregion
