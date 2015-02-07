@@ -26,7 +26,7 @@
 
   <!--Compile target (this is the target that calls the compiler task)-->
   <Target Name="PhalangerCompilerTarget"
-          Inputs="@(Compile);@(ReferencePath);@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
+          Inputs="@(Compile);@(ReferencePath);@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile);@(Content)"
           Outputs="@(IntermediateAssembly)">
     <Message Text="Building: @(IntermediateAssembly)" />
       <PhalangerCompilerTask
