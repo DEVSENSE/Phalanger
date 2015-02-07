@@ -336,9 +336,11 @@ namespace PHP.Library.Data
         public object beginTransaction(ScriptContext context)
         {
             if (this.m_tx != null)
-            {
                 return false;
-            }
+
+            if (this.PDOConnection != null)
+                this.PDOConnection.ClosePendingReader();
+
             this.m_tx = this.Connection.BeginTransaction();
             return true;
         }
