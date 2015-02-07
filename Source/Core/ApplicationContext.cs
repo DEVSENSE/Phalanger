@@ -192,6 +192,8 @@ namespace PHP.Core
             
             // Exception:
             addType(typeof(Library.SPL.Exception));
+            addType(typeof(Library.SPL.RuntimeException));
+            addType(typeof(Library.SPL.ErrorException));
             addType(typeof(Library.SPL.LogicException));
             addType(typeof(Library.SPL.InvalidArgumentException));
             addType(typeof(Library.SPL.BadFunctionCallException));

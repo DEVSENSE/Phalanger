@@ -71,6 +71,7 @@ namespace PHP.Library.SPL
 		/// Needn't to be serialized.
 		/// </summary>
 		private string stringTraceCache;
+        private object previous;
 
 		/// <summary>
 		/// Invoked when the instance is created (not called when unserialized).
@@ -158,14 +159,18 @@ namespace PHP.Library.SPL
 		/// <param name="context">Current <see cref="ScriptContext"/>.</param>
 		/// <param name="message">A message to be associated with the exception.</param>
 		/// <param name="code">A code to be associated with the exception.</param>
+        /// <param name="previous">The previous exception used for the exception chaining.</param>
 		/// <returns>A <b>null</b> reference (void in PHP).</returns>
 		[ImplementsMethod]
-		public virtual object __construct(ScriptContext context, [Optional] object message, [Optional] object code)
+		public virtual object __construct(ScriptContext context, [Optional] object message, [Optional] object code, [Optional] object previous)
 		{
-			this.message.Value = (message == Arg.Default) ? CoreResources.GetString("default_exception_message") : message;
+            this.message.Value = (message == Arg.Default) ? CoreResources.GetString("default_exception_message") : message;
 			this.code.Value = (code == Arg.Default) ? 0 : code;
+            this.previous = (previous == Arg.Default) ? null : previous;
 
-			// stack is already captured by CLR ctor //
+            Debug.Assert(this.previous == null || (this.previous is DObject && ((DObject)this.previous).RealObject is Exception));
+
+            // stack is already captured by CLR ctor //
 
 			return null;
 		}
@@ -230,6 +235,16 @@ namespace PHP.Library.SPL
 			return message.Value;
 		}
 
+        /// <summary>
+        /// Returns previous <see cref="Exception"/> (the third parameter of <see cref="__construct"/>).
+        /// </summary>
+        /// <returns></returns>
+        [ImplementsMethod]
+        public object getPrevious(ScriptContext context)
+        {
+            return previous;
+        }
+
 		/// <summary>
 		/// Returns a trace of the stack in the moment the exception was thrown.
 		/// </summary>
@@ -272,6 +287,7 @@ namespace PHP.Library.SPL
 			typeDesc.AddMethod("getCode", PhpMemberAttributes.Public, getCode);
 			typeDesc.AddMethod("getFile", PhpMemberAttributes.Public, getFile);
 			typeDesc.AddMethod("getTrace", PhpMemberAttributes.Public, getTrace);
+            typeDesc.AddMethod("getPrevious", PhpMemberAttributes.Public, getPrevious);
 			typeDesc.AddMethod("getTraceAsString", PhpMemberAttributes.Public, getTraceAsString);
 			typeDesc.AddMethod("getLine", PhpMemberAttributes.Public, getLine);
 			typeDesc.AddMethod("getColumn", PhpMemberAttributes.Public, getColumn);
@@ -306,8 +322,9 @@ namespace PHP.Library.SPL
 		{
 			object message = stack.PeekValueOptional(1);
 			object code = stack.PeekValueOptional(2);
+            object previous = stack.PeekValueOptional(3);
 			stack.RemoveFrame();
-			return ((Exception)instance).__construct(stack.Context, message, code);
+			return ((Exception)instance).__construct(stack.Context, message, code, previous);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -325,6 +342,13 @@ namespace PHP.Library.SPL
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getPrevious(object instance, PhpStack stack)
+		{
+			stack.RemoveFrame();
+            return ((Exception)instance).getPrevious(stack.Context);
+		}
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
 		public static object getTrace(object instance, PhpStack stack)
 		{
 			stack.RemoveFrame();
@@ -397,6 +421,155 @@ namespace PHP.Library.SPL
 #endif
 		#endregion
 	}
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class RuntimeException : Exception
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RuntimeException(ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RuntimeException(ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected RuntimeException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class ErrorException : Exception
+    {
+        private int severity;
+        
+        #region __construct, getSeverity
+
+        [ImplementsMethod]
+        public object __construct(ScriptContext/*!*/context,
+            [Optional]object message /*""*/, [Optional]object code /*0*/, [Optional]object severity /*1*/,
+            [Optional]object filename /*__FILE__*/, [Optional]object lineno /*__LINE__*/,
+            [Optional]object previous /*NULL*/ )
+        {
+            base.__construct(context, message, code, previous);
+
+            this.severity = (severity == Arg.Default) ? 1 : PHP.Core.Convert.ObjectToInteger(severity);
+            if (filename != Arg.Default) this.file.Value = PHP.Core.Convert.ObjectToString(filename);
+            if (lineno != Arg.Default) this.line.Value = PHP.Core.Convert.ObjectToInteger(filename);
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public object getSeverity(ScriptContext/*!*/context)
+        {
+            return this.severity;
+        }
+
+        #endregion
+
+        #region Implementation Details
+        
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ErrorException (ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ErrorException (ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object __construct(object instance, PhpStack stack)
+        {
+            object message = stack.PeekValueOptional(1);
+            object code = stack.PeekValueOptional(2);
+            object severity = stack.PeekValueOptional(3);
+            object filename = stack.PeekValueOptional(4);
+            object lineno = stack.PeekValueOptional(5);
+            object previous = stack.PeekValueOptional(6);
+            stack.RemoveFrame();
+            return ((ErrorException)instance).__construct(stack.Context, message, code, severity, filename, lineno, previous);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getSeverity(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ErrorException)instance).getSeverity(stack.Context);
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected ErrorException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
 
     [ImplementsType]
 #if !SILVERLIGHT

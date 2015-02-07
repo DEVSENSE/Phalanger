@@ -30,8 +30,7 @@ namespace PHP.Core
 	{
 		Invisible,
 		Visible,
-		ClassLibraryFunction,
-        Main,
+		ClassLibraryFunction
 	}
 
 	/// <summary>
@@ -197,17 +196,10 @@ namespace PHP.Core
 
 				// the caller has already been set by FillEvalStackInfo 
 				// if it is not an eval main:
-				if (!(eval_id != TransientAssembly.InvalidEvalId && PhpScript.IsScriptType(type) && kind == FrameKinds.Main))
+				if (!(eval_id != TransientAssembly.InvalidEvalId && PhpScript.IsScriptType(type) && method.Name == ScriptModule.MainHelperName))
 				{
-                    if (this.name == ScriptModule.MainHelperName)
-                    {
-                        this.name = "{main}";
-                    }
-                    else
-                    {
-                        int j;
-                        PhpScript.ParseMDeclName(method.Name, out this.name, out j);
-                    }                    
+					int j;
+					PhpScript.ParseMDeclName(method.Name, out this.name, out j);
 				}
 			}
 		}
@@ -280,7 +272,7 @@ namespace PHP.Core
 				if (DRoutineDesc.GetSpecialName(method_base) == ScriptModule.MainHelperName &&
 					method_base.Module.Assembly.IsDefined(typeof(ScriptAssemblyAttribute), false))
 				{
-					return FrameKinds.Main;
+					return FrameKinds.Visible;
 				}
 
 				return FrameKinds.Invisible;
@@ -339,7 +331,7 @@ namespace PHP.Core
 				{
 					// main helper is visible as it contains user code:
 					if (DRoutineDesc.GetSpecialName(method) == ScriptModule.MainHelperName)
-						return FrameKinds.Main;
+						return FrameKinds.Visible;
 
 					return FrameKinds.Invisible;
 				}
@@ -348,7 +340,6 @@ namespace PHP.Core
 				if (method.IsDefined(Emit.Types.DebuggerHiddenAttribute, false))
 					return FrameKinds.Invisible;
 
-                //
 				return FrameKinds.Visible;
 			}
 
@@ -428,16 +419,8 @@ namespace PHP.Core
 				StackFrame frame = clrTrace.GetFrame(i);
 				FrameKinds kind = GetFrameKind(frame);
 
-                if (kind != FrameKinds.Invisible)
-                {
-                    frames.Add(new PhpStackFrame(context, frame, kind));
-                }
-                else
-                {
-                    // stop probing the stack trace once we reach RequestHandler
-                    if (frame.GetMethod().DeclaringType == typeof(RequestHandler))
-                        break;
-                }
+				if (kind != FrameKinds.Invisible)
+					frames.Add(new PhpStackFrame(context, frame, kind));
 			}
 		}
 
@@ -458,7 +441,7 @@ namespace PHP.Core
 		/// If the trace ends up with a function or method inside transient assembly an eval hierarchy is inspected
 		/// and added to the resulting source position information.
 		/// </remarks>
-		internal static ErrorStackInfo TraceErrorFrame(ScriptContext/*!*/ context, bool lazy)
+		internal static ErrorStackInfo TraceErrorFrame(ScriptContext/*!*/ context)
 		{
 			Debug.Assert(context != null);
 
@@ -496,18 +479,12 @@ namespace PHP.Core
 					return result;
 				}
 
-        MethodBase method = frame.GetMethod();
-			  if (lazy)
-			  {
-          if(method.Name == "Throw" && method.DeclaringType == typeof (PhpException))
-			      lazy = false;
-          continue;
-			  }
+				FrameKinds frame_kind = GetFrameKind(frame);
 
-        FrameKinds frame_kind = GetFrameKind(frame);
-
-				if (frame_kind == FrameKinds.Visible || frame_kind == FrameKinds.Main)
+				if (frame_kind == FrameKinds.Visible)
 				{
+					MethodBase method = frame.GetMethod();
+
 					int eid = TransientModule.GetEvalId(context.ApplicationContext, method);
 
 					if (eval_id == TransientAssembly.InvalidEvalId)
@@ -518,6 +495,8 @@ namespace PHP.Core
 				}
 				else if (frame_kind == FrameKinds.ClassLibraryFunction)
 				{
+					MethodBase method = frame.GetMethod();
+
 					cl_function_idx = i;
 					cl_function_name = ImplementsFunctionAttribute.Reflect(method).Name;
 				}
@@ -822,15 +801,15 @@ namespace PHP.Core
 					int line = Convert.ObjectToInteger(frame["line"]);
 					int column = Convert.ObjectToInteger(frame["column"]);
 
-                    result.AppendFormat("#{0} {1}{2}: {3}{4}\n",
+					result.Insert(0, String.Format("#{0} {1}{2}: {3}{4}\n",
 					  entry.Key.Object,
 					  Convert.ObjectToString(frame["file"]),
 					  (line > 0 && column > 0) ? String.Format("({0},{1})", line, column) : null,
 					  Convert.ObjectToString(frame["class"]) + Convert.ObjectToString(frame["type"]),
-					  frame["function"]);
+					  frame["function"]));
 				}
 			}
-            return result.AppendFormat("#{0} {{main}}", trace.Count).ToString();
+			return result.AppendFormat("#{0} {{main}}", trace.Count).ToString();
 		}
 
 		/// <summary>

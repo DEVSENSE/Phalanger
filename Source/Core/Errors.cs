@@ -128,7 +128,7 @@ namespace PHP.Core
 	/// </summary>
 	public struct ErrorStackInfo
 	{
-		/// <summary>
+        /// <summary>
 		/// The name of the source file.
 		/// </summary>
 		public string File;
@@ -153,22 +153,22 @@ namespace PHP.Core
 		/// </summary>
 		public int Column;
 
-		/// <summary>
-		/// Initializes <see cref="ErrorStackInfo"/> by given values.
-		/// </summary>
-		/// <param name="file">Full path to a source file.</param>
-		/// <param name="caller">Name of a calling PHP funcion.</param>
-		/// <param name="line">Line in a source file.</param>
-		/// <param name="column">Column in a source file.</param>
-		/// <param name="libraryCaller">Whether a caller is a library function.</param>
-		public ErrorStackInfo(string file, string caller, int line, int column, bool libraryCaller)
-		{
-			File = file;
-			Caller = caller;
-			Line = line;
-			Column = column;
-			LibraryCaller = libraryCaller;
-		}
+        /// <summary>
+        /// Initializes <see cref="ErrorStackInfo"/> by given values.
+        /// </summary>
+        /// <param name="file">Full path to a source file.</param>
+        /// <param name="caller">Name of a calling PHP funcion.</param>
+        /// <param name="line">Line in a source file.</param>
+        /// <param name="column">Column in a source file.</param>
+        /// <param name="libraryCaller">Whether a caller is a library function.</param>
+        public ErrorStackInfo(string file, string caller, int line, int column, bool libraryCaller)
+        {
+            File = file;
+            Caller = caller;
+            Line = line;
+            Column = column;
+            LibraryCaller = libraryCaller;
+        }
 	}
 
 	/// <summary>
@@ -247,14 +247,14 @@ namespace PHP.Core
 			Throw(severity, CoreResources.GetString("function_not_supported"));
 		}
 
-        /// <summary>
-        /// Called library function is deprecated.
-        /// </summary>
-        public static void FunctionDeprecated()
-        {
-            ErrorStackInfo info = PhpStackTrace.TraceErrorFrame(ScriptContext.CurrentContext);
-            FunctionDeprecated(info.LibraryCaller ? info.Caller : null);
-        }
+        ///// <summary>
+        ///// Called library function is deprecated.
+        ///// </summary>
+        //public static void FunctionDeprecated()
+        //{
+        //    ErrorStackInfo info = PhpStackTrace.TraceErrorFrame(ScriptContext.CurrentContext);
+        //    FunctionDeprecated(info.LibraryCaller ? info.Caller : null);
+        //}
 
         /// <summary>
         /// Called library function is deprecated.
@@ -568,9 +568,10 @@ namespace PHP.Core
         /// <summary>
         /// Delegate used to catch any thrown PHP exception. Used in compile time to catch PHP runtime exceptions.
         /// </summary>
+        [ThreadStatic]
         internal static Action<PhpError, string> ThrowCallbackOverride = null;
 
-		/// <summary>
+        /// <summary>
 		/// Reports a PHP error. 
 		/// </summary>
 		/// <param name="error">The error type</param>
@@ -595,6 +596,12 @@ namespace PHP.Core
 			bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0;
 			bool is_error_fatal = ((PhpErrorSet)error & PhpErrorSet.Fatal) != 0;
 			bool do_report = true;
+
+            // remember last error info
+            context.LastErrorType = error;
+            context.LastErrorMessage = message;
+            context.LastErrorFile = null;   // only if we are getting ErrorStackInfo, see PhpStackTrace.TraceErrorFrame
+            context.LastErrorLine = 0;     // only if we are getting ErrorStackInfo, see PhpStackTrace.TraceErrorFrame
 
 			// calls a user defined handler if available:
 			if (is_error_handleable && config.ErrorControl.UserHandler != null)
