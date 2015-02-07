@@ -17,7 +17,6 @@
 using System;
 using System.IO;
 using PHP.Core;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -121,10 +120,13 @@ namespace PHP.Library.StrToTime
 		{
 			Debug.Assert(str != null);
 
-            var scanner = new Scanner(new StringReader(str.ToLowerInvariant()));
-			while (true)
+			StrToTime.Scanner scanner = new StrToTime.Scanner(new StringReader(str.ToLower()));
+			error = null;
+
+			for (; ; )
 			{
 				Tokens token = scanner.GetNextToken();
+
 				if (token == Tokens.ERROR || scanner.Errors > 0)
 				{
 					error = LibResources.GetString("parse_error", scanner.Position, str.Substring(scanner.Position));
@@ -132,10 +134,10 @@ namespace PHP.Library.StrToTime
 				}
 
 				if (token == Tokens.EOF)
-				{
-				    return scanner.Time.GetUnixTimeStamp(utcStart, out error);
-				}
+					return scanner.Time.GetUnixTimeStamp(utcStart, out error);
 			}
+			//error = "unknown error of datetime parsing";
+			//return 0;
 		}
 
 		#endregion
@@ -144,7 +146,9 @@ namespace PHP.Library.StrToTime
 
 		private int GetUnixTimeStamp(DateTime utcStart, out string error)
 		{
-            var zone = PhpTimeZone.CurrentTimeZone;
+			error = null;
+
+			var zone = PhpTimeZone.CurrentTimeZone;
             DateTime start = TimeZoneInfo.ConvertTimeFromUtc(utcStart, zone);// zone.ToLocalTime(utcStart);
 
             // following operates on local time defined by the parsed info or by the current time zone //
@@ -171,7 +175,7 @@ namespace PHP.Library.StrToTime
             int days_overflow;
             CheckOverflows(y, m, ref d, ref h, out days_overflow);
             
-			var result = new DateTime(y, m, d, h, i, s, DateTimeKind.Unspecified);
+			DateTime result = new DateTime(y, m, d, h, i, s);
 
 			result = result.AddDays(relative.d + days_overflow);
 			result = result.AddMonths(relative.m);
@@ -193,7 +197,7 @@ namespace PHP.Library.StrToTime
 					result = result.AddDays(difference);
 				else
 					result = result.AddDays(dow - relative.weekday - 7);
-            }
+			}
 
 			// convert to UTC:
 			if (have_zone > 0)
@@ -202,18 +206,6 @@ namespace PHP.Library.StrToTime
 			}
 			else
 			{
-                if (zone.IsInvalidTime(result))
-                {
-                    // We ended up in an invalid time. This time was skipped because of day-light saving change.
-                    // Figure out the direction we were moving, and step in the direction until the next valid time.
-                    int secondsStep = ((result - utcStart).Ticks >= 0) ? 1 : -1;
-                    do
-                    {
-                        result = result.AddSeconds(secondsStep);
-                    }
-                    while (zone.IsInvalidTime(result));
-                }
-
                 result = TimeZoneInfo.ConvertTimeToUtc(result, zone);// zone.ToUniversalTime(result);
 			}
 
