@@ -192,8 +192,8 @@ namespace PHP.Library
 
                 case "zend.ze1_compatibility_mode": Debug.Assert(action != IniAction.Set || OptionValueToBoolean(value) == false); return false;// GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
 				case "magic_quotes_runtime": return GSR(ref local.Variables.QuoteRuntimeVariables, @default.Variables.QuoteRuntimeVariables, value, action);
-				case "magic_quotes_sybase": Debug.Assert(action == IniAction.Get); return local.Variables.QuoteInDbManner; //GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
-                case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.QuoteGpcVariables;
+                case "magic_quotes_sybase": Debug.Assert(action == IniAction.Get || OptionValueToBoolean(value) == local.Variables.QuoteInDbManner); return local.Variables.QuoteInDbManner; //GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
+                case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get || OptionValueToBoolean(value) == global.GlobalVariables.QuoteGpcVariables); return global.GlobalVariables.QuoteGpcVariables;
 				case "register_argc_argv": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterArgcArgv;
 				case "register_globals": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterGlobals;
 				case "register_long_arrays": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterLongArrays;
