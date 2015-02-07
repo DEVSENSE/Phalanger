@@ -260,12 +260,12 @@ namespace PHP.Core
 
         #region IEqualityComparer<object>
 
-        public bool Equals(object x, object y)
+        bool IEqualityComparer<object>.Equals(object x, object y)
         {
             return comparer.Compare(x, y) == 0;
         }
 
-        public int GetHashCode(object obj)
+        int IEqualityComparer<object>.GetHashCode(object obj)
         {
             return (obj != null) ? obj.GetHashCode() : 0;
         }

@@ -202,17 +202,12 @@ namespace PHP.Core
 			StatStruct result;//  = new StatStruct();
 			uint device = unchecked((uint)(char.ToLower(info.FullName[0]) - 'a')); // index of the disk
 
-            ushort mode;
-
-            if (EnvironmentUtils.IsDotNetFramework)
-                mode = (ushort)BuildMode(info, attributes, path);
-            else
-                mode = (ushort)BuildModeSimple(attributes, path);
+            ushort mode = (ushort)BuildMode(info, attributes, path);
 
 			long atime,mtime,ctime;
-            atime = ToStatUnixTimeStamp(() => info.LastAccessTimeUtc);
-			mtime = ToStatUnixTimeStamp(() => info.LastWriteTimeUtc);
-			ctime = ToStatUnixTimeStamp(() => info.CreationTimeUtc);
+            atime = ToStatUnixTimeStamp(info, (_info) => _info.LastAccessTimeUtc);
+            mtime = ToStatUnixTimeStamp(info, (_info) => _info.LastWriteTimeUtc);
+            ctime = ToStatUnixTimeStamp(info, (_info) => _info.CreationTimeUtc);
 
 			result.st_dev = device;         // device number 
 			result.st_ino = 0;              // inode number 
@@ -239,13 +234,15 @@ namespace PHP.Core
 		/// Adjusts UTC time of a file by adding Daylight Saving Time difference.
 		/// Makes file times working in the same way as in PHP and Windows Explorer.
 		/// </summary>
-		private static long ToStatUnixTimeStamp(Func<DateTime> utcTimeFunc)
+        /// <param name="info"><see cref="FileSystemInfo"/> object reference. Used to avoid creating of closure when passing <paramref name="utcTimeFunc"/>.</param>
+        /// <param name="utcTimeFunc">Function obtaining specific <see cref="DateTime"/> from given <paramref name="info"/>.</param>
+        private static long ToStatUnixTimeStamp(FileSystemInfo info, Func<FileSystemInfo, DateTime> utcTimeFunc)
 		{
             DateTime utcTime;
 
             try
             {
-                utcTime = utcTimeFunc();
+                utcTime = utcTimeFunc(info);
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -358,89 +355,67 @@ namespace PHP.Core
 		/// <param name="attributes">Attributes of the file.</param>
 		/// <param name="path">Paths to the file.</param>
 		/// <returns>UNIX-like file mode.</returns>
-		private static FileModeFlags BuildMode(FileSystemInfo info, FileAttributes attributes, string path)
-		{
+		private static FileModeFlags BuildMode(FileSystemInfo/*!*/info, FileAttributes attributes, string path)
+        {
+            // TODO: remove !EnvironmentUtils.IsDotNetFramework branches;
+            // use mono.unix.native.stat on Mono instead of BuildStatStruct(), http://docs.go-mono.com/?link=M%3aMono.Unix.Native.Syscall.stat
+
+            // TODO: use Win32 stat on Windows
+
 			// Simulates the UNIX file mode.
-			bool directory = ((attributes & FileAttributes.Directory) > 0);
-			FileModeFlags rv = (directory) ? FileModeFlags.Directory : FileModeFlags.File;
+			FileModeFlags rv;
 
-            if (directory)
+            if ((attributes & FileAttributes.Directory) != 0)
             {
-                rv |= GetFileMode((DirectoryInfo)info);
+                // a directory:
+                rv = FileModeFlags.Directory;
 
-                // PHP on windows always shows that directory isn't executable
-                rv &= ~FileModeFlags.Execute;
+                if (EnvironmentUtils.IsDotNetFramework)
+                {
+                    rv |= GetFileMode((DirectoryInfo)info);
+
+                    // PHP on Windows always shows that directory isn't executable
+                    rv &= ~FileModeFlags.Execute;
+                }
+                else
+                {
+                    rv |= FileModeFlags.Read | FileModeFlags.Execute | FileModeFlags.Write;
+                }
             }
             else
             {
-                rv |= GetFileMode((FileInfo)info);
+                // a file:
+                rv = FileModeFlags.File;
 
-                if ((attributes & FileAttributes.ReadOnly) != 0 && (rv & FileModeFlags.Write) != 0)
-                    rv |= FileModeFlags.Write;
-
-                if ((rv & FileModeFlags.Execute) != 0)
+                if (EnvironmentUtils.IsDotNetFramework)
                 {
-                    //Php on windows check the file internaly wheather it is executable
-                    //we just look on the extension
+                    rv |= GetFileMode((FileInfo)info);
 
-                    string ext = Path.GetExtension(path).ToLower();
-                    if ((ext == ".exe") || (ext == ".com") || (ext == ".bat"))
-                        rv |= FileModeFlags.Execute;
+                    if ((attributes & FileAttributes.ReadOnly) != 0 && (rv & FileModeFlags.Write) != 0)
+                        rv &= ~FileModeFlags.Write;
+
+                    if ((rv & FileModeFlags.Execute) == 0)
+                    {
+                        // PHP on Windows checks the file internaly wheather it is executable
+                        // we just look on the extension
+
+                        string ext = Path.GetExtension(path);
+                        if ((ext.EqualsOrdinalIgnoreCase(".exe")) || (ext.EqualsOrdinalIgnoreCase(".com")) || (ext.EqualsOrdinalIgnoreCase(".bat")))
+                            rv |= FileModeFlags.Execute;
+                    }
                 }
+                else
+                {
+                    rv |= FileModeFlags.Read; // | FileModeFlags.Execute;
 
+                    if ((attributes & FileAttributes.ReadOnly) == 0)
+                        rv |= FileModeFlags.Write;
+                }
             }
 
-            //rv |= FileModeFlags.Read;
-
-            //if (directory)
-            //{
-            //    rv |= FileModeFlags.Execute;
-            //    rv |= FileModeFlags.Write;
-            //}
-            //else
-            //{
-            //    if ((attributes & FileAttributes.ReadOnly) == 0)
-            //        rv |= FileModeFlags.Write;
-
-            //    string ext = Path.GetExtension(path).ToLower();
-            //    if ((ext == ".exe") || (ext == ".com") || (ext == ".bat"))
-            //        rv |= FileModeFlags.Execute;
-            //}
-
+            //
 			return rv;
 		}
-
-        /// <summary>
-        /// Creates the UNIX-like file mode depending on the file or directory attributes.
-        /// </summary>
-        /// <param name="attributes"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        /// <remarks>This is simple version for Mono, where we don't have ACL.</remarks> //TODO: filesystem releated function should use Mono.Unix.Native classes and methods
-        private static FileModeFlags BuildModeSimple(FileAttributes attributes, string path)
-        {
-            // Simulates the UNIX file mode.
-            bool directory = ((attributes & FileAttributes.Directory) > 0);
-            FileModeFlags rv = (directory) ? FileModeFlags.Directory : FileModeFlags.File;
-            rv |= FileModeFlags.Read;
-
-            if (directory)
-            {
-                rv |= FileModeFlags.Execute;
-                rv |= FileModeFlags.Write;
-            }
-            else
-            {
-                if ((attributes & FileAttributes.ReadOnly) == 0)
-                    rv |= FileModeFlags.Write;
-
-                string ext = Path.GetExtension(path).ToLower();
-                if ((ext == ".exe") || (ext == ".com") || (ext == ".bat"))
-                    rv |= FileModeFlags.Execute;
-            }
-
-            return rv;
-        }
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
         public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
@@ -464,7 +439,7 @@ namespace PHP.Core
                         }
                     }
 
-                    return BuildStatStruct(info, File.GetAttributes(p), p);
+                    return BuildStatStruct(info, info.Attributes, p);
                 });
         }
 
