@@ -140,6 +140,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Empty statement containing PHPDoc block.
     /// </summary>
+    [Serializable]
     public sealed class PHPDocStmt : Statement
     {
         public PHPDocBlock/*!*/PHPDoc { get { return _phpdoc; } }
