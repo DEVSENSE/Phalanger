@@ -10,7 +10,6 @@ using PHP.Core.Emit;
 
 namespace PHP.Core.Utilities
 {
-
     #region BaseScope
 
     /// <summary>
@@ -499,9 +498,7 @@ namespace PHP.Core.Utilities
 
         }
 
-    #endregion
-
     }
 
-
+    #endregion
 }
