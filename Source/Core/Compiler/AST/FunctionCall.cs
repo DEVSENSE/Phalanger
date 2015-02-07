@@ -204,7 +204,6 @@ namespace PHP.Core.Compiler.AST
                     // warning if function requiring locals is detected (performance critical)
                     if ((opts & FunctionImplOptions.NeedsVariables) != 0 && !analyzer.CurrentScope.IsGlobal)
                         analyzer.ErrorSink.Add(Warnings.UnoptimizedLocalsInFunction, analyzer.SourceUnit, node.Span, node.QualifiedName.ToString());
-
                 }
 
                 // analyze parameters:
@@ -212,6 +211,14 @@ namespace PHP.Core.Compiler.AST
 
                 // get properties:
                 analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
+
+                // HACK: handle call to assert() function
+                if (node.QualifiedName.Name.Value.EqualsOrdinalIgnoreCase("assert"))
+                {
+                    // replace DirectFcnCall with AssertEx
+                    var newnode = new AssertEx(node.Span, node.CallSignature);
+                    return newnode.Analyze(analyzer, info);
+                }
 
                 // replaces the node if its value can be determined at compile-time:
                 object value;

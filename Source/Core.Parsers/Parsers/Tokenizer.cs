@@ -197,7 +197,6 @@ namespace PHP.Core.Parsers
 					case Tokens.T_TRUE:
 					case Tokens.T_FALSE:
 					case Tokens.T_NULL:
-					case Tokens.T_ASSERT:
 					case Tokens.T_GET:
 					case Tokens.T_SET:
 					case Tokens.T_CALL:

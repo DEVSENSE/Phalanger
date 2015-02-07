@@ -221,7 +221,6 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"<:"           		{ return Tokens.T_LGENERIC; }
 <ST_IN_SCRIPTING>":>"           		{ return Tokens.T_RGENERIC; }
                                 		         
-<ST_IN_SCRIPTING>"assert"						{ return Tokens.T_ASSERT; }
 <ST_IN_SCRIPTING>"__get"        		{ return Tokens.T_GET; }
 <ST_IN_SCRIPTING>"__set"        		{ return Tokens.T_SET; }
 <ST_IN_SCRIPTING>"__call"       		{ return Tokens.T_CALL; }
