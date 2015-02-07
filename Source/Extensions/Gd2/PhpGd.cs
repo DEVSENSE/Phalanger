@@ -27,7 +27,6 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library.Gd2
 {
@@ -898,48 +897,49 @@ namespace PHP.Library.Gd2
 
             PhpGdImageResource src_img = PhpGdImageResource.ValidImage(src_im);
             if (src_img == null)
-                return false;
+                return false;            
 
-            if (pct <= 0 || src_w <= 0 || src_h <= 0)
-                return true;
+            if (src_w < 0) src_w = 0;
+            if (src_h < 0) src_h = 0;
 
-            ImageAttributes ia = null;
-
-            if (pct < 100)
+            if (src_w == 0 && src_h == 0)
             {
-                // prepare transformation matrix if needed
-                ColorMatrix cm = new ColorMatrix();
-                cm.Matrix00 = cm.Matrix11 = cm.Matrix22 = cm.Matrix44 = 1.0f;
-                cm.Matrix33 = (float)pct * 0.01f;
-
-                ia = new ImageAttributes();
-                ia.SetColorMatrix(cm, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+                return true;
             }
+
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
 
             try
             {
-                // draw the image
-                using (Graphics g = Graphics.FromImage(dst_img.Image))
+
+                if (pct == 100)
                 {
-                    g.DrawImage(src_img.Image,
-                        new Rectangle(dst_x, dst_y, src_w, src_h),
-                        src_x, src_y, src_w, src_h,
-                        GraphicsUnit.Pixel, ia);
+                    Graphics g = Graphics.FromImage(dst_img.Image);
+                    g.DrawImage(src_img.Image, dst_x, dst_y, new Rectangle(src_x, src_y, src_w, src_h),
+                        GraphicsUnit.Pixel);
+                    g.Dispose();
                 }
-            }
-            catch (Exception ex)
-            {
-                // output the warning
-                PhpException.Throw(PhpError.Warning, ex.Message);
-                return false;
-            }
-            finally
-            {
-                if (ia != null)
+                else
                 {
+                    ColorMatrix cm = new ColorMatrix();
+                    cm.Matrix00 = cm.Matrix11 = cm.Matrix22 = cm.Matrix44 = ((float)pct / 100.0f);
+                    cm.Matrix33 = 1.0f;
+
+                    ImageAttributes ia = new ImageAttributes();
+                    ia.SetColorMatrix(cm, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+                    Graphics g = Graphics.FromImage(dst_img.Image);
+                    g.DrawImage(src_img.Image, new Rectangle(src_x, src_y, src_w, src_h), dst_x, dst_y,
+                        src_w, src_h, GraphicsUnit.Pixel, ia);
+
                     ia.Dispose();
-                    ia = null;
+                    g.Dispose();
                 }
+            }
+            catch
+            {
+                return false;
             }
 
             return true;

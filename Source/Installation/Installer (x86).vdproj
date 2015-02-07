@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0349F3A6B25144B69CD9F5777069B30C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_03EE80F99B3149C68ED9106412D4B600"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -69,6 +75,24 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_074FAF4DFF61D1CF08D4D77B765B6CE2"
+        "OwnerKey" = "8:_1E97475C536546718CA693FF1C99D003"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_074FAF4DFF61D1CF08D4D77B765B6CE2"
+        "OwnerKey" = "8:_34C0D89560B145AE9D6CA4F6171DB3EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_074FAF4DFF61D1CF08D4D77B765B6CE2"
+        "OwnerKey" = "8:_4DC9C523D2D74545B31A5A6C7ADA22DC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_075AFB9E7D784BD3966572C69293B641"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -76,6 +100,12 @@
         "Entry"
         {
         "MsmKey" = "8:_08E033D8B1444AA383949B39406FF566"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_096830E1C1FB4418B20C6D246ACF250B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -112,6 +142,114 @@
         "Entry"
         {
         "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_80C6CE98EB134100A8FF46FCF9B5CB53"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_C6B0F880B0594AA18BE8B307DEA73F9A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_3AA766D24F2A4F5EAC87C53DFECE445E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_59437C7CA20C4F09B9ACCD0B5FE77467"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_25FF76936ABD4A8A96266E913A971719"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_0349F3A6B25144B69CD9F5777069B30C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_56B266F7A5CB4644B0534974B03071DA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_BEA38DAF64FE4368B85ADD9E80BB896B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_7A89FB7963DF430BBE664ADE629D497D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_E3B262747F164DCEB49ABD74C16AF101"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_096830E1C1FB4418B20C6D246ACF250B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_34C0D89560B145AE9D6CA4F6171DB3EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_9B9694EDF0104FBFAB5338A6D6CE68BB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_283BEE524275CDAAC83773B3FA9665FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_13FA5F7EE47E4DFBB2398C4424D6D376"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_6907C9D3CB9B4E618A512F482A0EDF5D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_D19504DBE16840728B60765410583A4E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
+        "OwnerKey" = "8:_074FAF4DFF61D1CF08D4D77B765B6CE2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
         "OwnerKey" = "8:_8E7DDCCBCF3B41D9A78DEAA92C9EDF4F"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -125,12 +263,6 @@
         {
         "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
         "OwnerKey" = "8:_1E97475C536546718CA693FF1C99D003"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0F8AAC25F85C778EF62A74CD0AA7FDEF"
-        "OwnerKey" = "8:_E4B2E47D5E78961CB758AFBF1921EB70"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -219,6 +351,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_13FA5F7EE47E4DFBB2398C4424D6D376"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_161F5172E860445488919F69EDBDD712"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -226,6 +364,12 @@
         "Entry"
         {
         "MsmKey" = "8:_169B26CC7038405B8664B77864E54B09"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_16B40E0082A642BC9694806AF7DF2F2E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -369,6 +513,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_25FF76936ABD4A8A96266E913A971719"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2607216F77304C20A204EB64840F611F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -383,6 +533,18 @@
         {
         "MsmKey" = "8:_27E4AA82850A4938A0B2BF30B6A9C58D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_283BEE524275CDAAC83773B3FA9665FE"
+        "OwnerKey" = "8:_13FA5F7EE47E4DFBB2398C4424D6D376"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_283BEE524275CDAAC83773B3FA9665FE"
+        "OwnerKey" = "8:_25FF76936ABD4A8A96266E913A971719"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -465,6 +627,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_34C0D89560B145AE9D6CA4F6171DB3EA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_34DE26BD021240F1BAF12BB638F4B7AA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -532,6 +700,12 @@
         "Entry"
         {
         "MsmKey" = "8:_3A9B770849074A48B8158455053ECC51"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3AA766D24F2A4F5EAC87C53DFECE445E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -783,6 +957,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_56B266F7A5CB4644B0534974B03071DA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_56DE1AB6C005445487A4A6F1297618F6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -820,6 +1000,12 @@
         "Entry"
         {
         "MsmKey" = "8:_593E11F3119B42A4BCE5E99172A8DD58"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_59437C7CA20C4F09B9ACCD0B5FE77467"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -945,8 +1131,122 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6907C9D3CB9B4E618A512F482A0EDF5D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
         "OwnerKey" = "8:_03EE80F99B3149C68ED9106412D4B600"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_80C6CE98EB134100A8FF46FCF9B5CB53"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_C6B0F880B0594AA18BE8B307DEA73F9A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_3AA766D24F2A4F5EAC87C53DFECE445E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_59437C7CA20C4F09B9ACCD0B5FE77467"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_25FF76936ABD4A8A96266E913A971719"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_0349F3A6B25144B69CD9F5777069B30C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_56B266F7A5CB4644B0534974B03071DA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_BEA38DAF64FE4368B85ADD9E80BB896B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_7A89FB7963DF430BBE664ADE629D497D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_E3B262747F164DCEB49ABD74C16AF101"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_096830E1C1FB4418B20C6D246ACF250B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_34C0D89560B145AE9D6CA4F6171DB3EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_9B9694EDF0104FBFAB5338A6D6CE68BB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_283BEE524275CDAAC83773B3FA9665FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_13FA5F7EE47E4DFBB2398C4424D6D376"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_6907C9D3CB9B4E618A512F482A0EDF5D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_D19504DBE16840728B60765410583A4E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_074FAF4DFF61D1CF08D4D77B765B6CE2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -965,12 +1265,6 @@
         {
         "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
         "OwnerKey" = "8:_1E97475C536546718CA693FF1C99D003"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
-        "OwnerKey" = "8:_E4B2E47D5E78961CB758AFBF1921EB70"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1833,6 +2127,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7A89FB7963DF430BBE664ADE629D497D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7AEBB8B86F0F48B7B8BD1E39327E5050"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1900,6 +2200,12 @@
         "Entry"
         {
         "MsmKey" = "8:_809F4F712CCD45888DD5716043BCCB4B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_80C6CE98EB134100A8FF46FCF9B5CB53"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2158,6 +2464,12 @@
         "Entry"
         {
         "MsmKey" = "8:_9B3BC6A461A54234BF427577C7AB53E7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B9694EDF0104FBFAB5338A6D6CE68BB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2475,6 +2787,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BEA38DAF64FE4368B85ADD9E80BB896B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C10CF0BD67DB40EF8A40A7FA35E20D53"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2506,6 +2824,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C62BD952797545938567FD03E4D3E5FF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C6B0F880B0594AA18BE8B307DEA73F9A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2590,6 +2914,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D06F36B4F4D243768D154CF53BA9A859"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D19504DBE16840728B60765410583A4E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2745,14 +3075,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E4B2E47D5E78961CB758AFBF1921EB70"
-        "OwnerKey" = "8:_1E97475C536546718CA693FF1C99D003"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E4B2E47D5E78961CB758AFBF1921EB70"
-        "OwnerKey" = "8:_4DC9C523D2D74545B31A5A6C7ADA22DC"
+        "MsmKey" = "8:_E3B262747F164DCEB49ABD74C16AF101"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2849,6 +3173,30 @@
         {
         "MsmKey" = "8:_F358927D4B7840C69E4E57A642204644"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F53496CC9B61B9F83486B308E488E2BC"
+        "OwnerKey" = "8:_4DC9C523D2D74545B31A5A6C7ADA22DC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F53496CC9B61B9F83486B308E488E2BC"
+        "OwnerKey" = "8:_E3B262747F164DCEB49ABD74C16AF101"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F53496CC9B61B9F83486B308E488E2BC"
+        "OwnerKey" = "8:_34C0D89560B145AE9D6CA4F6171DB3EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F53496CC9B61B9F83486B308E488E2BC"
+        "OwnerKey" = "8:_EA1245D44A5E4184932E81762D899317"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2974,43 +3322,109 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8E7DDCCBCF3B41D9A78DEAA92C9EDF4F"
+        "OwnerKey" = "8:_80C6CE98EB134100A8FF46FCF9B5CB53"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_4DC9C523D2D74545B31A5A6C7ADA22DC"
+        "OwnerKey" = "8:_C6B0F880B0594AA18BE8B307DEA73F9A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1E97475C536546718CA693FF1C99D003"
+        "OwnerKey" = "8:_3AA766D24F2A4F5EAC87C53DFECE445E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E4B2E47D5E78961CB758AFBF1921EB70"
+        "OwnerKey" = "8:_59437C7CA20C4F09B9ACCD0B5FE77467"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EA1245D44A5E4184932E81762D899317"
+        "OwnerKey" = "8:_25FF76936ABD4A8A96266E913A971719"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9755C195DB004A8FA405A5153689C85C"
+        "OwnerKey" = "8:_0349F3A6B25144B69CD9F5777069B30C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6035EE2BA7BD471BAF8FB377840C36C6"
+        "OwnerKey" = "8:_56B266F7A5CB4644B0534974B03071DA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_16B40E0082A642BC9694806AF7DF2F2E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_BEA38DAF64FE4368B85ADD9E80BB896B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_7A89FB7963DF430BBE664ADE629D497D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E3B262747F164DCEB49ABD74C16AF101"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_096830E1C1FB4418B20C6D246ACF250B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_34C0D89560B145AE9D6CA4F6171DB3EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9B9694EDF0104FBFAB5338A6D6CE68BB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_13FA5F7EE47E4DFBB2398C4424D6D376"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_283BEE524275CDAAC83773B3FA9665FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_6907C9D3CB9B4E618A512F482A0EDF5D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D19504DBE16840728B60765410583A4E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3041,6 +3455,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F358927D4B7840C69E4E57A642204644"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_EA1245D44A5E4184932E81762D899317"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3214,6 +3634,18 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9755C195DB004A8FA405A5153689C85C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_8E7DDCCBCF3B41D9A78DEAA92C9EDF4F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8DED78A4047D4F0B8F9A4DD9520451DF"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3370,6 +3802,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_6035EE2BA7BD471BAF8FB377840C36C6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5FFFDF8DF13F4A90BF93BA22019FA258"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3407,6 +3845,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5869114A6FDC47C1816F81FC5A26785C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_4DC9C523D2D74545B31A5A6C7ADA22DC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F53496CC9B61B9F83486B308E488E2BC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3616,6 +4066,18 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_1E97475C536546718CA693FF1C99D003"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_074FAF4DFF61D1CF08D4D77B765B6CE2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1CD612BDC0364D1CA4BAB6905072BADB"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3718,13 +4180,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -3937,6 +4399,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0349F3A6B25144B69CD9F5777069B30C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetGd2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0349F3A6B25144B69CD9F5777069B30C"
+                    {
+                    "Name" = "8:PhpNetGd2.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetGd2.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_03EE80F99B3149C68ED9106412D4B600"
             {
             "AssemblyRegister" = "3:1"
@@ -4119,6 +4612,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_074FAF4DFF61D1CF08D4D77B765B6CE2"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:PhpNetPDO, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_074FAF4DFF61D1CF08D4D77B765B6CE2"
+                    {
+                    "Name" = "8:PhpNetPDO.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetPDO.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_075AFB9E7D784BD3966572C69293B641"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_sybase_ct.dll"
@@ -4145,6 +4669,37 @@
             "TargetName" = "8:php_mime_magic.xml"
             "Tag" = "8:"
             "Folder" = "8:_0AFED39B54BD4D9CA1D7FE8BAE64CFA2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_096830E1C1FB4418B20C6D246ACF250B"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetSoap, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_096830E1C1FB4418B20C6D246ACF250B"
+                    {
+                    "Name" = "8:PhpNetSoap.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetSoap.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -4467,6 +5022,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_13FA5F7EE47E4DFBB2398C4424D6D376"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetIconv, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_13FA5F7EE47E4DFBB2398C4424D6D376"
+                    {
+                    "Name" = "8:PhpNetIconv.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetIconv.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_161F5172E860445488919F69EDBDD712"
             {
             "SourcePath" = "8:..\\..\\Deployment\\WebSamples\\Extensions\\Web.config"
@@ -4504,6 +5090,37 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7972C95AAB7E4B7DBCC785EA02AB2756"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_16B40E0082A642BC9694806AF7DF2F2E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_16B40E0082A642BC9694806AF7DF2F2E"
+                    {
+                    "Name" = "8:System.Data.SQLite.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\System.Data.SQLite.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5059,6 +5676,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_25FF76936ABD4A8A96266E913A971719"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetIconv, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_25FF76936ABD4A8A96266E913A971719"
+                    {
+                    "Name" = "8:PhpNetIconv.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetIconv.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2607216F77304C20A204EB64840F611F"
             {
             "AssemblyRegister" = "3:1"
@@ -5128,6 +5776,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_283BEE524275CDAAC83773B3FA9665FE"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:PhpNetMbstring, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_283BEE524275CDAAC83773B3FA9665FE"
+                    {
+                    "Name" = "8:PhpNetMbstring.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetMbstring.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_29D836370FA241AE9F81FA3A112CB1E1"
@@ -5447,6 +6126,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_34C0D89560B145AE9D6CA4F6171DB3EA"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetPDOSQLite, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_34C0D89560B145AE9D6CA4F6171DB3EA"
+                    {
+                    "Name" = "8:PhpNetPDOSQLite.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetPDOSQLite.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_34DE26BD021240F1BAF12BB638F4B7AA"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Bin\\gacall.cmd"
@@ -5727,6 +6437,37 @@
                     }
                 }
             "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetXmlDom.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3AA766D24F2A4F5EAC87C53DFECE445E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetSoap, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_3AA766D24F2A4F5EAC87C53DFECE445E"
+                    {
+                    "Name" = "8:PhpNetSoap.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetSoap.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
@@ -6698,6 +7439,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_56B266F7A5CB4644B0534974B03071DA"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCurl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_56B266F7A5CB4644B0534974B03071DA"
+                    {
+                    "Name" = "8:PhpNetCurl.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetCurl.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_56DE1AB6C005445487A4A6F1297618F6"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_fdf.dll"
@@ -6868,6 +7640,37 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7972C95AAB7E4B7DBCC785EA02AB2756"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_59437C7CA20C4F09B9ACCD0B5FE77467"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetMbstring, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_59437C7CA20C4F09B9ACCD0B5FE77467"
+                    {
+                    "Name" = "8:PhpNetMbstring.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetMbstring.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7323,6 +8126,37 @@
             "TargetName" = "8:AssemblyInfo.cs"
             "Tag" = "8:"
             "Folder" = "8:_E8D13052B93644EE956229950D54A7AD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6907C9D3CB9B4E618A512F482A0EDF5D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetGd2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_6907C9D3CB9B4E618A512F482A0EDF5D"
+                    {
+                    "Name" = "8:PhpNetGd2.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetGd2.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8067,6 +8901,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7A89FB7963DF430BBE664ADE629D497D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetXml, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_7A89FB7963DF430BBE664ADE629D497D"
+                    {
+                    "Name" = "8:PhpNetXml.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetXml.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7AEBB8B86F0F48B7B8BD1E39327E5050"
             {
             "SourcePath" = "8:..\\Phalanger.CompilerTask\\Phalanger.targets"
@@ -8337,6 +9202,37 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7972C95AAB7E4B7DBCC785EA02AB2756"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_80C6CE98EB134100A8FF46FCF9B5CB53"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetZlib, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_80C6CE98EB134100A8FF46FCF9B5CB53"
+                    {
+                    "Name" = "8:PhpNetZlib.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetZlib.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9331,6 +10227,37 @@
             "TargetName" = "8:Program.php"
             "Tag" = "8:"
             "Folder" = "8:_346E2916760E44899D9B4DB04A8DC6A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9B9694EDF0104FBFAB5338A6D6CE68BB"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetPDO, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_9B9694EDF0104FBFAB5338A6D6CE68BB"
+                    {
+                    "Name" = "8:PhpNetPDO.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetPDO.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10508,6 +11435,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BEA38DAF64FE4368B85ADD9E80BB896B"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetZlib, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_BEA38DAF64FE4368B85ADD9E80BB896B"
+                    {
+                    "Name" = "8:PhpNetZlib.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetZlib.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C10CF0BD67DB40EF8A40A7FA35E20D53"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Samples\\ConsoleApplication\\MultiScriptAssembly\\ext\\fncs.php"
@@ -10625,6 +11583,37 @@
             "TargetName" = "8:php_interbase.dll"
             "Tag" = "8:"
             "Folder" = "8:_A6C9620ACDFD41E585FD490BCBE4062D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C6B0F880B0594AA18BE8B307DEA73F9A"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetXml, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_C6B0F880B0594AA18BE8B307DEA73F9A"
+                    {
+                    "Name" = "8:PhpNetXml.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetXml.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10938,6 +11927,37 @@
             "TargetName" = "8:php_hyperwave.xml"
             "Tag" = "8:"
             "Folder" = "8:_0AFED39B54BD4D9CA1D7FE8BAE64CFA2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D19504DBE16840728B60765410583A4E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCurl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_D19504DBE16840728B60765410583A4E"
+                    {
+                    "Name" = "8:PhpNetCurl.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetCurl.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11518,23 +12538,23 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E4B2E47D5E78961CB758AFBF1921EB70"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E3B262747F164DCEB49ABD74C16AF101"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetPDO, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetSQLite, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_E4B2E47D5E78961CB758AFBF1921EB70"
+                    "_E3B262747F164DCEB49ABD74C16AF101"
                     {
-                    "Name" = "8:PhpNetPDO.DLL"
+                    "Name" = "8:PhpNetSQLite.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:PhpNetPDO.DLL"
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetSQLite.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11545,8 +12565,8 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E58BB0AB97D546C6BED650C387334201"
@@ -11913,6 +12933,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F53496CC9B61B9F83486B308E488E2BC"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_F53496CC9B61B9F83486B308E488E2BC"
+                    {
+                    "Name" = "8:System.Data.SQLite.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Data.SQLite.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F69CC9E12D1B4514856FA82CF4D56B39"
@@ -13842,7 +14893,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_518A5155C5324C62933D0FF95E2A2551"
             {
-            "SourcePath" = "8:Installer.IISSamples\\obj\\Debug\\Installer.IISSamples.dll"
+            "SourcePath" = "8:Installer.IISSamples\\obj\\Release\\Installer.IISSamples.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
@@ -13870,7 +14921,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_ED0D04076F8641E2B76058B19420DB36"
             {
-            "SourcePath" = "8:Installer.Permissions\\obj\\Debug\\Installer.Permissions.dll"
+            "SourcePath" = "8:Installer.Permissions\\obj\\Release\\Installer.Permissions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
@@ -13898,7 +14949,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F892513EE29B40499B323C4D46FA2D7A"
             {
-            "SourcePath" = "8:MachineConfig\\obj\\Debug\\Installer.MachineConfig.dll"
+            "SourcePath" = "8:MachineConfig\\obj\\Release\\Installer.MachineConfig.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"

@@ -28,7 +28,6 @@ using System.Resources;
 using System.Reflection;
 
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library.Gd2
 {
@@ -677,7 +676,7 @@ namespace PHP.Library.Gd2
                             yMax = nCurrentValue;
                             break;
                         default:
-                            Debug.Fail(null);
+                            Debug.Fail();
                             break;
                     }
 

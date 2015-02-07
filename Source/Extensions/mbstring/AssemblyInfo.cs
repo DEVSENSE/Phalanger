@@ -16,5 +16,17 @@ using PHP.Core;
 
 [assembly: AssemblyTitle("Phalanger mbstring")]
 [assembly: AssemblyDescription("Phalanger Managed Extension - mbstring")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("DEVSENSE")]
+[assembly: AssemblyProduct("Phalanger")]
+[assembly: AssemblyCopyright("Copyright © DEVSENSE 2011")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyKeyName("")]
 
+//#if DEBUG
 [assembly: PhpLibrary(typeof(PHP.Library.Strings.MbstringLibraryDescriptor), "mbstring", new string[] { "mbstring" })]
+//#else
+//[assembly: PhpLibrary(typeof(PHP.Library.Data.MsSqlLibraryDescriptor), "mbstring", false, true)]
+//#endif

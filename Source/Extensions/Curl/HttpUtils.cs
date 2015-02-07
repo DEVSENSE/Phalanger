@@ -5,7 +5,6 @@ using System.Text;
 using System.Net;
 using PHP.Core;
 using System.IO;
-using System.Diagnostics;
 
 namespace PHP.Library.Curl
 {
@@ -118,10 +117,7 @@ namespace PHP.Library.Curl
                             request.Accept = headerValue;
                             break;
                         case "connection":
-                            if (headerValue.Equals("close", StringComparison.InvariantCultureIgnoreCase))
-                                request.KeepAlive = false;
-                            else
-                                request.Connection = headerValue;
+                            request.Connection = headerValue;
                             break;
                         case "content-length":
                             request.ContentLength = System.Convert.ToInt32(headerValue);
@@ -130,10 +126,7 @@ namespace PHP.Library.Curl
                             request.ContentType = headerValue;
                             break;
                         case "expect":
-                            if (headerValue.Equals("100-continue", StringComparison.InvariantCultureIgnoreCase))
-                                request.ServicePoint.Expect100Continue = true;
-                            else
-                                request.Expect = headerValue;
+                            request.Expect = headerValue;
                             break;
                         case "date":
                             request.Date = System.Convert.ToDateTime(headerValue);

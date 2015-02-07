@@ -6,7 +6,6 @@ using PHP.Core;
 using System.Xml;
 using System.IO;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 namespace PHP.Library.Xml
 {
@@ -136,12 +135,9 @@ namespace PHP.Library.Xml
 
         internal static XmlParserResource ValidResource(PhpResource handle)
         {
-            var xmlParserResource = handle as XmlParserResource;
-            if (xmlParserResource != null)
-            {
-                return xmlParserResource;
-            }
-            
+            if (handle != null && handle.GetType() == typeof(XmlParserResource))
+                return (XmlParserResource)handle;
+
             PhpException.Throw(PhpError.Warning, Strings.invalid_xmlresource);
             return null;
         }
@@ -278,7 +274,7 @@ namespace PHP.Library.Xml
                     case ReadState.Closed:
                     case ReadState.Initial:
                         //nonsense
-                        Debug.Fail(null);
+                        Debug.Fail();
                         break;
                     case ReadState.Interactive:
                         //debug step, that prints out the current state of the parser (pretty printed)

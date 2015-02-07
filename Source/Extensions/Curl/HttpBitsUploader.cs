@@ -8,7 +8,6 @@ using System.Net;
 using System.Threading;
 using System.Security;
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library.Curl
 {
