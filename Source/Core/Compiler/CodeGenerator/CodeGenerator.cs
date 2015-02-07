@@ -1581,12 +1581,18 @@ namespace PHP.Core
             {
                 Debug.Assert(routineNameExpr == null || fallbackRoutineFullname == null);   // (routineNameExpr != null) => (fallbackRoutineFullName == null)
 
+                // DRoutineDesc <callHint>;
+                FieldInfo hintField = this.CallSitesBuilder.DefineField(
+                    "<callHint>'" + (routineFullName ?? "indirect"),
+                    typeof(PHP.Core.Reflection.DRoutineDesc),
+                    FieldAttributes.Static | FieldAttributes.Assembly);
+
                 // LOAD ScriptContext.Call{|Void|Value}(<local variables>, <naming context>, <function name>, ref <hint>, context);
                 this.EmitLoadRTVariablesTable();
                 this.EmitLoadNamingContext();
                 this.EmitName(routineFullName, routineNameExpr, true);
                 if (fallbackRoutineFullname != null) il.Emit(OpCodes.Ldstr, fallbackRoutineFullname); else il.Emit(OpCodes.Ldnull); // fallback fcn name
-                il.Emit(OpCodes.Ldsflda, il.TypeBuilder.DefineField("<callHint>'" + (routineFullName ?? "indirect"), typeof(PHP.Core.Reflection.DRoutineDesc), FieldAttributes.Static | FieldAttributes.Private));
+                il.Emit(OpCodes.Ldsflda, hintField);
                 this.EmitLoadScriptContext();
 
                 // (J) only necessary copying, dereferencing or reference making:
