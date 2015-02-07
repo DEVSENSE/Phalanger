@@ -183,7 +183,7 @@ namespace PHP.Library.SPL
             }
 
             // move first:
-            this.rewind(context);
+            this.isValid = false; // this.rewind(context);
             return null;
         }
 
@@ -501,7 +501,7 @@ namespace PHP.Library.SPL
         #region interface Iterator
 
         [ImplementsMethod]
-        public object rewind(ScriptContext context)
+        public virtual object rewind(ScriptContext context)
         {
             if (isArrayIterator)
             {
@@ -517,7 +517,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object next(ScriptContext context)
+        public virtual object next(ScriptContext context)
         {
             if (isArrayIterator)
                 this.isValid = arrayEnumerator.MoveNext();
@@ -889,7 +889,7 @@ namespace PHP.Library.SPL
         #region OuterIterator
 
         [ImplementsMethod]
-        public object getInnerIterator(ScriptContext context)
+        public virtual object getInnerIterator(ScriptContext context)
         {
             return this.iterator;
         }
@@ -1166,7 +1166,7 @@ namespace PHP.Library.SPL
 
         #region Implementation details
 
-        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
         {
             throw new NotImplementedException();
         }
@@ -1220,57 +1220,57 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Helper class containing <see cref="IPhpEnumerable"/> object and its enumerator and current key and value.
+    /// </summary>
+    internal class EnumerableIteratorEntry
+    {
+        public readonly IPhpEnumerable obj;
+
+        private IDictionaryEnumerator enumerator;
+
+        public bool isValid { get; private set; }
+        public object currentValue { get; private set; }
+        public object currentKey { get; private set; }
+
+        public EnumerableIteratorEntry(IPhpEnumerable/*!*/obj)
+        {
+            Debug.Assert(obj != null);
+
+            this.isValid = false;
+            this.enumerator = null;
+            this.currentKey = this.currentValue = null;
+            
+            this.obj = obj;
+        }
+
+        public void rewind()
+        {
+            if (enumerator is PhpObject.PhpIteratorEnumerator)
+                ((PhpObject.PhpIteratorEnumerator)enumerator).Reset();    // we can rewind() existing PhpIteratorEnumerator
+            else
+                enumerator = obj.GetForeachEnumerator(true, false, null); // we have to reinitialize (null or not PhpIteratorEnumerator)
+
+            isValid = false;// enumerator.MoveNext();
+        }
+
+        public void next()
+        {
+            if (isValid = (enumerator != null && enumerator.MoveNext()))
+            {
+                this.currentValue = enumerator.Value;
+                this.currentKey = enumerator.Key;
+            }
+            else
+            {
+                this.currentValue = this.currentKey = null;
+            }
+        }
+    }
+
     [ImplementsType]
     public class RecursiveIteratorIterator : PhpObject, OuterIterator, Iterator, Traversable
     {
-        private class IteratorEntry
-        {
-            public readonly IPhpEnumerable obj;
-
-            private IDictionaryEnumerator enumerator;
-
-            public bool isValid { get; private set; }
-            public object currentValue { get; private set; }
-            public object currentKey { get; private set; }
-
-            public IteratorEntry(IPhpEnumerable/*!*/obj)
-            {
-                Debug.Assert(obj != null);
-                
-                enumerator = null;
-
-                currentValue = currentKey = null;
-                isValid = false;
-
-                this.obj = obj;                
-            }
-
-            public void rewind()
-            {
-                if (enumerator is PhpIteratorEnumerator)
-                    ((PhpIteratorEnumerator)enumerator).Reset();    // we can rewind() existing PhpIteratorEnumerator
-                else
-                    enumerator = obj.GetForeachEnumerator(true, false, null); // we have to reinitialize (null or not PhpIteratorEnumerator)
-
-                isValid = false;// enumerator.MoveNext();
-            }
-
-            public void next()
-            {
-                if (enumerator != null && enumerator.MoveNext())
-                {
-                    isValid = true;
-                    currentKey = enumerator.Key;
-                    currentValue = enumerator.Value;
-                }
-                else
-                {
-                    isValid = false;
-                    currentKey = currentValue = null;
-                }
-            }
-        }
-
         private int maxDepth = -1;
         private int level { get { return (iterators.Count > 0) ? (iterators.Count - 1) : (0); } }
 
@@ -1282,7 +1282,7 @@ namespace PHP.Library.SPL
         /// <summary>
         /// "Stack" of active iterators and their enumerators.
         /// </summary>
-        private List<IteratorEntry>/*!*/iterators = new List<IteratorEntry>(3);
+        private List<EnumerableIteratorEntry>/*!*/iterators = new List<EnumerableIteratorEntry>(3);
         private IEnumerator<KeyValuePair<object, object>> enumerator = null;
         private bool isValid = false;
 
@@ -1302,11 +1302,11 @@ namespace PHP.Library.SPL
             CatchGetChilds = CATCH_GET_CHILD,
         }
 
-        private IEnumerator<KeyValuePair<object, object>>/*!*/GetEnumerator(ScriptContext/*!*/context, List<IteratorEntry>/*!*/iterators)
+        private IEnumerator<KeyValuePair<object, object>>/*!*/GetEnumerator(ScriptContext/*!*/context, List<EnumerableIteratorEntry>/*!*/iterators)
         {
             // reset the top level iterator
             if (iterators.Count == 0)
-                iterators.Add(new IteratorEntry(this.iterator));
+                iterators.Add(new EnumerableIteratorEntry(this.iterator));
 
             // rewind
             iterators[0].rewind();
@@ -1338,7 +1338,7 @@ namespace PHP.Library.SPL
                         var child = this.callGetChildren(context) as DObject;
                         if (child != null && child.RealObject is IPhpEnumerable)
                         {
-                            iterators.Add(new IteratorEntry(child.RealObject as IPhpEnumerable));
+                            iterators.Add(new EnumerableIteratorEntry(child.RealObject as IPhpEnumerable));
 
                             iterators[++l].rewind();
                             this.beginChildren(context);
@@ -1699,8 +1699,9 @@ namespace PHP.Library.SPL
 
         public static object getSubIterator(object instance, PhpStack stack)
         {
+            var level = stack.PeekValueOptional(1);
             stack.RemoveFrame();
-            return ((RecursiveIteratorIterator)instance).getSubIterator(stack.Context);
+            return ((RecursiveIteratorIterator)instance).getSubIterator(stack.Context, level);
         }
 
         public static object nextElement(object instance, PhpStack stack)
@@ -1783,5 +1784,264 @@ namespace PHP.Library.SPL
 
 #endif
         #endregion
+    }
+
+    [ImplementsType]
+    public class AppendIterator : IteratorIterator, OuterIterator, Traversable, Iterator
+    {
+        /// <summary>
+        /// Contained iterators.
+        /// </summary>
+        private List<EnumerableIteratorEntry>/*!*/iterators = new List<EnumerableIteratorEntry>(3);
+        private int iterators_index = 0;
+
+        private void NextInternal(ScriptContext/*!*/context)
+        {
+            if (iterators_index < iterators.Count)
+            {
+                var it = iterators[iterators_index];
+
+                it.next();
+                this.isValid = it.isValid;
+
+                if (!this.isValid)
+                {
+                    // proceed to the next iterator, if available
+                    this.iterators_index++;
+                    if (iterators_index < iterators.Count)
+                    {
+                        iterators[iterators_index].rewind();
+                        NextInternal(context);
+                    }
+                }
+            }
+            else
+                this.isValid = false;   // no more iterators
+        }
+
+        #region AppendIterator
+
+        [ImplementsMethod]
+        public object __construct(ScriptContext/*!*/context)
+        {
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object append(ScriptContext/*!*/context, object/*Iterator*/iterator)
+        {
+            var dobj = iterator as IPhpEnumerable;
+            if (dobj != null)
+            {
+                var newit = new EnumerableIteratorEntry(dobj);
+                this.iterators.Add(newit);
+
+                if (iterators_index + 1 == iterators.Count)
+                {
+                    // PHP calls valid() on the previous iterator again, but we know it is at the end
+                    // ...
+
+                    // continue with new iterator
+                    newit.rewind();
+                    NextInternal(context);
+                }
+            }
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object getArrayIterator(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException(); // we dont use ArrayIterator internally
+        }
+
+        [ImplementsMethod]
+        public virtual object getIteratorIndex(ScriptContext/*!*/context)
+        {
+            return this.iterators_index;
+        }
+
+        #endregion
+
+        #region OuterIterator
+
+        [ImplementsMethod]
+        public override object getInnerIterator(ScriptContext/*!*/context)
+        {
+            return (isValid && iterators_index < iterators.Count) ? iterators[iterators_index].obj : null;
+        }
+
+        #endregion
+
+        #region Iterator
+
+        [ImplementsMethod]
+        public override object rewind(ScriptContext context)
+        {
+            iterators_index = 0;
+
+            if (iterators.Count > 0)
+                iterators[0].rewind();
+
+            NextInternal(context);
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public override object next(ScriptContext context)
+        {
+            NextInternal(context);
+            return null;
+        }
+
+        [ImplementsMethod]
+        public override object valid(ScriptContext context)
+        {
+            return base.valid(context);
+        }
+
+        [ImplementsMethod]
+        public override object key(ScriptContext context)
+        {
+            return isValid ? iterators[iterators_index].currentKey : null;
+        }
+
+        [ImplementsMethod]
+        public override object current(ScriptContext context)
+        {
+            return isValid ? iterators[iterators_index].currentValue : null;
+        }
+
+        #endregion
+
+        #region Implementation details
+
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public AppendIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public AppendIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region class AppendIterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object __construct(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((AppendIterator)instance).__construct(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public static object append(object instance, PhpStack stack)
+        {
+            object it = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((AppendIterator)instance).append(stack.Context, it);
+        }
+
+        [ImplementsMethod]
+        public static object getArrayIterator(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((AppendIterator)instance).getArrayIterator(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public static object getIteratorIndex(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((AppendIterator)instance).getIteratorIndex(stack.Context);
+        }
+
+        #endregion
+
+        #region interface OuterIterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object getInnerIterator(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((OuterIterator)instance).getInnerIterator(stack.Context);
+        }
+
+        #endregion
+
+        #region interface Iterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).rewind(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).next(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).valid(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).current(stack.Context);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected AppendIterator(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion        
     }
 }
