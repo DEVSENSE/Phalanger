@@ -30,9 +30,9 @@ namespace PHP.Core.Reflection
 	[DebuggerNonUserCode]
 	public abstract class DObject : IPhpComparable, IPhpConvertible, IPhpCloneable, IPhpPrintable,
 		IPhpVariable, IDisposable, IPhpObjectGraphNode, IPhpEnumerable, ISerializable,
-		IDeserializationCallback , IDynamicMetaObjectProvider
+		IDeserializationCallback
 	{
-        #region ObjectFlags
+		#region ObjectFlags
 
 		/// <summary>
 		/// Instance flags grouped into an enum to conserve space.
@@ -74,27 +74,68 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
+		#region SpecialMethodNames
+
+		/// <summary>
+		/// Contains special (or &quot;magic&quot;) method names.
+		/// </summary>
+		public static class SpecialMethodNames
+		{
+			/// <summary>Constructor.</summary>
+			public static readonly Name Construct = new Name("__construct");
+
+			/// <summary>Destructor.</summary>
+			public static readonly Name Destruct = new Name("__destruct");
+
+			/// <summary>Invoked when cloning instances.</summary>
+			public static readonly Name Clone = new Name("__clone");
+
+			/// <summary>Invoked when casting to string.</summary>
+			public static readonly Name Tostring = new Name("__tostring");
+
+			/// <summary>Invoked when serializing instances.</summary>
+			public static readonly Name Sleep = new Name("__sleep");
+
+			/// <summary>Invoked when deserializing instanced.</summary>
+			public static readonly Name Wakeup = new Name("__wakeup");
+
+			/// <summary>Invoked when an unknown field is read.</summary>
+			public static readonly Name Get = new Name("__get");
+
+			/// <summary>Invoked when an unknown field is written.</summary>
+			public static readonly Name Set = new Name("__set");
+
+			/// <summary>Invoked when an unknown method is called.</summary>
+			public static readonly Name Call = new Name("__call");
+
+            /// <summary>Invoked when an unknown method is called statically.</summary>
+            public static readonly Name CallStatic = new Name("__callStatic");
+
+			/// <summary>Invoked when an unknown field is unset.</summary>
+			public static readonly Name Unset = new Name("__unset");
+
+			/// <summary>Invoked when an unknown field is tested for being set.</summary>
+			public static readonly Name Isset = new Name("__isset");
+		};
+
+		#endregion
+
 		#region AttributedValue
 
 		protected struct AttributedValue
 		{
-			public readonly object Value;
-			public readonly PhpMemberAttributes Attributes;
+			public object Value;
+			public PhpMemberAttributes Attributes;
 
-            public string DeclaringTypeName { get { return (DeclaringType != null) ? DeclaringType.MakeSimpleName() : null; } }
-            private readonly DTypeDesc DeclaringType;
-
-            public AttributedValue(object value, PhpMemberAttributes attributes, DTypeDesc DeclaringType)
+			public AttributedValue(object value, PhpMemberAttributes attributes)
 			{
 				this.Value = value;
 				this.Attributes = attributes;
-                this.DeclaringType = DeclaringType; // needed only when value is private
 			}
 
-            public AttributedValue(object value)
-                :this(value, PhpMemberAttributes.None, null)
-            {
-            }
+			public AttributedValue(object value)
+				: this(value, PhpMemberAttributes.Public)
+			{ }
 		}
 
 		#endregion
@@ -180,7 +221,6 @@ namespace PHP.Core.Reflection
 					if (obj == null) return 0;
 					if (PhpVariable.IsString(obj)) return obj;
 					if (obj is int) return obj;
-                    if (obj is long) return obj;
 					if (obj is bool) return ((bool)obj ? 1 : 0);
 					if (obj is double) return unchecked((int)(double)obj);
 
@@ -281,7 +321,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// This field is initialized in a lazy manner. It is <B>null</B> until the first RT field is created.
 		/// </remarks>
-		public PhpArray RuntimeFields;
+		public OrderedHashtable<string> RuntimeFields;
 
 		/// <summary>
 		/// <B>True</B> iff this instance has already been disposed off.
@@ -447,7 +487,7 @@ namespace PHP.Core.Reflection
             {
                 if (type_desc == caller) seen_context = true;
 
-                method = type_desc.GetMethod(Name.SpecialMethodNames.Construct);
+                method = type_desc.GetMethod(SpecialMethodNames.Construct);
                 if (method == null)
                     method = type_desc.GetMethod(new Name(type_desc.MakeSimpleName()));
 
@@ -528,7 +568,7 @@ namespace PHP.Core.Reflection
 			{
 				// if not found, perform __call 'magic' method lookup, but not if we are already inside a __call
 				if (insideCaller ||
-					(result = type_desc.GetMethod(Name.SpecialMethodNames.Call, caller, out method)) ==
+					(result = type_desc.GetMethod(SpecialMethodNames.Call, caller, out method)) ==
 					GetMemberResult.NotFound)
 				{
 					stack.RemoveFrame();
@@ -595,7 +635,7 @@ namespace PHP.Core.Reflection
 			if (result == GetMemberResult.NotFound)
 			{
 				// if not found, perform __call 'magic' method lookup
-				if ((result = type_desc.GetMethod(Name.SpecialMethodNames.Call, caller, out method)) ==
+				if ((result = type_desc.GetMethod(SpecialMethodNames.Call, caller, out method)) ==
 					GetMemberResult.NotFound)
 				{
 					if (!quiet) PhpException.UndefinedMethodCalled(TypeName, name);
@@ -663,7 +703,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>Override in order to get custom property reading behavior.</remarks>
 		protected virtual object PropertyReadHandler(string name, DTypeDesc caller, out bool handled)
 		{
-			return InvokeSpecialMethod(Name.SpecialMethodNames.Get, ObjectFlags.InsideGetter, caller, out handled, name);
+			return InvokeSpecialMethod(SpecialMethodNames.Get, ObjectFlags.InsideGetter, caller, out handled, name);
 		}
 
 		/// <summary>
@@ -672,7 +712,7 @@ namespace PHP.Core.Reflection
 		protected virtual bool PropertyWriteHandler(object name, object value, DTypeDesc caller)
 		{
 			bool handled;
-			InvokeSpecialMethod(Name.SpecialMethodNames.Set, ObjectFlags.InsideSetter, caller, out handled, name, value);
+			InvokeSpecialMethod(SpecialMethodNames.Set, ObjectFlags.InsideSetter, caller, out handled, name, value);
 
 			return handled;
 		}
@@ -683,7 +723,7 @@ namespace PHP.Core.Reflection
 		protected virtual bool PropertyUnsetHandler(string name, DTypeDesc caller)
 		{
 			bool handled;
-			InvokeSpecialMethod(Name.SpecialMethodNames.Unset, ObjectFlags.InsideUnsetter, caller, out handled, name);
+			InvokeSpecialMethod(SpecialMethodNames.Unset, ObjectFlags.InsideUnsetter, caller, out handled, name);
 
 			return handled;
 		}
@@ -693,7 +733,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		public virtual object PropertyIssetHandler(string name, DTypeDesc caller, out bool handled)
 		{
-            return InvokeSpecialMethod(Name.SpecialMethodNames.Isset, ObjectFlags.InsideIssetter, caller, out handled, name);
+			return InvokeSpecialMethod(SpecialMethodNames.Isset, ObjectFlags.InsideIssetter, caller, out handled, name);
 		}
 
 		#endregion
@@ -750,11 +790,10 @@ namespace PHP.Core.Reflection
 				{
 					if (issetSemantics)
 					{
-						var namekey = new IntStringKey(name);
-                        object value;
-						if (RuntimeFields != null && RuntimeFields.TryGetValue(namekey, out value))
+						OrderedHashtable<string>.Element element;
+						if (RuntimeFields != null && (element = RuntimeFields.GetElement(name)) != null)
 						{
-							return value;
+							return element.Value;
 						}
 						else
 						{
@@ -828,12 +867,22 @@ namespace PHP.Core.Reflection
 			}
 
 			// search in RT fields
+			OrderedHashtable<string>.Element element;
+			if (RuntimeFields != null && (element = RuntimeFields.GetElement(name)) != null)
+			{
+				value = element.Value;
+				reference = value as PhpReference;
 
-			if (RuntimeFields != null && RuntimeFields.ContainsKey(name))
-            {
-                var namekey = new IntStringKey(name);
-                return RuntimeFields.table._ensure_item_ref(ref namekey, RuntimeFields);
-            }
+				if (reference == null)
+				{
+					// it is correct to box the value without making a deep copy since there was a single pointer on value
+					// before this operation (by invariant) and there will be a single one after the operation as well:
+					reference = new PhpReference(value);
+					element.Value = reference;
+				}
+
+				return reference;
+			}
 
 			// property is not present -> try to invoke __get
 			reference = InvokeGetterRef(name, caller, out getter_exists);
@@ -843,7 +892,7 @@ namespace PHP.Core.Reflection
 
 			// add the field
 			reference = new PhpReference();
-            if (RuntimeFields == null) RuntimeFields = new PhpArray();
+			if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
 			RuntimeFields[name] = reference;
 
 			return reference;
@@ -858,23 +907,23 @@ namespace PHP.Core.Reflection
 		/// <remarks>This is merely a helper method called from <see cref="GetProperty"/>.</remarks>
 		public object GetRuntimeField(string name, DTypeDesc caller)
 		{
-			object value;
-            var namekey = new IntStringKey(name);
-            if (RuntimeFields == null || !RuntimeFields.table.TryGetValue(namekey, out value))
-            {
-                // invoke __get
-                bool handled;
-                value = PropertyReadHandler(name, caller, out handled);
+			OrderedHashtable<string>.Element element;
+			if (RuntimeFields == null || (element = RuntimeFields.GetElement(name)) == null)
+			{
+				// invoke __get
+				bool handled;
+				object ret_val = PropertyReadHandler(name, caller, out handled);
+				
+				if (!handled)
+				{
+					PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_property_accessed",
+						TypeName, name));
+					return null;
+				}
 
-                if (!handled)
-                {
-                    PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_property_accessed",
-                        TypeName, name));
-                    return null;
-                }
-            }
-            
-            return value;
+				return ret_val;
+			}
+			else return element.Value;
 		}
 
 		/// <summary>
@@ -902,7 +951,6 @@ namespace PHP.Core.Reflection
 		#endregion
 
 		#region SetProperty, SetPropertyDirect, SetRuntimeField, InvokeSetter
-
 
 		/// <summary>
 		/// Sets the value of an instance property (both CT and RT).
@@ -963,7 +1011,7 @@ namespace PHP.Core.Reflection
 				!= GetMemberResult.OK)
 			{
 				// no, it is an RT field
-                if (RuntimeFields == null) RuntimeFields = new PhpArray();
+				if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
 				RuntimeFields[name_str] = value;
 				return;
 			}
@@ -1002,8 +1050,8 @@ namespace PHP.Core.Reflection
 		{
 			PhpReference reference = value as PhpReference;
 
-            object elementvalue;
-            if (RuntimeFields == null || !RuntimeFields.TryGetValue(name, out elementvalue))
+			OrderedHashtable<string>.Element element;
+			if (RuntimeFields == null || (element = RuntimeFields.GetElement(name)) == null)
 			{
 				if (reference != null)
 				{
@@ -1034,7 +1082,7 @@ namespace PHP.Core.Reflection
 					}
 					else
 					{
-                        if (RuntimeFields == null) RuntimeFields = new PhpArray();
+						if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
 						RuntimeFields[name] = value;
 					}
 				}
@@ -1042,14 +1090,14 @@ namespace PHP.Core.Reflection
 			else
 			{
 				// if the new value is a PhpReference, it is always directly written to the RuntimeFields table
-				if (reference != null) RuntimeFields[name] = reference;
+				if (reference != null) element.Value = reference;
 				else
 				{
 					// if the new value is not a PhpReference, check has to be made whether the original field value
 					// was a PhpReference
-                    reference = elementvalue as PhpReference;
+					reference = element.Value as PhpReference;
 					if (reference != null) reference.Value = value;
-                    else RuntimeFields[name] = value;
+					else element.Value = value;
 				}
 			}
 		}
@@ -1099,7 +1147,7 @@ namespace PHP.Core.Reflection
 			else
 			{
 				// search in RT fields
-				if (RuntimeFields == null || !RuntimeFields.table.Remove(new IntStringKey(name)))
+				if (RuntimeFields == null || !RuntimeFields.Remove(name))
 				{
 					// invoke the unset handler (will call the __unset special method)
 					PropertyUnsetHandler(name, caller);
@@ -1132,15 +1180,13 @@ namespace PHP.Core.Reflection
 			// copy RT fields
 			if (RuntimeFields != null)
 			{
-                copy.RuntimeFields = new PhpArray(RuntimeFields.Count);
-                using (var fields = RuntimeFields.GetFastEnumerator())
-                    while (fields.MoveNext())
-				    {
-					    copy.RuntimeFields.Add(fields.CurrentKey,
-                            deepCopyFields ?
-						        PhpVariable.DeepCopy(fields.CurrentValue) :
-                                PhpVariable.Copy(fields.CurrentValue, CopyReason.Assigned));
-				    }
+				copy.RuntimeFields = new OrderedHashtable<string>(RuntimeFields.Count);
+				foreach (KeyValuePair<string, object> pair in RuntimeFields)
+				{
+					copy.RuntimeFields.Add(pair.Key, deepCopyFields ?
+						PhpVariable.DeepCopy(pair.Value) :
+						PhpVariable.Copy(pair.Value, CopyReason.Assigned));
+				}
 			}
 
 			return copy;
@@ -1171,7 +1217,7 @@ namespace PHP.Core.Reflection
 			{
 				// try to invoke __clone on the copy
 				DRoutineDesc method;
-                switch (copy.TypeDesc.GetMethod(Name.SpecialMethodNames.Clone, caller, out method))
+				switch (copy.TypeDesc.GetMethod(SpecialMethodNames.Clone, caller, out method))
 				{
 					case GetMemberResult.BadVisibility:
 					{
@@ -1260,7 +1306,7 @@ namespace PHP.Core.Reflection
 		public void Wakeup(DTypeDesc caller, ScriptContext context)
 		{
 			DRoutineDesc method;
-            switch (TypeDesc.GetMethod(Name.SpecialMethodNames.Wakeup, caller, out method))
+			switch (TypeDesc.GetMethod(SpecialMethodNames.Wakeup, caller, out method))
 			{
 				case GetMemberResult.BadVisibility:
 				{
@@ -1298,7 +1344,7 @@ namespace PHP.Core.Reflection
 			PhpArray sleep_result = null;
 
 			DRoutineDesc method;
-            switch (TypeDesc.GetMethod(Name.SpecialMethodNames.Sleep, caller, out method))
+			switch (TypeDesc.GetMethod(SpecialMethodNames.Sleep, caller, out method))
 			{
 				case GetMemberResult.BadVisibility:
 				{
@@ -1319,6 +1365,88 @@ namespace PHP.Core.Reflection
 				}
 			}
 			return sleep_result;
+		}
+
+		#endregion
+
+		#region Incarnate, IncarnateFast
+
+		/// <summary>
+		/// Copies fields from <paramref name="newState"/> to this instance. Called from <see cref="Externals"/>.
+		/// Must try to preserve <see cref="PhpReference"/>s.
+		/// </summary>
+		/// <param name="newState">The instance whose state should be incarnated into this instance.</param>
+		public void Incarnate(DObject/*!*/ newState)
+		{
+			if (newState == null || newState.TypeDesc == TypeDesc) throw new ArgumentNullException("newState");
+
+			// incarnate CT properties
+			foreach (KeyValuePair<VariableName, DPropertyDesc> pair in TypeDesc.EnumerateProperties())
+			{
+				object new_value = pair.Value.Get(newState);
+				PhpReference new_value_ref = new_value as PhpReference;
+
+				if (new_value_ref == null)
+				{
+					object old_value = pair.Value.Get(this);
+					PhpReference old_value_ref = old_value as PhpReference;
+
+					if (old_value_ref != null) old_value_ref.Value = new_value;
+					else pair.Value.Set(this, new_value);
+				}
+				else pair.Value.Set(this, new_value_ref);
+			}
+
+			// incarnate RT fields
+			if (RuntimeFields == null)
+			{
+				if (newState.RuntimeFields != null)
+					RuntimeFields = (OrderedHashtable<string>)newState.RuntimeFields.Clone();
+			}
+			else
+			{
+				if (newState.RuntimeFields == null) RuntimeFields = null;
+				else
+				{
+					// both this.RuntimeFields and newSate.RuntimeFields are non-null
+					OrderedHashtable<string> new_rt_fields = new OrderedHashtable<string>(newState.RuntimeFields.Count);
+
+					foreach (KeyValuePair<string, object> pair in newState.RuntimeFields)
+					{
+						PhpReference new_ref = pair.Value as PhpReference;
+						if (new_ref == null) new_rt_fields.Add(pair.Key, pair.Value);
+						else
+						{
+							PhpReference old_ref = RuntimeFields[pair.Key] as PhpReference;
+							if (old_ref == null) new_rt_fields.Add(pair.Key, new_ref);
+							else
+							{
+								old_ref.Value = new_ref.Value;
+								new_rt_fields.Add(pair.Key, old_ref);
+							}
+						}
+					}
+					RuntimeFields = new_rt_fields;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Copies fields from <paramref name="newState"/> to this instance without checks. Runtime fields nor references
+		/// are preserved.
+		/// </summary>
+		/// <param name="newState">The instance whose state should be incarnated into this instance.</param>
+		internal void IncarnateFast(PhpObject newState)
+		{
+			// incarnate CT properties
+			foreach (KeyValuePair<VariableName, DPropertyDesc> pair in TypeDesc.EnumerateProperties())
+			{
+				pair.Value.Set(this, pair.Value.Get(newState));
+			}
+
+			// incarnate RT fields
+			if (newState.RuntimeFields == null) RuntimeFields = null;
+			else RuntimeFields = (OrderedHashtable<string>)newState.RuntimeFields.Clone();
 		}
 
 		#endregion
@@ -1346,8 +1474,8 @@ namespace PHP.Core.Reflection
 
 			DObject php_obj;
 
-			if (obj == null) return 1;                      // 1 > null
-            if (obj is bool) return ((bool)obj ? 0 : 1);    // 1 == true, 1 > false
+			if (obj == null) return 1;
+			if (obj is bool) return (HasSetInstanceProperties ? 2 : 1) - ((bool)obj ? 2 : 1);
 
 			if ((php_obj = obj as DObject) != null)
 			{
@@ -1418,21 +1546,21 @@ namespace PHP.Core.Reflection
 				// compare RT fields
 				if (x.RuntimeFields != null && y.RuntimeFields != null)
 				{
-					var enum_x = x.RuntimeFields.GetFastEnumerator();
-					var enum_y = y.RuntimeFields.GetFastEnumerator();
+					IEnumerator<KeyValuePair<string, object>> enum_x = x.RuntimeFields.GetEnumerator();
+					IEnumerator<KeyValuePair<string, object>> enum_y = y.RuntimeFields.GetEnumerator();
 
 					while (enum_x.MoveNext())
 					{
 						enum_y.MoveNext();
 
 						// compare keys
-						result = PhpArrayKeysComparer.Default.Compare(enum_x.CurrentKey, enum_y.CurrentKey);
+						result = PhpArrayKeysComparer.Default.Compare(enum_x.Current.Key, enum_y.Current.Key);
 						if (result != 0) return result;
 
 						// compare values
 						result = CompareObjectsCore(
-							PhpVariable.Dereference(enum_x.CurrentValue),
-							PhpVariable.Dereference(enum_y.CurrentValue),
+							PhpVariable.Dereference(enum_x.Current.Value),
+							PhpVariable.Dereference(enum_y.Current.Value),
 							comparer,
 							out incomparable);
 
@@ -1501,10 +1629,9 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// The result is <c>1</c> if there is at least one field in this instance, <c>0</c> otherwise.
 		/// </remarks>
-		public virtual int ToInteger()
+		public int ToInteger()
 		{
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameInt));
-			return 1;
+			return (HasSetInstanceProperties) ? 1 : 0;
 		}
 
 		/// <summary>
@@ -1514,10 +1641,9 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// The result is <c>1</c> if there is at least one field in this instance, <c>0</c> otherwise.
 		/// </remarks>
-		public virtual long ToLongInteger()
+		public long ToLongInteger()
 		{
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameInt));
-			return 1;
+			return (HasSetInstanceProperties) ? 1 : 0;
 		}
 
 		/// <summary>
@@ -1527,10 +1653,9 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// The result is <c>1.0</c> if there is at least one field in this instance, <c>0.0</c> otherwise.
 		/// </remarks>
-		public virtual double ToDouble()
+		public double ToDouble()
 		{
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameDouble));
-			return 1.0;
+			return (HasSetInstanceProperties) ? 1.0 : 0.0;
 		}
 
 		/// <summary>
@@ -1542,7 +1667,7 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public virtual bool ToBoolean()
 		{
-			return true;
+			return HasSetInstanceProperties;
 		}
 
 		/// <summary>
@@ -1553,39 +1678,74 @@ namespace PHP.Core.Reflection
 		/// If this object contains the <c>__toString</c> method, it is invoked and its result returned.
 		/// Otherwise, <see cref="Object.ToString"/> is invoked on the real object.
 		/// </remarks>
-		public virtual PhpBytes ToPhpBytes()
+		public PhpBytes ToPhpBytes()
 		{
-            GetMemberResult lookup_result;
-            object result = InvokeToString(out lookup_result);
-
-            if (lookup_result != GetMemberResult.NotFound)
-            {
-                // ignoring __toString() visibility as it is in PHP:
-                var bytes = PhpVariable.AsBytes(result);
-                if (bytes != null)
-                    return bytes;
-
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
-            }
-
-            return new PhpBytes();
+			return ToPhpBytes(PhpStackTrace.GetClassContext());
 		}
 
-		private object InvokeToString(out GetMemberResult lookupResult)
+		private object InvokeToString(DTypeDesc caller, out GetMemberResult lookupResult)
 		{
 			DRoutineDesc method;
-            if ((lookupResult = TypeDesc.GetMethod(Name.SpecialMethodNames.Tostring, null/*ignoring visibility*/, out method)) != GetMemberResult.NotFound)
-            {
-                // ignoring __toString() visibility as it is in PHP:
-                PhpStack stack = ScriptContext.CurrentContext.Stack;
+			lookupResult = TypeDesc.GetMethod(SpecialMethodNames.Tostring, caller, out method);
 
-                stack.AddFrame();
-                return method.Invoke(this, stack);
-            }
+			switch (lookupResult)
+			{
+				case GetMemberResult.BadVisibility:
+				{
+					ThrowMethodVisibilityError(method, caller);
+					return null;
+				}
 
-			// __toString() not found:
-            // "Object of class %s could not be converted to %s"
-            PhpException.Throw(PhpError.RecoverableError, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameString));
+				case GetMemberResult.OK:
+				{
+					PhpStack stack = ScriptContext.CurrentContext.Stack;
+
+					stack.AddFrame();
+					return method.Invoke(this, stack, caller);
+				}
+
+				// if not found, nothing happens
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Converts this instance to its <see cref="PhpBytes"/> representation.
+		/// </summary>
+		/// <param name="caller"><see cref="DTypeDesc"/> of the object that request the operation.</param>
+		/// <returns>The converted value.</returns>
+		/// <remarks>
+		/// If thi object contains the <c>__toString</c> method, it is invoked and its result returned.
+		/// Otherwise, <see cref="Object.ToString"/> is invoked on the real object.
+		/// </remarks>
+		public virtual PhpBytes ToPhpBytes(DTypeDesc caller)
+		{
+			GetMemberResult lookup_result;
+			object result = InvokeToString(caller, out lookup_result);
+
+			switch (lookup_result)
+			{
+				case GetMemberResult.BadVisibility: return null;
+
+				case GetMemberResult.NotFound:
+				{
+					PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_to_string_conversion", TypeName));
+					return new PhpBytes(RealObject.ToString());
+				}
+
+				case GetMemberResult.OK:
+				{
+					string str = result as string;
+					if (str != null) return new PhpBytes(str);
+
+					PhpBytes bytes = result as PhpBytes;
+					if (bytes != null) return bytes;
+
+					PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
+					return null;
+				}
+			}
 			return null;
 		}
 
@@ -1596,12 +1756,11 @@ namespace PHP.Core.Reflection
 		/// <param name="intValue">This instance converted to integer.</param>
 		/// <param name="longValue">Not applicable.</param>
 		/// <returns><see cref="Convert.NumberInfo.Integer"/>.</returns>
-		public virtual Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
+		public Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
 		{
-			intValue = 1;
-			doubleValue = 1.0;
-			longValue = 1;
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameInt));
+			intValue = (HasSetInstanceProperties) ? 1 : 0;
+			doubleValue = intValue;
+			longValue = intValue;
 			return Convert.NumberInfo.Integer;
 		}
 
@@ -1615,11 +1774,25 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		string IPhpConvertible.ToString()
 		{
-            bool b;
-            return ((IPhpConvertible)this).ToString(true, out b);
+			return ((IPhpConvertible)this).ToString(PhpStackTrace.GetClassContext());
 		}
 
         /// <summary>
+        /// Converts this instance to its <see cref="string"/> representation according to PHP conversion algorithm.
+        /// </summary>
+        /// <returns>The converted value.</returns>
+        /// <remarks>
+        /// If this object contains the __toString method, it is invoked and its result returned.
+        /// Otherwise, &quot;Object&quot; is returned.
+        /// </remarks>
+        string IPhpConvertible.ToString(DTypeDesc caller)
+        {
+            bool b;
+            return ToString(caller, true, out b);
+        }
+
+
+		/// <summary>
 		/// Converts this instance to its <see cref="string"/> representation according to PHP conversion algorithm.
 		/// </summary>
 		/// <param name="throwOnError">
@@ -1631,23 +1804,58 @@ namespace PHP.Core.Reflection
 		/// If this object contains the __toString method, it is invoked and its result returned.
 		/// Otherwise, &quot;Object&quot; is returned.
 		/// </remarks>
-		public virtual string ToString(bool throwOnError, out bool success)
+		string IPhpConvertible.ToString(bool throwOnError, out bool success)
 		{
-            GetMemberResult lookup_result;
-            object result = InvokeToString(out lookup_result);
-            success = true;
+			return ToString(PhpStackTrace.GetClassContext(), throwOnError, out success);
+		}
 
-            if (lookup_result != GetMemberResult.NotFound)
-            {
-                // ignoring __toString() visibility as it is in PHP:
 
-                string str = PhpVariable.AsString(result);
-                if (str != null)
-                    return str;
+		/// <summary>
+		/// Converts this instance to its <see cref="string"/> representation according to PHP conversion algorithm.
+		/// </summary>
+		/// <param name="caller"><see cref="System.Type"/> of the object that request the operation or <B>null</B>
+		/// if it should be determined lazily.
+		/// </param>
+		/// <param name="throwOnError">
+		/// Should the method throw 'object_to_string_conversion' notice when no conversion method is found?
+		/// </param>
+		/// <param name="success">Indicates whether conversion was successful.</param>
+		/// <returns>The converted value.</returns>
+		/// <remarks>
+		/// If this object contains the <c>__toString</c> method, it is invoked and its result returned.
+		/// Otherwise, &quot;Object&quot; is returned.
+		/// </remarks>
+		public virtual string ToString(DTypeDesc caller, bool throwOnError, out bool success)
+		{
+			GetMemberResult lookup_result;
+			object result = InvokeToString(caller, out lookup_result);
+			success = true;
 
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
-            }
-            return string.Empty;
+			switch (lookup_result)
+			{
+				case GetMemberResult.BadVisibility: return null;
+
+				case GetMemberResult.NotFound:
+				{
+					success = false;
+					if (throwOnError)
+						PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_to_string_conversion", TypeName));
+					return RealObject.ToString();
+				}
+
+				case GetMemberResult.OK:
+				{
+					string str = result as string;
+					if (str != null) return str;
+
+					PhpBytes bytes = result as PhpBytes;
+					if (bytes != null) return bytes.ToString();
+
+					PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
+					return null;
+				}
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -1721,9 +1929,7 @@ namespace PHP.Core.Reflection
 				// convert RT fields
 				if (RuntimeFields != null)
 				{
-                    using (var fields = RuntimeFields.GetFastEnumerator())
-                        while (fields.MoveNext())
-                            array[fields.CurrentKey] = fields.CurrentValue;
+					foreach (KeyValuePair<string, object> pair in RuntimeFields) array[pair.Key] = pair.Value;
 				}
 			}
 
@@ -1740,12 +1946,10 @@ namespace PHP.Core.Reflection
 		/// <returns>The copy.</returns>
 		public object DeepCopy()
 		{
-            //ScriptContext context = ScriptContext.CurrentContext;
+			ScriptContext context = ScriptContext.CurrentContext;
 
-            //if (context.Config.Variables.ZendEngineV1Compatible)
-            //    return CloneObject(null, context, true);
-            //else
-                return this;
+            if (context.Config.Variables.ZendEngineV1Compatible) return CloneObject(null, context, true);
+			else return this;
 		}
 
 		/// <summary>
@@ -1777,7 +1981,7 @@ namespace PHP.Core.Reflection
 
 				try
 				{
-					property_value = property.DumpGet(this);
+					property_value = property.Get(this);
 				}
 				catch (Exception e)
 				{
@@ -1785,7 +1989,7 @@ namespace PHP.Core.Reflection
 				}
 
 				yield return new KeyValuePair<VariableName, AttributedValue>
-					(pair.Key, new AttributedValue(property_value, property.MemberAttributes, property.DeclaringType));
+					(pair.Key, new AttributedValue(property_value, property.MemberAttributes));
 			}
 		}
 
@@ -1824,7 +2028,7 @@ namespace PHP.Core.Reflection
 						{
 							case PhpMemberAttributes.Public: output.Write("[{0}] => ", pair.Key); break;
 							case PhpMemberAttributes.Protected: output.Write("[{0}:protected] => ", pair.Key); break;
-                            case PhpMemberAttributes.Private: output.Write("[{0}:{1}:private] => ", pair.Key, pair.Value.DeclaringTypeName); break;
+							case PhpMemberAttributes.Private: output.Write("[{0}:private] => ", pair.Key); break;
 						}
 						PhpVariable.Print(output, pair.Value.Value);
                         output.WriteLine();
@@ -1834,10 +2038,10 @@ namespace PHP.Core.Reflection
 				// print RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (var pair in RuntimeFields)
+					foreach (KeyValuePair<string, object> pair in RuntimeFields)
 					{
 						PhpVariable.PrintIndentation(output);
-						output.Write("[{0}] => ", pair.Key.Object);
+						output.Write("[{0}] => ", pair.Key);
 						PhpVariable.Print(output, pair.Value);
 					}
 				}
@@ -1874,8 +2078,8 @@ namespace PHP.Core.Reflection
 					switch (pair.Value.Attributes & PhpMemberAttributes.VisibilityMask)
 					{
 						case PhpMemberAttributes.Public: prop_name = String.Format("[\"{0}\"]=>", pair.Key); break;
-                        case PhpMemberAttributes.Protected: prop_name = String.Format("[\"{0}\":protected]=>", pair.Key); break;
-                        case PhpMemberAttributes.Private: prop_name = String.Format("[\"{0}\":\"{1}\":private]=>", pair.Key, pair.Value.DeclaringTypeName); break;
+						case PhpMemberAttributes.Protected: prop_name = String.Format("[\"{0}:protected\"]=>", pair.Key); break;
+						case PhpMemberAttributes.Private: prop_name = String.Format("[\"{0}:private\"]=>", pair.Key); break;
 					}
 
 					ct_props.Add(new KeyValuePair<string, object>(prop_name, pair.Value.Value));
@@ -1886,7 +2090,7 @@ namespace PHP.Core.Reflection
 			int count = ct_props.Count;
 			if (RuntimeFields != null) count += RuntimeFields.Count;
 
-            string type_name = string.Format("object({0})#{2} ({1})", TypeDesc.MakeFullGenericName(), count, unchecked((uint)this.GetHashCode()));
+			string type_name = string.Format("object({0})({1})", TypeDesc.MakeFullGenericName(), count);
 
 			if (visited)
 			{
@@ -1922,10 +2126,10 @@ namespace PHP.Core.Reflection
 				// print RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (var pair in RuntimeFields)
+					foreach (KeyValuePair<string, object> pair in RuntimeFields)
 					{
 						PhpVariable.PrintIndentation(output);
-						output.WriteLine("[\"{0}\"]=>", pair.Key.String);
+						output.WriteLine("[\"{0}\"]=>", pair.Key);
 
                         PhpVariable.PrintIndentation(output);
 						property_value_ref = pair.Value as PhpReference;
@@ -1999,14 +2203,14 @@ namespace PHP.Core.Reflection
 				// print RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (var pair in RuntimeFields)
+					foreach (KeyValuePair<string, object> pair in RuntimeFields)
 					{
 						if (!first) output.WriteLine(String.Empty);
 						else first = false;
 
 						PhpVariable.PrintIndentation(output);
 
-						output.Write("public ${0} = ", pair.Key.String);
+						output.Write("public ${0} = ", pair.Key);
 
 						PhpVariable.Export(output, pair.Value);
 						output.Write(';');
@@ -2115,17 +2319,16 @@ namespace PHP.Core.Reflection
 					// walks RT fields:
 					if (RuntimeFields != null)
 					{
-                        using (var fields = RuntimeFields.GetFastEnumerator())
-                            while (fields.MoveNext())
-                            {
-                                IPhpObjectGraphNode node = fields.CurrentValue as IPhpObjectGraphNode;
-                                if (node != null)
-                                {
-                                    object res = callback(node, context);
-                                    if (!Object.ReferenceEquals(res, fields.CurrentValue)) fields.ModifyCurrentValue(res);
-                                    if ((node = res as IPhpObjectGraphNode) != null) node.Walk(callback, context);
-                                }
-                            }
+						foreach (KeyValuePair<string, object> pair in RuntimeFields)
+						{
+							IPhpObjectGraphNode node = pair.Value as IPhpObjectGraphNode;
+							if (node != null)
+							{
+								object res = callback(node, context);
+								if (!Object.ReferenceEquals(res, pair.Value)) RuntimeFields[pair.Key] = res;
+								if ((node = res as IPhpObjectGraphNode) != null) node.Walk(callback, context);
+							}
+						}
 					}
 				}
 				finally
@@ -2205,10 +2408,10 @@ namespace PHP.Core.Reflection
 
 				if (obj == null || !(obj.RealObject is Library.SPL.Iterator))
 				{
-                    Library.SPL.Exception.ThrowSplException(
-                        _ctx => new Library.SPL.Exception(_ctx, true),
-                        context,
-                        string.Format(CoreResources.getiterator_must_return_traversable, last_obj.TypeName), 0, null);
+					Library.SPL.Exception e = new Library.SPL.Exception(context, true);
+					e.__construct(context, CoreResources.GetString("getiterator_must_return_traversable", last_obj.TypeName), 0);
+
+					throw new PhpUserException(e);
 				}
 			}
 			else context = ScriptContext.CurrentContext;
@@ -2300,7 +2503,7 @@ namespace PHP.Core.Reflection
 		/// This iterator returns instance property names as keys and instance property values as values. Only
 		/// properties that are visible for the <paramref name="caller"/> are enumerated - both CT and RT, CT first.
 		/// </remarks>
-		internal IEnumerator<KeyValuePair<object, object>> InstancePropertyIterator(DTypeDesc caller, bool aliasedValues)
+		private IEnumerator<KeyValuePair<object, object>> InstancePropertyIterator(DTypeDesc caller, bool aliasedValues)
 		{
 			object value;
 			PhpReference reference;
@@ -2332,7 +2535,7 @@ namespace PHP.Core.Reflection
 			// enumerate RT fields
 			if (RuntimeFields != null)
 			{
-				foreach (var pair in RuntimeFields)
+				foreach (KeyValuePair<string, object> pair in RuntimeFields)
 				{
 					value = pair.Value;
 
@@ -2348,7 +2551,7 @@ namespace PHP.Core.Reflection
 					}
 					else value = PhpVariable.Copy(PhpVariable.Dereference(value), CopyReason.Assigned);
 
-					yield return new KeyValuePair<object, object>(pair.Key.Object, value);
+					yield return new KeyValuePair<object, object>(pair.Key, value);
 				}
 			}
 		}
@@ -2365,7 +2568,7 @@ namespace PHP.Core.Reflection
 			if (name == null) throw new ArgumentNullException("name");
 			if (Contains(name)) throw new ArgumentException(CoreResources.GetString("field_already_exists"));
 
-			if (RuntimeFields == null) RuntimeFields = new PhpArray();
+			if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
 			RuntimeFields.Add(Convert.ObjectToString(name), value);
 		}
 
@@ -2375,7 +2578,7 @@ namespace PHP.Core.Reflection
                 return;
 
             if (RuntimeFields == null)
-                RuntimeFields = new PhpArray();
+                RuntimeFields = new OrderedHashtable<string>();
 
             foreach (var member in members)
             {
@@ -2490,33 +2693,33 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-        ///// <summary>
-        ///// Returns <B>true</B> is this instance contains at least one instance property that is not unset.
-        ///// </summary>
-        //public bool HasSetInstanceProperties
-        //{
-        //    get
-        //    {
-        //        if (RuntimeFields != null && RuntimeFields.Count > 0) return true;
+		/// <summary>
+		/// Returns <B>true</B> is this instance contains at least one instance property that is not unset.
+		/// </summary>
+		public bool HasSetInstanceProperties
+		{
+			get
+			{
+				if (RuntimeFields != null && RuntimeFields.Count > 0) return true;
 
-        //        // enumerate CT properties
-        //        foreach (KeyValuePair<VariableName, DPropertyDesc> pair in TypeDesc.EnumerateProperties())
-        //        {
-        //            DPropertyDesc property = pair.Value;
-        //            if (property.IsStatic) continue;
+				// enumerate CT properties
+				foreach (KeyValuePair<VariableName, DPropertyDesc> pair in TypeDesc.EnumerateProperties())
+				{
+					DPropertyDesc property = pair.Value;
+					if (property.IsStatic) continue;
 
-        //            if (!(property is DPhpFieldDesc)) return true;
-        //            else
-        //            {
-        //                // PHP fields can be unset!
-        //                PhpReference property_value_ref = property.Get(this) as PhpReference;
-        //                if (property_value_ref == null || property_value_ref.IsSet) return true;
-        //            }
-        //        }
+					if (!(property is DPhpFieldDesc)) return true;
+					else
+					{
+						// PHP fields can be unset!
+						PhpReference property_value_ref = property.Get(this) as PhpReference;
+						if (property_value_ref == null || property_value_ref.IsSet) return true;
+					}
+				}
 
-        //        return false;
-        //    }
-        //}
+				return false;
+			}
+		}
 
 		#endregion
 
@@ -2578,7 +2781,7 @@ namespace PHP.Core.Reflection
 
 				// perform __destruct method lookup and runtime check
 				DRoutineDesc method;
-                switch (TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct, TypeDesc, out method))
+				switch (TypeDesc.GetMethod(SpecialMethodNames.Destruct, TypeDesc, out method))
 				{
 					case GetMemberResult.BadVisibility:
 					{
@@ -2592,7 +2795,7 @@ namespace PHP.Core.Reflection
 						if (method.IsStatic)
 						{
 							PhpException.Throw(PhpError.Error, CoreResources.GetString("destructor_cannot_be_static",
-							  method.DeclaringType.MakeFullName(), Name.SpecialMethodNames.Destruct));
+							  method.DeclaringType.MakeFullName(), SpecialMethodNames.Destruct));
 							return;
 						}
 
@@ -2626,16 +2829,7 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
-
-        #region IDynamicMetaObjectProvider Members
-
-        public DynamicMetaObject GetMetaObject(System.Linq.Expressions.Expression parameter)
-        {
-            return new DMetaObject(parameter, this);
-        }
-
-        #endregion
-    }
+	}
 
     #region ClrObject
 
@@ -2647,26 +2841,46 @@ namespace PHP.Core.Reflection
 	/// </remarks>
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("{realObject}", Type = "{TypeName,nq}")]
+    [DebuggerDisplay("CLR object", Type = "{realObject.GetType(),nq}")]
+#if !SILVERLIGHT
+    [DebuggerTypeProxy(typeof(ClrObject.DebugView))]
+#endif
     public sealed class ClrObject : DObject
     {
+        #region Debug View
+
+        private sealed class DebugView
+        {
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public object RealObject { get { return obj.RealObject; } }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            private readonly ClrObject/*!*/ obj;
+
+            public DebugView(ClrObject/*!*/ obj)
+            {
+                if (obj == null)
+                    throw new ArgumentNullException("obj");
+
+                this.obj = obj;
+            }
+        }
+
+        #endregion
+
         #region Fields and Properties
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly WeakCache<ClrObject>/*!*/ cache = new WeakCache<ClrObject>();
 
         /// <summary>
         /// The real object contained by this ClrObject wrapper.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object/*!*/ RealObject { get { return realObject; } }
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         private object/*!*/ realObject;
 
         /// <summary>
         /// The reference passed to the methods and properties.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object InstanceObject { get { return realObject; } }
 
         /// <summary>
@@ -2678,7 +2892,6 @@ namespace PHP.Core.Reflection
             this.realObject = obj;
         }
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         protected override bool ReadyForDisposal
         {
             get
@@ -2746,9 +2959,6 @@ namespace PHP.Core.Reflection
             byte[] bytes;
             if ((bytes = instance as byte[]) != null) return new PhpBytes(bytes);
 
-            // convert MulticastDelegate into callable PHP object
-            if (instance is MulticastDelegate) return WrapDelegate((MulticastDelegate)instance);
-
             // create ClrObject from instance
             return WrapRealObject(instance);
         }
@@ -2767,9 +2977,6 @@ namespace PHP.Core.Reflection
         {
             if (instance == null) return null;
 
-            Debug.Assert(!PhpVariable.HasPrimitiveType(instance));
-            Debug.Assert(!(instance is DObject));
-
             ClrObject result;
 
             lock (cache)
@@ -2781,121 +2988,6 @@ namespace PHP.Core.Reflection
             }
             return result;
         }
-
-        #region MulticastDelegate wrapping
-
-        [ImplementsType]
-        public class DelegateClosure : PhpObject
-        {
-            /// <summary>
-            /// Delegate to be called when this object is converted into <see cref="PhpCallback"/> and invoked.
-            /// </summary>
-            private readonly MulticastDelegate/*!*/function;
-
-            /// <summary>
-            /// Cache args count of the <see cref="function"/>.
-            /// </summary>
-            private System.Reflection.ParameterInfo[] functionParams = null;
-
-            internal DelegateClosure(MulticastDelegate/*!*/function)
-                : base(ScriptContext.CurrentContext, true)
-            {
-                Debug.Assert(function != null);
-                this.function = function;
-            }
-
-            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-            public static object __invoke(object instance, PhpStack stack)
-            {
-                // prepare args array
-                object[] args = new object[stack.ArgCount];
-                for (int i = 0; i < args.Length; i++)
-                    args[i] = stack.PeekValue(i + 1);
-
-                // call __invoke
-                stack.RemoveFrame();
-                return ((DelegateClosure)instance).invokeDelegate(args);
-            }
-
-
-            [ImplementsMethod, System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-            public object __invoke(ScriptContext/*!*/context)
-            {
-                return invokeDelegate();
-            }
-
-            /// <summary>
-            /// Check the <paramref name="args"/> to correspond to <see cref="function"/>.
-            /// </summary>
-            /// <param name="args"></param>
-            /// <returns></returns>
-            private object[] CheckArgs(object[]/*!*/args)
-            {
-                if (functionParams == null)
-                    functionParams = function.Method.GetParameters();
-
-                if (args.Length != functionParams.Length)
-                {
-                    if (args.Length < functionParams.Length)
-                    {
-                        // Warning: InvalidArgumentCount
-                        PhpException.InvalidArgumentCount(
-                            (function.Target == null) ? null : function.Target.GetType().ToString().Replace('.', QualifiedName.Separator),
-                            function.Method.Name);
-                    }
-
-                    var args2 = new object[functionParams.Length];  // valid params count
-                    int copiedArgs = Math.Min(args2.Length, args.Length);
-                    Array.Copy(args, args2, copiedArgs);    // copy passed params
-                    args = args2;
-
-                    // default value for missing args
-                    for (int i = copiedArgs; i < args.Length; i++)
-                        args[i] = /*functionParams[i].DefaultValue ?? */ReflectionUtils.GetDefault(functionParams[i].ParameterType);
-                }
-
-                return args;
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="args">Arguments to be unwrapped and passed to <see cref="function"/>.</param>
-            /// <returns></returns>
-            private object invokeDelegate(params object[] args)
-            {
-                // check args count
-                args = CheckArgs(args);
-
-                // unwraps arguments
-                for (int i = 0; i < args.Length; i++)
-                    args[i] = PhpVariable.Unwrap(args[i]);
-
-                // invoke the .NET delegate
-                return ClrObject.WrapDynamic(this.function.DynamicInvoke(args));
-            }
-
-            /// <summary>
-            /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
-            /// </summary>
-            /// <param name="typeDesc">The type desc to populate.</param>
-            private static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
-            {
-                typeDesc.AddMethod("__invoke", PhpMemberAttributes.Public, __invoke);
-
-            }
-        }
-        /// <summary>
-        /// Wrap <see cref="MulticastDelegate"/> into PHP invokable object.
-        /// </summary>
-        /// <param name="function">.NET <see cref="MulticastDelegate"/> to be wrapped.</param>
-        /// <returns>PHP callable object.</returns>
-        public static DObject/*!*/WrapDelegate(MulticastDelegate/*!*/function)
-        {
-            return new DelegateClosure(function);
-        }
-
-        #endregion
 
         /// <summary>
         /// Called by compiled code when a new real object is being constructed.
@@ -2924,7 +3016,6 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// Cache of <see cref="ClrValue&lt;T&gt;"/> and its <see cref="ClrValue&lt;T&gt;.Create"/> method associated with specific value type.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal static readonly SynchronizedCache<Type, Tuple<Type, Delegate>>/*!*/valueTypesCache =
             new SynchronizedCache<Type, Tuple<Type, Delegate>>(type =>
             {
@@ -2962,27 +3053,6 @@ namespace PHP.Core.Reflection
 
         #endregion
 
-        #region PHP Operators
-
-        /// <summary>
-        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
-        /// </summary>
-        public override string ToString(bool throwOnError, out bool success)
-        {
-            success = true;
-            return this.realObject.ToString();
-        }
-
-        /// <summary>
-        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
-        /// </summary>
-        public override PhpBytes ToPhpBytes()
-        {
-            return new PhpBytes(this.realObject.ToString());
-        }
-
-        #endregion
-
         #region Serialization (CLR only)
 #if !SILVERLIGHT
 
@@ -3002,15 +3072,12 @@ namespace PHP.Core.Reflection
     /// <summary>
     /// An interface identifying ClrValue&lt;T&gt; instance object.
     /// </summary>
-    public interface IClrValue { }
+    internal interface IClrValue { }
 
     /// <summary>
     /// Represents non-PHP value typed object at runtime.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Serializable]
-    [DebuggerNonUserCode]
-    [DebuggerDisplay("{realValue}", Type = "{TypeName,nq}")]
     internal sealed class ClrValue<T> : DObject, IClrValue where T : struct
     {
         #region Fields and properties
@@ -3018,13 +3085,11 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// The CLR value represented by this <see cref="ClrValue&lt;T&gt;"/> instance.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public T realValue;
 
         /// <summary>
         /// The CLR value represented by this <see cref="ClrValue&lt;T&gt;"/> instance. The returned value is boxed.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object RealObject { get { return (object)realValue; } } // box the realValue
 
         /// <summary>
@@ -3032,7 +3097,6 @@ namespace PHP.Core.Reflection
         /// The whole <see cref="ClrValue&lt;T&gt;"/> is returned too not box the wrapped value. Therefore the value
         /// can be modified in-place by the called method or property.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object InstanceObject { get { return this; } }  // pass the whole ClrValue into the method/property stub
         
         #endregion
@@ -3077,156 +3141,6 @@ namespace PHP.Core.Reflection
             return realValue.ToString();
         }
         
-        #endregion
-
-        #region PHP Operators
-
-        /// <summary>
-        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
-        /// </summary>
-        public override string ToString(bool throwOnError, out bool success)
-        {
-            success = true;
-            return this.realValue.ToString();
-        }
-
-        /// <summary>
-        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
-        /// </summary>
-        public override PhpBytes ToPhpBytes()
-        {
-            return new PhpBytes(this.realValue.ToString());
-        }
-
-        /// <summary>
-        /// Overrides default double cast of CLR object in case of <see cref="decimal"/> type.
-        /// </summary>
-        public override double ToDouble()
-        {
-            if (typeof(T) == typeof(decimal))
-                return (double)(decimal)this.RealObject;
-            if (typeof(T) == typeof(byte))
-                return (byte)this.RealObject;
-            if (typeof(T) == typeof(float))
-                return (float)this.RealObject;
-            if (typeof(T) == typeof(short))
-                return (short)this.RealObject;
-            if (typeof(T) == typeof(ushort))
-                return (ushort)this.RealObject;
-            if (typeof(T) == typeof(sbyte))
-                return (sbyte)this.RealObject;
-            if (typeof(T) == typeof(uint))
-                return (uint)this.RealObject;
-            if (typeof(T) == typeof(ulong))
-                return (ulong)this.RealObject;
-
-            return base.ToDouble();
-        }
-
-        /// <summary>
-        /// Overrides default number conversion of CLR object in of <see cref="decimal"/> type.
-        /// </summary>
-        public override Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
-        {
-            if (typeof(T) == typeof(decimal))
-            {
-                doubleValue = (double)(decimal)this.RealObject;
-                intValue = unchecked((int)doubleValue);
-                longValue = unchecked((long)doubleValue);
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(byte))
-            {
-                intValue = (byte)this.RealObject;
-                doubleValue = intValue;
-                longValue = intValue;
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(float))
-            {
-                doubleValue = (float)this.RealObject;
-                intValue = unchecked((int)doubleValue);
-                longValue = unchecked((long)doubleValue);
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(short))
-            {
-                intValue = (short)this.RealObject;
-                doubleValue = intValue;
-                longValue = intValue;
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(ushort))
-            {
-                intValue = (ushort)this.RealObject;
-                doubleValue = intValue;
-                longValue = intValue;
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(sbyte))
-            {
-                intValue = (sbyte)this.RealObject;
-                doubleValue = intValue;
-                longValue = intValue;
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(uint))
-            {
-                longValue = (uint)this.RealObject;
-                intValue = unchecked((int)longValue);
-                doubleValue = intValue;
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-            if (typeof(T) == typeof(ulong))
-            {
-                var real = (ulong)this.RealObject;
-                longValue = unchecked((long)real);
-                doubleValue = real;
-                intValue = unchecked((int)longValue);
-                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
-            }
-
-            return base.ToNumber(out intValue, out longValue, out doubleValue);
-        }
-
-        public override int CompareTo(object obj, IComparer comparer)
-        {
-            if (typeof(T) == typeof(decimal))
-            {
-                return comparer.Compare((double)(decimal)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(byte))
-            {
-                return comparer.Compare((int)(byte)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(float))
-            {
-                return comparer.Compare((double)(float)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(short))
-            {
-                return comparer.Compare((int)(short)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(ushort))
-            {
-                return comparer.Compare((int)(ushort)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(sbyte))
-            {
-                return comparer.Compare((int)(sbyte)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(uint))
-            {
-                return comparer.Compare((long)(uint)this.RealObject, obj);
-            }
-            if (typeof(T) == typeof(ulong))
-            {
-                return comparer.Compare((double)(ulong)this.RealObject, obj);
-            }
-
-            return base.CompareTo(obj, comparer);
-        }
-
         #endregion
 
         #region Clone
