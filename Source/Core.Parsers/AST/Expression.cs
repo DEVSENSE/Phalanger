@@ -145,6 +145,11 @@ namespace PHP.Core.AST
 
         protected Expression(Text.Span span) : base(span) { }
 
+        /// <summary>
+        /// Internal type information determined during type analysis.
+        /// </summary>
+        internal ulong/*A*/TypeInfoValue { get; set; }
+
 		/// <summary>
         /// Whether the expression is allowed to be passed by reference to a routine.
         /// </summary>
