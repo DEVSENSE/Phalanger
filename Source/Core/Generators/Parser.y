@@ -343,6 +343,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> assignment_expression                   // AssignEx
 %type<Integer> cast_operation                         // Operation
 %type<Object> expr_without_chain                      // Expression
+%type<Object> new_expr								  // NewEx
 %type<Object> expression_list                         // List<Expression>/*!*/
 %type<Object> expression_list_opt                     // List<Expression> 
 %type<Object> foreach_variable                        // ForeachVar
@@ -1639,11 +1640,7 @@ expr_without_chain:
 			$$ = $1; 
 		}
 		
-	|	T_NEW type_ref ctor_arguments_opt 
-		{ 
-			$$ = new NewEx(@$, (TypeRef)$2, (List<ActualParam>)$3); 
-		}
-		
+	|	new_expr						{ $$ = $1; }		
 	|	T_CLONE expr                    { $$ = new UnaryEx(@$, Operations.Clone, (Expression)$2); }
 		
 	|	writable_chain T_INC                { $$ = new IncDecEx(@$, true, true, (VariableUse)$1); }
@@ -1708,6 +1705,13 @@ expr_without_chain:
 	| linq_query_expression				{ $$ = $1; }
 
 	| lambda_function_expression		{ $$ = $1; }
+;
+
+new_expr:
+	T_NEW type_ref ctor_arguments_opt 
+	{ 
+		$$ = new NewEx(@$, (TypeRef)$2, (List<ActualParam>)$3); 
+	}
 ;
 
 lambda_function_expression:
@@ -2131,7 +2135,7 @@ chain:
 		chain_base_with_function_calls T_OBJECT_OPERATOR keyed_field_name actual_arguments_opt member_access_chain_opt 
 		{ 
       $$ = CreateVariableUse(@$, (VarLikeConstructUse)$1, (VarLikeConstructUse)$3, (FcnParam)$4, (VarLikeConstructUse)$5);
-		}	
+		}
 			
 	|	chain_base_with_function_calls { $$ = $1; }	
 ;
@@ -2205,6 +2209,7 @@ chain_base:
 chain_base_with_function_calls:
 		chain_base			  { $$ = $1; }	
 	|	keyed_function_call   { $$ = $1; }
+	|	'(' new_expr ')'	  { $$ = $2; }
 ;
 
 // (identifier|{expr})[key_opt]*
