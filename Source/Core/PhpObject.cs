@@ -14,11 +14,9 @@ using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
-using D = System.Diagnostics;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -495,61 +493,9 @@ namespace PHP.Core
 	/// Serves as a base for user defined PHP classes.
 	/// </summary>
 	[Serializable]
-    [D.DebuggerNonUserCodeAttribute]
-#if !SILVERLIGHT
-    [D.DebuggerTypeProxy(typeof(PhpObject.DebugView))]
-    [D.DebuggerDisplay("object ({this.TypeName,nq})", Type = "{this.TypeName,nq}")]
-#endif
-    public abstract class PhpObject : DObject
+	[System.Diagnostics.DebuggerNonUserCodeAttribute]
+	public abstract class PhpObject : DObject
 	{
-        #region Debug View
-
-        [D.DebuggerDisplay("object ({this.obj.TypeName,nq})", Type = "{this.obj.TypeName,nq}")]
-        internal sealed class DebugView
-        {
-            [D.DebuggerBrowsable(D.DebuggerBrowsableState.Never)]
-            private readonly PhpObject obj;
-
-            public DebugView(PhpObject obj)
-            {
-                this.obj = obj;
-            }
-
-            [D.DebuggerBrowsable(D.DebuggerBrowsableState.RootHidden)]
-            public PhpHashEntryDebugView[] Items
-            {
-                get
-                {
-                    List<PhpHashEntryDebugView> result = new List<PhpHashEntryDebugView>();
-
-                    for (DTypeDesc desc = obj.TypeDesc; desc != null; desc = desc.Base)
-                    {
-                        foreach (var field in desc.Properties)
-                        {
-                            //if (field.Key.Value == PhpObjectBuilder.ProxyFieldName ||
-                            //    field.Key.Value == PhpObjectBuilder.TypeDescFieldName)
-                            //    continue;
-
-                            var fielddesc = field.Value;
-
-                            object value = fielddesc.Get(obj);
-                            if (value is PhpReference && !((PhpReference)value).IsAliased) value = ((PhpReference)value).Value;
-
-                            result.Add(new PhpHashEntryDebugView(new IntStringKey(field.Key.Value), value));
-                        }
-                    }
-
-                    if (obj.RuntimeFields != null)
-                        foreach (var field in obj.RuntimeFields)
-                            result.Add(new PhpHashEntryDebugView(field.Key, field.Value));
-
-                    return result.ToArray();
-                }
-            }
-        }
-
-        #endregion
-
 		#region Fields and Properties
 
 		/// <summary>
