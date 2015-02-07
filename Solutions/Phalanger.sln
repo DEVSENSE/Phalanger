@@ -1,10 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1BA64DC-649F-4BC5-A6DA-6649A8029B1D}"
-	ProjectSection(SolutionItems) = preProject
-		..\Documentation\Developer\BaseAddresses.txt = ..\Documentation\Developer\BaseAddresses.txt
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{BBF40DB7-2CCE-4E82-98C9-F506E356CC08}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{64A5B5CA-E0A5-4816-96EE-D574E4189E83}"
@@ -25,8 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.XmlDom", "..\Source\Extensions\XmlDom\Extension.XmlDom.csproj", "{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phalanger.CompilerTask", "..\Source\Phalanger.CompilerTask\Phalanger.CompilerTask.csproj", "{68B54816-884B-48A1-949C-DBBDE2A5C412}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testers.Unit", "..\Source\Testing\Unit\Testers.Unit.csproj", "{1F0323F9-DF73-4EE0-A9C1-C59464A96104}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.PDO", "..\Source\Extensions\PDO\Extension.PDO.csproj", "{A3D74786-1B4A-4967-853E-C98D74E6990B}"
 EndProject
@@ -60,9 +53,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Parsers", "..\Source\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.DuckTyping", "..\Source\Core.DuckTyping\Core.DuckTyping.csproj", "{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2FC1ABC3-5452-411E-8C09-FAABCE16A469}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Parsers.Tests", "..\Source\Core.Parsers.Tests\Core.Parsers.Tests.csproj", "{B7676837-C805-4898-AE2A-BF00C2AC9C51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "..\Source\Core.Tests\Core.Tests.csproj", "{2BC9950D-CD28-4A47-A405-0AE639A76384}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Tests", "..\Source\ClassLibrary.Tests\ClassLibrary.Tests.csproj", "{D2388680-0C99-467F-9C17-68E1E6E4F1C0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 25
+		SccNumberOfProjects = 27
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -91,70 +92,79 @@ Global
 		SccProjectUniqueName7 = ..\\Source\\Phalanger.CompilerTask\\Phalanger.CompilerTask.csproj
 		SccProjectName7 = ../Source/Phalanger.CompilerTask
 		SccLocalPath7 = ..\\Source\\Phalanger.CompilerTask
-		SccProjectUniqueName8 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
-		SccProjectName8 = ../Source/Testing/Unit
-		SccLocalPath8 = ..\\Source\\Testing\\Unit
-		SccProjectUniqueName9 = ..\\Source\\Extensions\\PDO\\Extension.PDO.csproj
+		SccProjectUniqueName8 = ..\\Source\\Extensions\\PDO\\Extension.PDO.csproj
+		SccProjectTopLevelParentUniqueName8 = Phalanger.sln
+		SccProjectName8 = ../Source/Extensions/PDO
+		SccLocalPath8 = ..\\Source\\Extensions\\PDO
+		SccProjectUniqueName9 = ..\\Source\\Extensions\\PDOSQLite\\Extension.PDOSQLite.csproj
 		SccProjectTopLevelParentUniqueName9 = Phalanger.sln
-		SccProjectName9 = ../Source/Extensions/PDO
-		SccLocalPath9 = ..\\Source\\Extensions\\PDO
-		SccProjectUniqueName10 = ..\\Source\\Extensions\\PDOSQLite\\Extension.PDOSQLite.csproj
+		SccProjectName9 = ../Source/Extensions/PDOSQLite
+		SccLocalPath9 = ..\\Source\\Extensions\\PDOSQLite
+		SccProjectUniqueName10 = ..\\Source\\Extensions\\SQLite\\Extension.SQLite.csproj
 		SccProjectTopLevelParentUniqueName10 = Phalanger.sln
-		SccProjectName10 = ../Source/Extensions/PDOSQLite
-		SccLocalPath10 = ..\\Source\\Extensions\\PDOSQLite
-		SccProjectUniqueName11 = ..\\Source\\Extensions\\SQLite\\Extension.SQLite.csproj
+		SccProjectName10 = ../Source/Extensions/SQLite
+		SccLocalPath10 = ..\\Source\\Extensions\\SQLite
+		SccProjectUniqueName11 = ..\\Source\\Extensions\\Zip\\Extension.Zip.csproj
 		SccProjectTopLevelParentUniqueName11 = Phalanger.sln
-		SccProjectName11 = ../Source/Extensions/SQLite
-		SccLocalPath11 = ..\\Source\\Extensions\\SQLite
-		SccProjectUniqueName12 = ..\\Source\\Extensions\\Zip\\Extension.Zip.csproj
+		SccProjectName11 = ../Source/Extensions/Zip
+		SccLocalPath11 = ..\\Source\\Extensions\\Zip
+		SccProjectUniqueName12 = ..\\Source\\Extensions\\PDOSQLServer\\Extension.PDOSQLServer.csproj
 		SccProjectTopLevelParentUniqueName12 = Phalanger.sln
-		SccProjectName12 = ../Source/Extensions/Zip
-		SccLocalPath12 = ..\\Source\\Extensions\\Zip
-		SccProjectUniqueName13 = ..\\Source\\Extensions\\PDOSQLServer\\Extension.PDOSQLServer.csproj
+		SccProjectName12 = ../Source/Extensions/PDOSQLServer
+		SccLocalPath12 = ..\\Source\\Extensions\\PDOSQLServer
+		SccProjectUniqueName13 = ..\\Source\\Extensions\\Curl\\Extension.Curl.csproj
 		SccProjectTopLevelParentUniqueName13 = Phalanger.sln
-		SccProjectName13 = ../Source/Extensions/PDOSQLServer
-		SccLocalPath13 = ..\\Source\\Extensions\\PDOSQLServer
-		SccProjectUniqueName14 = ..\\Source\\Extensions\\Curl\\Extension.Curl.csproj
+		SccProjectName13 = ../Source/Extensions/Curl
+		SccLocalPath13 = ..\\Source\\Extensions\\Curl
+		SccProjectUniqueName14 = ..\\Source\\Extensions\\Gd2\\Extension.Gd2.csproj
 		SccProjectTopLevelParentUniqueName14 = Phalanger.sln
-		SccProjectName14 = ../Source/Extensions/Curl
-		SccLocalPath14 = ..\\Source\\Extensions\\Curl
-		SccProjectUniqueName15 = ..\\Source\\Extensions\\Gd2\\Extension.Gd2.csproj
+		SccProjectName14 = ../Source/Extensions/Gd2
+		SccLocalPath14 = ..\\Source\\Extensions\\Gd2
+		SccProjectUniqueName15 = ..\\Source\\Extensions\\GetText\\Extension.GetText.csproj
 		SccProjectTopLevelParentUniqueName15 = Phalanger.sln
-		SccProjectName15 = ../Source/Extensions/Gd2
-		SccLocalPath15 = ..\\Source\\Extensions\\Gd2
-		SccProjectUniqueName16 = ..\\Source\\Extensions\\GetText\\Extension.GetText.csproj
+		SccProjectName15 = ../Source/Extensions/GetText
+		SccLocalPath15 = ..\\Source\\Extensions\\GetText
+		SccProjectUniqueName16 = ..\\Source\\Extensions\\iconv\\Extension.iconv.csproj
 		SccProjectTopLevelParentUniqueName16 = Phalanger.sln
-		SccProjectName16 = ../Source/Extensions/GetText
-		SccLocalPath16 = ..\\Source\\Extensions\\GetText
-		SccProjectUniqueName17 = ..\\Source\\Extensions\\iconv\\Extension.iconv.csproj
+		SccProjectName16 = ../Source/Extensions/iconv
+		SccLocalPath16 = ..\\Source\\Extensions\\iconv
+		SccProjectUniqueName17 = ..\\Source\\Extensions\\mbstring\\Extension.mbstring.csproj
 		SccProjectTopLevelParentUniqueName17 = Phalanger.sln
-		SccProjectName17 = ../Source/Extensions/iconv
-		SccLocalPath17 = ..\\Source\\Extensions\\iconv
-		SccProjectUniqueName18 = ..\\Source\\Extensions\\mbstring\\Extension.mbstring.csproj
+		SccProjectName17 = ../Source/Extensions/mbstring
+		SccLocalPath17 = ..\\Source\\Extensions\\mbstring
+		SccProjectUniqueName18 = ..\\Source\\Extensions\\Soap\\Extension.Soap.csproj
 		SccProjectTopLevelParentUniqueName18 = Phalanger.sln
-		SccProjectName18 = ../Source/Extensions/mbstring
-		SccLocalPath18 = ..\\Source\\Extensions\\mbstring
-		SccProjectUniqueName19 = ..\\Source\\Extensions\\Soap\\Extension.Soap.csproj
+		SccProjectName18 = ../Source/Extensions/Soap
+		SccLocalPath18 = ..\\Source\\Extensions\\Soap
+		SccProjectUniqueName19 = ..\\Source\\Extensions\\Xml\\Extension.Xml.csproj
 		SccProjectTopLevelParentUniqueName19 = Phalanger.sln
-		SccProjectName19 = ../Source/Extensions/Soap
-		SccLocalPath19 = ..\\Source\\Extensions\\Soap
-		SccProjectUniqueName20 = ..\\Source\\Extensions\\Xml\\Extension.Xml.csproj
+		SccProjectName19 = ../Source/Extensions/Xml
+		SccLocalPath19 = ..\\Source\\Extensions\\Xml
+		SccProjectUniqueName20 = ..\\Source\\Extensions\\Zlib\\Extension.Zlib.csproj
 		SccProjectTopLevelParentUniqueName20 = Phalanger.sln
-		SccProjectName20 = ../Source/Extensions/Xml
-		SccLocalPath20 = ..\\Source\\Extensions\\Xml
-		SccProjectUniqueName21 = ..\\Source\\Extensions\\Zlib\\Extension.Zlib.csproj
-		SccProjectTopLevelParentUniqueName21 = Phalanger.sln
-		SccProjectName21 = ../Source/Extensions/Zlib
-		SccLocalPath21 = ..\\Source\\Extensions\\Zlib
-		SccProjectUniqueName22 = ..\\Source\\Core.CodeDom\\Core.CodeDom.csproj
-		SccProjectName22 = ../Source/Core.CodeDom
-		SccLocalPath22 = ..\\Source\\Core.CodeDom
-		SccProjectUniqueName23 = ..\\Source\\Core.Parsers\\Core.Parsers.csproj
-		SccProjectName23 = ../Source/Core.Parsers
-		SccLocalPath23 = ..\\Source\\Core.Parsers
-		SccProjectUniqueName24 = ..\\Source\\Core.DuckTyping\\Core.DuckTyping.csproj
-		SccProjectName24 = ../Source/Core.DuckTyping
-		SccLocalPath24 = ..\\Source\\Core.DuckTyping
+		SccProjectName20 = ../Source/Extensions/Zlib
+		SccLocalPath20 = ..\\Source\\Extensions\\Zlib
+		SccProjectUniqueName21 = ..\\Source\\Core.CodeDom\\Core.CodeDom.csproj
+		SccProjectName21 = ../Source/Core.CodeDom
+		SccLocalPath21 = ..\\Source\\Core.CodeDom
+		SccProjectUniqueName22 = ..\\Source\\Core.Parsers\\Core.Parsers.csproj
+		SccProjectName22 = ../Source/Core.Parsers
+		SccLocalPath22 = ..\\Source\\Core.Parsers
+		SccProjectUniqueName23 = ..\\Source\\Core.DuckTyping\\Core.DuckTyping.csproj
+		SccProjectName23 = ../Source/Core.DuckTyping
+		SccLocalPath23 = ..\\Source\\Core.DuckTyping
+		SccProjectUniqueName24 = ..\\Source\\Core.Parsers.Tests\\Core.Parsers.Tests.csproj
+		SccProjectTopLevelParentUniqueName24 = Phalanger.sln
+		SccProjectName24 = ../Source/Core.Parsers.Tests
+		SccLocalPath24 = ..\\Source\\Core.Parsers.Tests
+		SccProjectUniqueName25 = ..\\Source\\Core.Tests\\Core.Tests.csproj
+		SccProjectTopLevelParentUniqueName25 = Phalanger.sln
+		SccProjectName25 = ../Source/Core.Tests
+		SccLocalPath25 = ..\\Source\\Core.Tests
+		SccProjectUniqueName26 = ..\\Source\\ClassLibrary.Tests\\ClassLibrary.Tests.csproj
+		SccProjectTopLevelParentUniqueName26 = Phalanger.sln
+		SccProjectName26 = ../Source/ClassLibrary.Tests
+		SccLocalPath26 = ..\\Source\\ClassLibrary.Tests
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -269,20 +279,6 @@ Global
 		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Win32.ActiveCfg = Release|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Any CPU.ActiveCfg = DebugNoGac|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Any CPU.Build.0 = DebugNoGac|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Mixed Platforms.ActiveCfg = DebugNoGac|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Mixed Platforms.Build.0 = DebugNoGac|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Win32.ActiveCfg = DebugNoGac|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Win32.ActiveCfg = Release|Any CPU
 		{A3D74786-1B4A-4967-853E-C98D74E6990B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3D74786-1B4A-4967-853E-C98D74E6990B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3D74786-1B4A-4967-853E-C98D74E6990B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -523,6 +519,51 @@ Global
 		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Win32.ActiveCfg = Release|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51}.Release|Win32.ActiveCfg = Release|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2BC9950D-CD28-4A47-A405-0AE639A76384}.Release|Win32.ActiveCfg = Release|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -545,6 +586,9 @@ Global
 		{630C04B5-0B38-4883-981E-2F094982D49D} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{1FBEBAD2-F7C5-4F75-965C-45098F5A0A48} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
+		{B7676837-C805-4898-AE2A-BF00C2AC9C51} = {2FC1ABC3-5452-411E-8C09-FAABCE16A469}
+		{2BC9950D-CD28-4A47-A405-0AE639A76384} = {2FC1ABC3-5452-411E-8C09-FAABCE16A469}
+		{D2388680-0C99-467F-9C17-68E1E6E4F1C0} = {2FC1ABC3-5452-411E-8C09-FAABCE16A469}
 	EndGlobalSection
 	GlobalSection(SolutionNotes) = postSolution
 	EndGlobalSection

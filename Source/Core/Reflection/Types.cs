@@ -1304,67 +1304,6 @@ namespace PHP.Core.Reflection
 		}
 
 		#endregion
-
-        #region Test
-
-#if DEBUG
-
-        [Test]
-        static void TestGetByName()
-        {
-            // positive tests
-            foreach (var name in new [] {
-                QualifiedName.Boolean,
-                QualifiedName.Integer, 
-                QualifiedName.LongInteger,
-                QualifiedName.Double,
-                QualifiedName.String,
-                QualifiedName.Resource,
-                QualifiedName.Array,
-                QualifiedName.Object,
-                QualifiedName.Callable})
-            {
-                Debug.Assert(name.IsPrimitiveTypeName);
-                Debug.Assert(GetByName(name) != null);
-                Debug.Assert(GetByName(new PrimitiveTypeName(name)) != null);
-            }
-
-            // false tests
-            foreach (var name in new[] {
-                QualifiedName.Error,
-                QualifiedName.False, 
-                QualifiedName.Global,
-                QualifiedName.Lambda,
-                QualifiedName.Null,
-                QualifiedName.True})
-            {
-                Debug.Assert(!name.IsPrimitiveTypeName);
-                Debug.Assert(GetByName(name) == null);
-            }
-        }
-
-        [Test]
-        static void TestGetByTypeCode()
-        {
-            // positive tests
-            foreach (var typecode in new PhpTypeCode[] {
-                PhpTypeCode.Boolean,
-                PhpTypeCode.Integer,
-                PhpTypeCode.LongInteger,
-                PhpTypeCode.Double,
-                PhpTypeCode.String,
-                PhpTypeCode.PhpResource,
-                PhpTypeCode.PhpArray,
-                PhpTypeCode.DObject,
-                PhpTypeCode.PhpCallable})
-            {
-                Debug.Assert(GetByTypeCode(typecode) != null);
-            }
-        }
-
-#endif
-
-        #endregion
     }
 
 	#endregion

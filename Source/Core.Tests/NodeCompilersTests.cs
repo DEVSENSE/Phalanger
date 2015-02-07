@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PHP.Core.AST;
-using System.Diagnostics;
 
 namespace PHP.Core.Tests
 {
@@ -22,10 +21,7 @@ namespace PHP.Core.Tests
             foreach (var t in asttypes)
             {
                 var compilerinfo = dict[t];
-
-#if DEBUG
                 compilerinfo.Test();
-#endif
             }
         }
     }

@@ -63,29 +63,5 @@ namespace PHP.Core.Compiler.AST
 
             return dict;
         }
-
-        #if DEBUG
-
-        /// <summary>
-        /// Checks whether every implementation of <see cref="AstNode"/> has its <see cref="INodeCompiler"/> implementation.
-        /// </summary>
-        [Test]
-        static void TestAstNodeCompilersDefined()
-        {
-            var dict = AstNodeExtension.AstNodeExtensionTypes;
-            Debug.Assert(dict != null);
-
-            var asttypes = typeof(LangElement).Assembly
-                .GetTypes()
-                .Where(t => !t.IsAbstract && !t.IsInterface && t.IsPublic && typeof(AstNode).IsAssignableFrom(t));
-
-            foreach (var t in asttypes)
-            {
-                var compilerinfo = dict[t];
-                compilerinfo.Test();
-            }
-        }
-
-        #endif
     }
 }
