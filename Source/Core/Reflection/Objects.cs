@@ -2913,6 +2913,11 @@ namespace PHP.Core.Reflection
             /// </summary>
             private readonly MulticastDelegate/*!*/function;
 
+            /// <summary>
+            /// Cache args count of the <see cref="function"/>.
+            /// </summary>
+            private System.Reflection.ParameterInfo[] functionParams = null;
+
             internal DelegateClosure(MulticastDelegate/*!*/function)
                 : base(ScriptContext.CurrentContext, true)
             {
@@ -2941,12 +2946,45 @@ namespace PHP.Core.Reflection
             }
 
             /// <summary>
+            /// Check the <paramref name="args"/> to correspond to <see cref="function"/>.
+            /// </summary>
+            /// <param name="args"></param>
+            /// <returns></returns>
+            private object[] CheckArgs(object[]/*!*/args)
+            {
+                if (functionParams == null)
+                    functionParams = function.Method.GetParameters();
+
+                if (args.Length != functionParams.Length)
+                {
+                    var args2 = new object[functionParams.Length];  // valid params count
+                    int copiedArgs = Math.Min(args2.Length, args.Length);
+                    Array.Copy(args, args2, copiedArgs);    // copy passed params
+                    args = args2;
+
+                    // default value for missing args
+                    for (int i = copiedArgs; i < args.Length; i++)
+                        args[i] = /*functionParams[i].DefaultValue ?? */ReflectionUtils.GetDefault(functionParams[i].ParameterType);
+
+                    // Warning: InvalidArgumentCount
+                    PhpException.InvalidArgumentCount(
+                        (function.Target == null) ? null : function.Target.GetType().ToString().Replace('.', QualifiedName.Separator),
+                        function.Method.Name);
+                }
+
+                return args;
+            }
+
+            /// <summary>
             /// 
             /// </summary>
             /// <param name="args">Arguments to be unwrapped and passed to <see cref="function"/>.</param>
             /// <returns></returns>
             private object invokeDelegate(params object[] args)
             {
+                // check args count
+                args = CheckArgs(args);
+
                 // unwraps arguments
                 for (int i = 0; i < args.Length; i++)
                     args[i] = PhpVariable.Unwrap(args[i]);
