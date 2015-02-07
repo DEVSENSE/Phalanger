@@ -1206,6 +1206,29 @@ namespace PHP.Core.Reflection
 
 		#region Call
 
+        /// <summary>
+        /// Emit load <paramref name="instance"/> in top of the evaluation stack. Unwraps the value if &lt;proxy&gt; is used instead of <c>this</c>.
+        /// </summary>
+        /// <param name="codeGenerator"></param>
+        /// <param name="instance"></param>
+        private static void EmitLoadInstanceUnwrapped(CodeGenerator/*!*/ codeGenerator, IPlace instance)
+        {
+            if (instance != null)
+            {
+                // just detect DirectVarUse holding $this in context of Type with <proxy> property:
+                var targetExpression = ExpressionPlace.GetExpression(instance);
+
+                // pass RealObject instead of DObject when using <proxy>:   // J: ASP.NET code behind fix // ArgLesses expect RealObject too
+                if (targetExpression != null &&
+                    codeGenerator.LocationStack.InMethodDecl && codeGenerator.LocationStack.PeekMethodDecl().Type.ProxyFieldInfo != null &&    // current type has "<proxy>" property
+                    targetExpression is DirectVarUse && ((DirectVarUse)targetExpression).VarName.IsThisVariableName && ((DirectVarUse)targetExpression).IsMemberOf == null)   // we are accessing "this"
+                    instance = IndexedPlace.ThisArg;    // "this" instead of "this.<proxy>"
+
+                //
+                instance.EmitLoad(codeGenerator.IL);
+            }
+        }
+
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
             IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
             AccessType access, bool callVirt)
@@ -1231,8 +1254,10 @@ namespace PHP.Core.Reflection
 			ILEmitter il = codeGenerator.IL;
 			bool args_aware = (Properties & RoutineProperties.IsArgsAware) != 0;
 
-			// load the instance reference if we have one
-			if (instance != null) instance.EmitLoad(il);
+			// load the instance reference if we have one:
+            // Just here we need RealObject if possible. When calling CLR method on $this,
+            // Phalanger has "this.<proxy>" in "codeGenerator.SelfPlace". We need just "this".
+			EmitLoadInstanceUnwrapped(codeGenerator, instance);
 
             // arg-full overload may not be present in the case of classes declared Class Library where
 			// we do not require the user to specify both overloads
