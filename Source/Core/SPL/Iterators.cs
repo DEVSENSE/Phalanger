@@ -834,7 +834,7 @@ namespace PHP.Library.SPL
         protected bool isValid = false;
 
         [ImplementsMethod]
-        public object __construct(ScriptContext/*!*/context, object/*Traversable*/ iterator, [Optional]object classname)
+        public virtual object __construct(ScriptContext/*!*/context, object/*Traversable*/ iterator, [Optional]object classname)
         {
             this.iterator = iterator as DObject;    // iterator.RealObject is Traversable ?
             if (this.iterator != null)
