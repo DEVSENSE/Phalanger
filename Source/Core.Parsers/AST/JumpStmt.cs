@@ -96,7 +96,7 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class LabelStmt : Statement
 	{
-		internal VariableName Name { get { return name; } }
+        public VariableName Name { get { return name; } }
 		private VariableName name;
 
 		internal Label Label { get { return label; } set { label = value; } }
