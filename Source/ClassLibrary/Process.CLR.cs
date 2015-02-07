@@ -108,7 +108,7 @@ namespace PHP.Library
 				return null;
 			}
 
-			Process process = CreateProcessExecutingCommand(ref command);
+			Process process = CreateProcessExecutingCommand(ref command, false);
 			if (process == null) return null;
 
 			process.StartInfo.RedirectStandardOutput = read;
@@ -139,8 +139,9 @@ namespace PHP.Library
 			ProcessWrapper wrapper = php_stream.Wrapper as ProcessWrapper;
 			if (wrapper == null) return -1;
 
-			php_stream.Close();
-			return CloseProcess(wrapper.process);
+			var code = CloseProcess(wrapper.process);
+            php_stream.Close();
+            return code;
 		}
 
 		#endregion
@@ -217,22 +218,24 @@ namespace PHP.Library
 			}
 
 			pipes = new PhpArray();
-			PhpResource result = Open(command, (IDictionary)descriptors, pipes, workingDirectory, envVariables, options);
+			PhpResource result = Open(command, descriptors, pipes, workingDirectory, envVariables, options);
 			return result;
 		}
 
 		/// <summary>
 		/// Opens a process.
 		/// </summary>
-		public static PhpResource Open(string command, IDictionary/*!*/ descriptors, IList/*!*/ pipes,
-		  string workingDirectory, IDictionary envVariables, IDictionary options)
+		private static PhpResource Open(string command, PhpArray/*!*/ descriptors, PhpArray/*!*/ pipes,
+          string workingDirectory, PhpArray envVariables, PhpArray options)
 		{
 			if (descriptors == null)
 				throw new ArgumentNullException("descriptors");
 			if (pipes == null)
 				throw new ArgumentNullException("pipes");
 
-			Process process = CreateProcessExecutingCommand(ref command);
+            bool bypass_shell = options != null && Core.Convert.ObjectToBoolean(options["bypass_shell"]);   // quiet
+
+            Process process = CreateProcessExecutingCommand(ref command, bypass_shell);
 			if (process == null)
 				return null;
 
@@ -261,15 +264,33 @@ namespace PHP.Library
 			return new PhpProcessHandle(process, command);
 		}
 
-		private static Process CreateProcessExecutingCommand(ref string command)
+        private const string CommandLineSplitterPattern = @"(?<filename>^""[^""]*""|\S*) *(?<arguments>.*)?";
+        private static readonly System.Text.RegularExpressions.Regex/*!*/CommandLineSplitter = new System.Text.RegularExpressions.Regex(CommandLineSplitterPattern, System.Text.RegularExpressions.RegexOptions.Singleline);
+
+        private static Process CreateProcessExecutingCommand(ref string command, bool bypass_shell)
 		{
 			if (!Execution.MakeCommandSafe(ref command))
 				return null;
 
 			Process process = new Process();
 
-			process.StartInfo.FileName = (Environment.OSVersion.Platform != PlatformID.Win32Windows) ? "cmd.exe" : "command.com";
-			process.StartInfo.Arguments = "/c " + command;
+            if (bypass_shell)
+            {
+                var match = CommandLineSplitter.Match(command);
+                if (match == null || !match.Success)
+                {
+                    PhpException.InvalidArgument("command");
+                    return null;
+                }
+                
+                process.StartInfo.FileName = match.Groups["filename"].Value;
+                process.StartInfo.Arguments = match.Groups["arguments"].Value;
+            }
+            else
+            {
+                process.StartInfo.FileName = (Environment.OSVersion.Platform != PlatformID.Win32Windows) ? "cmd.exe" : "command.com";
+                process.StartInfo.Arguments = "/c " + command;
+            }
 			process.StartInfo.UseShellExecute = false;
             process.StartInfo.WorkingDirectory = ScriptContext.CurrentContext.WorkingDirectory;
 
@@ -327,11 +348,12 @@ namespace PHP.Library
 			return true;
 		}
 
-		private static bool RedirectStreams(Process/*!*/ process, IDictionary/*!*/ descriptors, IList/*!*/ pipes)
+        private static bool RedirectStreams(Process/*!*/ process, PhpArray/*!*/ descriptors, PhpArray/*!*/ pipes)
 		{
-			foreach (DictionaryEntry entry in descriptors)
+			using (var descriptors_enum = descriptors.GetFastEnumerator())
+            while (descriptors_enum.MoveNext())
 			{
-				int desc_no = (int)entry.Key;
+                int desc_no = descriptors_enum.CurrentKey.Integer;
 
 				StreamAccessOptions access;
 				Stream stream;
@@ -343,10 +365,11 @@ namespace PHP.Library
 					default: Debug.Fail(); return false;
 				}
 
-				PhpResource resource;
-				IDictionary array;
-
-				if ((array = entry.Value as IDictionary) != null)
+                object value = PhpVariable.Dereference(descriptors_enum.CurrentValue);
+                PhpResource resource;
+				PhpArray array;
+                
+                if ((array = PhpArray.AsPhpArray(value)) != null)
 				{
 					if (!array.Contains(0))
 					{
@@ -363,7 +386,7 @@ namespace PHP.Library
 							{
 								// mode is ignored (it's determined by the stream):
 								PhpStream php_stream = new NativeStream(stream, null, access, String.Empty, StreamContext.Default);
-								pipes.Add(php_stream);
+								pipes.Add(desc_no, php_stream);
 								break;
 							}
 
@@ -397,7 +420,7 @@ namespace PHP.Library
 							return false;
 					}
 				}
-				else if ((resource = entry.Value as PhpResource) != null)
+                else if ((resource = value as PhpResource) != null)
 				{
 					PhpStream php_stream = PhpStream.GetValid(resource);
 					if (php_stream == null) return false;
@@ -510,8 +533,9 @@ namespace PHP.Library
 			PhpProcessHandle handle = PhpProcessHandle.Validate(process);
 			if (handle == null) return -1;
 
-			handle.Close();
-			return CloseProcess(handle.Process);
+            var code = CloseProcess(handle.Process);
+            handle.Close();
+            return code;
 		}
 
 		private static int CloseProcess(Process/*!*/ process)
@@ -555,7 +579,7 @@ namespace PHP.Library
 
 			result.Add("command", handle.Command);
 			result.Add("pid", handle.Process.Id);
-			result.Add("running", handle.Process.HasExited);
+			result.Add("running", !handle.Process.HasExited);
 			result.Add("signaled", false); // UNIX
 			result.Add("stopped", false);  // UNIX
 			result.Add("exitcode", handle.Process.HasExited ? handle.Process.ExitCode : -1);
