@@ -2758,7 +2758,7 @@ namespace PHP.Core.Reflection
 	/// </remarks>
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("CLR object", Type = "{realObject.GetType(),nq}")]
+    [DebuggerDisplay("{realObject}", Type = "{realObject.GetType(),nq}")]
     public sealed class ClrObject : DObject
     {
         #region Fields and Properties
@@ -2978,7 +2978,7 @@ namespace PHP.Core.Reflection
     /// <typeparam name="T"></typeparam>
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("CLR value", Type = "{typeof(T),nq}")]
+    [DebuggerDisplay("{realValue}", Type = "{typeof(T),nq}")]
     internal sealed class ClrValue<T> : DObject, IClrValue where T : struct
     {
         #region Fields and properties

@@ -56,7 +56,7 @@ namespace PHP.Core.CodeDom
 		/// <summary>
 		/// Imports generated so far.
 		/// </summary>
-		private Dictionary<string, object> importedNamespaces;
+		private Dictionary<string, string> importedNamespaces;
 
 		/// <summary>
 		/// <B>True</B> if the class that is currently being generated has a base class (i.e. is not a parent-less
@@ -101,7 +101,7 @@ namespace PHP.Core.CodeDom
 		internal static CodeAttributeDeclaration AppStaticAttribute
 		{
 			get
-			{ return new CodeAttributeDeclaration("AppStatic"); }
+			{ return new CodeAttributeDeclaration("\\AppStatic"); }
 		}
 
 		internal static CodeAttributeDeclaration OutAttribute
@@ -113,7 +113,7 @@ namespace PHP.Core.CodeDom
 		internal static CodeAttributeDeclaration ExportAttribute
 		{
 			get
-			{ return new CodeAttributeDeclaration("Export"); }
+			{ return new CodeAttributeDeclaration("\\Export"); }
 		}
 
 		#endregion
@@ -222,7 +222,7 @@ namespace PHP.Core.CodeDom
 				// TODO
 				return Keywords.Array;
 			}
-
+            
 			string base_type = value.BaseType;
             if(value.TypeArguments.Count>0){//For generic types name ends with grave and number of generic arguments. Remove this.
                 string graveNum = string.Format("`{0:0}", value.TypeArguments.Count);
@@ -230,10 +230,10 @@ namespace PHP.Core.CodeDom
                     base_type = base_type.Substring(0, base_type.Length - graveNum.Length);
             }
 
-			StringBuilder sb = new StringBuilder(base_type.Length + 8 + 16 * value.TypeArguments.Count);
+			StringBuilder sb = new StringBuilder(1 + base_type.Length + 8 + 16 * value.TypeArguments.Count);
 
 			// process the base type
-			for (int i = 0; i < base_type.Length; i++)
+            for (int i = 0; i < base_type.Length; i++)
 			{
 				if (base_type[i] == '.') sb.Append(Tokens.NamespaceSeparator);
 				else sb.Append(base_type[i]);
@@ -528,7 +528,7 @@ namespace PHP.Core.CodeDom
 		{
 			GenerateCompileUnitStart(e);
 
-			importedNamespaces = new Dictionary<string, object>();
+			importedNamespaces = new Dictionary<string, string>();
 
 			inCompileUnit = true;
 			try
@@ -1061,6 +1061,28 @@ namespace PHP.Core.CodeDom
 			}
 		}
 
+        /// <summary>
+        /// Converts CLR namespace name to some short form used as alias.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <remarks>System.Xml.Linq to SXLinq.</remarks>
+        private string FullClrNamespaceToShort(string/*!*/name)
+        {
+            string[] names = name.Split('.');
+
+            StringBuilder bld = new StringBuilder(8);
+
+            for (int i = 0; i < names.Length - 1; i++)
+            {
+                bld.Append(names[i][0]);
+            }
+
+            bld.Append(names[names.Length - 1]);
+
+            return bld.ToString();
+        }
+
 		/// <summary>
 		/// Generates code for the specified namespace import.
 		/// </summary>
@@ -1072,14 +1094,17 @@ namespace PHP.Core.CodeDom
 				if (importedNamespaces.ContainsKey(e.Namespace)) return;
 			}
 
-			Output.Write(Keywords.Import + WhiteSpace.Space + Keywords.Namespace + WhiteSpace.Space);
-			Output.Write(e.Namespace.Replace(".", Tokens.NamespaceSeparator));  // TODO: use {e};
+            //string alias = FullClrNamespaceToShort(e.Namespace);
 
+			Output.Write(Keywords.Import + WhiteSpace.Space + Keywords.Namespace + WhiteSpace.Space);
+			Output.Write(e.Namespace.Replace(".", Tokens.NamespaceSeparator));
+            //Output.Write(WhiteSpace.Space + Keywords.As + WhiteSpace.Space);
+            //Output.Write(alias);
 			Output.WriteLine(Tokens.Semicolon);
 
 			if (inCompileUnit)
 			{
-				importedNamespaces.Add(e.Namespace, null);
+				importedNamespaces.Add(e.Namespace, /*alias*/null);
 			}
 		}
 

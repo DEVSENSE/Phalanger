@@ -734,7 +734,6 @@ namespace PHP.Core
                 }
                 else
                 {
-                    qname.IsFullyQualifiedName = true;
                     return qname;
                 }
             }   

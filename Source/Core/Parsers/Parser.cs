@@ -555,7 +555,7 @@ namespace PHP.Core.Parsers
             qname = TranslateNamespace(qname);
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
-                !IsInGlobalNamespace &&
+                !IsInGlobalNamespace && !sourceUnit.HasImportedNamespaces &&
                 !reservedTypeNames.Contains(qname.Name.Value, StringComparer.OrdinalIgnoreCase))
             {
                 // "\foo"
@@ -784,6 +784,17 @@ namespace PHP.Core.Parsers
         //{
         //    sourceUnit.AddImportedNamespace(new QualifiedName(Name.EmptyBaseName, new Name[] { new Name(namespaceName) }));
         //}
+        public void AddImport(QualifiedName namespaceName)
+        {
+            if (sourceUnit.CompilationUnit.IsPure)
+            {
+                sourceUnit.ImportedNamespaces.Add(namespaceName);
+            }
+            else
+            {
+                ErrorSink.Add(Errors.ImportOnlyInPureMode, sourceUnit, this.yypos); // does actually not happen, since T_IMPORT is not recognized outside Pure mode at all
+            }
+        }
 
         //#endregion
 
@@ -930,7 +941,7 @@ namespace PHP.Core.Parsers
             return QualifiedName.TranslateAlias(
                 qname,
                 CurrentScopeAliases,
-                IsInGlobalNamespace ? (QualifiedName?)null : currentNamespace.QualifiedName);
+                (IsInGlobalNamespace || sourceUnit.HasImportedNamespaces) ? (QualifiedName?)null : currentNamespace.QualifiedName);  // do not use current namespace, if there are imported namespace ... will be resolved later
         }
 
         #endregion

@@ -66,8 +66,9 @@ namespace PHP.Core.Reflection
         //public Dictionary<Name, QualifiedName> ConstantAliases { get { return constantAliases; } }
         //private Dictionary<Name, QualifiedName> constantAliases = null;
 
-        //public List<QualifiedName> ImportedNamespaces { get { return importedNamespaces; } }
-        //private List<QualifiedName> importedNamespaces = null;
+        public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
+        private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
+        public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count > 0; } }
 
 		/// <summary>
 		/// Place where this unit's <see cref="NamingContext"/> is stored (<B>null</B> if there are no imports).
@@ -296,7 +297,7 @@ namespace PHP.Core.Reflection
 			if (result != null)
 				return result;
 
-            /*
+            /*  // aliases are resolved in parse-time
 			// try explicit aliases:
 			if (qualifiedName.IsSimpleName)
 			{
@@ -332,9 +333,10 @@ namespace PHP.Core.Reflection
 					return result;
 				}
 			}
+            */
 
 			// try imported namespaces:
-			if (importedNamespaces != null)
+            if (!qualifiedName.IsFullyQualifiedName && HasImportedNamespaces)
 			{
 				result = null;
 
@@ -372,8 +374,7 @@ namespace PHP.Core.Reflection
 				if (result != null)
 					return result;
 			}
-            */
-
+            
 			// unknown qualified name:
 			if (errors != null)
 			{
