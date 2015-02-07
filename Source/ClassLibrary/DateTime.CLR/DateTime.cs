@@ -540,6 +540,11 @@ namespace PHP.Library
                         result.Append(local.ToString("dd", DateTimeFormatInfo.InvariantInfo));
                         break;
 
+                    case 'e':
+                        // Timezone identifier (added in PHP 5.1.0)
+                        result.Append(zone.Id);
+                        break;
+
                     case 'D':
                         // A textual representation of a day, three letters - Mon through Sun
                         result.Append(local.ToString("ddd", DateTimeFormatInfo.InvariantInfo));
@@ -661,11 +666,6 @@ namespace PHP.Library
                     case 't':
                         // Number of days in the given month 28 through 31
                         result.Append(DateTime.DaysInMonth(local.Year, local.Month));
-                        break;
-
-                    case 'e':
-                        // Timezone identifier (added in PHP 5.1.0)
-                        result.Append(zone.StandardName);
                         break;
 
                     case 'T':
