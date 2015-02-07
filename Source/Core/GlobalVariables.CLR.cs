@@ -85,51 +85,91 @@ namespace PHP.Core
 		/// </para>
 		/// </summary>
 		public PhpReference/*!*/ Server = new PhpReference();
-		
+		public const string ServerName = "_SERVER";
+
 		/// <summary>
 		/// Environment variables ($_ENV).
 		/// </summary>
 		public PhpReference/*!*/ Env = new PhpReference();
+		public const string EnvName = "_ENV";
 
 		/// <summary>
 		/// Global variables ($GLOBALS). 
 		/// </summary>
 		public PhpReference/*!*/ Globals = new PhpReference();
-		
+		public const string GlobalsName = "GLOBALS";
+
 		/// <summary>
 		/// Request variables ($_REQUEST) copied from $_GET, $_POST and $_COOKIE arrays.
 		/// </summary>
 		public PhpReference/*!*/ Request = new PhpReference();
+		public const string RequestName = "_REQUEST";
 
 		/// <summary>
 		/// Variables passed by HTTP GET method ($_GET).
 		/// </summary>
 		public PhpReference/*!*/ Get = new PhpReference();
+		public const string GetName = "_GET";
 
 		/// <summary>
 		/// Variables passed by HTTP POST method ($_POST).
 		/// </summary>
 		public PhpReference/*!*/ Post = new PhpReference();
+		public const string PostName = "_POST";
 
 		/// <summary>
 		/// Cookies ($_COOKIE).
 		/// </summary>
 		public PhpReference/*!*/ Cookie = new PhpReference();
+		public const string CookieName = "_COOKIE";
 
         /// <summary>
         /// Raw POST data ($HTTP_RAW_POST_DTA). Equivalent to file_get_contents("php://input").
         /// </summary>
         public PhpReference/*!*/ HttpRawPostData = new PhpReference();
+        public const string HttpRawPostDataName = "HTTP_RAW_POST_DATA";
 
 		/// <summary>
 		/// Uploaded files information ($_FILES).
 		/// </summary>
 		public PhpReference/*!*/ Files = new PhpReference();
+		public const string FilesName = "_FILES";
 
 		/// <summary>
 		/// Session variables ($_SESSION). Initialized on session start.
 		/// </summary>
 		public PhpReference/*!*/ Session = new PhpReference();
+		public const string SessionName = "_SESSION";
+
+		#endregion
+
+		#region IsAutoGlobal
+
+		/// <summary>
+		/// Checks whether a specified name is the name of an auto-global variable.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns>Whether <paramref name="name"/> is auto-global.</returns>
+		public static bool IsAutoGlobal(string name)
+		{
+			switch (name)
+			{
+                case GlobalsName:
+                case ServerName:
+                case EnvName:
+                case CookieName:
+                case HttpRawPostDataName:
+                case FilesName:
+                case RequestName:
+                case GetName:
+                case PostName:
+                case SessionName:
+					return true;
+
+                default:
+                    return false;
+			}
+		}
 
 		#endregion
 
@@ -141,19 +181,27 @@ namespace PHP.Core
 		/// <param name="array">The array.</param>
 		/// <param name="name">A unparsed name of variable.</param>
 		/// <param name="value">A value to be added.</param>
+		/// <param name="isGpc">Whether the array is GET, POST or COOKIE (value will be slashed then).</param>
+		/// <param name="config">A configuration record.</param>
 		/// <param name="subname">A name of intermediate array inserted before the value.</param>
 		private static void AddVariable(
 		  PhpArray/*!*/ array,
 		  string name,
 		  object value,
-		  string subname)
+		  string subname,
+		  bool isGpc,
+				LocalConfiguration/*!*/ config)
 		{
+			if (config == null)
+				throw new ArgumentNullException("config");
 			if (array == null)
 				throw new ArgumentNullException("array");
 			if (name == null)
 				name = String.Empty;
 
-            string key;
+			value = GpcEncodeValue(value, isGpc, config);
+
+			string key;
 
 			// current left and right square brace positions:
 			int left, right;
@@ -163,7 +211,7 @@ namespace PHP.Core
 			if (left > 0 && left < name.Length - 1 && (right = name.IndexOf(']', left + 1)) >= 0)
 			{
 				// the variable name is a key to the "array", dots are replaced by underscores in top-level name:
-                key = EncodeTopLevelName(name.Substring(0, left));
+				key = name.Substring(0, left).Replace('.', '_');
 
 				// ensures that all [] operators in the chain except for the last one are applied on an array:
 				for (;;)
@@ -197,7 +245,7 @@ namespace PHP.Core
 			else
 			{
 				// no array pattern in variable name, "name" is a top-level key:
-                name = EncodeTopLevelName(name);
+				name = name.Replace('.', '_');
 
 				// inserts a subname on the next level:
 				if (subname != null)
@@ -207,45 +255,27 @@ namespace PHP.Core
 			}
 		}
 
-        /// <summary>
-        /// Fixes top level variable name to not contain spaces and dots (as it is in PHP);
-        /// </summary>
-        private static string EncodeTopLevelName(string/*!*/name)
-        {
-            Debug.Assert(name != null);
+		private static object GpcEncodeValue(object value, bool isGpc, LocalConfiguration config)
+		{
+			string svalue = value as string;
+			if (svalue != null && isGpc)
+			{
+				// url-decodes the values:
+				svalue = HttpUtility.UrlDecode(svalue, Configuration.Application.Globalization.PageEncoding);
 
-            return name.Replace('.', '_').Replace(' ', '_');
-        }
+				// quotes the values:
+				if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
+				{
+					if (config.Variables.QuoteInDbManner)
+						svalue = StringUtils.AddDbSlashes(svalue);
+					svalue = StringUtils.AddCSlashes(svalue, true, true);
+				}
 
-        /// <summary>
-        /// Returns <see cref="HttpUtility.UrlDecode"/>  of <paramref name="value"/> if it is a string.
-        /// </summary>
-        private static string UrlDecodeValue(string value)
-        {
-            return HttpUtility.UrlDecode(value, Configuration.Application.Globalization.PageEncoding);
-        }
+				value = svalue;
+			}
 
-        //private static object GpcEncodeValue(object value, LocalConfiguration config)
-        //{
-        //    if (value != null && value.GetType() == typeof(string))
-        //    {
-        //         // url-decodes the values: (COOKIES ONLY)
-        //        string svalue = HttpUtility.UrlDecode((string)value, Configuration.Application.Globalization.PageEncoding);
-
-        //        // quotes the values:
-        //        if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
-        //        {
-        //            if (config.Variables.QuoteInDbManner)
-        //                svalue = StringUtils.AddDbSlashes(svalue);
-        //            svalue = StringUtils.AddCSlashes(svalue, true, true);
-        //        }
-
-        //        //
-        //        value = svalue;
-        //    }
-
-        //    return value;
-        //}
+			return value;
+		}
 
 		/// <summary>
 		/// Adds variables from one auto-global array to another.
@@ -288,7 +318,9 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="result">An array where to add variables stored in the collection.</param>
 		/// <param name="collection">The collection.</param>
-		public static void LoadFromCollection(PhpArray result, NameValueCollection collection)
+		/// <param name="isGpc">Whether the array is GET, POST or COOKIE.</param>
+		/// <param name="config">A configuration record.</param>
+		private static void LoadFromCollection(PhpArray result, NameValueCollection collection, bool isGpc, LocalConfiguration config)
 		{
 			foreach (string name in collection)
 			{
@@ -302,7 +334,7 @@ namespace PHP.Core
 				if (name != null)
 				{
 					foreach (string value in values)
-                        AddVariable(result, name, value, null);
+						AddVariable(result, name, value, null, false, config);
 				}
 				else
 				{
@@ -310,7 +342,7 @@ namespace PHP.Core
 					// e.g. for GET variables, URL looks like this: ...&test&...
 					// we add the name of the variable and an emtpy string to get what PHP gets:
                     foreach (string value in values)
-                        AddVariable(result, value, String.Empty, null);
+						AddVariable(result, value, String.Empty, null, false, config);
 				}
 			}
 		}
@@ -339,7 +371,7 @@ namespace PHP.Core
 			// $_SESSION (initialized by session_start)
 
 			// $_FILE:
-			InitializeFileVariables(config, request, context);
+			InitializeFileVariables(config, request);
 
 			// $GLOBALS:
 			InitializeGlobals(config, request);
@@ -356,7 +388,7 @@ namespace PHP.Core
 			PhpArray array = new PhpArray(0, env_vars.Count);
 
 			foreach (DictionaryEntry entry in env_vars)
-				AddVariable(array, entry.Key as string, entry.Value as string, null);
+				AddVariable(array, entry.Key as string, entry.Value as string, null, false, config);
 
 			Env.Value = array;
 		}
@@ -382,7 +414,7 @@ namespace PHP.Core
             Server.Value = array = new PhpArray(0, /*serverVariables.Count*/64);
 
 			// adds variables defined by ASP.NET and IIS:
-            LoadFromCollection(array, serverVariables);
+            LoadFromCollection(array, serverVariables, false, config);
 
 			// adds argv, argc variables:
 			if (Configuration.Global.GlobalVariables.RegisterArgcArgv)
@@ -502,7 +534,7 @@ namespace PHP.Core
                     postArray = new PhpArray(0, 0);
 
                     // loads Form variables to GET array:
-                    LoadFromCollection(getArray, request.Form);
+                    LoadFromCollection(getArray, request.Form, true, config);
                 }
                 else
                 {
@@ -510,11 +542,11 @@ namespace PHP.Core
                     postArray = new PhpArray(0, request.Form.Count);
 
                     // loads Form variables to POST array:
-                    LoadFromCollection(postArray, request.Form);
+                    LoadFromCollection(postArray, request.Form, true, config);
                 }
 
                 // loads Query variables to GET array:
-                LoadFromCollection(getArray, request.QueryString);
+                LoadFromCollection(getArray, request.QueryString, true, config);
 
                 // HTTP_RAW_POST_DATA   // when always_populate_raw_post_data option is TRUE, however using "php://input" is preferred. For "multipart/form-data" it is not available.
                 try
@@ -548,25 +580,22 @@ namespace PHP.Core
 		public static void InitializeCookieVariables(LocalConfiguration/*!*/ config, HttpRequest request,
 		  out PhpArray cookieArray)
 		{
-            Debug.Assert(config != null);
+			if (config == null)
+				throw new ArgumentNullException("config");
 
 			if (request != null)
 			{
-                var cookies = request.Cookies;
-                Debug.Assert(cookies != null, "cookies == null");
+				cookieArray = new PhpArray(0, request.Cookies.Count);
 
-                int count = cookies.Count;
-				cookieArray = new PhpArray(0, count);
-
-                for (int i = 0; i < count; i++)
-                {
-                    HttpCookie cookie = cookies.Get(i);
-					AddVariable(cookieArray, cookie.Name, UrlDecodeValue(cookie.Value), null);
+				foreach (string cookie_name in request.Cookies)
+				{
+					HttpCookie cookie = request.Cookies[cookie_name];
+					AddVariable(cookieArray, cookie.Name, cookie.Value, null, true, config);
 
 					// adds a copy of cookie with the same key as the session name;
 					// the name gets encoded and so $_COOKIE[session_name()] doesn't work then:
 					if (cookie.Name == AspNetSessionHandler.AspNetSessionName)
-						cookieArray[AspNetSessionHandler.AspNetSessionName] = UrlDecodeValue(cookie.Value);
+						cookieArray[AspNetSessionHandler.AspNetSessionName] = GpcEncodeValue(cookie.Value, true, config);
 				}
 			}
 			else
@@ -590,7 +619,7 @@ namespace PHP.Core
 				// adds items from GET, POST, COOKIE arrays in the order specified by RegisteringOrder config option:
 				for (int i = 0; i < gpcOrder.Length; i++)
 				{
-					switch (Char.ToUpperInvariant(gpcOrder[i]))
+					switch (Char.ToUpper(gpcOrder[i]))
 					{
 						case 'G': AddVariables(requestArray, getArray); break;
 						case 'P': AddVariables(requestArray, postArray); break;
@@ -604,7 +633,7 @@ namespace PHP.Core
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Loads $_FILES from HttpRequest.Files.
 		/// </summary>
 		/// <remarks>
@@ -616,26 +645,21 @@ namespace PHP.Core
 		///   <item>$_FILES[{var_name}]['error'] - The error code associated with this file upload.</item> 
 		/// </list>
 		/// </remarks>
-        private void InitializeFileVariables(LocalConfiguration/*!*/ config, HttpRequest request, HttpContext context)
+		private void InitializeFileVariables(LocalConfiguration/*!*/ config, HttpRequest request)
 		{
 			Debug.Assert(config != null);
 			PhpArray files;
+			string path;
 			int count;
 
 			GlobalConfiguration global_config = Configuration.Global;
 
 			if (request != null && global_config.PostedFiles.Accept && (count = request.Files.Count) > 0)
 			{
-                Debug.Assert(context != null);
-                Debug.Assert(RequestContext.CurrentContext != null, "PHP.Core.RequestContext not initialized!");
-
 				files = new PhpArray(0, count);
 
 				// gets a path where temporary files are stored:
-				var temppath = global_config.PostedFiles.GetTempPath(global_config.SafeMode);
-                // temporary file name (first part)
-                var basetempfilename = string.Concat("php_", context.Timestamp.Ticks.ToString("x"), "-");
-                var basetempfileid = this.GetHashCode();
+				path = global_config.PostedFiles.GetTempPath(global_config.SafeMode);
 
 				for (int i = 0; i < count; i++)
 				{
@@ -644,16 +668,14 @@ namespace PHP.Core
 					HttpPostedFile file = request.Files[i];
 					PostedFileError error = PostedFileError.None;
 
-					if (!string.IsNullOrEmpty(file.FileName))
+					if (file.FileName != String.Empty)
 					{
 						type = file.ContentType;
-
-                        var tempfilename = string.Concat(basetempfilename, (basetempfileid++).ToString("X"), ".tmp");
-                        file_path = Path.Combine(temppath, tempfilename);
+						file_path = Path.Combine(path, RequestContext.GetTempFileName());
 						file_name = Path.GetFileName(file.FileName);
 
 						// registers the temporary file for deletion at request end:
-						RequestContext.CurrentContext.AddTemporaryFile(file_path);
+						RequestContext.AddTemporaryFile(file_path);
 
 						// saves uploaded content to the temporary file:
 						file.SaveAs(file_path);
@@ -664,11 +686,11 @@ namespace PHP.Core
 						error = PostedFileError.NoFile;
 					}
 
-					AddVariable(files, name, file_name, "name");
-					AddVariable(files, name, type, "type");
-					AddVariable(files, name, file_path, "tmp_name");
-					AddVariable(files, name, (int)error, "error");
-					AddVariable(files, name, file.ContentLength, "size");
+					AddVariable(files, name, file_name, "name", false, config);
+					AddVariable(files, name, type, "type", false, config);
+					AddVariable(files, name, file_path, "tmp_name", false, config);
+					AddVariable(files, name, (int)error, "error", false, config);
+					AddVariable(files, name, file.ContentLength, "size", false, config);
 				}
 			}
 			else
@@ -771,16 +793,16 @@ namespace PHP.Core
 			}
 
 			// adds auto-global variables (overwrites potential existing variables in $GLOBALS):
-            globals[VariableName.GlobalsName] = Globals;
-            globals[VariableName.EnvName] = Env;
-            globals[VariableName.GetName] = Get;
-            globals[VariableName.PostName] = Post;
-            globals[VariableName.CookieName] = Cookie;
-            globals[VariableName.RequestName] = Request;
-            globals[VariableName.ServerName] = Server;
-            globals[VariableName.FilesName] = Files;
-            globals[VariableName.SessionName] = Session;
-            globals[VariableName.HttpRawPostDataName] = HttpRawPostData;
+			globals[GlobalsName] = Globals;
+			globals[EnvName] = Env;
+			globals[GetName] = Get;
+			globals[PostName] = Post;
+			globals[CookieName] = Cookie;
+			globals[RequestName] = Request;
+			globals[ServerName] = Server;
+			globals[FilesName] = Files;
+			globals[SessionName] = Session;
+            globals[HttpRawPostDataName] = HttpRawPostData;
 
 			// adds long arrays:
 			if (Configuration.Global.GlobalVariables.RegisterLongArrays)
@@ -810,25 +832,25 @@ namespace PHP.Core
 		{
 			switch (name.ToString())
 			{
-				case VariableName.CookieName:
+				case AutoGlobals.CookieName:
 					return Fields.AutoGlobals.Cookie;
-                case VariableName.EnvName:
+				case AutoGlobals.EnvName:
 					return Fields.AutoGlobals.Env;
-                case VariableName.FilesName:
+				case AutoGlobals.FilesName:
 					return Fields.AutoGlobals.Files;
-                case VariableName.GetName:
+				case AutoGlobals.GetName:
 					return Fields.AutoGlobals.Get;
-                case VariableName.GlobalsName:
+				case AutoGlobals.GlobalsName:
 					return Fields.AutoGlobals.Globals;
-                case VariableName.PostName:
+				case AutoGlobals.PostName:
 					return Fields.AutoGlobals.Post;
-                case VariableName.RequestName:
+				case AutoGlobals.RequestName:
 					return Fields.AutoGlobals.Request;
-                case VariableName.ServerName:
+				case AutoGlobals.ServerName:
 					return Fields.AutoGlobals.Server;
-                case VariableName.SessionName:
+				case AutoGlobals.SessionName:
 					return Fields.AutoGlobals.Session;
-                case VariableName.HttpRawPostDataName:
+                case AutoGlobals.HttpRawPostDataName:
                     return Fields.AutoGlobals.HttpRawPostData;
 				default:
 					return null;
