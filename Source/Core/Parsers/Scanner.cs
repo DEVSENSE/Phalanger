@@ -129,9 +129,7 @@ namespace PHP.Core.Parsers
 		private readonly Encoding encoding;
 		private bool pure;
 
-        private readonly Action/*!*/UpdateTokenPosition;
-
-		public Scanner(Parsers.Position initialPosition, TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit,
+        public Scanner(Parsers.Position initialPosition, TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit,
 			ErrorSink/*!*/ errors, ICommentsSink commentsSink, LanguageFeatures features)
 			: base(reader)
 		{
@@ -157,10 +155,6 @@ namespace PHP.Core.Parsers
 
 			AllowAspTags = (features & LanguageFeatures.AspTags) != 0;
 			AllowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
-
-            this.UpdateTokenPosition = (this.columnShift == 0 && this.encoding.IsSingleByte) ?
-                new Action(this.UpdateTokenPosition_Optimized) :
-                new Action(this.UpdateTokenPosition_Default);
 		}
 
 		private void StoreEncapsedString()
@@ -182,13 +176,10 @@ namespace PHP.Core.Parsers
 			return encapsedStringBuffer.ToString(offset, length);
 		}
 
-        #region UpdateTokenPosition
-
         /// <summary>
         /// Updates <see cref="streamOffset"/> and <see cref="tokenPosition"/>.
         /// </summary>
-        /// <remarks>Assumes <see cref="columnShift"/> != <c>0</c> or <see cref="encoding"/> is not single byte encoding.</remarks>
-        private void UpdateTokenPosition_Default()
+        private void UpdateTokenPosition()
 		{
 			// update token position info:
 			int byte_length = base.GetTokenByteLength(encoding);
@@ -211,31 +202,6 @@ namespace PHP.Core.Parsers
 
 			streamOffset += byte_length;
 		}
-
-        /// <summary>
-        /// Updates <see cref="streamOffset"/> and <see cref="tokenPosition"/>.
-        /// </summary>
-        /// <remarks>Assumes <see cref="columnShift"/> == <c>0</c> and <see cref="encoding"/> is single byte encoding.</remarks>
-        private void UpdateTokenPosition_Optimized()
-        {
-            Debug.Assert(this.encoding.IsSingleByte);
-            Debug.Assert(this.columnShift == 0);
-
-            // update token position info:
-            int byte_length = base.GetTokenCharLength();    // assuming encoding is single byte encoding
-
-            tokenPosition.FirstOffset = offsetShift + streamOffset;
-            tokenPosition.FirstLine = lineShift + token_start_pos.Line;
-            tokenPosition.FirstColumn = token_start_pos.Column; // assuming columnShift is 0
-
-            tokenPosition.LastOffset = tokenPosition.FirstOffset + byte_length - 1;
-            tokenPosition.LastLine = lineShift + token_end_pos.Line;
-            tokenPosition.LastColumn = token_end_pos.Column; // assuming columnShift is 0
-
-            streamOffset += byte_length;
-        }
-
-        #endregion
 
         public new Tokens GetNextToken()
 		{
