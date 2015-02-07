@@ -186,7 +186,7 @@ namespace PHP.Core
 			// use the instance's RuntimeFields as a temp storage for deserialized members
 			DObject instance = (DObject)obj;
 
-            instance.RuntimeFields = new PhpArray();
+			instance.RuntimeFields = new OrderedHashtable<string>(1);
 			instance.RuntimeFields.Add(MembersSerializationInfoKey,
 				info.GetValue(MembersSerializationInfoKey, typeof(object[])));
 
@@ -568,10 +568,11 @@ namespace PHP.Core
 				if (res_str == null)
 				{
 					// serialize did not return NULL nor a string -> throw an exception
-                    Library.SPL.Exception.ThrowSplException(
-                        _ctx => new Library.SPL.Exception(_ctx, true),
-                        context.ScriptContext,
-                        string.Format(CoreResources.serialize_must_return_null_or_string, instance.TypeName), 0, null);
+					Library.SPL.Exception e = new Library.SPL.Exception(context.ScriptContext, true);
+					e.__construct(context.ScriptContext, CoreResources.GetString("serialize_must_return_null_or_string",
+						instance.TypeName), 0);
+
+					throw new PhpUserException(e);
 				}
 
 				info.AddValue(SerializedDataFieldName, res_str);

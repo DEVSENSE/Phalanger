@@ -2759,45 +2759,25 @@ namespace PHP.Core.Reflection
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("CLR object", Type = "{realObject.GetType(),nq}")]
-#if !SILVERLIGHT
-    [DebuggerTypeProxy(typeof(ClrObject.DebugView))]
-#endif
     public sealed class ClrObject : DObject
     {
-        #region Debug View
-
-        private sealed class DebugView
-        {
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public object RealObject { get { return obj.RealObject; } }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            private readonly ClrObject/*!*/ obj;
-
-            public DebugView(ClrObject/*!*/ obj)
-            {
-                if (obj == null)
-                    throw new ArgumentNullException("obj");
-
-                this.obj = obj;
-            }
-        }
-
-        #endregion
-
         #region Fields and Properties
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly WeakCache<ClrObject>/*!*/ cache = new WeakCache<ClrObject>();
 
         /// <summary>
         /// The real object contained by this ClrObject wrapper.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object/*!*/ RealObject { get { return realObject; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         private object/*!*/ realObject;
 
         /// <summary>
         /// The reference passed to the methods and properties.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object InstanceObject { get { return realObject; } }
 
         /// <summary>
@@ -2933,6 +2913,7 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// Cache of <see cref="ClrValue&lt;T&gt;"/> and its <see cref="ClrValue&lt;T&gt;.Create"/> method associated with specific value type.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal static readonly SynchronizedCache<Type, Tuple<Type, Delegate>>/*!*/valueTypesCache =
             new SynchronizedCache<Type, Tuple<Type, Delegate>>(type =>
             {
@@ -2995,6 +2976,9 @@ namespace PHP.Core.Reflection
     /// Represents non-PHP value typed object at runtime.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [Serializable]
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("CLR value", Type = "{typeof(T),nq}")]
     internal sealed class ClrValue<T> : DObject, IClrValue where T : struct
     {
         #region Fields and properties
@@ -3002,11 +2986,13 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// The CLR value represented by this <see cref="ClrValue&lt;T&gt;"/> instance.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public T realValue;
 
         /// <summary>
         /// The CLR value represented by this <see cref="ClrValue&lt;T&gt;"/> instance. The returned value is boxed.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object RealObject { get { return (object)realValue; } } // box the realValue
 
         /// <summary>
@@ -3014,6 +3000,7 @@ namespace PHP.Core.Reflection
         /// The whole <see cref="ClrValue&lt;T&gt;"/> is returned too not box the wrapped value. Therefore the value
         /// can be modified in-place by the called method or property.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override object InstanceObject { get { return this; } }  // pass the whole ClrValue into the method/property stub
         
         #endregion
