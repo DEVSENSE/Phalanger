@@ -2020,13 +2020,16 @@ non-infringement.
   <data name="callstat_must_be_public_static" xml:space="preserve">
     <value>The magic method __callStatic() must have public visibility and be static</value>
   </data>
-  <data name="call_must_be_public_nonstatic" xml:space="preserve">
-    <value>The magic method __call() must have public visibility and cannot be static</value>
+  <data name="magic_method_must_be_public_nonstatic" xml:space="preserve">
+    <value>The magic method {0}() must have public visibility and cannot be static</value>
   </data>
   <data name="unoptimized_local_variables_function" xml:space="preserve">
     <value>Function {0} requires access to local variables and prevents optimizing them. To improve performance, separate this function call into small function.</value>
   </data>
   <data name="constant_not_found" xml:space="preserve">
     <value>Couldn't find constant {0}</value>
+  </data>
+  <data name="method_cannot_take_arguments" xml:space="preserve">
+    <value>Method {0}::{1}() cannot take arguments</value>
   </data>
 </root>
