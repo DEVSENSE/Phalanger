@@ -175,7 +175,6 @@ namespace PHP.Core
             addType(typeof(Library.__PHP_Incomplete_Class));
             addType(typeof(Library.EventClass<>));
             addType(typeof(Library.SPL.ArrayAccess));
-            addType(typeof(Library.SPL.Exception));
             addType(typeof(Library.SPL.Traversable));
             addType(typeof(Library.SPL.Iterator));
             addType(typeof(Library.SPL.SeekableIterator));
@@ -186,6 +185,11 @@ namespace PHP.Core
             addType(typeof(Library.SPL.Countable));
             addType(typeof(Library.SPL.ArrayIterator));
             addType(typeof(Library.SPL.Reflector));
+
+            // Exception:
+            addType(typeof(Library.SPL.Exception));
+            addType(typeof(Library.SPL.LogicException));
+            addType(typeof(Library.SPL.InvalidArgumentException));            
 
             // primitive constants
             constants.Add("TRUE", GlobalConstant.True.ConstantDesc, true);

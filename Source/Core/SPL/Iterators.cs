@@ -171,9 +171,10 @@ namespace PHP.Library.SPL
             }
             else
             {
-                // TODO: throw an PHP.Library.SPL.InvalidArgumentException if anything besides an array or an object is given.
-                throw new ArgumentException("", "array");
-                //return null;
+                // throw an PHP.Library.SPL.InvalidArgumentException if anything besides an array or an object is given.
+                var e = new InvalidArgumentException(context, true);
+				e.__construct(context, null, 0);
+				throw new PhpUserException(e);
             }
 
             // move first:
@@ -216,6 +217,78 @@ namespace PHP.Library.SPL
             object array = stack.PeekValue(1);
             stack.RemoveFrame();
             return ((ArrayIterator)instance).__construct(stack.Context, array);
+        }
+
+        #endregion
+
+        #region ArrayIterator (uasort, uksort, natsort, natcasesort, ksort, asort)
+
+        public static object uasort(object instance, PhpStack stack)
+        {
+            var cmp_function = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).uasort(stack.Context, cmp_function);
+        }
+
+        public static object uksort(object instance, PhpStack stack)
+        {
+            var cmp_function = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).uksort(stack.Context, cmp_function);
+        }
+
+        public static object natsort(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).natsort(stack.Context);
+        }
+
+        public static object natcasesort(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).natcasesort(stack.Context);
+        }
+
+        public static object ksort(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).ksort(stack.Context);
+        }
+
+        public static object asort(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).asort(stack.Context);
+        }
+
+        #endregion
+
+        #region ArrayIterator (getFlags, setFlags, append, getArrayCopy)
+
+        public static object getFlags(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).getFlags(stack.Context);
+        }
+
+        public static object setFlags(object instance, PhpStack stack)
+        {
+            var value = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).setFlags(stack.Context, value);
+        }
+
+        public static object getArrayCopy(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).getArrayCopy(stack.Context);
+        }
+
+        public static object append(object instance, PhpStack stack)
+        {
+            var value = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).append(stack.Context, value);
         }
 
         #endregion
@@ -336,6 +409,76 @@ namespace PHP.Library.SPL
         }
 
         #endregion
+
+        #endregion
+
+        #region ArrayIterator (uasort, uksort, natsort, natcasesort, ksort, asort)
+
+        public virtual object uasort(ScriptContext/*!*/context, object cmp_function)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object uksort(ScriptContext/*!*/context, object cmp_function)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object natsort(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object natcasesort(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object ksort(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object asort(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region ArrayIterator (getFlags, setFlags, append, getArrayCopy)
+
+        public virtual object getFlags(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object setFlags(ScriptContext/*!*/context, object flags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual PhpArray getArrayCopy(ScriptContext/*!*/context)
+        {
+            if (isArrayIterator)
+                return new PhpArray(array);
+
+            throw new NotImplementedException();
+        }
+
+        public virtual object append(ScriptContext/*!*/context, object value)
+        {
+            if (isArrayIterator)
+            {
+                array.Add(value);
+            }
+            else if (isObjectIterator)
+            {
+                // php_error_docref(NULL TSRMLS_CC, E_RECOVERABLE_ERROR, "Cannot append properties to objects, use %s::offsetSet() instead", Z_OBJCE_P(object)->name);
+            }
+            
+            return null;
+        }
 
         #endregion
 
