@@ -382,7 +382,7 @@ namespace PHP
 				0x5C, 0xA7, 0x5E, 0x04 };
 
 		internal:
-			static Version ^wrapperVersion = gcnew Version(2, 2, 0, 0);
+			static Version ^wrapperVersion = gcnew Version(3, 0, 0, 0);
 
 			#pragma endregion
 		};

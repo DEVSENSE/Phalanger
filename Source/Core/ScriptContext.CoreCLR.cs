@@ -93,7 +93,7 @@ namespace PHP.Core
             //ConfigurationContext.AddLibrary("System.SilverLight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", null, "");
             //ConfigurationContext.AddLibrary("agclr, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", null, "");
 
-            ConfigurationContext.AddLibrary("PhpNetClassLibrary, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb", null, "");
+            ConfigurationContext.AddLibrary("PhpNetClassLibrary, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb", null, "");
 
 			//
 			Configuration.Application.Compiler.Debug = true;
