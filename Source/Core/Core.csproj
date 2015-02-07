@@ -166,8 +166,9 @@
     <Compile Include="Compiler\AppCompiler.CLR.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\AST_\AstNodeCompiler.cs" />
-    <Compile Include="Compiler\AST_\AstNodeCompilers.cs" />
+    <Compile Include="Compiler\AST_\Expression.cs" />
+    <Compile Include="Compiler\AST_\NodeCompiler.cs" />
+    <Compile Include="Compiler\AST_\NodeCompilers.cs" />
     <Compile Include="Compiler\AST_\AstNodeExtension.cs" />
     <Compile Include="Compiler\AstVisitor.cs">
       <SubType>Code</SubType>
