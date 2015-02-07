@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Diagnostics;
+using PHP.Core.AST;
 
 namespace PHP.Core
 {
@@ -57,10 +58,18 @@ namespace PHP.Core
 			private bool isDirectlyUsed;
 
             /// <summary>
-            /// Gets or sets the type information. 
-            /// This member can be null and should be checked for null before accesing it.
+            /// Gets or sets the type of the variable if it can be determined. 
+            /// Otherwise, it returns <see cref="PhpTypeCode.Unknown"/>.
+            /// If it returns <see cref="PhpTypeCode.Object"/>, then the object type 
+            /// can be retrieved from <see cref="TypeRef"/>.
             /// </summary>
-            public VarTypeInfo VarTypeInfo { get; set; }
+            public PhpTypeCode TypeCode { get; set; }
+
+            /// <summary>
+            /// If <see cref="TypeCode"/> is <see cref="PhpTypeCode.Object"/>, then this gets the type of the object 
+            /// if it can be determined and <c>null</c> otherwise.
+            /// </summary>
+            public TypeRef TypeRef { get; set; }
 
 			public Entry(VariableName varName, bool isPhpReference)
 				: this(varName, isPhpReference, false)
