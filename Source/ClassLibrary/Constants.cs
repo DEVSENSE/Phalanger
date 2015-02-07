@@ -60,15 +60,18 @@ namespace PHP.Library
 
         #region analyzer of defined
 
-        public static bool Defined_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
             var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
 
             if (constant == null || constant.IsUnknown)
-                throw new ArgumentException("name");
+                return null; // do not evaluate in compile time
 
-            return true;    // constant exists in compile time
+            return new Core.AST.DirectFcnCall.EvaluateInfo()
+            {
+                value = true    // constant exists in compile time
+            };
         }
 
         #endregion

@@ -16,7 +16,6 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -273,44 +272,17 @@ namespace PHP.Library
 		/// Verifies whether the method given by <paramref name="methodName"/> has been defined for the given
 		/// object <paramref name="obj"/>. 
 		/// </summary>
-        /// <param name="caller">Current class context.</param>
 		/// <param name="obj">The object to test.</param>
 		/// <param name="methodName">The name of the method.</param>
 		/// <returns><B>True</B> if the method given by <paramref name="methodName"/> has been defined for the given
 		/// object <paramref name="obj"/>, <B>false</B> otherwise.</returns>
-        [ImplementsFunction("method_exists", FunctionImplOptions.NeedsClassContext)]
-		public static bool MethodExists(DTypeDesc caller, object obj, string methodName)
+		[ImplementsFunction("method_exists")]
+		public static bool MethodExists(DObject obj, string methodName)
 		{
-			if (obj == null || string.IsNullOrEmpty(methodName)) return false;
-
-            DTypeDesc dtype;
-            DObject dobj;
-            string str;
-
-            if ((dobj = (obj as DObject)) != null)
-            {
-                dtype = dobj.TypeDesc;
-                if (dtype == null)
-                {
-                    Debug.Fail("DObject.TypeDesc should not be null");
-                    return false;
-                }
-            }
-            else if ((str = PhpVariable.AsString(obj)) != null)
-            {
-                ScriptContext script_context = ScriptContext.CurrentContext;
-                dtype = script_context.ResolveType(str, null, caller, null, ResolveTypeFlags.UseAutoload);
-                if (dtype == null)
-                    return false;
-            }
-            else
-            {
-                // other type names are not handled
-                return false;
-            }
+			if (obj == null) return false;
 
 			DRoutineDesc method;
-            return (dtype.GetMethod(new Name(methodName), dtype, out method) != GetMemberResult.NotFound);
+			return (obj.TypeDesc.GetMethod(new Name(methodName), obj.TypeDesc, out method) != GetMemberResult.NotFound);
 		}
 
 		/// <summary>
@@ -487,13 +459,13 @@ namespace PHP.Library
 
         #region analyzer of class_exists
 
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo ClassExists_Analyze_2(Analyzer analyzer, string name, bool autoload)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo ClassExists_Analyze_2(Analyzer analyzer, string name, bool autoload)
         {
             // ignore autoload at the compile time
             return ClassExists_Analyze_1(analyzer, name);
         }
 
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo ClassExists_Analyze_1(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo ClassExists_Analyze_1(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -502,13 +474,13 @@ namespace PHP.Library
                 analyzer.CurrentScope,
                 out alias,
                 null,
-                PHP.Core.Text.Span.Invalid,
+                PHP.Core.Parsers.Position.Invalid,
                 false);
 
             if (type == null || type.IsUnknown)
                 return null;  // type is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
 
-            return new PHP.Core.Compiler.AST.FunctionCallEvaluateInfo()
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
             {
                 value = true    // type is definitely known the the compilation time
             };
@@ -544,47 +516,18 @@ namespace PHP.Library
 			return type != null && type.IsInterface;
 		}
 
-        /// <summary>
-        /// Returns the name of the current class.
-        /// </summary>
-        /// <param name="caller">Current class context.</param>
-        /// <returns>Current class name.</returns>
-        [ImplementsFunction("get_class", FunctionImplOptions.NeedsClassContext)]
-        [return: CastToFalse]
-        public static string GetClass(DTypeDesc caller)
-        {
-            if (caller == null || caller.IsUnknown)
-                return null;
-
-            return caller.MakeFullName();
-        }
-
 		/// <summary>
 		/// Returns the name of the class of which the object <paramref name="var"/> is an instance.
 		/// </summary>
-        /// <param name="caller">Current class context.</param>
 		/// <param name="var">The object whose class is requested.</param>
-		/// <returns><paramref name="var"/>'s class name or current class name if <paramref name="var"/> is
+		/// <returns><paramref name="var"/>'s class name or <B>null</B> if <paramref name="var"/> is
 		/// <B>null</B>.</returns>
-		[ImplementsFunction("get_class", FunctionImplOptions.NeedsClassContext)]
+		[ImplementsFunction("get_class")]
 		[return: CastToFalse]
-		public static string GetClass(DTypeDesc caller, object var)
+		public static string GetClass(object var)
 		{
-            if (var == null)
-                return GetClass(caller);
-
 			DObject obj = var as DObject;
 			return (obj != null) ? obj.TypeName : null;
-		}
-
-        [ImplementsFunction("get_called_class", FunctionImplOptions.NeedsLateStaticBind)]
-		[return: CastToFalse]
-		public static string GetCalledClass(DTypeDesc caller)
-		{
-            if (caller == null || caller.IsUnknown)
-                return null;
-
-            return caller.MakeFullName();
 		}
 
 		/// <summary>
@@ -618,7 +561,7 @@ namespace PHP.Library
         #region analyzer of get_parent_class
 
         [return: CastToFalse]
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo GetParentClass_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo GetParentClass_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -627,7 +570,7 @@ namespace PHP.Library
                 analyzer.CurrentScope,
                 out alias,
                 null,
-                PHP.Core.Text.Span.Invalid,
+                PHP.Core.Parsers.Position.Invalid,
                 false);
 
             if (type == null || type.IsUnknown)
@@ -635,7 +578,7 @@ namespace PHP.Library
 
             // type is definitely known the the compilation time
             var parent_type = type.Base;
-            return new PHP.Core.Compiler.AST.FunctionCallEvaluateInfo()
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
             {
                 value = (parent_type == null ? null : parent_type.FullName)
             };
@@ -652,15 +595,14 @@ namespace PHP.Library
 		/// <returns><B>true</B> if the object <paramref name="obj"/> belongs to <paramref name="className"/> class or
 		/// a class which is a subclass of <paramref name="className"/>, <B>false</B> otherwise.</returns>
         [ImplementsFunction("is_a", FunctionImplOptions.NeedsClassContext)]
-		public static bool IsA(DTypeDesc caller, object obj, string className)
+		public static bool IsA(DTypeDesc caller, DObject obj, string className)
 		{
-			if (obj == null || !(obj is DObject)) return false;
+			if (obj == null) return false;
 
-            DObject dobj = (DObject)obj;
             DTypeDesc type = ScriptContext.CurrentContext.ResolveType(className, null, caller, null, ResolveTypeFlags.None);    // do not call autoload [workitem:26664]
 			if (type == null) return false;
 
-			return type.IsAssignableFrom(dobj.TypeDesc);
+			return type.IsAssignableFrom(obj.TypeDesc);
 		}
 
 		/// <summary>

@@ -15,7 +15,6 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -67,7 +66,7 @@ namespace PHP.Library
             if (args != null)
             {
                 args_array = new object[args.Count];
-                args.CopyValuesTo(args_array, 0);
+                args.Values.CopyTo(args_array, 0);
             }
             else
             {
@@ -87,13 +86,13 @@ namespace PHP.Library
         [PureFunction(typeof(PhpFunctions), "CreateFunction_Analyze")]
 		public static string CreateFunction(string args, string body)
 		{
-			var context = ScriptContext.CurrentContext;
-            return DynamicCode.CreateLambdaFunction(args, body, context, context.GetCapturedSourceCodeDescriptor());
+			ScriptContext context = ScriptContext.CurrentContext;
+			return DynamicCode.CreateLambdaFunction(args, body, context, context.GetCapturedSourceCodeDescriptor());
         }
 
         #region analyzer of create_function
 
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo CreateFunction_Analyze(
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo CreateFunction_Analyze(
             Analyzer analyzer,
             PHP.Core.AST.CallSignature callSignature,
             string args, string body)
@@ -108,19 +107,23 @@ namespace PHP.Library
             string prefix1, prefix2;
             DynamicCode.GetLamdaFunctionCodePrefixes(function_name, args, out prefix1, out prefix2);
 
-            var pos_args = new PHP.Core.Text.TextSpan(analyzer.SourceUnit.LineBreaks, callSignature.Parameters[0].Span);
-            var pos_body = new PHP.Core.Text.TextSpan(analyzer.SourceUnit.LineBreaks, callSignature.Parameters[1].Span);
+            PHP.Core.Parsers.Position pos_args = callSignature.Parameters[0].Position;
+            PHP.Core.Parsers.Position pos_body = callSignature.Parameters[1].Position;
 
             // function __XXXXXX(<args>){<fill><body>}
             string fill = GetInlinedLambdaCodeFill(pos_args, pos_body);
             string code = String.Concat(prefix2, fill, body, "}");
 
-            // parses function source code:
-            
             // the position of the first character of the parsed code:
             // (note that escaped characters distort position a little bit, which cannot be eliminated so easily)
+            PHP.Core.Parsers.Position pos = PHP.Core.Parsers.Position.Initial;
+            pos.FirstOffset = pos_args.FirstOffset - prefix1.Length + 1;
+            pos.FirstColumn = pos_args.FirstColumn - prefix1.Length + 1;
+            pos.FirstLine = pos_args.FirstLine;
+
+            // parses function source code:
             var counter = new PHP.Core.Parsers.Parser.ReductionsCounter();
-            var ast = analyzer.BuildAst(pos_args.Start.Position - prefix1.Length + 1, code, counter);
+            var ast = analyzer.BuildAst(pos, code, counter);
             if (ast == null || ast.Statements == null)
                 return null;   // the function cannot be parsed
 
@@ -132,13 +135,13 @@ namespace PHP.Library
             analyzer.AddLambdaFcnDeclaration(decl_node);
 
             //
-            return new PHP.Core.Compiler.AST.FunctionCallEvaluateInfo()
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
             {
                 //.inlined = InlinedFunction.CreateFunction;
                 emitDeclareLamdaFunction = true,
 
                 // modify declaration:
-                newRoutine = Core.Compiler.AST.FunctionDeclCompilerHelper.ConvertToLambda(decl_node, analyzer),
+                newRoutine = decl_node.ConvertToLambda(analyzer),
             };
         }
 
@@ -149,7 +152,7 @@ namespace PHP.Library
         /// <param name="args">A position of string literal holding source code for lambda function arguments.</param>
         /// <param name="body">A position of string literal holding source code for the body.</param>
         /// <returns>A string containing spaces and end-of-line characters '\n'.</returns>
-        private static string GetInlinedLambdaCodeFill(PHP.Core.Text.TextSpan args, PHP.Core.Text.TextSpan body)
+        private static string GetInlinedLambdaCodeFill(PHP.Core.Parsers.Position args, PHP.Core.Parsers.Position body)
         {
             int delta_lines = body.FirstLine - args.LastLine;
 
@@ -178,47 +181,6 @@ namespace PHP.Library
         }
 
         #endregion
-
-        #endregion
-
-        #region assert, assert_options
-
-        /// <summary>
-        /// Assertion options.
-        /// </summary>
-        public enum AssertOption : int
-        {
-            [ImplementsConstant("ASSERT_ACTIVE")]
-            ASSERT_ACTIVE,
-            [ImplementsConstant("ASSERT_WARNING")]
-            ASSERT_WARNING,
-            [ImplementsConstant("ASSERT_BAIL")]
-            ASSERT_BAIL,
-            [ImplementsConstant("ASSERT_QUIET_EVAL")]
-            ASSERT_QUIET_EVAL,
-            [ImplementsConstant("ASSERT_CALLBACK")]
-            ASSERT_CALLBACK,
-        }
-
-        [ImplementsFunction("assert", FunctionImplOptions.CaptureEvalInfo /*| FunctionImplOptions.Special*/)]
-        public static bool Assert(object assertion)
-        {
-            return Assert(assertion, null);
-        }
-
-        [ImplementsFunction("assert", FunctionImplOptions.CaptureEvalInfo /*| FunctionImplOptions.Special*/)]
-        public static bool Assert(object assertion, string description)
-        {
-            ScriptContext context = ScriptContext.CurrentContext;
-            var descriptor = context.GetCapturedSourceCodeDescriptor();
-            return DynamicCode.CheckAssertion(assertion, null, context, descriptor.ContainingSourcePath, descriptor.Line, descriptor.Column, null);
-        }
-
-        [ImplementsFunction("assert_options", FunctionImplOptions.NotSupported)]
-        public static object AssertOptions(int what, object value)
-        {
-            return value;
-        }
 
         #endregion
 
@@ -328,7 +290,7 @@ namespace PHP.Library
 
         #region analyzer of function_exists
 
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo Exists_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Exists_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -337,13 +299,13 @@ namespace PHP.Library
                 analyzer.CurrentScope,
                 out alias,
                 null,
-                Core.Text.Span.Invalid,
+                PHP.Core.Parsers.Position.Invalid,
                 false);
 
             if (routine == null || routine.IsUnknown)
                 return null;  // function is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
 
-            return new PHP.Core.Compiler.AST.FunctionCallEvaluateInfo()
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
             {
                 value = true    // function is definitely known the the compilation time
             };
