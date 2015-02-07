@@ -886,7 +886,7 @@ namespace PHP.Core
             //
             object protocol_version = context.GetOption(scheme, "protocol_version");
             double dprotocol_version = (protocol_version != null) ? Convert.ObjectToDouble(protocol_version) : 1.0;// default: 1.0
-            request.ProtocolVersion = new Version(dprotocol_version.ToString("F01"));
+            request.ProtocolVersion = new Version(dprotocol_version.ToString("F01", System.Globalization.CultureInfo.InvariantCulture));
 #endif
             //
             // method - GET, POST, or any other HTTP method supported by the remote server.
