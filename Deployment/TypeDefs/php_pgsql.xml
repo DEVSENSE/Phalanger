@@ -1,0 +1,438 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="pg_clientencoding" description="Get the current client encoding.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="pg_loexport" description="Export large object direct to filesystem.">
+    <param type="resource" name="connection" />
+    <param type="int" name="objoid" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="pg_field_prtlen" description="Returns the printed length.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param type="mixed" name="field_name_or_number" />
+  </function>
+  <function returnType="int" name="pg_lo_create" description="Create a large object.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="string" name="pg_fieldtype" description="Returns the type name for the given field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="bool" name="pg_put_line" description="Send null-terminated string to backend server.">
+    <param type="resource" name="connection" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="string" name="pg_tty" description="Return the tty name associated with the connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="pg_end_copy" description="Sync with backend. Completes the Copy command.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_field_is_null" description="Test if a field is NULL.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param type="mixed" name="field_name_or_number" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_lo_open" description="Open a large object and return fd.">
+    <param type="resource" name="connection" />
+    <param type="int" name="large_object_oid" />
+    <param type="string" name="mode" />
+  </function>
+  <function returnType="bool" name="pg_lo_unlink" description="Delete a large object.">
+    <param type="resource" name="connection" />
+    <param type="int" name="large_object_oid" />
+  </function>
+  <function returnType="int" name="pg_num_fields" description="Return the number of fields in the result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="object" name="pg_fetch_object" description="Fetch a row as an object.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="row" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="bool" name="pg_lo_close" description="Close a large object.">
+    <param type="resource" name="large_object" />
+  </function>
+  <function returnType="int" name="pg_field_num" description="Returns the field number of the named field.">
+    <param type="resource" name="result" />
+    <param type="string" name="field_name" />
+  </function>
+  <function returnType="int" name="pg_result_status" description="Get status of query result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="string" name="pg_host" description="Returns the host name associated with the connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_loopen" description="Open a large object and return fd.">
+    <param type="resource" name="connection" />
+    <param type="int" name="large_object_oid" />
+    <param type="string" name="mode" />
+  </function>
+  <function returnType="int" name="pg_fieldnum" description="Returns the field number of the named field.">
+    <param type="resource" name="result" />
+    <param type="string" name="field_name" />
+  </function>
+  <function returnType="string" name="pg_escape_bytea" description="Escape binary for bytea type.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="bool" name="pg_lo_seek" description="Seeks position of large object.">
+    <param type="resource" name="large_object" />
+    <param type="int" name="offset" />
+    <param optional="true" type="int" name="whence" />
+  </function>
+  <function returnType="array" name="pg_copy_to" description="Copy table to array.">
+    <param type="int" name="connection" />
+    <param type="string" name="table_name" />
+    <param optional="true" type="string" name="delimiter" />
+    <param optional="true" type="string" name="null_as" />
+  </function>
+  <function returnType="int" name="pg_affected_rows" description="Returns the number of affected tuples.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="pg_num_rows" description="Return the number of rows in the result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="string" name="pg_field_name" description="Returns the name of the field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="array" name="pg_fetch_array" description="Fetch a row as an array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="row" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="string" name="pg_escape_string" description="Escape string for text/char type.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="string" name="pg_result_error" description="Get error message associated with result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="pg_lowrite" description="Write a large object.">
+    <param type="resource" name="large_object" />
+    <param type="string" name="buf" />
+    <param optional="true" type="int" name="len" />
+  </function>
+  <function returnType="int" name="pg_lo_read_all" description="Read a large object and send straight to browser.">
+    <param type="resource" name="large_object" />
+  </function>
+  <function returnType="bool" name="pg_copy_from" description="Copy table from array.">
+    <param type="int" name="connection" />
+    <param type="string" name="table_name" />
+    <param type="array" name="rows" />
+    <param optional="true" type="string" name="delimiter" />
+    <param optional="true" type="string" name="null_as" />
+  </function>
+  <function returnType="string" name="pg_last_notice" description="Returns the last notice set by the backend.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_last_oid" description="Returns the last object identifier.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="pg_loclose" description="Close a large object.">
+    <param type="resource" name="large_object" />
+  </function>
+  <function returnType="int" name="pg_field_size" description="Returns the internal size of the field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_query" description="Execute a query.">
+    <param type="resource" name="connection" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_query" description="Execute a query.">
+    <param type="string" name="query" />
+  </function>
+  <function returnType="int" name="pg_locreate" description="Create a large object.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="string" name="pg_loread" description="Read a large object.">
+    <param type="resource" name="large_object" />
+    <param optional="true" type="int" name="len" />
+  </function>
+  <function returnType="int" name="pg_port" description="Return the port number associated with the connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_numrows" description="Return the number of rows in the result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="pg_loimport" description="Import large object direct from filesystem.">
+    <param type="resource" name="connection" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="mixed" name="pg_fetch_result" description="Returns values from a result identifier.">
+    <param type="resource" name="result" />
+    <param type="int" name="row_number" />
+    <param type="mixed" name="field_name" />
+  </function>
+  <function returnType="bool" name="pg_send_query" description="Send asynchronous query.">
+    <param type="resource" name="connection" />
+    <param type="string" name="qeury" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_exec" description="Execute a query.">
+    <param type="resource" name="connection" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="int" name="pg_lo_tell" description="Returns current position of large object.">
+    <param type="resource" name="large_object" />
+  </function>
+  <function returnType="string" name="pg_dbname" description="Get the database name.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="string" name="pg_last_error" description="Get the error message string.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="string" name="pg_fieldname" description="Returns the name of the field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="int" name="pg_fieldisnull" description="Test if a field is NULL.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param type="mixed" name="field_name_or_number" />
+  </function>
+  <function returnType="bool" name="pg_close" description="Close a PostgreSQL connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_loreadall" description="Read a large object and send straight to browser.">
+    <param type="resource" name="large_object" />
+  </function>
+  <function returnType="bool" name="pg_trace" description="Enable tracing a PostgreSQL connection.">
+    <param type="string" name="filename" />
+    <param optional="true" type="string" name="mode" />
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_connection_status" description="Get connection status.">
+    <param type="resource" name="connnection" />
+  </function>
+  <function returnType="string" name="pg_client_encoding" description="Get the current client encoding.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_get_result" description="Get asynchronous query result.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="mixed" name="pg_result" description="Returns values from a result identifier.">
+    <param type="resource" name="result" />
+    <param type="int" name="row_number" />
+    <param type="mixed" name="field_name" />
+  </function>
+  <function returnType="bool" name="pg_connection_reset" description="Reset connection (reconnect).">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="pg_free_result" description="Free result memory.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="pg_fieldprtlen" description="Returns the printed length.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param type="mixed" name="field_name_or_number" />
+  </function>
+  <function returnType="int" name="pg_numfields" description="Return the number of fields in the result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_pconnect" description="Open a persistent PostgreSQL connection (deprecated syntax).">
+    <param type="string" name="host" />
+    <param type="string" name="port" />
+    <param type="string" name="options" />
+    <param type="string" name="tty" />
+    <param type="string" name="database" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_pconnect" description="Open a persistent PostgreSQL connection.">
+	<param type="string" name="connection_string" />
+  </function>
+  <function returnType="array" name="pg_fetch_row" description="Get a row as an enumerated array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="row" />
+  </function>
+  <function returnType="int" name="pg_lo_write" description="Write a large object.">
+    <param type="resource" name="large_object" />
+    <param type="string" name="buf" />
+    <param optional="true" type="int" name="len" />
+  </function>
+  <function returnType="string" name="pg_lo_read" description="Read a large object.">
+    <param type="resource" name="large_object" />
+    <param optional="true" type="int" name="len" />
+  </function>
+  <function returnType="int" name="pg_fieldsize" description="Returns the internal size of the field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="bool" name="pg_lo_export" description="Export large object direct to filesystem.">
+    <param type="resource" name="connection" />
+    <param type="int" name="objoid" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="pg_freeresult" description="Free result memory.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="string" name="pg_errormessage" description="Get the error message string.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_setclientencoding" description="Set client encoding.">
+    <param type="resource" name="connection" />
+    <param type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="pg_field_type" description="Returns the type name for the given field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="int" name="pg_getlastoid" description="Returns the last object identifier.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_connect" description="Open a PostgreSQL connection (deprecated syntax).">
+    <param type="string" name="host" />
+    <param type="string" name="port" />
+    <param type="string" name="options" />
+    <param type="string" name="tty" />
+    <param type="string" name="database" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_connect" description="Open a PostgreSQL connection.">
+	<param type="string" name="connection_string" />
+  </function>
+  <function returnType="string" name="pg_options" description="Get the options associated with the connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="pg_lounlink" description="Delete a large object.">
+    <param type="resource" name="connection" />
+    <param type="int" name="large_object_oid" />
+  </function>
+  <function returnType="int" name="pg_lo_import" description="Import large object direct from filesystem.">
+    <param type="resource" name="connection" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="pg_cmdtuples" description="Returns the number of affected tuples.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="pg_cancel_query" description="Cancel request.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="pg_untrace" description="Disable tracing of a PostgreSQL connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="pg_set_client_encoding" description="Set client encoding.">
+    <param type="resource" name="connection" />
+    <param type="string" name="encoding" />
+  </function>
+  <function returnType="bool" name="pg_connection_busy" description="Get connection is busy or not.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="array" name="pg_fetch_all" description="Fetch all rows from a result as an array.">
+	<param type="resource" name="result" />
+  </function>
+  <function returnType="array" name="pg_convert" description="Convert associative array values into suitable for SQL statement.">
+    <param type="resource" name="connection" />
+    <param type="string" name="table_name" />
+    <param type="array" name="assoc_array" />
+    <param optional="true" type="int" name="options" />
+  </function>
+  <function returnType="mixed" name="pg_delete" description="Deletes records.">
+    <param type="resource" name="connection" />
+    <param type="string" name="table_name" />
+    <param type="array" name="assoc_array" />
+    <param optional="true" type="int" name="options" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_execute" description="Sends a request to execute a prepared statement with given parameters, and waits for the result.">
+    <param type="resource" name="connection" />
+    <param type="string" name="stmtname" />
+    <param type="array" name="params" />
+  </function>
+  <function returnType="array" castToFalse="true" name="pg_fetch_all_columns" description="Fetches all rows in a particular result column as an array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="column" />
+  </function>
+  <function returnType="array" castToFalse="true" name="pg_fetch_assoc" description="Fetch a row as an associative array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="row" />
+  </function>
+  <function returnType="int" castToFalse="true" name="pg_field_type_oid" description="Returns the type ID (OID) for the corresponding field number.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="array" castToFalse="true" name="pg_get_notify" description="Gets SQL NOTIFY message.">
+    <param type="resource" name="connection" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="int" name="pg_get_pid" description="Gets the backend's process ID.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="mixed" name="pg_insert" description="Insert array into table.">
+    <param type="resource" name="connection" />
+    <param type="string" name="table_name" />
+    <param type="array" name="assoc_array" />
+    <param optional="true" type="int" name="options" />
+  </function>
+  <function returnType="array" castToFalse="true" name="pg_meta_data" description="Get meta data for table.">
+    <param type="resource" name="connection" />
+    <param type="string" name="table_name" />
+  </function>
+  <!-- http://phalanger.codeplex.com/workitem/21541
+  <function returnType="string" castToFalse="true" name="pg_parameter_status" description="Looks up a current parameter setting of the server.">
+    <param type="resource" name="connection" />
+    <param type="string" name="param_name" />
+  </function>
+  -->
+  <function returnType="bool" name="pg_ping" description="Ping database connection.">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_prepare" description="Submits a request to create a prepared statement with the given parameters, and waits for completion.">
+    <param type="resource" name="connection" />
+    <param type="string" name="stmtname" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pg_query_params" description="Submits a command to the server and waits for the result, with the ability to pass parameters separately from the SQL command text.">
+    <param type="resource" name="connection" />
+    <param type="string" name="query" />
+    <param type="array" name="params" />
+  </function>
+  <function returnType="string" castToFalse="true" name="pg_result_error_field" description="Returns an individual field of an error report.">
+    <param type="resource" name="result" />
+    <param type="int" name="fieldcode" />
+  </function>
+  <function returnType="bool" name="pg_result_seek" description="Set internal row offset in result resource.">
+    <param type="resource" name="result" />
+    <param type="int" name="offset" />
+  </function>
+  <function returnType="mixed" name="pg_select" description="Select records.">
+    <param type="resource" name="connection" />
+    <param type="string" name="table_name" />
+    <param type="array" name="assoc_array" />
+    <param optional="true" type="int" name="options" />
+  </function>
+  <function returnType="bool" name="pg_send_execute" description="Sends a request to execute a prepared statement with given parameters, without waiting for the result(s).">
+    <param type="resource" name="connection" />
+    <param type="string" name="stmtname" />
+    <param type="array" name="params" />
+  </function>
+  <function returnType="bool" name="pg_send_prepare" description="Sends a request to create a prepared statement with the given parameters, without waiting for completion.">
+    <param type="resource" name="connection" />
+    <param type="string" name="stmtname" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="bool" name="pg_send_query_params" description="Submits a command and separate parameters to the server without waiting for the result(s).">
+    <param type="resource" name="connection" />
+    <param type="string" name="query" />
+    <param type="array" name="params" />
+  </function>
+  <function returnType="int" name="pg_set_error_verbosity" description="Determines the verbosity of messages returned by pg_last_error() and pg_result_error().">
+    <param type="resource" name="connection" />
+    <param type="int" name="verbosity" />
+  </function>
+  <function returnType="int" name="pg_transaction_status" description="Returns the current in-transaction status of the server.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="string" name="pg_unescape_bytea" description="Unescape binary for bytea type.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="mixed" name="pg_update" description="Update table.">
+    <param type="resource" name="connection" />
+    <param type="string" name="table_name" />
+    <param type="array" name="data" />
+    <param type="array" name="condition" />
+    <param optional="true" type="int" name="options" />
+  </function>
+  <function returnType="array" castToFalse="true" name="pg_version" description="Returns an array with client, protocol and server version (when available).">
+    <param optional="true" type="resource" name="connection" />
+  </function>
+</module>
