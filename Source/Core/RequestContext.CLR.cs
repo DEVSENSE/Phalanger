@@ -639,8 +639,7 @@ namespace PHP.Core
 		void FinallyDispose()
 		{
 			DeleteTemporaryFiles();
-			Externals.EndRequest();
-
+			
 			// updates session cookie expiration stamp:
 			UpdateSessionCookieExpiration();
 

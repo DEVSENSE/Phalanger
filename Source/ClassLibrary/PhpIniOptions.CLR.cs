@@ -255,16 +255,8 @@ namespace PHP.Library
 			// option not found:
 			if (option == null)
 			{
-				// check for options in native extensions:
-				string result = null;
-				switch (action)
-				{
-					case IniAction.Get: error = !Externals.IniGet(name, out result); break;
-					case IniAction.Set: error = !Externals.IniSet(name, Convert.ObjectToString(value), out result); break;
-					case IniAction.Restore: error = !Externals.IniRestore(name); break;
-				}
-				if (error) PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_option", name));
-				return result;
+				PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_option", name));
+				return null;
 			}
 
 			// the option is known but not supported:
