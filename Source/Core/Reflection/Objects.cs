@@ -30,7 +30,7 @@ namespace PHP.Core.Reflection
 	[DebuggerNonUserCode]
 	public abstract class DObject : IPhpComparable, IPhpConvertible, IPhpCloneable, IPhpPrintable,
 		IPhpVariable, IDisposable, IPhpObjectGraphNode, IPhpEnumerable, ISerializable,
-		IDeserializationCallback
+		IDeserializationCallback , IDynamicMetaObjectProvider
 	{
 		#region ObjectFlags
 
@@ -954,6 +954,7 @@ namespace PHP.Core.Reflection
 		#endregion
 
 		#region SetProperty, SetPropertyDirect, SetRuntimeField, InvokeSetter
+
 
 		/// <summary>
 		/// Sets the value of an instance property (both CT and RT).
@@ -2750,7 +2751,16 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
-	}
+
+        #region IDynamicMetaObjectProvider Members
+
+        public DynamicMetaObject GetMetaObject(System.Linq.Expressions.Expression parameter)
+        {
+            return new DMetaObject(parameter, this);
+        }
+
+        #endregion
+    }
 
     #region ClrObject
 

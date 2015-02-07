@@ -828,7 +828,7 @@ namespace PHP.Core.Emit
             _ShellExec, _IPhpEnumerable_GetForeachEnumerator,
             _String_IsInterned, _String_Concat_String_String, _IEnumerator_MoveNext, _DTypeDesc_Create,
             _PhpTypeDesc_Create, _ClrObject_Wrap, _ClrObject_WrapDynamic, _ClrObject_WrapRealObject, _ClrObject_Create, _Object_GetType,
-            _Object_ToString, _Object_Finalize, _DObject_InvokeMethod, _DObject_InvokeConstructor, _DObject_Dispose, _DObject_GetRuntimeField,
+            _Object_ToString, _Object_Finalize, _DObject_InvokeMethod, _DObject_InvokeConstructor, _DObject_Dispose, _DObject_GetRuntimeField, _DObject_SetProperty,
             _DRoutineDesc_Invoke, _PhpHashtable_Add, _InitializeArray, _ArrayCopy, _ArrayCopyTo;
 
         public static MethodInfo GetTypeFromHandle { get { if (_GetTypeFromHandle == null)  _GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle"); return _GetTypeFromHandle; } }
@@ -855,6 +855,7 @@ namespace PHP.Core.Emit
         public static MethodInfo DObject_InvokeMethod { get { if (_DObject_InvokeMethod == null) _DObject_InvokeMethod = Types.DObject[0].GetMethod("InvokeMethod"); return _DObject_InvokeMethod; } }
         public static MethodInfo DObject_Dispose { get { return _DObject_Dispose ?? (_DObject_Dispose = Types.DObject[0].GetMethod("Dispose", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Types.Bool, null)); } }
         public static MethodInfo DObject_GetRuntimeField { get { return _DObject_GetRuntimeField ?? (_DObject_GetRuntimeField = Types.DObject[0].GetMethod("GetRuntimeField")); } }
+        public static MethodInfo DObject_SetProperty { get { return _DObject_SetProperty ?? (_DObject_SetProperty = Types.DObject[0].GetMethod("SetProperty")); } }
         public static MethodInfo DRoutineDesc_Invoke { get { if (_DRoutineDesc_Invoke == null) _DRoutineDesc_Invoke = typeof(DRoutineDesc).GetMethod("Invoke", new Type[] { Types.DObject[0], Types.PhpStack[0] }); return _DRoutineDesc_Invoke; } }
         
         public static MethodInfo InitializeArray { get { if (_InitializeArray == null) _InitializeArray = typeof(RuntimeHelpers).GetMethod("InitializeArray"); return _InitializeArray; } }

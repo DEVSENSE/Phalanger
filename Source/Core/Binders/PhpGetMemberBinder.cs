@@ -47,10 +47,10 @@ namespace PHP.Core.Binders
         {
             if (target.Value is IDynamicMetaObjectProvider)
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
                 //Translate arguments to DLR standard
-                //TODO: Create DlrCompatibilityInvokeBinder because it has to be derived from InvokeMemberBinder
-                //return target.BindInvokeMember(this,args);
+                //TODO: Create DlrCompatibilityInvokeBinder because it has to be derived from GetMemberBinder
+                //return target.BindGetMember(this,args);
             }
 
             return FallbackInvokeMember(target, args);

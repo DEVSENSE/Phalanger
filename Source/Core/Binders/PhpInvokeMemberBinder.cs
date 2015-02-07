@@ -35,7 +35,8 @@ namespace PHP.Core.Binders
         /// <summary>
         /// The result type of the invoke operation.
         /// </summary>
-        public override Type ReturnType {
+        public override Type ReturnType
+        {
             get
             {
                 return _returnType;
@@ -85,7 +86,7 @@ namespace PHP.Core.Binders
         {
             if (methodName == null)
             {
-                return new PhpIndirectInvokeMemberBinder( genericParamsCount, paramsCount, callerClassContext, returnType );
+                return new PhpIndirectInvokeMemberBinder(genericParamsCount, paramsCount, callerClassContext, returnType);
             }
             else
             {
@@ -155,17 +156,6 @@ namespace PHP.Core.Binders
             return arguments;
         }
 
-        protected static Expression[]/*!*/ CombineArguments(Expression/*!*/ arg,Expression/*!*/[]/*!*/ args)
-        {
-            Expression[] arguments = new Expression[1 + args.Length];
-            arguments[0] = arg;
-            for (int i = 0; i < args.Length; ++i)
-                arguments[1+i] = args[i];
-
-            return arguments;
-        }
-
-
         /// <summary>
         /// Converts first #length elements from a given array of DynamicMetaObject to array of Expression
         /// </summary>
@@ -192,7 +182,7 @@ namespace PHP.Core.Binders
 
         protected DynamicMetaObject GetRuntimeClassContext(DynamicMetaObject[] args)
         {
-            if ( args.Length > this._genericParamsCount + this._paramsCount + 1)
+            if (args.Length > this._genericParamsCount + this._paramsCount + 1)
                 return args[this._genericParamsCount + this._paramsCount + 1];
 
             return null;
@@ -252,13 +242,13 @@ namespace PHP.Core.Binders
                     return Expression.Call(Methods.PhpVariable.MakeReference, result);
                 }
 
-            } 
+            }
             else /*if (_returnType != Types.PhpReference[0])*/
             {
                 result = CopyByReturn(result);
 
                 if (methodReturnType == Types.PhpReference[0])
-                    return Expression.Field(Expression.Convert(result,Types.PhpReference[0]), Fields.PhpReference_Value);
+                    return Expression.Field(Expression.Convert(result, Types.PhpReference[0]), Fields.PhpReference_Value);
                 else if (dereference)
                 {
                     return Expression.Call(Methods.PhpVariable.Dereference, result);
@@ -315,14 +305,14 @@ namespace PHP.Core.Binders
         /// </summary>
         protected override string ActualMethodName
         {
-            get { return this._methodName;  }
+            get { return this._methodName; }
         }
 
         #endregion
 
         #region Construction
 
-        internal PhpInvokeMemberBinder(string methodName, int genericParamsCount, int paramsCount, DTypeDesc callerClassContext, Type returnType):
+        internal PhpInvokeMemberBinder(string methodName, int genericParamsCount, int paramsCount, DTypeDesc callerClassContext, Type returnType) :
             base(methodName, genericParamsCount, paramsCount, callerClassContext, returnType)
         {
 
@@ -444,32 +434,33 @@ namespace PHP.Core.Binders
                     return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
                 }
                 else
-                //ClrObject
-                if (target.LimitType == typeof(ClrObject))
-                {
-                    InvokeClrMethod(new ClrDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
-
-                    if (wrappedTarget != null)
+                    //ClrObject
+                    if (target.LimitType == typeof(ClrObject))
                     {
-                        return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
-                                                     invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
+                        InvokeClrMethod(new ClrDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
+
+                        if (wrappedTarget != null)
+                        {
+                            return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
+                                                         invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
+                        }
+
+                        return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
                     }
+                    else
+                        //IClrValue
+                        if (typeof(IClrValue).IsAssignableFrom(target.LimitType))
+                        {
+                            InvokeClrMethod(new ClrValueDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
 
-                    return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
-                }else
-                //IClrValue
-                if (typeof(IClrValue).IsAssignableFrom(target.LimitType))
-                {
-                    InvokeClrMethod(new ClrValueDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
+                            if (wrappedTarget != null)
+                            {
+                                return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
+                                                             invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
+                            }
 
-                    if (wrappedTarget != null)
-                    {
-                        return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
-                                                     invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
-                    }
-
-                    return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
-                }
+                            return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
+                        }
             }
 
             throw new NotImplementedException();
@@ -611,15 +602,15 @@ namespace PHP.Core.Binders
                                 Expression.New(Constructors.PhpArray.Int32_Int32,
                                             Expression.Constant(_paramsCount),
                                             Expression.Constant(0))),
-                    
-                                ((initArgsArray.Length == 0) ?  (Expression)Expression.Empty() : Expression.Block(initArgsArray)),
+
+                                ((initArgsArray.Length == 0) ? (Expression)Expression.Empty() : Expression.Block(initArgsArray)),
 
                                 Expression.Assign(insideCaller,
                                                 Expression.Constant(true)),
                                 Expression.TryFinally(
-                                //__call(caller,args)
+                //__call(caller,args)
                                     Expression.Assign(retValVariable, invokeMethodExpr),
-                                //Finally part:
+                //Finally part:
                                     Expression.Assign(insideCaller,
                                                         Expression.Constant(false))
                                     ),
@@ -649,7 +640,7 @@ namespace PHP.Core.Binders
                 args = GetArgumentsRange(args, 0, RealMethodArgumentCount);// This can't be done when _call method is invoked
 
                 //Check if method has ArgAware attribute
-                if ((routine.Properties & RoutineProperties.IsArgsAware) != 0 || 
+                if ((routine.Properties & RoutineProperties.IsArgsAware) != 0 ||
                     routine.IsStatic)// this is because of hack in PHP.Library.XML library static methods that can be also called like instance methods
                 {
                     DynamicMetaObject scriptContext = args[0];
@@ -672,10 +663,10 @@ namespace PHP.Core.Binders
 
             //((PhpObject)target))
             var realObjEx = Expression.Convert(target.Expression, routine.ArgFullInfo.DeclaringType);//targetObj.TypeDesc.RealType);
-            
+
             //ArgFull( ((PhpObject)target), ScriptContext, args, ... )
             invokeMethodExpr = Expression.Call(BinderHelper.WrapInstanceMethodCall(routine.ArgFullInfo),
-                                     CombineArguments(realObjEx, arguments));
+                                     BinderHelper.CombineArguments(realObjEx, arguments));
 
             invokeMethodExpr = ReturnArgumentHelpers.ReturnValueConversion(routine.ArgFullInfo, invokeMethodExpr);
 
@@ -745,7 +736,7 @@ namespace PHP.Core.Binders
 
 
         protected override DynamicMetaObject/*!*/ FallbackInvokeMember(
-            DynamicMetaObject target, 
+            DynamicMetaObject target,
             DynamicMetaObject[] args)
         {
             Debug.Assert(Types.String[0].IsAssignableFrom(args[args.Length - 1].LimitType), "Wrong field name type!");
@@ -775,7 +766,7 @@ namespace PHP.Core.Binders
                 actualMethodName = name;
 
                 //transform arguments that it doesn't contains methodName
-                Array.Resize<DynamicMetaObject>(ref args, args.Length-1);
+                Array.Resize<DynamicMetaObject>(ref args, args.Length - 1);
 
                 DynamicMetaObject result = base.FallbackInvokeMember(target, args);
 

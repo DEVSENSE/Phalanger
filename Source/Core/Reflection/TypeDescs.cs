@@ -2775,7 +2775,8 @@ namespace PHP.Core.Reflection
 			// Note: on silverlight we're using "stubs"
 			bool isPhpObjectInterface = (realInterface == typeof(System.IDisposable) ||
 				realInterface == typeof(ISerializable) ||
-				realInterface == typeof(IDeserializationCallback));
+				realInterface == typeof(IDeserializationCallback) ||
+                realInterface == typeof(System.Dynamic.IDynamicMetaObjectProvider));
 
 			// interfaces implemented by PhpObject/DObject:
 			if (isPhpObjectInterface)

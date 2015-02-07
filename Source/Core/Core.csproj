@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Binders\Binder.cs" />
     <Compile Include="Binders\BinderHelper.cs" />
+    <Compile Include="Binders\InteropBinder.cs" />
     <Compile Include="Binders\PhpRoutineExtensions.cs" />
     <Compile Include="Binders\PhpDynamicMetaObjects.cs" />
     <Compile Include="Binders\PhpGetMemberBinder.cs" />
@@ -371,6 +372,7 @@
     <Compile Include="Reflection\MethodDescs.cs" />
     <Compile Include="Reflection\Modules.CLR.cs" />
     <Compile Include="Reflection\Modules.cs" />
+    <Compile Include="Reflection\MetaObject.cs" />
     <Compile Include="Reflection\PhpLibraryModule.cs" />
     <Compile Include="Errors.cs">
       <SubType>Code</SubType>
