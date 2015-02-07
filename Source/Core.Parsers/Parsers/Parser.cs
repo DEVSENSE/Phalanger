@@ -451,7 +451,6 @@ namespace PHP.Core.Parsers
 			if (item as VariableUse == null)
 			{
                 errors.Add(FatalErrors.CheckVarUseFault, SourceUnit, span);
-				throw new CompilerException();
 			}
 		}
 
@@ -935,7 +934,9 @@ namespace PHP.Core.Parsers
                 CurrentScopeAliases.Add(alias, fullQualifiedName);
             }
             else
+            {
                 errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos, fullQualifiedName.NamespacePhpName, alias);
+            }
         }
 
         private void ReserveTypeNames(List<FormalTypeParam> typeParams)
@@ -1165,8 +1166,10 @@ namespace PHP.Core.Parsers
                 throw new ArgumentNullException("token");
             
             // report syntax error if C# names are not allowed
-			if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
+            if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
+            {
                 this.ErrorSink.Add(FatalErrors.SyntaxError, this.SourceUnit, span, CoreResources.GetString("unexpected_token", token));
+            }
 
             //
             return token;
