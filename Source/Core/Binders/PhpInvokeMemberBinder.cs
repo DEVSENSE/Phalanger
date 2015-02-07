@@ -115,14 +115,14 @@ namespace PHP.Core.Binders
         /// </summary>
         /// <remarks>
         /// 
-        /// CallSite< Func< CallSite, 
+        /// CallSite&lt; Func&lt; CallSite, 
         ///      object /*target instance*/,
         ///      ScriptContext,
         ///      {args}*/*method call arguments*/,
         ///      (DTypeDesc)?/*class context,
-        ///      iff <classContext>.IsUnknown*/,
+        ///      iff {classContext}.IsUnknown*/,
         ///      (object)?/*method name,
-        ///      iff <methodName>==null*/, <returnType> > >
+        ///      iff {methodName}==null*/, {returnType} &gt; &gt;
         /// 
         /// </remarks>
         public override DynamicMetaObject/*!*/ Bind(DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args)
@@ -634,6 +634,8 @@ namespace PHP.Core.Binders
         /// <param name="args"></param>
         /// <param name="targetObj"></param>
         /// <param name="routine"></param>
+        /// <param name="restrictions"></param>
+        /// <param name="invokeMethodExpr"></param>
         /// <returns></returns>
         private void InvokePhpMethod(DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args, PhpObject/*!*/ targetObj, PhpRoutine/*!*/ routine, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
         {
