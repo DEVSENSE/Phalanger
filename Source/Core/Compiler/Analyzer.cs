@@ -1288,11 +1288,10 @@ namespace PHP.Core
 			// we cannot resolve a method unless we know the inherited members:
 			if (type.IsDefinite)
 			{
-				KnownType known;
-
-				// the method is a constructor:
-				if (methodName.IsConstructName || (known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
-					return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
+                //// if the method is a constructor, 
+                //KnownType known;
+                //if (methodName.IsConstructName || (known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
+                //    return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
 
 				DRoutine routine;
 				GetMemberResult member_result;
@@ -1326,10 +1325,18 @@ namespace PHP.Core
 					case GetMemberResult.OK:
 						return routine;
 
-					case GetMemberResult.NotFound:
-                        if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
-                            ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
-						return new UnknownMethod(type, methodName.Value);
+                    case GetMemberResult.NotFound:
+                        {
+                            // allow calling CLR constructor:
+                            KnownType known;
+                            if (/*methodName.IsConstructName || */(known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
+                                return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
+
+                            //
+                            if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
+                                ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
+                            return new UnknownMethod(type, methodName.Value);
+                        }
 
 					case GetMemberResult.BadVisibility:
 						{
