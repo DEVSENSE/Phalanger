@@ -2450,7 +2450,7 @@ namespace PHP.Core
 
                 default:
                     // regular getter:
-                    return PhpVariable.Dereference(arrayAccess[key]);
+                    return ClrObject.WrapDynamic(PhpVariable.Dereference(arrayAccess[key]));
             }
 
         }
@@ -2476,7 +2476,7 @@ namespace PHP.Core
 
                 default:
                     // regular getter:
-                    return PhpVariable.Dereference(arrayAccess[index]);
+                    return ClrObject.WrapDynamic(PhpVariable.Dereference(arrayAccess[index]));
             }
 
         }
