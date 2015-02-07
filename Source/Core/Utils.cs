@@ -1811,7 +1811,9 @@ namespace PHP.Core
 #else
             fixed (byte* ptr = &array[offset])
             {
-                Utils.MemFill(ptr, value, count);
+                for (int i = 0; i < count; i++)
+                    ptr[i] = value;
+                //Utils.MemFill(ptr, value, count);
             }
 #endif
         }

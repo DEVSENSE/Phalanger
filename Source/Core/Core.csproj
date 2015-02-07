@@ -102,10 +102,6 @@
       <Project>{0D5B7BFC-1236-4D9D-AC17-4A5C0964C1A2}</Project>
       <Name>ShmChannel</Name>
     </ProjectReference>
-    <ProjectReference Include="MSIL\Core.IL.vcxproj">
-      <Project>{7F13AC5E-1B8D-467E-83F1-912D12F44370}</Project>
-      <Name>MSIL</Name>
-    </ProjectReference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>

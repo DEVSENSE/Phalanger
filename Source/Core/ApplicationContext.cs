@@ -169,7 +169,12 @@ namespace PHP.Core
             types.Add("@" + QualifiedName.Object.Name.Value, DTypeDesc.ObjectTypeDesc);
 
             // types implemented in Core
-            Action<Type> addType = (x) => { types.Add(x.Name, DTypeDesc.Create(x)); };
+            Func<Type, DTypeDesc> addType = (x) =>
+            {
+                var typedesc = DTypeDesc.Create(x);
+                types.Add(x.Name, typedesc);
+                return typedesc;
+            };
 
             addType(typeof(Library.stdClass));
             addType(typeof(Library.__PHP_Incomplete_Class));
@@ -179,7 +184,7 @@ namespace PHP.Core
             
             addType(typeof(Library.SPL.Serializable));
             addType(typeof(Library.SPL.Countable));
-            addType(typeof(Library.SPL.Reflector));
+            AddExportMethod(addType(typeof(Library.SPL.Reflector)));
             addType(typeof(Library.SPL.SplObjectStorage));
             addType(typeof(Library.SPL.SplObserver));
             addType(typeof(Library.SPL.SplSubject));
@@ -223,7 +228,38 @@ namespace PHP.Core
             constants.Add("PHP_INT_MAX", GlobalConstant.PhpIntMax.ConstantDesc, false);
         }
 
-		internal void LoadModuleEntries(DModule/*!*/ module)
+        #region HACK HACK HACK !!!
+
+        /// <remarks>
+        /// We have to inject <c>export</c> method into <see cref="Library.SPL.Reflector"/> interface, since it cannot be written in C#
+        /// (abstract public static method with implementation in an interface). It could be declared in pure IL, but it would be ugly.
+        /// </remarks>
+        /// <param name="typedesc"><see cref="DTypeDesc"/> corresponding to <see cref="Library.SPL.Reflector"/>.</param>
+        private void AddExportMethod(DTypeDesc/*!*/typedesc)
+        {
+            Debug.Assert(typedesc != null);
+            Debug.Assert(typedesc.RealType == typeof(Library.SPL.Reflector));
+
+            Func<ScriptContext, object> emptyargfull = (context) => null;
+
+            // public static object export( ScriptContext context ){ return null; }
+            var name = new Name("export");
+            var method_desc = new PhpRoutineDesc(typedesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static | PhpMemberAttributes.Abstract);
+
+            typedesc.Methods.Add(name, method_desc);
+
+            // assign member
+            if (method_desc.Member == null)
+            {
+                PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, emptyargfull.Method, null);
+                method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, emptyargfull.Method));
+                method_desc.Member = method;
+            }
+        }
+
+        #endregion
+
+        internal void LoadModuleEntries(DModule/*!*/ module)
 		{
 			module.Reflect(!lazyFullReflection, types, functions, constants);
 		}
