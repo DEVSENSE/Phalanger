@@ -72,12 +72,12 @@ namespace PHP.Library.Data
             switch (ft)
             {
                 case PDOFetchType.PDO_FETCH_ASSOC:
-                    return Fetch_Assoc(dr, false) ?? (object)false;
+                    return Fetch_Assoc(m_pdo.Driver, dr, false) ?? (object)false;
                 case PDOFetchType.PDO_FETCH_NUM:
-                    return Fetch_Num(dr) ?? (object)false;
+                    return Fetch_Num(m_pdo.Driver, dr) ?? (object)false;
                 case PDOFetchType.PDO_FETCH_BOTH:
                 case PDOFetchType.PDO_FETCH_USE_DEFAULT:
-                    return Fetch_Assoc(dr, true) ?? (object)false;
+                    return Fetch_Assoc(m_pdo.Driver, dr, true) ?? (object)false;
                 default:
                     throw new NotImplementedException();
             }
@@ -93,7 +93,7 @@ namespace PHP.Library.Data
             return ((PDOStatement)instance).fetch(stack.Context, style, orientation, cursor_offset);
         }
 
-        private static PhpArray Fetch_Assoc(IDataReader dr, bool withNum)
+        private static PhpArray Fetch_Assoc(PDODriver driver, IDataReader dr, bool withNum)
         {
             if (dr.Read())
             {
@@ -103,11 +103,7 @@ namespace PHP.Library.Data
                 for (int i = 0; i < fieldCount; i++)
                 {
                     string fName = dr.GetName(i);
-                    object value;
-                    if (dr.IsDBNull(i))
-                        value = null;
-                    else
-                        value = dr.GetValue(i);
+                    object value = driver.ConvertDbValue(dr.GetValue(i), dr.GetDataTypeName(i));
 
                     arr.Add(fName, value);
                     if (withNum)
@@ -121,12 +117,16 @@ namespace PHP.Library.Data
             }
         }
 
-        private static PhpArray Fetch_Num(IDataReader dr)
+        private static PhpArray Fetch_Num(PDODriver driver, IDataReader dr)
         {
             if (dr.Read())
             {
                 object[] values = new object[dr.FieldCount];
                 dr.GetValues(values);
+
+                for (int i = 0; i < values.Length; i++)
+                    values[i] = driver.ConvertDbValue(values[i], dr.GetDataTypeName(i));
+                
                 return new PhpArray(values);
             }
             else
@@ -134,6 +134,7 @@ namespace PHP.Library.Data
                 return null;
             }
         }
+
         #endregion
 
         #region close
@@ -477,7 +478,7 @@ namespace PHP.Library.Data
         #region fetchAll
         
         [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style/*=null*/, object fetch_argument/*=null*/, object ctor_args/*=null*/)
+        public object fetchAll(ScriptContext context, [Optional]object fetch_style/*=null*/, [Optional]object fetch_argument/*=null*/, [Optional]object ctor_args/*=null*/)
         {
             PhpArray arr = new PhpArray();
 
@@ -486,6 +487,8 @@ namespace PHP.Library.Data
                 fetch = PDOFetchType.PDO_FETCH_BOTH;
             else
                 fetch = (PDOFetchType)(int)fetch_style;
+
+            // TODO: fetch bitwise combinations (group, unique, ...)
 
             if (fetch == PDOFetchType.PDO_FETCH_COLUMN)
             {
