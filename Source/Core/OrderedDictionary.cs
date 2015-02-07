@@ -180,6 +180,7 @@ namespace PHP.Core
         /// <summary>
         /// An element stored in the table.
         /// </summary>
+        [Serializable]
         private struct Entry
         {
             /// <summary>
@@ -218,6 +219,7 @@ namespace PHP.Core
                 
         #region Inner class: Enumerator
 
+        [Serializable]
         public class Enumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
         {
             /// <summary>
