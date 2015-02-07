@@ -648,34 +648,6 @@ namespace PHP.Library
             return config.Serialization.DefaultSerializer.Deserialize(bytes, caller);
 		}
 
-		/// <summary>
-		/// Serializes a graph of connected objects to a byte array using a specified serializer.
-		/// </summary>
-        /// <param name="caller">DTypeDesc of the caller's class context if it is known or UnknownTypeDesc if it should be determined lazily.</param>
-        /// <param name="variable">The variable to serialize.</param>
-		/// <param name="serializerName">A name of the serializer.</param>
-		/// <returns>The serialized representation of the <paramref name="variable"/>.</returns>
-        [ImplementsFunction("custom_serialize", FunctionImplOptions.NeedsClassContext)]
-        public static PhpBytes CustomSerialize(PHP.Core.Reflection.DTypeDesc caller, object variable, string serializerName)
-		{
-			Serializer serializer = Serializers.GetSerializerVerbose(serializerName);
-			return (serializer != null) ? serializer.Serialize(variable, caller) : null;
-		}
-
-		/// <summary>
-		/// Deserializes a graph of connected object from a byte array using a specified serializer.
-		/// </summary>
-        /// <param name="caller">DTypeDesc of the caller's class context if it is known or UnknownTypeDesc if it should be determined lazily.</param>
-        /// <param name="bytes">The byte array to deserialize the graph from.</param>
-		/// <param name="serializerName">A name of the serializer.</param>
-		/// <returns>The deserialized object graph.</returns>
-        [ImplementsFunction("custom_unserialize", FunctionImplOptions.NeedsClassContext)]
-        public static PhpReference CustomUnserialize(PHP.Core.Reflection.DTypeDesc caller, PhpBytes bytes, string serializerName)
-		{
-			Serializer serializer = Serializers.GetSerializerVerbose(serializerName);
-			return (serializer != null) ? serializer.Deserialize(bytes, caller) : new PhpReference(false);
-		}
-
 #endif
 		#endregion
 
