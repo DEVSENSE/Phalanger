@@ -239,6 +239,11 @@ namespace PHP.Core
 
             _constants.Add("PHALANGER", PhalangerVersion.Current, false);
             _constants.Add("PHP_VERSION", PhpVersion.Current, false);
+            _constants.Add("PHP_MAJOR_VERSION", PhpVersion.Major, false);
+            _constants.Add("PHP_MINOR_VERSION", PhpVersion.Minor, false);
+            _constants.Add("PHP_RELEASE_VERSION", PhpVersion.Release, false);
+            _constants.Add("PHP_VERSION_ID", PhpVersion.Major * 10000 + PhpVersion.Minor * 100 + PhpVersion.Release, false);
+            _constants.Add("PHP_EXTRA_VERSION", PhpVersion.Extra, false);
             _constants.Add("PHP_OS", Environment.OSVersion.Platform == PlatformID.Win32NT ? "WINNT" : "WIN32", false); // TODO: GENERICS (Unix)
             _constants.Add("PHP_SAPI", (System.Web.HttpContext.Current == null) ? "cli" : "isapi", false);
             _constants.Add("DIRECTORY_SEPARATOR", FullPath.DirectorySeparatorString, false);

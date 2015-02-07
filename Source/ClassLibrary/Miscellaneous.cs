@@ -644,5 +644,15 @@ namespace PHP.Library
 		}
 
 		#endregion
-	}
+
+        #region gc_enabled
+
+        [ImplementsFunction("gc_enabled")]
+        public static bool gc_enabled()
+        {
+            return true;    // status of the circular reference collector
+        }
+
+        #endregion
+    }
 }

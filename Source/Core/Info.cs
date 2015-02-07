@@ -731,15 +731,35 @@ namespace PHP.Core
 	/// </summary>
 	public sealed class PhpVersion
 	{
+        /// <summary>
+        /// Currently supported PHP major version.
+        /// </summary>
+        public const int Major = 5;
+
+        /// <summary>
+        /// Currently supported PHP minor version.
+        /// </summary>
+        public const int Minor = 3;
+
+        /// <summary>
+        /// Currently supported PHP release version.
+        /// </summary>
+        public const int Release = 10;
+
 		/// <summary>
 		/// Currently supported PHP version.
 		/// </summary>
-		public static readonly string Current = "5.2.6";
+		public static readonly string Current = Major + "." + Minor + "." + Release;
+
+        /// <summary>
+        /// Extra version string.
+        /// </summary>
+        public const string Extra = "phalanger";
 
 		/// <summary>
 		/// Currently supported Zend Engine version.
 		/// </summary>
-		public static readonly string Zend = "2.0.0";
+		public const string Zend = "2.0.0";
 
 		/// <summary>
 		/// Compares parts of varsions delimited by '.'.

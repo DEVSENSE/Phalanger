@@ -190,13 +190,18 @@ namespace PHP.Core.AST
             if (routine.IsUnknown)
             {
                 // note: we've to try following at run time, there can be dynamically added namespaced function matching qualifiedName
-                //// try fallback
-                //if (this.fallbackQualifiedName.HasValue)
-                //{
-                //    routine = analyzer.ResolveFunctionName(this.fallbackQualifiedName.Value, position);
-                //}
+                // try fallback
+                if (this.fallbackQualifiedName.HasValue)
+                {
+                    var fallbackroutine = analyzer.ResolveFunctionName(this.fallbackQualifiedName.Value, position);
+                    if (fallbackroutine != null && !fallbackroutine.IsUnknown)
+                    {
+                        if (fallbackroutine is PhpLibraryFunction)  // we are calling library function directly
+                            routine = fallbackroutine;
+                    }
+                }
 
-                //if (routine.IsUnknown)   // still unknown ?
+                if (routine.IsUnknown)   // still unknown ?
                     Statistics.AST.AddUnknownFunctionCall(qualifiedName);
             }
             // resolve overload if applicable:
