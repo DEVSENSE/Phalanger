@@ -2749,6 +2749,7 @@ namespace PHP.Core.Reflection
 					typeof(PHP.Core.IPhpObjectGraphNode),
 					typeof(PHP.Core.IPhpEnumerable),
 					typeof(System.IDisposable),
+                    typeof(System.Dynamic.IDynamicMetaObjectProvider),
 #if !SILVERLIGHT
 					typeof(System.Runtime.Serialization.ISerializable),
 					typeof(System.Runtime.Serialization.IDeserializationCallback) 

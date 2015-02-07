@@ -1652,11 +1652,16 @@ namespace PHP.Core
             double dx;
 
             int iy = Convert.ObjectToInteger(y);
+            Convert.ObjectToNumber(x, out ix, out lx, out dx);
 
-            if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & Convert.NumberInfo.Integer) != 0)
-                return unchecked(ix << iy);
-            else
-                return unchecked(lx << iy);
+            long rl = unchecked(lx << iy);
+
+            // int -> long overflow?
+            int il = unchecked((int)rl);
+            if (il == rl)
+                return il;  // int is enought
+            
+            return rl;      // long result
         }
 
         /// <summary>
@@ -1673,11 +1678,16 @@ namespace PHP.Core
             double dx;
 
             int iy = Convert.ObjectToInteger(y);
+            Convert.ObjectToNumber(x, out ix, out lx, out dx);
 
-            if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & Convert.NumberInfo.Integer) != 0)
-                return unchecked(ix >> iy);
-            else
-                return unchecked(lx >> iy);
+            long rl = unchecked(lx >> iy);
+
+            // long -> int?
+            int il = unchecked((int)rl);
+            if (il == rl)
+                return il;  // int is enought
+
+            return rl;      // long result
         }
 
         #endregion
@@ -5018,7 +5028,7 @@ namespace PHP.Core
 			{
 			{ "1.5xxx", -35, 536870912 },
 			{ "1.5xxx",   0, 1 },
-			{ "1.5xxx",  34, 4 }
+			{ "1.5xxx",  34, 17179869184L } // 64bit behaviour
 			};
 
             for (int i = 0; i < cases.GetLength(1); i++)
@@ -5037,7 +5047,7 @@ namespace PHP.Core
             string d = "-bye-";
 
             object result = Operators.Concat(a, b, c, d);
-            Debug.Assert(result as string == "=>?-hello-===-bye-");
+            Debug.Assert(Operators.StrictEquality(result, "=>?-hello-===-bye-"));
         }
     }
 
