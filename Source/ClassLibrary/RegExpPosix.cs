@@ -14,7 +14,6 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
