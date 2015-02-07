@@ -79,6 +79,11 @@ namespace PHP.Library
 			/// </summary>
 			public string DefaultFromHeader = null;
 
+            /// <summary>
+            /// Whether to add <c>X-PHP-Originating-Script</c> header to sent mails.
+            /// </summary>
+            public bool AddXHeader = false;
+
             public MailerSection()
             {
                 
@@ -116,6 +121,10 @@ namespace PHP.Library
 					case "SmtpPort":
 						SmtpPort = ConfigUtils.ParseInteger(value, 0, UInt16.MaxValue, node);
 						break;
+
+                    case "AddXHeader":
+                        AddXHeader = string.Equals(value, true.ToString(), StringComparison.OrdinalIgnoreCase);
+                        break;
 
 					default:
 						return false;
