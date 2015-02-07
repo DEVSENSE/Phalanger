@@ -112,6 +112,7 @@ namespace PHP.Library.SPL
         /// Returns the inner iterator for the current iterator entry.
         /// </summary>
         /// <returns>The inner <see cref="Iterator"/> for the current entry.</returns>
+        [ImplementsMethod]
         object getInnerIterator(ScriptContext context);
     }
 
@@ -125,12 +126,14 @@ namespace PHP.Library.SPL
         /// Returns an iterator for the current iterator entry.
         /// </summary>
         /// <returns>An <see cref="RecursiveIterator"/> for the current entry.</returns>
+        [ImplementsMethod]
         object getChildren(ScriptContext context);
 
         /// <summary>
         /// Returns if an iterator can be created fot the current entry.
         /// </summary>
         /// <returns>Returns TRUE if the current entry can be iterated over, otherwise returns FALSE.</returns>
+        [ImplementsMethod]
         object hasChildren(ScriptContext context);
     }
 
@@ -415,31 +418,37 @@ namespace PHP.Library.SPL
 
         #region ArrayIterator (uasort, uksort, natsort, natcasesort, ksort, asort)
 
+        [ImplementsMethod]
         public virtual object uasort(ScriptContext/*!*/context, object cmp_function)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object uksort(ScriptContext/*!*/context, object cmp_function)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object natsort(ScriptContext/*!*/context)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object natcasesort(ScriptContext/*!*/context)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object ksort(ScriptContext/*!*/context)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object asort(ScriptContext/*!*/context)
         {
             throw new NotImplementedException();
@@ -449,16 +458,19 @@ namespace PHP.Library.SPL
 
         #region ArrayIterator (getFlags, setFlags, append, getArrayCopy)
 
+        [ImplementsMethod]
         public virtual object getFlags(ScriptContext/*!*/context)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object setFlags(ScriptContext/*!*/context, object flags)
         {
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual PhpArray getArrayCopy(ScriptContext/*!*/context)
         {
             if (isArrayIterator)
@@ -467,6 +479,7 @@ namespace PHP.Library.SPL
             throw new NotImplementedException();
         }
 
+        [ImplementsMethod]
         public virtual object append(ScriptContext/*!*/context, object value)
         {
             if (isArrayIterator)
