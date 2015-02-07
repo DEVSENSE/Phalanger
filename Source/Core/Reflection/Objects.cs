@@ -1477,8 +1477,8 @@ namespace PHP.Core.Reflection
 
 			DObject php_obj;
 
-			if (obj == null) return 1;
-            if (obj is bool) return 1 - ((bool)obj ? 1 : 0);
+			if (obj == null) return 1;                      // 1 > null
+            if (obj is bool) return ((bool)obj ? 0 : 1);    // 1 == true, 1 > false
 
 			if ((php_obj = obj as DObject) != null)
 			{
