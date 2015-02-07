@@ -47,10 +47,19 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
     [ImplementsExtension(LibraryDescriptor.ExtPcre)]
 	public static class PerlRegExp
-	{
-		#region preg_quote
+    {
+        #region preg_last_error
 
-		/// <summary>
+        [ImplementsFunction("preg_last_error")]
+        public static int LastError()
+        {
+            return 0;
+        }
+
+        #endregion
+        #region preg_quote
+
+        /// <summary>
 		/// <para>Escapes all characters that have special meaning in regular expressions. These characters are
 		/// . \\ + * ? [ ^ ] $ ( ) { } = ! &lt; &gt; | :</para>
 		/// </summary>
