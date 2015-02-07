@@ -727,18 +727,12 @@ namespace PHP.Core.Parsers
 			return CustomAttribute.TargetSelectors.Default;
 		}
 
-		private List<CustomAttribute>/*!*/ AddCustomAttributes(List<CustomAttribute> result,
-		  List<CustomAttribute>/*!*/ attrs, CustomAttribute.TargetSelectors targetSelector)
+		private List<CustomAttribute>/*!*/CustomAttributes(List<CustomAttribute>/*!*/ attrs, CustomAttribute.TargetSelectors targetSelector)
 		{
-			if (result == null)
-				result = attrs;
-			else
-				result.AddRange(attrs);
-
 			for (int i = 0; i < attrs.Count; i++)
 				attrs[i].TargetSelector = targetSelector;
 
-			return result;
+			return attrs;
 		}
 
 		#endregion

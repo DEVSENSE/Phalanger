@@ -160,7 +160,10 @@ namespace PHP.Core.AST
 		Linq,
 		LinqOpChain,
 		LinqTuple,
-		LinqTupleItemAccess
+		LinqTupleItemAccess,
+
+        // lambda function:
+        Closure,
 	}
 
 	#endregion
