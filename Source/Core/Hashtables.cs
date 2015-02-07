@@ -2856,6 +2856,9 @@ namespace PHP.Core
 
 		public IEnumerator<KeyValuePair<IntStringKey, object>>/*!*/ GetEnumerator()
 		{
+            if (this.Count == 0)
+                return OrderedDictionary.EmptyEnumerator.SingletonInstance;
+
             return new OrderedDictionary.Enumerator(this, true); //table.GetEnumerator();
 		}
 
@@ -2865,6 +2868,9 @@ namespace PHP.Core
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
+            if (this.Count == 0)
+                return OrderedDictionary.EmptyEnumerator.SingletonInstance;
+
             return new OrderedDictionary.Enumerator(this, true); //(IEnumerator)table.GetEnumerator();
 		}
 
@@ -2978,6 +2984,9 @@ namespace PHP.Core
 		/// <returns>The enumerator.</returns>
 		IDictionaryEnumerator/*!*/ IDictionary.GetEnumerator()
 		{
+            if (this.Count == 0)
+                return OrderedDictionary.EmptyEnumerator.SingletonInstance;
+
             return new IDictionaryAdapter(this); // new GenericDictionaryAdapter<object, object>(GetDictionaryEnumerator(), false);
 		}
 

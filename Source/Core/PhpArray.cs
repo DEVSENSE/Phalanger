@@ -889,6 +889,9 @@ namespace PHP.Core
 		/// <remarks>Used for internal purposes only!</remarks>
         public virtual IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, Reflection.DTypeDesc caller)
         {
+            if (this.Count == 0)
+                return OrderedDictionary.EmptyEnumerator.SingletonInstance;
+
             if (aliasedValues)
                 return new ForeachEnumeratorAliased(this, keyed);
             else
