@@ -574,7 +574,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc { get; set; }
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetProperty<PHPDocBlock>(); }
+            set { this.SetProperty<PHPDocBlock>(value); }
+        }
 	}
 
 	#endregion
