@@ -5,7 +5,6 @@ using System.Text;
 using PHP.Core;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
-using System.Diagnostics;
 
 namespace PHP.Library.Zip
 {

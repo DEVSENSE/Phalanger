@@ -345,7 +345,7 @@ namespace PHP.Core
         /// <param name="accessOptions">Resulting <see cref="StreamAccessOptions"/> giving 
         /// additional information to the stream opener.</param>
         /// <returns><c>true</c> if the given mode was a valid file opening mode, otherwise <c>false</c>.</returns>
-        internal bool ParseMode(string mode, StreamOpenOptions options, out FileMode fileMode, out FileAccess fileAccess, out StreamAccessOptions accessOptions)
+        public bool ParseMode(string mode, StreamOpenOptions options, out FileMode fileMode, out FileAccess fileAccess, out StreamAccessOptions accessOptions)
         {
             accessOptions = StreamAccessOptions.Empty;
             bool forceBinary = false; // The user requested a text stream
@@ -540,6 +540,21 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Register a new system wrapper
+        /// </summary>
+        /// <param name="wrapper">An instance of the corresponding StreamWrapper descendant.</param>
+        /// <returns>True if succeeds, false if the scheme is already registered.</returns>
+        public static bool RegisterSystemWrapper(StreamWrapper wrapper)
+        {
+            if (!systemStreamWrappers.ContainsKey(wrapper.Scheme))
+            {
+                systemStreamWrappers.Add(wrapper.Scheme, wrapper);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Checks if a wrapper is already registered for the given scheme.
         /// </summary>
         /// <param name="scheme">The scheme.</param>
@@ -592,12 +607,13 @@ namespace PHP.Core
         /// <returns></returns>
         public static ICollection<string> GetSystemWrapperSchemes()
         {
-            return new string[]
+            string[] keys = new string[systemStreamWrappers.Count];
+            int i = 0;
+            foreach (string key in systemStreamWrappers.Keys)
             {
-              "file", 
-              "http", 
-              "php" 
-            };
+                keys[i++] = key;
+            }
+            return keys;
         }
 
         /// <summary>
@@ -1354,7 +1370,7 @@ namespace PHP.Core
         private readonly string scheme;
         private readonly Reflection.DTypeDesc/*!*/wrapperTypeDesc;
         private readonly bool isUrl;
-        
+
         #region Wrapper methods invocation
 
         /// <summary>
@@ -1417,7 +1433,7 @@ namespace PHP.Core
 
         public override PhpStream Open(ref string path, string mode, StreamOpenOptions options, StreamContext context)
         {
-            var opened_path  = new PhpReference(path);
+            var opened_path = new PhpReference(path);
             object result = InvokeWrapperMethod(PhpUserStream.USERSTREAM_OPEN, path, mode, (int)options, opened_path);
 
             if (Convert.ObjectToBoolean(result))
@@ -1426,8 +1442,8 @@ namespace PHP.Core
                 if (opened_path_str != null) path = opened_path_str;
 
                 FileMode fileMode;
-			    FileAccess fileAccess;
-			    StreamAccessOptions ao;
+                FileAccess fileAccess;
+                StreamAccessOptions ao;
 
                 if (!ParseMode(mode, options, out fileMode, out fileAccess, out ao)) return null;
                 return new PhpUserStream(this, ao, path, context);
@@ -1468,11 +1484,11 @@ namespace PHP.Core
 
         public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
         {
-            PhpArray arr = (streamStat ? 
+            PhpArray arr = (streamStat ?
                 this.InvokeWrapperMethod(PhpUserStream.USERSTREAM_STAT) :
                 this.InvokeWrapperMethod(PhpUserStream.USERSTREAM_STATURL, path, options)) as PhpArray;
 
-            if (arr!= null)
+            if (arr != null)
             {
                 return new StatStruct()
                 {

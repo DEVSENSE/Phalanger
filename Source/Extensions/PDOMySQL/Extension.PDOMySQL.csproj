@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7445CDB5-09EE-4884-B606-B1D870E03B3B}</ProjectGuid>
+    <ProjectGuid>{0AEFF62C-0607-4C03-8F44-9E24BC2EADFA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PHP.Library.Data</RootNamespace>
-    <AssemblyName>PhpNetPDOSQLServer</AssemblyName>
+    <AssemblyName>PhpNetPDOMySQL</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -37,20 +37,32 @@
     <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.5.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MySQLPDODriver.cs" />
+    <Compile Include="PDOMySQLGlobalConfig.cs" />
+    <Compile Include="PDOMySQLLibraryDescriptor.cs" />
+    <Compile Include="PDOMySQLConfiguration.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="PDOSQLServerConfiguration.cs" />
-    <Compile Include="PDOSQLServerGlobalConfig.cs" />
-    <Compile Include="PDOSQLServerLibraryDescriptor.cs" />
-    <Compile Include="PDOSQLServerLocalConfig.cs" />
-    <Compile Include="SQLServerPDODriver.cs" />
+    <Compile Include="PDOMySQLLocalConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Extensions.snk">
+      <Link>Extensions.snk</Link>
+    </None>
+    <None Include="lib\CHANGES" />
+    <None Include="lib\COPYING" />
+    <None Include="lib\README" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -70,9 +82,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Extensions.snk">
-      <Link>Extensions.snk</Link>
-    </None>
+    <Content Include="lib\MySql.Data.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Release Notes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

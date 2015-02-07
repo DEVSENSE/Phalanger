@@ -8,7 +8,6 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using ICSharpCode.SharpZipLib.Core;
-using System.Diagnostics;
 
 namespace PHP.Library.Zip
 {

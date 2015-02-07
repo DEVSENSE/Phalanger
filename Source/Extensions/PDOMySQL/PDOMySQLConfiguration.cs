@@ -6,11 +6,11 @@ using PHP.Core;
 using System.Xml;
 using System.Collections;
 
-namespace PHP.Library.Zip
+namespace PHP.Library.Data
 {
-    public sealed class ZipConfiguration
+    public sealed class PDOMySQLConfiguration
     {
-        private ZipConfiguration() { }
+        private PDOMySQLConfiguration() { }
 
         #region Legacy Configuration
 
@@ -19,9 +19,9 @@ namespace PHP.Library.Zip
         /// </summary>
         private static object GetSetRestore(LocalConfiguration config, string option, object value, IniAction action)
         {
-            ZipLocalConfig local = (ZipLocalConfig)config.GetLibraryConfig(ZipLibraryDescriptor.Singleton);
-            ZipLocalConfig @default = DefaultLocal;
-            ZipGlobalConfig global = Global;
+            PDOMySQLLocalConfig local = (PDOMySQLLocalConfig)config.GetLibraryConfig(PDOMySQLLibraryDescriptor.Singleton);
+            PDOMySQLLocalConfig @default = DefaultLocal;
+            PDOMySQLGlobalConfig global = Global;
 
             //switch (option)
             //{
@@ -36,7 +36,7 @@ namespace PHP.Library.Zip
         }
 
         /// <summary>
-        /// Writes Zip legacy options and their values to XML text stream.
+        /// Writes PDO legacy options and their values to XML text stream.
         /// Skips options whose values are the same as default values of Phalanger.
         /// </summary>
         /// <param name="writer">XML writer.</param>
@@ -49,11 +49,11 @@ namespace PHP.Library.Zip
             if (options == null)
                 throw new ArgumentNullException("options");
 
-            ZipLocalConfig local = new ZipLocalConfig();
-            ZipGlobalConfig global = new ZipGlobalConfig();
+            PDOMySQLLocalConfig local = new PDOMySQLLocalConfig();
+            PDOMySQLGlobalConfig global = new PDOMySQLGlobalConfig();
             PhpIniXmlWriter ow = new PhpIniXmlWriter(writer, options, writePhpNames);
 
-            ow.StartSection("Zip");
+            ow.StartSection("pdo");
 
             // local:
 
@@ -67,12 +67,12 @@ namespace PHP.Library.Zip
         /// </summary>
         internal static void RegisterLegacyOptions()
         {
-            //const string s = ZipLibraryDescriptor.ExtensionName;
-            //GetSetRestoreDelegate d = new GetSetRestoreDelegate(GetSetRestore);
+            const string s = PDOMySQLLibraryDescriptor.ExtensionName;
+            GetSetRestoreDelegate d = new GetSetRestoreDelegate(GetSetRestore);
 
-            //// local:
+            // local:
 
-            //// global:
+            // global:
         }
 
         #endregion
@@ -82,33 +82,33 @@ namespace PHP.Library.Zip
         /// <summary>
         /// Gets the library configuration associated with the current script context.
         /// </summary>
-        public static ZipLocalConfig Local
+        public static PDOMySQLLocalConfig Local
         {
             get
             {
-                return (ZipLocalConfig)Configuration.Local.GetLibraryConfig(ZipLibraryDescriptor.Singleton);
+                return (PDOMySQLLocalConfig)Configuration.Local.GetLibraryConfig(PDOMySQLLibraryDescriptor.Singleton);
             }
         }
 
         /// <summary>
         /// Gets the default library configuration.
         /// </summary>
-        public static ZipLocalConfig DefaultLocal
+        public static PDOMySQLLocalConfig DefaultLocal
         {
             get
             {
-                return (ZipLocalConfig)Configuration.DefaultLocal.GetLibraryConfig(ZipLibraryDescriptor.Singleton);
+                return (PDOMySQLLocalConfig)Configuration.DefaultLocal.GetLibraryConfig(PDOMySQLLibraryDescriptor.Singleton);
             }
         }
 
         /// <summary>
         /// Gets the global library configuration.
         /// </summary>
-        public static ZipGlobalConfig Global
+        public static PDOMySQLGlobalConfig Global
         {
             get
             {
-                return (ZipGlobalConfig)Configuration.Global.GetLibraryConfig(ZipLibraryDescriptor.Singleton);
+                return (PDOMySQLGlobalConfig)Configuration.Global.GetLibraryConfig(PDOMySQLLibraryDescriptor.Singleton);
             }
         }
 

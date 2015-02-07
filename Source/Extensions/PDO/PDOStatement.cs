@@ -79,7 +79,8 @@ namespace PHP.Library.Data
             int fetch_style_int = PHP.Core.Convert.ObjectToInteger(fetch_style);
             if (!Enum.IsDefined(typeof(PDOFetchType), fetch_style_int))
             {
-                throw new PDOException("Invalid fetch_style value");
+                PDOException.Throw(context, "Invalid fetch_style value", null, null, null);
+                return null;
             }
             ft = (PDOFetchType)fetch_style_int;
             var dr = this.CurrentReader;
@@ -187,7 +188,7 @@ namespace PHP.Library.Data
 
         private static readonly Regex regName = new Regex(@"[\w_]+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        internal void Prepare(string query, Dictionary<int, object> options)
+        internal void Prepare(ScriptContext context, string query, Dictionary<int, object> options)
         {
             this.m_prepMode = PreparedMode.None;
             this.m_prepName.Clear();
@@ -209,7 +210,8 @@ namespace PHP.Library.Data
                             {
                                 if (this.m_prepMode != PreparedMode.Numbers)
                                 {
-                                    throw new PDOException("Mixed parameter mode : use only '?' or ':name' pattern");
+                                    PDOException.Throw(context, "Mixed parameter mode : use only '?' or ':name' pattern", null, null, null);
+                                    return;
                                 }
                             }
                             int paramNum = this.m_prepNum.Count;
@@ -228,7 +230,8 @@ namespace PHP.Library.Data
                             {
                                 if (this.m_prepMode != PreparedMode.Named)
                                 {
-                                    throw new PDOException("Mixed parameter mode : use only '?' or ':name' pattern");
+                                    PDOException.Throw(context, "Mixed parameter mode : use only '?' or ':name' pattern", null, null, null);
+                                    return;
                                 }
                             }
                             Match m = regName.Match(query, pos);
@@ -548,14 +551,14 @@ namespace PHP.Library.Data
                     default:
                         throw new NotImplementedException();
                 }
-                object ret = this.fetch(context, fetch_style);
-                if (ret != null && (ret is bool && ((bool)ret) != false))
+                object ret = this.fetch(context, fetch);
+                if ((ret is bool && ((bool)ret) == false) || ret == null)
                 {
-                    arr.AddToEnd(ret);
+                    break;
                 }
                 else
                 {
-                    break;
+                    arr.AddToEnd(ret);
                 }
             }
             return arr;

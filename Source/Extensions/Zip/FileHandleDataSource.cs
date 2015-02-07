@@ -29,7 +29,7 @@ namespace PHP.Library.Zip
             }
             else
             {
-                data = handle.ReadBinaryContents(-1);
+                data = handle.ReadMaximumBytes();
             }
             this.m_ms = new MemoryStream(data.ReadonlyData);
         }

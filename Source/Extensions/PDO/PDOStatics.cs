@@ -14,5 +14,14 @@ namespace PHP.Library.Data
         {
             return PDOLibraryDescriptor.GetDrivers();
         }
+
+        public static PhpArray BuildErrorInfo(string sqlstate, object driver_error, string message)
+        {
+            PhpArray arr = new PhpArray();
+            arr.Add(0, sqlstate);
+            arr.Add(1, driver_error);
+            arr.Add(2, message);
+            return arr;
+        }
     }
 }

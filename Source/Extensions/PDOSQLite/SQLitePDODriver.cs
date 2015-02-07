@@ -25,6 +25,13 @@ namespace PHP.Library.Data
             csb.Version = 3;
 
             SQLiteConnection con = new SQLiteConnection(csb.ConnectionString);
+            Action clear = null;
+            clear = () =>
+            {
+                con.Dispose();
+                RequestContext.RequestEnd -= clear;
+            };
+            RequestContext.RequestEnd += clear;
             con.Open();
 
             return con;
@@ -127,6 +134,11 @@ namespace PHP.Library.Data
 
             SQLiteFunction.RegisterFunction(func_name, FunctionType.Scalar, nbr_arg, d);
             return null;
+        }
+
+        public override object GetLastInsertId(ScriptContext context, PDO pdo, string name)
+        {
+            return ((SQLiteConnection)pdo.Connection).LastInsertRowId;
         }
     }
 }
