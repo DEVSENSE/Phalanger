@@ -61,6 +61,16 @@ namespace PHP.Core.AST
             return _properties.GetProperty<T>();
         }
 
+        bool IPropertyCollection.TryGetProperty(object key, out object value)
+        {
+            return _properties.TryGetProperty(key, out value);
+        }
+
+        bool IPropertyCollection.TryGetProperty<T>(out T value)
+        {
+            return _properties.TryGetProperty<T>(out value);
+        }
+
         bool IPropertyCollection.RemoveProperty(object key)
         {
             return _properties.RemoveProperty(key);
