@@ -507,7 +507,7 @@ namespace PHP.Core.AST
                     Debug.Assert(real_property != null);
 
                     properties.Add(real_property);
-                    field_values.Add(ConvertToClr.ObjectToType(value, real_property.PropertyType));
+                    prop_values.Add(ConvertToClr.ObjectToType(value, real_property.PropertyType));
 				}
 			}
 
