@@ -613,7 +613,36 @@ namespace PHP.Library.SPL
         //public static string export ( string $class , string $name [, bool $return = false ] )
         //public Closure getClosure ( string $object )
         //public int getModifiers ( void )
-        //public ReflectionMethod getPrototype ( void )
+        
+        /// <summary>
+        /// Gets the method prototype (if there is one).
+        /// Prototype is a method of base class.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns><see cref="ReflectionMethod"/> or <c>FALSE</c>.</returns>
+        [ImplementsMethod]
+        public virtual object/*ReflectionMethod*/getPrototype(ScriptContext context)
+        {
+            if (dtype == null || method == null || dtype.Base == null)
+                return false;
+
+            DRoutineDesc prototype;
+            if (dtype.Base.GetMethod(method.KnownRoutine.Name, dtype, out prototype) == GetMemberResult.NotFound)
+                return false;
+
+            return new ReflectionMethod(context, true)
+            {
+                dtype = prototype.DeclaringType,
+                method = prototype,
+            };
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getPrototype(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).getPrototype(stack.Context);
+        }
 
         [ImplementsMethod]
         public virtual object/*ReflectionClass*/getDeclaringClass(ScriptContext context)
