@@ -1035,7 +1035,11 @@ namespace PHP.Core.Parsers
                 !(item is NamespaceDecl))
             {
                 // adding a statement after simple namespace declaration => add the statement into the namespace:
-                ListAdd<T>(nsitem.Statements, (T)item);
+                Debug.Assert(item is T);
+                Debug.Assert(item is Statement);
+
+                nsitem.Statements.Add((Statement)item);
+                //nsitem.UpdatePosition(Position.CombinePositions(nsitem.Position, ((Statement)item).Position));
             }
             else if (item is List<T>)
             {
@@ -1053,6 +1057,8 @@ namespace PHP.Core.Parsers
         private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
         {
             Debug.Assert(list != null);
+            Debug.Assert(item != null);
+            Debug.Assert(item is T);
                 
             var tlist = (List<T>)list;
 
@@ -1065,12 +1071,18 @@ namespace PHP.Core.Parsers
             NamespaceDecl nsitem = item as NamespaceDecl;
             if (nsitem != null && nsitem.IsSimpleSyntax)
             {
+                Debug.Assert(list is List<Statement>);
+                var slist = (List<Statement>)list;
+
                 // move statements into nsitem namespace:
                 int i = 0;  // find how many Statements from tlist move to nsitem.Statements
-                for (; i < tlist.Count && !(tlist[i] is NamespaceDecl); ++i) ;
+                while (i < slist.Count && !(slist[i] is NamespaceDecl))
+                    ++i;
+
                 if (i > 0)
                 {
-                    nsitem.Statements.AddRange((tlist as List<Statement>).Take(i));
+                    nsitem.Statements.AddRange(slist.Take(i));
+                    //nsitem.UpdatePosition(Position.CombinePositions(nsitem.Position, slist[i - 1].Position));
                     tlist.RemoveRange(0, i);
                 }
             }
