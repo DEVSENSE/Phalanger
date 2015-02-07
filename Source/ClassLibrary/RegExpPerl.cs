@@ -2215,6 +2215,7 @@ namespace PHP.Library
 				}
 				else
 				{
+
 					// hexadecimal number encoding single-byte character:
 					for (int i = pos + 2; i < pos + 4; i++)
 					{
@@ -2224,11 +2225,12 @@ namespace PHP.Library
 						number = (number << 4) + digit;
 					}
 					pos += 3;
-					char[] chars = encoding.GetChars(new byte[] { (byte)number });
-					if (chars.Length == 1)
-						ch = chars[0];
-					else
-						ch = number;
+                    ch = number;
+					//char[] chars = encoding.GetChars(new byte[] { (byte)number });
+                    //if (chars.Length == 1)
+                    //    ch = chars[0];
+                    //else
+                    //    ch = number;
                     escaped = ch < Char.MaxValue ? IsCharRegexSpecial((char)ch) : false;
 				}
 				return true;
