@@ -329,8 +329,8 @@ namespace PHP.Core.Parsers
             Debug.Assert(element is IHasPhpDoc);
             if (doccomment != null)
             {
-                Debug.Assert(doccomment is string);
-                ((IHasPhpDoc)element).PHPDoc = new PHPDocBlock((string)doccomment);
+                Debug.Assert(doccomment is PHPDocBlock);
+                ((IHasPhpDoc)element).PHPDoc = (PHPDocBlock)doccomment;
             }
         }
 
