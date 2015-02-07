@@ -29,6 +29,7 @@ namespace VersionReplacer
                 };
 
             var result = new StringBuilder();
+            bool changed = false;
             foreach (var line in File.ReadAllLines(fname))
             {
                 if (isvsix)
@@ -38,6 +39,8 @@ namespace VersionReplacer
                         var regex = new Regex(@"<Version>[0-9]+\.[0-9]+\.(.+)</Version>");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
+
+                        changed |= newline != line;
                         continue;
                     }
                 }
@@ -48,6 +51,8 @@ namespace VersionReplacer
                         var regex = new Regex(@"public\s+const\s+string\s+Version\s+\=\s+""[0-9]+\.[0-9]+\.(.+)""");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
+
+                        changed |= newline != line;
                         continue;
                     }
 
@@ -56,6 +61,8 @@ namespace VersionReplacer
                         var regex = new Regex(@"[assembly\:\s+AssemblyFileVersion\(""[0-9]+\.[0-9]+\.[0-9]+\.(.+)""\)");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
+
+                        changed |= newline != line;
                         continue;
                     }
                 }
@@ -64,8 +71,12 @@ namespace VersionReplacer
                 result.AppendLine(line);
             }
 
-            File.SetAttributes(fname, FileAttributes.Normal);
-            File.WriteAllText(fname, result.ToString());
+            if (changed)
+            {
+                // do not modify the file if not necessary (causing project to rebuild)
+                File.SetAttributes(fname, FileAttributes.Normal);
+                File.WriteAllText(fname, result.ToString());
+            }
         }
     }
 }

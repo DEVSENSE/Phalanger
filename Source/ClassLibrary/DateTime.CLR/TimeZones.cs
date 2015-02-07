@@ -317,10 +317,13 @@ namespace PHP.Library
 
             // add additional time zones:
             sortedTZ.Add(new TimeZoneInfoItem("UTC", TimeZoneInfo.Utc, null, false));
+            sortedTZ.Add(new TimeZoneInfoItem("GMT", TimeZoneInfo.Utc, null, true));
+            sortedTZ.Add(new TimeZoneInfoItem("GMT0", TimeZoneInfo.Utc, null, true));
             sortedTZ.Add(new TimeZoneInfoItem("UCT", TimeZoneInfo.Utc, null, true));
             sortedTZ.Add(new TimeZoneInfoItem("Universal", TimeZoneInfo.Utc, null, true));
             sortedTZ.Add(new TimeZoneInfoItem("Zulu", TimeZoneInfo.Utc, null, true));
-            //{ "WET"    = Europe/Berlin     
+            sortedTZ.Add(new TimeZoneInfoItem("MET", sortedTZ.First(t => t.PhpName == "Europe/Rome").Info, null, true));
+            sortedTZ.Add(new TimeZoneInfoItem("WET", sortedTZ.First(t => t.PhpName == "Europe/Berlin").Info, null, true));     
             //{ "PRC"              
             //{ "ROC"              
             //{ "ROK"   
