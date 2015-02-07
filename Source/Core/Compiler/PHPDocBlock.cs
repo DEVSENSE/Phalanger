@@ -1261,9 +1261,10 @@ namespace PHP.Core
         private readonly string doccomment;
 
         /// <summary>
-        /// Position of the first character in the source code.
+        /// Position of the whole token in the source code.
         /// </summary>
-        private readonly ShortPosition startPosition;
+        public Parsers.Position Position { get { return this.position; } }
+        private readonly Parsers.Position position;
 
         /// <summary>
         /// Parsed data. Lazily initialized.
@@ -1291,11 +1292,11 @@ namespace PHP.Core
         /// Initializes new instance of <see cref="PHPDocBlock"/>.
         /// </summary>
         /// <param name="doccomment">PHPDoc token content.</param>
-        /// <param name="startPosition">Position of the first character.</param>
-        public PHPDocBlock(string doccomment, ShortPosition startPosition)
+        /// <param name="position">Position of whole token in the source code.</param>
+        public PHPDocBlock(string doccomment, Parsers.Position position)
         {
             this.doccomment = doccomment;
-            this.startPosition = startPosition;
+            this.position = position;
         }
 
         /// <summary>
@@ -1312,7 +1313,7 @@ namespace PHP.Core
                 // double-checked lock
                 if (this.elements == null)
                 {
-                    var elements = ParseNoLock(this.doccomment, this.startPosition);
+                    var elements = ParseNoLock(this.doccomment, this.position);
                     Debug.Assert(elements != null);
 
                     this.elements = elements.ToArray();
@@ -1324,8 +1325,8 @@ namespace PHP.Core
         /// Parses given <paramref name="doccomment"/> into a list of <see cref="Element"/> instances.
         /// </summary>
         /// <param name="doccomment">Content of the PHPDoc token.</param>
-        /// <param name="startPosition">Position of the first character of <paramref name="doccomment"/> withint the source code.</param>
-        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, ShortPosition startPosition)
+        /// <param name="position">Position of whole <paramref name="doccomment"/> within the source code.</param>
+        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, Parsers.Position position)
         {
             Debug.Assert(doccomment != null);
 
@@ -1346,11 +1347,11 @@ namespace PHP.Core
                     Debug.Assert(line != null);
                     
                     // determine position within the source code:
-                    int sourcePositionLine = lineIndex + startPosition.Line;
+                    int sourcePositionLine = lineIndex + position.FirstLine;
                     if (lineIndex == 0)
                     {
-                        startCharIndex += startPosition.Column;
-                        endCharIndex += startPosition.Column;
+                        startCharIndex += position.FirstColumn;
+                        endCharIndex += position.FirstColumn;
                     }
 
                     //
