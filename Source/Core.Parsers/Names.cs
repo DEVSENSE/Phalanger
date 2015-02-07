@@ -1060,15 +1060,37 @@ namespace PHP.Core
         {
             // current namespace:
             if (string.IsNullOrEmpty(currentNamespace))
+            {
                 this.CurrentNamespace = null;
+            }
             else
             {
-                Debug.Assert(currentNamespace.IndexOf(QualifiedName.Separator) != 0);   // not starting with separator
+                Debug.Assert(currentNamespace[0] != QualifiedName.Separator);   // not starting with separator
                 this.CurrentNamespace = new QualifiedName(currentNamespace.Split(QualifiedName.Separator), false, true);
             }
 
             // aliases (just initialize dictionary, items added later):
             this.Aliases = (aliases > 0) ? new Dictionary<string, QualifiedName>(aliases) : null;
+        }
+
+        /// <summary>
+        /// Initializes new instance of <see cref="NamingContext"/>
+        /// </summary>
+        public NamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
+        {
+            Debug.Assert(!currentNamespace.HasValue || string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
+
+            this.CurrentNamespace = currentNamespace;
+            this.Aliases = aliases;
+        }
+
+        /// <summary>
+        /// Initializes naming context from a namespace declaration.
+        /// </summary>
+        /// <param name="ns">Namespace declaration. Cannot be <c>null</c>.</param>
+        public NamingContext(AST.NamespaceDecl/*!*/ns)
+            :this(ns.QualifiedName, ns.Aliases)
+        {
         }
 
         /// <summary>
@@ -1080,8 +1102,8 @@ namespace PHP.Core
         {
             Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(!string.IsNullOrEmpty(qualifiedName));
-            Debug.Assert(qualifiedName.IndexOf(QualifiedName.Separator) != 0);   // not starting with separator
             Debug.Assert(this.Aliases != null);
+            Debug.Assert(qualifiedName[0] != QualifiedName.Separator);   // not starting with separator
 
             this.Aliases.Add(alias, new QualifiedName(qualifiedName.Split(QualifiedName.Separator), true, true));
         }
