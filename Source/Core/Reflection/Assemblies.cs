@@ -116,7 +116,7 @@ namespace PHP.Core.Reflection
 			{
 				PhpLibraryAttribute lib;
 				PurePhpAssemblyAttribute pure;
-                
+
 				if ((lib = attr as PhpLibraryAttribute) != null)
 				{
 					// PHP library or extension: 
@@ -131,19 +131,19 @@ namespace PHP.Core.Reflection
 					return new PureAssembly(applicationContext, realAssembly, pure, config);
 #endif
 				}
-                else 
-                {
+				else
+				{
 #if SILVERLIGHT
 					throw new NotSupportedException("Loading of pre-compiled script assemblies is not supported!");
 #else
-                    // compiled PHP script assembly:
-                    return ScriptAssembly.Create(applicationContext, realAssembly, (ScriptAssemblyAttribute)attr);
+					// compiled PHP script assembly:
+					return ScriptAssembly.Create(applicationContext, realAssembly, (ScriptAssemblyAttribute)attr);
 #endif
-                }
+				}
 			}
-            else
+			else
 			{
-                // CLR assembly:
+				// CLR assembly:
 				return new ClrAssembly(applicationContext, realAssembly, config);
 			}
 		}
@@ -290,7 +290,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Protects both <see cref="cache"/> and <see cref="modules"/>.
 		/// </summary>
-		private readonly ReaderWriterLockSlim/*!*/rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+		private readonly ReaderWriterLockSlim/*!*/rwLock = new ReaderWriterLockSlim();
 
 		/// <summary>
 		/// Maps transient source code to its compiled form - an instance of <see cref="ScriptModule"/> class.
@@ -363,7 +363,8 @@ namespace PHP.Core.Reflection
 
 		public override PhpModule GetModule(PhpSourceFile name)
 		{
-            throw new NotSupportedException();
+			Debug.Fail();
+			throw null;
 		}
 
 		/// <summary>
@@ -402,7 +403,7 @@ namespace PHP.Core.Reflection
 		}
 
 		internal TransientModuleBuilder/*!*/ DefineModule(TransientAssemblyBuilder/*!*/ assemblyBuilder,
-			TransientCompilationUnit/*!*/ compilationUnit, int containerId, EvalKinds kind, string sourcePath)
+			TransientCompilationUnit/*!*/ compilationUnit, int containerId, EvalKinds kind)
 		{
 			TransientModule container = GetModule(containerId);
 
@@ -421,7 +422,7 @@ namespace PHP.Core.Reflection
                 rwLock.ExitWriteLock();
 			}
 
-			return new TransientModuleBuilder(new_id, kind, compilationUnit, assemblyBuilder, container, sourcePath);
+			return new TransientModuleBuilder(new_id, kind, compilationUnit, assemblyBuilder, container);
 		}
 
 		internal TransientModule/*!*/ AddModule(TransientModule/*!*/ module, List<ProvidedType>/*!*/ dependentTypes,
@@ -545,9 +546,9 @@ namespace PHP.Core.Reflection
 
 	#endregion
 
-    #region PhpLibraryAssembly
+	#region PhpLibraryAssembly
 
-    public sealed class PhpLibraryAssembly : DAssembly
+	public sealed class PhpLibraryAssembly : DAssembly
 	{
 		internal static int LoadedLibraryCount { get { return uniqueIndex; } }
 		private static int uniqueIndex = 0;

@@ -362,7 +362,7 @@ namespace PHP.Core
 			{
 				ApplicationConfiguration app_config = Configuration.Application;
 				FullPath full_path = new FullPath(callerRelativeSourcePath, app_config.Compiler.SourceRoot);
-				context.Config.Assertion.Callback.Invoke(full_path.FullFileName, line, code);
+				context.Config.Assertion.Callback.Invoke(full_path, line, code);
 			}
 
 			// reports a warning if required:
@@ -483,6 +483,7 @@ namespace PHP.Core
                         CompilationContext context = new CompilationContext(scriptContext.ApplicationContext, null, config,
                             new EvalErrorSink(-prefix.Length, config.Compiler.DisabledWarnings, config.Compiler.DisabledWarningNumbers),
                             scriptContext.WorkingDirectory);
+
 
                         TransientCompilationUnit unit = assembly_builder.Build(code, descriptor, kind, context,
                             scriptContext, referringType, namingContext, entireFile);

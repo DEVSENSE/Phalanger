@@ -12,15 +12,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using PHP.Core.Parsers;
+using PHP.Core.Emit;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
-
-using PHP.Core.AST;
-using PHP.Core.Compiler.AST;
-using PHP.Core.Emit;
-using PHP.Core.Parsers;
-using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {
@@ -108,7 +104,7 @@ namespace PHP.Core.Reflection
 			{
 				// report fatal error (do not throw an exception, just don't let the analysis continue):
 				member.ReportRedeclaration(errors);
-				errors.Add(FatalErrors.RelatedLocation, existing.SourceUnit, existing.Span);
+				errors.Add(FatalErrors.RelatedLocation, existing.SourceUnit, existing.Position);
 				return false;
 			}
 
@@ -120,8 +116,8 @@ namespace PHP.Core.Reflection
 			if (!first.IsPartial && !first.IsConditional)
 			{
 				// report error and mark the declaration partial:
-				errors.Add(Errors.MissingPartialModifier, first.SourceUnit, first.Span, first.Declaree.FullName);
-				errors.Add(Errors.RelatedLocation, second.SourceUnit, second.Span);
+				errors.Add(Errors.MissingPartialModifier, first.SourceUnit, first.Position, first.Declaree.FullName);
+				errors.Add(Errors.RelatedLocation, second.SourceUnit, second.Position);
 
 				first.IsPartial = true;
 			}
@@ -207,6 +203,17 @@ namespace PHP.Core.Reflection
 		public bool IsDynamic { get { return isDynamic; } }
 		private bool isDynamic = false;
 
+#if SILVERLIGHT
+		public TransientCompilationUnit(string/*!*/ sourceCode, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding, NamingContext namingContext, int line, int column, bool client)
+		{
+			Debug.Assert(sourceCode != null && sourceFile != null && encoding != null);
+			if (client)
+				this.sourceUnit = new ClientSourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
+			else
+				this.sourceUnit = new SourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
+			this.sourceUnit.AddImportedNamespaces(namingContext);
+		}
+#else
 		public TransientCompilationUnit(string/*!*/ sourceCode, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding, NamingContext namingContext, int line, int column, bool client)
 		{
 			Debug.Assert(sourceCode != null && sourceFile != null && encoding != null);
@@ -214,6 +221,7 @@ namespace PHP.Core.Reflection
 			this.sourceUnit = new SourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
 			this.sourceUnit.AddImportedNamespaces(namingContext);
 		}
+#endif
 
 		#region Declaration look-up
 
@@ -299,9 +307,6 @@ namespace PHP.Core.Reflection
 		internal bool PreCompile(CompilationContext/*!*/ context, ScriptContext/*!*/ scriptContext,
 			SourceCodeDescriptor descriptor, EvalKinds kind, DTypeDesc referringType)
 		{
-            Debug.Assert(descriptor.Line == this.sourceUnit.Line);
-            Debug.Assert(descriptor.Column == this.sourceUnit.Column);
-
 			this.resolvingScriptContext = scriptContext;
 			this.referringType = referringType;
 
@@ -311,12 +316,13 @@ namespace PHP.Core.Reflection
 
 			this.assembly_builder = scriptContext.ApplicationContext.TransientAssemblyBuilder;
 			this.module_builder = assembly_builder.DefineModule(this, context.Config.Compiler.Debug,
-				descriptor.ContainingTransientModuleId, kind, descriptor.ContainingSourcePath);
+				descriptor.ContainingTransientModuleId, kind);
 			this.module = module_builder;
 			this.evalKind = kind;
 
-            sourceUnit.Parse(
+			sourceUnit.Parse(
                 context.Errors, this,
+                new Position(descriptor.Line, descriptor.Column, 0, descriptor.Line, descriptor.Column, 0),
                 context.Config.Compiler.LanguageFeatures);
 
 			if (context.Errors.AnyFatalError) return false;
@@ -396,54 +402,13 @@ namespace PHP.Core.Reflection
             if (bakedTypes != null)
                 foreach (var type in bakedTypes)
                 {
-                    // add base as this type dependency:
-                    AddDependentType(type.Value, dependentTypes, type.Value.Base);
-
-                    // do the same for type.Value.Interfaces
-                    var ifaces = type.Value.Interfaces;
-                    if (ifaces != null && ifaces.Length > 0)
-                        for (int i = 0; i < ifaces.Length; i++)
-                            AddDependentType(type.Value, dependentTypes, ifaces[i]);
+                    var parent = type.Value.Base;
+                    if (parent is PhpTypeDesc)
+                        dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(parent.MakeFullName(), parent));
                 }
 
             //
             module = assembly_builder.TransientAssembly.AddModule(module_builder, dependentTypes, sourceUnit.Code, descriptor);
-        }
-
-        private static void AddDependentType(PhpTypeDesc/*!*/selfType, List<KeyValuePair<string, DTypeDesc>>/*!*/dependentTypes, DTypeDesc dependentType)
-        {
-            if (dependentType != null && dependentType is PhpTypeDesc && !IsSameCompilationUnit(selfType, dependentType))
-                dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(dependentType.MakeFullName(), dependentType));
-        }
-
-        private static bool IsSameCompilationUnit(PhpTypeDesc/*!*/selfType, DTypeDesc dependentType)
-        {
-            Debug.Assert(selfType != null && dependentType != null);
-
-            if (object.ReferenceEquals(dependentType.RealType.Module, selfType.RealType.Module))
-            {
-                int selfTransientId, dependentTransientId;
-                string selfFileName, dependentFileName;
-                string selfTypeName, dependentTypeName;
-
-                ReflectionUtils.ParseTypeId(selfType.RealType, out selfTransientId, out selfFileName, out selfTypeName);
-                if (selfTransientId != PHP.Core.Reflection.TransientAssembly.InvalidEvalId) // always true, => TransientCompilationUnit
-                {
-                    ReflectionUtils.ParseTypeId(dependentType.RealType, out dependentTransientId, out dependentFileName, out dependentTypeName);
-                    // transient modules, must have same ids
-                    return selfTransientId == dependentTransientId;
-                }
-                else
-                {
-                    // same module, not transient modules
-                    return true;
-                }
-            }
-            else
-            {
-                // different modules => different units for sure
-                return false;
-            }
         }
 
 		private void DefineBuilders()
@@ -589,19 +554,17 @@ namespace PHP.Core.Reflection
 					//  PhpException.Throw(PhpError.Error, CoreResources.GetString("type_redeclared", entry.Value));
 
 					// checks for conflict on SC:
-					context.DeclareFunction(new PhpRoutineDesc(entry.Value.MemberAttributes, entry.Value.ArglessStub, false), entry.Key);
+					context.DeclareFunction(entry.Value.ArglessStub, entry.Key, entry.Value.MemberAttributes);
 				}
 			}
-
-            if (bakedConstants != null)
-            {
-                foreach (var entry in this.bakedConstants)
-                {
-                    // checks for conflict on SC:
-                    //if (constant.HasValue)
-                    context.DeclareConstant(entry.Key, entry.Value.LiteralValue);
-                }	
-            }
+			
+			// TODO: constants has to be evaluated at this point (add some constant evaluating DM):
+			//foreach (KeyValuePair<string, PhpRoutineDesc> entry in bakedFunctions)
+			//{
+			//  // checks for conflict on SC:
+			//  if (constant.HasValue)
+			//    context.DeclareConstant(constant.FullName, constant.Value);
+			//}	
 		}
 
 		#endregion
@@ -612,37 +575,28 @@ namespace PHP.Core.Reflection
 		{
 			// make all inclusions dynamic:
 #if !SILVERLIGHT
-            var nodecompiler = node.NodeCompiler<IIncludingExCompiler>();
-            nodecompiler.Inclusion = null;
-            nodecompiler.Characteristic = Characteristic.Dynamic;
+			node.Inclusion = null;
+			node.Characteristic = Characteristic.Dynamic;
 #endif
 		}
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
 		{
 			if (functions == null) functions = new Dictionary<QualifiedName, Declaration>();
-			AddDeclaration(parser.ErrorSink, node.GetFunction(), functions);
+			AddDeclaration(parser.ErrorSink, node.Function, functions);
 		}
 
 		public void TypeDeclarationReduced(Parser/*!*/ parser, AST.TypeDecl/*!*/ node)
 		{
 			if (types == null) types = new Dictionary<QualifiedName, Declaration>();
-            AddDeclaration(parser.ErrorSink, node.Type(), types);
+			AddDeclaration(parser.ErrorSink, node.Type, types);
 		}
 
 		public void GlobalConstantDeclarationReduced(Parser/*!*/ parser, AST.GlobalConstantDecl/*!*/ node)
 		{
 			if (constants == null) constants = new Dictionary<QualifiedName, Declaration>();
-			AddDeclaration(parser.ErrorSink, node.GetGlobalConstant(), constants);
+			AddDeclaration(parser.ErrorSink, node.GlobalConstant, constants);
 		}
-
-        public void NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
-        {
-        }
-
-        public void LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
-        {
-        }
 
 		private void AddDeclaration(ErrorSink/*!*/ errors, IDeclaree/*!*/ member, Dictionary<QualifiedName, Declaration>/*!*/ table)
 		{
