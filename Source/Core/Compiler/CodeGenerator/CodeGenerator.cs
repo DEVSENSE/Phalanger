@@ -532,13 +532,25 @@ namespace PHP.Core
 		/// <param name="function">The function to enter.</param>
 		/// <returns><B>true</B> if the function should be emitted, <B>false</B> if it should not be emitted
 		/// (an error was emitted instead due to the incorrect declaration).</returns>
-		public bool EnterFunctionDeclaration(PhpFunction/*!*/ function)
+        public bool EnterFunctionDeclaration(PhpFunction/*!*/ function)
+        {
+            return EnterFunctionDeclarationInternal(function, function.QualifiedName);
+        }
+
+        public bool EnterFunctionDeclaration(PhpLambdaFunction/*!*/ function)
+        {
+            return EnterFunctionDeclarationInternal(function, new QualifiedName(function.Name));
+        }
+
+        private bool EnterFunctionDeclarationInternal(PhpRoutine/*!*/ function, QualifiedName qualifiedName)
 		{
+            Debug.Assert(function.IsFunction);
+
 			bool is_optimized = (function.Properties & RoutineProperties.HasUnoptimizedLocals) == 0;
 			bool indirect_local_access = (function.Properties & RoutineProperties.IndirectLocalAccess) != 0;
 
 			CompilerLocationStack.FunctionDeclContext fd_context = new CompilerLocationStack.FunctionDeclContext();
-			fd_context.Name = function.QualifiedName;
+            fd_context.Name = qualifiedName;
 
 			// Set whether access to variables should be generated via locals or table
 			fd_context.OptimizedLocals = this.OptimizedLocals;

@@ -727,9 +727,38 @@ namespace PHP.Core
 
 		#endregion
 
-		#region RemoveFrame, MakeArgsAware, CollectFrame, AddIndirection
+        #region ExpandFrame
 
-		/// <summary>
+        /// <summary>
+        /// Adds additional arguments before arguments currently on stack.
+        /// Used for expanding 'use' parameters of lambda function.
+        /// </summary>
+        internal void ExpandFrame(PhpArray useParams)
+        {
+            if (useParams != null && useParams.Count > 0)
+            {
+                ArgCount += useParams.Count;
+                int new_top = Top + useParams.Count;
+
+                if (new_top > Items.Length) ResizeItems(new_top);
+
+                var stack_offset = new_top - 1;
+
+                using (var enumerator = useParams.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                    {
+                        Items[stack_offset--] = enumerator.CurrentValue;
+                    }
+
+                Top = new_top;
+            }
+        }
+
+        #endregion
+
+        #region RemoveFrame, MakeArgsAware, CollectFrame, AddIndirection
+
+        /// <summary>
 		/// Removes the current open args-unaware frame from the stack.
 		/// </summary>
 		/// <remarks>

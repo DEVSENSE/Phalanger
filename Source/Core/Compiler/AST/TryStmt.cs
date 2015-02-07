@@ -1,6 +1,5 @@
 /*
 
- Copyright (c) 2006- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -17,325 +16,309 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using PHP.Core.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
 
-namespace PHP.Core.Compiler.AST
+namespace PHP.Core.AST
 {
-    partial class NodeCompilers
-    {
-        [NodeCompiler(typeof(TryStmt), Singleton = true)]
-        sealed class TryStmtCompiler : StatementCompiler<TryStmt>
+	/// <summary>
+	/// Represents a try-catch statement.
+	/// </summary>
+	public sealed class TryStmt : Statement
+	{
+		/// <summary>
+		/// A list of statements contained in the try-block.
+		/// </summary>
+		private readonly List<Statement>/*!*/ statements;
+        /// <summary>A list of statements contained in the try-block.</summary>
+        public List<Statement>/*!*/ Statements { get { return statements; } }
+
+		/// <summary>
+		/// A list of catch statements catching exceptions thrown inside the try block.
+		/// </summary>
+		private readonly List<CatchItem>/*!*/ catches;
+        /// <summary>A list of catch statements catching exceptions thrown inside the try block.</summary>
+        public List<CatchItem>/*!*/ Catches { get { return catches; } }
+
+		public TryStmt(Position p, List<Statement>/*!*/ statements, List<CatchItem>/*!*/ catches)
+			: base(p)
+		{
+			Debug.Assert(statements != null && catches != null && catches.Count > 0);
+
+			this.statements = statements;
+			this.catches = catches;
+		}
+
+		internal override Statement Analyze(Analyzer/*!*/ analyzer)
+		{
+			analyzer.EnterConditionalCode();
+            this.Statements.Analyze(analyzer);
+			analyzer.LeaveConditionalCode();
+
+			for (int i = 0; i < catches.Count; i++)
+				catches[i].Analyze(analyzer);
+
+			return this;
+		}
+
+		/// <summary>
+		/// Emits the try block and the catch blocks.
+		/// </summary>
+		/// <param name="codeGenerator">A code generator.</param>
+		/// <remarks>
+		/// <code>
+		///	try
+		/// {
+		///   // guarded code //
+		/// }
+		/// catch(E1 $e1)
+		/// {
+		///   // E1 //
+		/// }
+		/// catch(E2 $e2)
+		/// {
+		///   // E2 //
+		/// } 
+		/// </code>
+		/// is translated as follows:
+		/// <code>
+		/// try
+		/// {
+		///   // guarded code //
+		/// }
+		/// catch(PhpUserException _e)
+		/// {
+		///   PhpObject _o = _e.UserException;
+		///   if (_o instanceOf E1)
+		///   {
+		///     $e1 = _o;
+		///     // E1 //
+		///   }
+		///   else if (_o instanceOf E2)
+		///   {
+		///     $e2 = _o;
+		///     // E2 //
+		///   }
+		///   else
+		///   {
+		///     throw;
+		///   }
+		/// }
+		/// </code> 
+		/// </remarks>
+		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			Statistics.AST.AddNode("TryStmt");
+			ILEmitter il = codeGenerator.IL;
+			codeGenerator.ExceptionBlockNestingLevel++;
+
+			// TRY
+			Label end_label = il.BeginExceptionBlock();
+			foreach (Statement statement in statements)
+				statement.Emit(codeGenerator);
+
+
+			// Two catch blocks for PHP and CLR exceptions
+			Tuple<bool, Type>[] excTypes = new Tuple<bool, Type>[] { 
+				new Tuple<bool, Type>(true,  typeof(PhpUserException)),
+				new Tuple<bool, Type>(false,  typeof(Exception)) };
+			foreach (Tuple<bool, Type> exc in excTypes)
+			{
+				// Catch it
+				il.BeginCatchBlock(exc.Item2);
+
+				LocalBuilder exception_local;
+				if (exc.Item1)
+				{
+					// PHP: SPL.Exception e  =  _e.InnerException;
+					exception_local = il.DeclareLocal(typeof(Library.SPL.Exception));
+					il.Emit(OpCodes.Ldfld, Fields.PhpUserException_UserException);
+				}
+				else
+				{
+					// CLR: DObject e = ClrObject.WrapRealObject(_e);
+					exception_local = il.DeclareLocal(typeof(DObject));
+					il.Emit(OpCodes.Call, Methods.ClrObject_WrapRealObject); 
+				}
+				il.Stloc(exception_local);
+
+				// emits all PHP catch-blocks processing into a single CLI catch-block:
+				foreach (CatchItem c in catches)
+				{
+					Label next_catch_label = il.DefineLabel();
+
+					// IF (exception <instanceOf> <type>);
+					c.Emit(codeGenerator, exception_local, end_label, next_catch_label);
+
+					// ELSE
+					il.MarkLabel(next_catch_label);
+				}
+				// emits the "else" branch invoked if the exceptions is not catched:
+				il.Emit(OpCodes.Rethrow);
+			}
+			il.EndExceptionBlock();
+
+			codeGenerator.ExceptionBlockNestingLevel--;
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            internal override Statement Analyze(TryStmt node, Analyzer analyzer)
-            {
-                // try {}
-                analyzer.EnterConditionalCode();
-                node.Statements.Analyze(analyzer);
-                analyzer.LeaveConditionalCode();
-
-                // catch {}
-                if (node.HasCatches)
-                {
-                    foreach (var c in node.Catches)
-                        c.Analyze(analyzer);
-                }
-
-                // finally {}
-                if (node.HasFinallyStatements)
-                {
-                    node.FinallyItem.Analyze(analyzer);
-                }
-
-                return node;
-            }
-
-            /// <summary>
-            /// Emits the try block and the catch blocks.
-            /// </summary>
-            /// <param name="node">Instance.</param>
-            /// <param name="codeGenerator">A code generator.</param>
-            /// <remarks>
-            /// <code>
-            ///	try
-            /// {
-            ///   // guarded code //
-            /// }
-            /// catch(E1 $e1)
-            /// {
-            ///   // E1 //
-            /// }
-            /// catch(E2 $e2)
-            /// {
-            ///   // E2 //
-            /// } 
-            /// </code>
-            /// is translated as follows:
-            /// <code>
-            /// try
-            /// {
-            ///   // guarded code //
-            /// }
-            /// catch(PhpUserException _e)
-            /// {
-            ///   PhpObject _o = _e.UserException;
-            ///   if (_o instanceOf E1)
-            ///   {
-            ///     $e1 = _o;
-            ///     // E1 //
-            ///   }
-            ///   else if (_o instanceOf E2)
-            ///   {
-            ///     $e2 = _o;
-            ///     // E2 //
-            ///   }
-            ///   else
-            ///   {
-            ///     throw;
-            ///   }
-            /// }
-            /// </code> 
-            /// </remarks>
-            internal override void Emit(TryStmt node, CodeGenerator codeGenerator)
-            {
-                Statistics.AST.AddNode("TryStmt");
-
-                // emit try block without CLR exception block if possible
-
-                if (!node.HasCatches && !node.HasFinallyStatements)
-                {
-                    node.Statements.Emit(codeGenerator);
-                    return;
-                }
-
-                // emit CLR exception block
-
-                ILEmitter il = codeGenerator.IL;
-                codeGenerator.ExceptionBlockNestingLevel++;
-
-                // TRY
-                Label end_label = il.BeginExceptionBlock();
-
-                node.Statements.Emit(codeGenerator);
-
-                // catches
-
-                if (node.HasCatches)
-                {
-                    // catch (PHP.Core.ScriptDiedException)
-                    // { throw; }
-
-                    il.BeginCatchBlock(typeof(PHP.Core.ScriptDiedException));
-                    il.Emit(OpCodes.Rethrow);
-
-                    // catch (System.Exception ex)
-
-                    il.BeginCatchBlock(typeof(System.Exception));
-
-                    // <exception_local> = (DObject) (STACK is PhpUserException) ? ((PhpUserException)STACK).UserException : ClrObject.WrapRealObject(STACK)
-
-                    Label clrExceptionLabel = il.DefineLabel();
-                    Label wrapEndLabel = il.DefineLabel();
-                    LocalBuilder exception_local = il.GetTemporaryLocal(typeof(DObject));
-
-                    il.Emit(OpCodes.Dup);
-                    il.Emit(OpCodes.Isinst, typeof(PHP.Core.PhpUserException)); // <STACK> as PhpUserException
-                    il.Emit(OpCodes.Brfalse, clrExceptionLabel);
-
-                    // if (<STACK> as PhpUserException != null)
-                    {
-                        il.Emit(OpCodes.Ldfld, Fields.PhpUserException_UserException);
-                        il.Emit(OpCodes.Br, wrapEndLabel);
-                    }
-
-                    // else
-                    il.MarkLabel(clrExceptionLabel);
-                    {
-                        il.Emit(OpCodes.Call, Methods.ClrObject_WrapRealObject);
-                    }
-                    il.MarkLabel(wrapEndLabel);
-                    il.Stloc(exception_local);
-
-                    // emits all PHP catch-blocks processing into a single CLI catch-block:
-                    foreach (CatchItem c in node.Catches)
-                    {
-                        Label next_catch_label = il.DefineLabel();
-
-                        // IF (exception <instanceOf> <type>);
-                        c.Emit(codeGenerator, exception_local, end_label, next_catch_label);
-
-                        // ELSE
-                        il.MarkLabel(next_catch_label);
-                    }
-
-                    il.ReturnTemporaryLocal(exception_local);
-
-                    // emits the "else" branch invoked if the exceptions is not catched:
-                    il.Emit(OpCodes.Rethrow);
-                }
-
-                // finally
-
-                if (node.HasFinallyStatements)
-                {
-                    node.FinallyItem.Emit(codeGenerator);
-                }
-
-                //
-                il.EndExceptionBlock();
-
-                codeGenerator.ExceptionBlockNestingLevel--;
-            }
+            visitor.VisitTryStmt(this);
         }
+	}
 
-        [NodeCompiler(typeof(CatchItem))]
-        sealed class CatchItemCompiler : INodeCompiler, ICatchItemCompiler
+	/// <summary>
+	/// Represents a catch-block.
+	/// </summary>
+	public sealed class CatchItem : LangElement
+	{
+		/// <summary>
+		/// A list of statements contained in the catch-block.
+		/// </summary>
+		private readonly List<Statement>/*!*/ statements;
+        /// <summary>A list of statements contained in the catch-block.</summary>
+        public List<Statement>/*!*/ Statements { get { return statements; } }
+
+		/// <summary>
+		/// A variable where an exception is assigned in.
+		/// </summary>
+		private readonly DirectVarUse/*!*/ variable;
+        /// <summary>A variable where an exception is assigned in.</summary>
+        public DirectVarUse/*!*/ Variable { get { return variable; } }
+
+		/// <summary>
+		/// An index of type identifier.
+		/// </summary>
+		private GenericQualifiedName className;
+        /// <summary>An index of type identifier.</summary>
+        public GenericQualifiedName ClassName { get { return className; } }
+
+		private DType resolvedType;
+
+		public CatchItem(Position p, GenericQualifiedName className, DirectVarUse/*!*/ variable,
+			List<Statement>/*!*/ statements)
+			: base(p)
+		{
+			Debug.Assert(variable != null && statements != null);
+
+			this.className = className;
+			this.variable = variable;
+			this.statements = statements;
+		}
+
+
+		internal void Analyze(Analyzer/*!*/ analyzer)
+		{
+			ExInfoFromParent info = new ExInfoFromParent(this);
+			info.Access = AccessType.Write;
+
+			resolvedType = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+
+			variable.Analyze(analyzer, info);
+
+			analyzer.EnterConditionalCode();
+            this.Statements.Analyze(analyzer);
+			analyzer.LeaveConditionalCode();
+		}
+
+		/// <summary>
+		/// Emits the catch-block.
+		/// </summary>
+		/// <param name="codeGenerator">A code generator.</param>
+		/// <param name="exceptionLocal">A local variable containing an instance of <see cref="Library.SPL.Exception"/>.</param>
+		/// <param name="endLabel">A label in IL stream where the processing of the try-catch blocks ends.</param>
+		/// <param name="nextCatchLabel">A label in IL stream where the next catch block processing begins.</param>
+		internal void Emit(CodeGenerator/*!*/ codeGenerator, LocalBuilder/*!*/ exceptionLocal, Label endLabel,
+			Label nextCatchLabel)
+		{
+			ILEmitter il = codeGenerator.IL;
+
+			codeGenerator.MarkSequencePoint(
+			  variable.Position.FirstLine,
+			  variable.Position.FirstColumn,
+			  variable.Position.LastLine,
+			  variable.Position.LastColumn + 1
+			);
+
+			// IF !InstanceOf(<class name>) GOTO next_catch;
+			il.Ldloc(exceptionLocal);
+			resolvedType.EmitInstanceOf(codeGenerator, null);
+			il.Emit(OpCodes.Brfalse, nextCatchLabel);
+
+			// variable = exception;
+			variable.Emit(codeGenerator);
+			il.Ldloc(exceptionLocal);
+			variable.EmitAssign(codeGenerator);
+
+			foreach (Statement statement in statements)
+				statement.Emit(codeGenerator);
+
+			// LEAVE end;
+			il.Emit(OpCodes.Leave, endLabel);
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            private DType resolvedType;
-
-            public void Analyze(CatchItem/*!*/node, Analyzer/*!*/ analyzer)
-            {
-                ExInfoFromParent info = new ExInfoFromParent(node);
-                info.Access = AccessType.Write;
-
-                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Span, false);
-
-                node.Variable.Analyze(analyzer, info);
-
-                analyzer.EnterConditionalCode();
-                node.Statements.Analyze(analyzer);
-                analyzer.LeaveConditionalCode();
-            }
-
-            /// <summary>
-            /// Emits the catch-block.
-            /// </summary>
-            /// <param name="node">Instance.</param>
-            /// <param name="codeGenerator">A code generator.</param>
-            /// <param name="exceptionLocal">A local variable containing an instance of <see cref="Library.SPL.Exception"/>.</param>
-            /// <param name="endLabel">A label in IL stream where the processing of the try-catch blocks ends.</param>
-            /// <param name="nextCatchLabel">A label in IL stream where the next catch block processing begins.</param>
-            public void Emit(CatchItem/*!*/node, CodeGenerator/*!*/ codeGenerator,
-                LocalBuilder/*!*/ exceptionLocal,
-                Label endLabel, Label nextCatchLabel)
-            {
-                ILEmitter il = codeGenerator.IL;
-
-                codeGenerator.MarkSequencePoint(node.Variable);
-
-                // IF !InstanceOf(<class name>) GOTO next_catch;
-                il.Ldloc(exceptionLocal);
-                resolvedType.EmitInstanceOf(codeGenerator, null);
-                il.Emit(OpCodes.Brfalse, nextCatchLabel);
-
-                // variable = exception;
-                node.Variable.Emit(codeGenerator);
-                il.Ldloc(exceptionLocal);
-                SimpleVarUseHelper.EmitAssign(node.Variable, codeGenerator);
-
-                node.Statements.Emit(codeGenerator);
-
-                // LEAVE end;
-                il.Emit(OpCodes.Leave, endLabel);
-            }
+            visitor.VisitCatchItem(this);
         }
+	}
 
-        [NodeCompiler(typeof(FinallyItem), Singleton = true)]
-        sealed class FinallyItemCompiler : INodeCompiler, IFinallyItemCompiler
+	/// <summary>
+	/// Represents a throw statement.
+	/// </summary>
+	public sealed class ThrowStmt : Statement
+	{
+		/// <summary>
+		/// An expression being thrown.
+		/// </summary>
+		private Expression/*!*/ expression;
+        /// <summary>An expression being thrown.</summary>
+        public Expression /*!*/ Expression { get { return expression; } }
+
+		public ThrowStmt(Position position, Expression/*!*/ expression)
+			: base(position)
+		{
+			Debug.Assert(expression != null);
+			this.expression = expression;
+		}
+
+		internal override Statement Analyze(Analyzer/*!*/ analyzer)
+		{
+			expression = expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
+			return this;
+		}
+
+		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			codeGenerator.MarkSequencePoint(
+				position.FirstLine,
+				position.FirstColumn,
+				position.LastLine,
+				position.LastColumn + 1
+			);
+
+			// CALL Operators.Throw(<context>, <expression>);
+			codeGenerator.EmitLoadScriptContext();
+			expression.Emit(codeGenerator);
+			codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.Throw);
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            private void Analyze(FinallyItem/*!*/node, Analyzer/*!*/ analyzer)
-            {
-                analyzer.EnterConditionalCode();
-                node.Statements.Analyze(analyzer);
-                analyzer.LeaveConditionalCode();
-            }
-
-            private void Emit(FinallyItem/*!*/node, CodeGenerator codeGenerator)
-            {
-                codeGenerator.IL.BeginFinallyBlock();
-                node.Statements.Emit(codeGenerator);
-            }
-
-            #region IFinallyItemCompiler Members
-
-            void IFinallyItemCompiler.Analyze(FinallyItem node, Analyzer analyzer)
-            {
-                Analyze(node, analyzer);
-            }
-
-            void IFinallyItemCompiler.Emit(FinallyItem node, CodeGenerator codeGenerator)
-            {
-                Emit(node, codeGenerator);
-            }
-
-            #endregion
+            visitor.VisitThrowStmt(this);
         }
-
-        [NodeCompiler(typeof(ThrowStmt), Singleton = true)]
-        sealed class ThrowStmtCompiler : StatementCompiler<ThrowStmt>
-        {
-            internal override Statement Analyze(ThrowStmt node, Analyzer analyzer)
-            {
-                node.Expression = node.Expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
-                return node;
-            }
-
-            internal override void Emit(ThrowStmt node, CodeGenerator codeGenerator)
-            {
-                codeGenerator.MarkSequencePoint(node.Span);
-
-                // CALL Operators.Throw(<context>, <expression>);
-                codeGenerator.EmitLoadScriptContext();
-                node.Expression.Emit(codeGenerator);
-                codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.Throw);
-            }
-        }
-    }
-
-    #region ICatchItemCompiler
-
-    internal interface ICatchItemCompiler
-    {
-        void Analyze(CatchItem/*!*/node, Analyzer/*!*/ analyzer);
-        void Emit(CatchItem/*!*/node, CodeGenerator/*!*/ codeGenerator, LocalBuilder/*!*/ exceptionLocal, Label endLabel, Label nextCatchLabel);
-    }
-
-    internal static class CatchItemCompilerHelper
-    {
-        public static void Analyze(this CatchItem/*!*/node, Analyzer/*!*/ analyzer)
-        {
-            node.NodeCompiler<ICatchItemCompiler>().Analyze(node, analyzer);
-        }
-        public static void Emit(this CatchItem/*!*/node, CodeGenerator/*!*/ codeGenerator, LocalBuilder/*!*/ exceptionLocal, Label endLabel, Label nextCatchLabel)
-        {
-            node.NodeCompiler<ICatchItemCompiler>().Emit(node, codeGenerator, exceptionLocal, endLabel, nextCatchLabel);
-        }
-    }
-
-    #endregion
-
-    #region IFinallyItemCompiler
-
-    internal interface IFinallyItemCompiler
-    {
-        void Analyze(FinallyItem/*!*/node, Analyzer/*!*/ analyzer);
-        void Emit(FinallyItem/*!*/node, CodeGenerator codeGenerator);
-    }
-
-    internal static class FinallyItemCompilerHelper
-    {
-        public static void Analyze(this FinallyItem/*!*/node, Analyzer/*!*/ analyzer)
-        {
-            node.NodeCompiler<IFinallyItemCompiler>().Analyze(node, analyzer);
-        }
-        public static void Emit(this FinallyItem/*!*/node, CodeGenerator codeGenerator)
-        {
-            node.NodeCompiler<IFinallyItemCompiler>().Emit(node, codeGenerator);
-        }
-    }
-
-    #endregion
-
+	}
 }

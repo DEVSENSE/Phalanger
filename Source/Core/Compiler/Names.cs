@@ -86,6 +86,7 @@ namespace PHP.Core
 		public static readonly Name OutName = new Name("Out");
 		public static readonly Name DeclareHelperName = new Name("<Declare>");
 		public static readonly Name LambdaFunctionName = new Name("<Lambda>");
+        public static readonly Name ClosureFunctionName = new Name("{closure}");
 
 		public bool IsCloneName
 		{

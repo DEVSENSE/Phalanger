@@ -2955,7 +2955,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		var static_doc_ref = (Tuple<PhpMemberAttributes,string,bool>)value_stack.array[value_stack.top-8].yyval.Object;
 
 		yyval.Object = new LambdaFunctionExpr(sourceUnit,
-            value_stack.array[value_stack.top-7].yypos, yypos, GetHeadingEnd(value_stack.array[value_stack.top-5].yypos), GetBodyStart(value_stack.array[value_stack.top-3].yypos),
+            value_stack.array[value_stack.top-8].yypos, yypos, GetHeadingEnd(value_stack.array[value_stack.top-6].yypos), GetBodyStart(value_stack.array[value_stack.top-3].yypos),
             GetScope(), currentNamespace,
             static_doc_ref.Item3, (List<FormalParam>)value_stack.array[value_stack.top-7].yyval.Object, (List<FormalParam>)value_stack.array[value_stack.top-5].yyval.Object,
             (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object);

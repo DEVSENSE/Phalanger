@@ -773,8 +773,10 @@ namespace PHP.Core
 		/// <summary>
 		/// Notices the analyzer that function declaration is entered.
 		/// </summary>
-		internal void EnterFunctionDeclaration(PhpFunction/*!*/ function)
+		internal void EnterFunctionDeclaration(PhpRoutine/*!*/ function)
 		{
+            Debug.Assert(function.IsFunction);
+
 			RoutineDeclLoc f = new RoutineDeclLoc(function, locationStack.Count);
 			routineDeclStack.Push(f);
 			locationStack.Push(f);
@@ -824,7 +826,7 @@ namespace PHP.Core
 			LeaveConditionalCode();
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Notices the analyzer that class declaration is entered.
 		/// </summary>
 		internal void EnterTypeDecl(PhpType type)

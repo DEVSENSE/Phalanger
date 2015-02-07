@@ -261,11 +261,8 @@ namespace PHP.Core.AST
 		{
 			analyzer.EnterConditionalCode();
 
-			for (int i = 0; i < statements.Count; i++)
-			{
-				statements[i] = statements[i].Analyze(analyzer);
-			}
-
+            this.Statements.Analyze(analyzer);
+			
 			analyzer.LeaveConditionalCode();
 		}
 

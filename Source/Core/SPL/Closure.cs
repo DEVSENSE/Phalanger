@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2011 DEVSENSE
+ Copyright (c) 2011 Jakub Misek
 
  The use and distribution terms for this software are contained in the file named License.txt, 
  which can be found in the root of the Phalanger distribution. By using this software 
@@ -14,13 +14,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using PHP.Core;
+using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
-
-using PHP.Core;
-using PHP.Core.Reflection;
 
 namespace PHP.Library.SPL
 {
@@ -28,7 +26,7 @@ namespace PHP.Library.SPL
     /// Prototype class for PHP closure.
     /// </summary>
     [ImplementsType]
-    public sealed class Closure : PhpObject
+    public class Closure : PhpObject
     {
         private readonly RoutineDelegate/*!*/lambda;
         private readonly PhpArray parameter;
@@ -62,7 +60,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object __construct(ScriptContext context)
         {
-            PhpException.Throw(PhpError.Error, string.Format(CoreResources.instantiation_not_allowed, "Closure"));
+            // TODO: "PHP Catchable fatal error:  Instantiation of 'Closure' is not allowed"
             return null;
         }
 
@@ -100,18 +98,6 @@ namespace PHP.Library.SPL
         {
             // this method should not be called, its argless should.
             throw new InvalidOperationException();
-        }
-
-        /// <summary>
-        /// Alters special behaviour of var_dump, export and print_r.
-        /// </summary>
-        protected override IEnumerable<KeyValuePair<VariableName, DObject.AttributedValue>> PropertyIterator()
-        {
-            if (this.@static != null)
-                yield return new KeyValuePair<VariableName, DObject.AttributedValue>(new VariableName("static"), new AttributedValue(this.@static));
-
-            if (this.parameter != null)
-                yield return new KeyValuePair<VariableName, DObject.AttributedValue>(new VariableName("parameter"), new AttributedValue(this.parameter));
         }
     }
 }
