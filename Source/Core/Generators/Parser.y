@@ -1795,6 +1795,13 @@ function_call:
 		  $$ = new IndirectStMtdCall(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3, (List<ActualParam>)$6, 
 				(List<TypeRef>)$4);	
 		}
+
+	|	keyed_variable T_DOUBLE_COLON keyed_variable generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
+		{ 
+		  $$ = new IndirectStMtdCall(@$,
+				new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (CompoundVarUse)$3,
+				(List<ActualParam>)$6, (List<TypeRef>)$4);	
+		}
 		
 	|	keyed_variable generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 

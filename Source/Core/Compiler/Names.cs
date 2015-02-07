@@ -937,7 +937,9 @@ namespace PHP.Core
 
 	#region NamingContext
 
-	public sealed class NamingContext
+    [Serializable]
+    [DebuggerNonUserCode]
+    public sealed class NamingContext
 	{
         //public string[] Prefixes { get { return prefixes; } }
         //private string[] prefixes;
