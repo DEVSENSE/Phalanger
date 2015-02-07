@@ -404,40 +404,29 @@ namespace PHP.Core.Binders
             {
                 // we are invoking the method
 
-                // PhpObject
-                if (Types.PhpObject[0].IsAssignableFrom(target.LimitType))
+                // PhpRoutine (function or method)
+                if (method.Member is PhpRoutine)
                 {
                     InvokePhpMethod(target, args, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
                     return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
                 }
-                else
-                    //ClrObject
-                    if (target.LimitType == typeof(ClrObject))
+                // ClrMethod
+                else if (method.Member is ClrMethod)
+                {
+                    var targetwrapper = (target.LimitType == typeof(ClrObject)) ?
+                        (DynamicMetaObject)new ClrDynamicMetaObject(target) :       // ((ClrObject)target).RealType restriction
+                        (DynamicMetaObject)new ClrValueDynamicMetaObject(target);   // simple type restriction, IClrValue<T> or any .NET class inheriting PhpObject
+
+                    InvokeClrMethod(targetwrapper, args, method, out restrictions, out invokeMethodExpr);
+
+                    if (wrappedTarget != null)
                     {
-                        InvokeClrMethod(new ClrDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
-
-                        if (wrappedTarget != null)
-                        {
-                            return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
-                                                         invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
-                        }
-
-                        return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
+                        return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
+                                                     invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
                     }
-                    else
-                        //IClrValue
-                        if (typeof(IClrValue).IsAssignableFrom(target.LimitType))
-                        {
-                            InvokeClrMethod(new ClrValueDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
 
-                            if (wrappedTarget != null)
-                            {
-                                return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
-                                                             invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
-                            }
-
-                            return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
-                        }
+                    return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
+                }
             }
 
             throw new NotImplementedException();
