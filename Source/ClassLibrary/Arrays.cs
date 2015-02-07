@@ -28,7 +28,6 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using PHP.Core;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -271,7 +270,7 @@ namespace PHP.Library
 		{
 			if (array == null)
 			{
-				//PhpException.ReferenceNull("array");
+				PhpException.ReferenceNull("array");
 				return null;
 			}
 			
@@ -302,7 +301,7 @@ namespace PHP.Library
 		{
 			if (array == null)
 			{
-				//PhpException.ReferenceNull("array");
+				PhpException.ReferenceNull("array");
 				return null;
 			}
 
@@ -560,8 +559,9 @@ namespace PHP.Library
 			// absolutizes range:
 			PhpMath.AbsolutizeRange(ref offset, ref length, array.Count);
 
-			var iterator = array.GetBaseEnumerator();
-			
+			OrderedHashtable<IntStringKey>.Enumerator iterator = array.GetBaseEnumerator();
+			PhpArray result = new PhpArray();
+
 			// moves iterator to the first item of the slice;
 			// starts either from beginning or from the end (which one is more efficient):
 			if (offset < array.Count - offset)
@@ -574,8 +574,7 @@ namespace PHP.Library
 			}
 
 			// copies the slice:
-            PhpArray result = new PhpArray(length);
-            int ikey = 0;
+			int ikey = 0;
 			for (int i = 0; i < length; i++)
 			{
 				KeyValuePair<IntStringKey, object> entry = iterator.Current;
@@ -613,7 +612,7 @@ namespace PHP.Library
 		[ImplementsFunction("array_splice")]
 		public static PhpArray Splice([PhpRw] PhpArray array, int offset)
 		{
-            // Splice would be equivalent to SpliceDc if no replacelent is specified (=> no SpliceDc):
+			// Splice would be equivalent to SpliceDc if no replacelent is specified (=> no SpliceDc):
 			return Splice(array, offset, int.MaxValue, null);
 		}
 
@@ -666,18 +665,13 @@ namespace PHP.Library
 		/// <para>See <see cref="PhpMath.AbsolutizeRange"/> for details about <paramref name="offset"/> and <paramref name="length"/>.</para>
 		/// <para>Reindexes all integer keys in resulting array.</para>
 		/// </remarks>
-        public static PhpArray Splice(PhpArray array, int offset, int length, object replacement)
-        {
-            if (array == null)
-            {
-                PhpException.Throw(
-                    PhpError.Warning,
-                    string.Format(Strings.unexpected_arg_given, "array", PhpArray.PhpTypeName, PhpVariable.TypeNameNull));
-                return null;
-            }
+		public static PhpArray Splice(PhpArray array, int offset, int length, object replacement)
+		{
+			if (array == null)
+				throw new ArgumentNullException("array");
 
-            return SpliceInternal(array, offset, length, replacement, false);
-        }
+			return SpliceInternal(array, offset, length, replacement, false);
+		}
 
 		/// <summary>
 		/// Implementation of <see cref="Splice(PhpArray,int,int,object)"/> and <see cref="SpliceDc(PhpArray,int,int,object)"/>.
@@ -691,7 +685,7 @@ namespace PHP.Library
 			// converts offset and length to interval [first,last]:
 			PhpMath.AbsolutizeRange(ref offset, ref length, count);
 
-            PhpArray result = new PhpArray(length);
+			PhpArray result = new PhpArray();
 			PhpArray r_array = replacement as PhpArray;
 
 			// replacement is an array:
@@ -864,7 +858,24 @@ namespace PHP.Library
 			return true;
 		}
 
-        #endregion
+		#region Unit Test
+
+#if DEBUG
+
+		[Test]
+		private static void TestRandomKeys()
+		{
+			PhpArray a = PhpArray.Keyed("Server1", 1, "Server2", 2, "Server3", 3);
+			PhpVariable.Dump(a);
+			string result = RandomKeys(a) as string;
+			Debug.Assert(result == "Server1" || result == "Server2" || result == "Server3");
+		}
+
+#endif
+
+		#endregion
+
+		#endregion
 
 
 		#region array_key_exists, in_array, array_search
@@ -888,7 +899,7 @@ namespace PHP.Library
 			}
 
 			IntStringKey array_key;
-			if (Core.Convert.ObjectToArrayKey(key, out array_key))
+			if (PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
 				return array.ContainsKey(array_key);
 				
 			PhpException.Throw(PhpError.Warning, CoreResources.GetString("illegal_offset_type")); 
@@ -970,27 +981,25 @@ namespace PHP.Library
 			// using operator ===:
 			if (strict)
 			{
-                using (var enumerator = haystack.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                    {
-                        // dereferences value (because of StrictEquality operator):
-                        object val = PhpVariable.Dereference(enumerator.CurrentValue);
+				foreach (KeyValuePair<IntStringKey, object> entry in haystack)
+				{
+					// dereferences value (because of StrictEquality operator):
+					object val = PhpVariable.Dereference(entry.Value);
 
-                        if (Operators.StrictEquality(needle, val))
-                            return enumerator.CurrentKey.Object;
-                    }
+					if (Operators.StrictEquality(needle, val))
+						return entry.Key.Object;
+				}
 			}
 			else
 			{
 				// using operator ==:
 
-                using (var enumerator = haystack.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                    {
-                        // comparator manages references well:
-                        if (PhpComparer.CompareEq(needle, enumerator.CurrentValue))
-                            return enumerator.CurrentKey.Object;
-                    }
+				foreach (KeyValuePair<IntStringKey, object> entry in haystack)
+				{
+					// comparator manages references well:
+					if (PhpComparer./*Default.*/CompareEq(needle, entry.Value))
+						return entry.Key.Object;
+				}
 			}
 
 			// not found:
@@ -1034,22 +1043,18 @@ namespace PHP.Library
         [return: PhpDeepCopy]
         public static PhpArray FillKeys(PhpArray keys, object value)
         {
-            if (keys == null)
-            {
-                PhpException.ArgumentNull("keys");
-                return null;
-            }
+            PhpArray result = new PhpArray(keys.Count);
 
-            var result = new PhpArray(keys.Count);
-            foreach (var x in keys)
-            {
-                IntStringKey key;
-                if (Core.Convert.ObjectToArrayKey(x.Value, out key) &&
-                    !result.ContainsKey(key))
+            if (keys != null)
+                foreach (var x in keys)
                 {
-                    result.Add(key, value);
+                    IntStringKey key;
+                    if (!PHP.Core.Convert.ObjectToArrayKey(x.Value, out key))
+                        continue;
+
+                    if (!result.ContainsKey(key))
+                        result.Add(key, value);
                 }
-            }
 
             // makes deep copies of all added items:
             result.InplaceCopyOnReturn = true;
@@ -1813,10 +1818,10 @@ namespace PHP.Library
 		/// comparison methods to be used. See PHP manual for more details.</param>
 		/// <returns>Whether arrays were sorted successfully.</returns>
 		/// <remarks>Reindexes integer keys in the sorted arrays and restarts their intrinsic enumerators.</remarks>
-		/// <exception cref="PhpException"><paramref name="first"/> is a <B>null</B> reference (Warning).</exception>
-        /// <exception cref="PhpException">Arrays has different lengths (Warning).</exception>
-        /// <exception cref="PhpException">Invalid sorting flags (Warning).</exception>
-        /// <exception cref="PhpException">Multiple sorting flags applied on single array (Warning).</exception>
+		/// <exception cref="PhpReference"><paramref name="first"/> is a <B>null</B> reference (Warning).</exception>
+		/// <exception cref="PhpReference">Arrays has different lengths (Warning).</exception>
+		/// <exception cref="PhpReference">Invalid sorting flags (Warning).</exception>
+		/// <exception cref="PhpReference">Multiple sorting flags applied on single array (Warning).</exception>
 		[ImplementsFunction("array_multisort")]
 		public static bool MultiSort([PhpRw] PhpArray first, params object[] args)
 		{
@@ -1868,30 +1873,30 @@ namespace PHP.Library
 		/// <summary>
 		/// Internal method common for all functions.
 		/// </summary>
-        private static PhpArray SetOperation(SetOperations op, PhpArray array, PhpArray[] arrays,
-            IComparer<KeyValuePair<IntStringKey, object>> comparer)
-        {
-            if (array == null)
-            {
-                PhpException.ArgumentNull("array");
-                return null;
-            }
+		private static PhpArray SetOperation(SetOperations op, PhpArray array, PhpArray[] arrays,
+			IComparer<KeyValuePair<IntStringKey, object>> comparer)
+		{
+			if (array == null)
+			{
+				PhpException.ArgumentNull("array");
+				return null;
+			}
 
-            if (arrays == null || arrays.Length == 0)
-            {
-                PhpException.InvalidArgumentCount(null, null);
-                return null;
-            }
+			if (arrays == null || arrays.Length == 0)
+			{
+				PhpException.InvalidArgumentCount(null, null);
+				return null;
+			}
 
-            Debug.Assert(comparer != null);
+			Debug.Assert(comparer != null);
 
-            PhpArray result = new PhpArray();
-            array.SetOperation(op, arrays, comparer, result);
+			PhpArray result = new PhpArray();
+			array.SetOperation(op, arrays, comparer, result);
 
-            // the result is inplace deeply copied on return to PHP code:
-            result.InplaceCopyOnReturn = true;
-            return result;
-        }
+			// the result is inplace deeply copied on return to PHP code:
+			result.InplaceCopyOnReturn = true;
+			return result;
+		}
 
 		/// <summary>
 		/// There have to be at least 1 value in <paramref name="vars"/>.
@@ -2217,17 +2222,16 @@ namespace PHP.Library
 
 			for (int i = 0; i < arrays.Length; i++)
 			{
-                if (arrays[i] != null)
-                {
-                    using (var enumerator = arrays[i].GetFastEnumerator())
-                        while (enumerator.MoveNext())
-                        {
-                            if (enumerator.CurrentKey.IsString)
-                                result[enumerator.CurrentKey] = enumerator.CurrentValue;
-                            else
-                                result.Add(enumerator.CurrentValue);
-                        }
-                }
+				if (arrays[i] != null)
+				{
+					foreach (KeyValuePair<IntStringKey, object> entry in arrays[i])
+					{
+						if (entry.Key.IsString)
+							result[entry.Key.String] = entry.Value;
+						else
+							result.Add(entry.Value);
+					}
+				}
 			}
 
 			// results is inplace deeply copied if returned to PHP code:
@@ -2351,12 +2355,12 @@ namespace PHP.Library
 							}
 							else
 							{
-								/*if (x != null)*/
+								if (x != null)
 									item_result.Add((deepCopy) ? PhpVariable.DeepCopy(x) : x);
 							}
 
 							if (ay != null) ay.AddTo(item_result, deepCopy);
-							else /*if (y != null)*/ item_result.Add((deepCopy) ? PhpVariable.DeepCopy(y) : y);
+							else if (y != null) item_result.Add((deepCopy) ? PhpVariable.DeepCopy(y) : y);
 						}
 
 						result[entry.Key] = item_result;
@@ -2397,18 +2401,12 @@ namespace PHP.Library
 			}
 
 			PhpArray result = new PhpArray();
-
-            System.Globalization.TextInfo textInfo = null; // cache current culture to avoid repetitious CurrentCulture.get
-
 			foreach (KeyValuePair<IntStringKey, object> entry in array)
 			{
-                if (entry.Key.IsString)
-                {
-                    if (textInfo == null) textInfo = System.Globalization.CultureInfo.CurrentCulture.TextInfo;
-                    result[textInfo.ToLower(entry.Key.String)] = entry.Value;
-                }
-                else
-                    result[entry.Key] = entry.Value;
+				if (entry.Key.IsString)
+					result[entry.Key.String.ToLower()] = entry.Value;
+				else
+					result[entry.Key] = entry.Value;
 			}
 			return result;
 		}
@@ -2694,7 +2692,7 @@ namespace PHP.Library
         }
 
         /// <summary>
-		/// Removes duplicate values from an array.
+		/// Removes duplicate values from an array. Not supported.
 		/// </summary>
 		/// <param name="array">The array which duplicate values to remove.</param>
 		/// <returns>A copy of <paramref name="array"/> without duplicated values.</returns>
@@ -2710,7 +2708,7 @@ namespace PHP.Library
         }
 
 		/// <summary>
-		/// Removes duplicate values from an array.
+		/// Removes duplicate values from an array. Not supported.
 		/// </summary>
 		/// <param name="array">The array which duplicate values to remove.</param>
         /// <param name="sortFlags">Specifies how the values are compared to be identical.</param>
@@ -2729,32 +2727,36 @@ namespace PHP.Library
 				return null;
 			}
 
-			IComparer comparer;
+			PhpArray result = new PhpArray();
+			PhpArray sorted = (PhpArray)array.Clone();
+
+            ValueComparer comparer;
             switch(sortFlags)
             {
                 case ArrayUniqueSortFlags.Regular:
-                    comparer = PhpComparer.Default; break;
+                    comparer = ValueComparer.Default; break;
                 case ArrayUniqueSortFlags.Numeric:
-                    comparer = PhpNumericComparer.Default; break;
+                    comparer = ValueComparer.Numeric; break;
                 case ArrayUniqueSortFlags.String:
-                    comparer = PhpStringComparer.Default; break;
+                    comparer = ValueComparer.String; break;
                 case ArrayUniqueSortFlags.LocaleString:
                 default:
-                    PhpException.ArgumentValueNotSupported("sortFlags", (int)sortFlags);
+                    PhpException.ArgumentValueNotSupported("sortFlags");
                     return null;
             }
 
-            PhpArray result = new PhpArray(array.Count);
-
-            HashSet<object>/*!*/identitySet = new HashSet<object>(new ObjectEqualityComparer(comparer));
+            sorted.Sort(comparer);
 
             // get only unique values - first found
-            using (var enumerator = array.GetFastEnumerator())
-                while (enumerator.MoveNext())
-                {
-                    if (identitySet.Add(PhpVariable.Dereference(enumerator.CurrentValue)))
-                        result.Add(enumerator.Current);
-                }
+            object previous = null;
+			foreach (var entry in sorted)
+			{
+                if (previous == null ||
+                    comparer.Compare(new KeyValuePair<IntStringKey, object>(entry.Key, previous), entry) != 0)
+					result.Add(entry.Key, entry.Value);
+
+                previous = entry.Value;
+			}
 
 			result.InplaceCopyOnReturn = true;
 			return result;
@@ -2842,12 +2844,7 @@ namespace PHP.Library
 			}
 
 			// no need to make a deep copy since keys are immutable objects (strings, ints):
-            var result = new PhpArray(array.Count);
-            using (var enumerator = array.GetFastEnumerator())
-                while (enumerator.MoveNext())
-                    result.AddToEnd(enumerator.CurrentKey.Object);
-
-            return result;
+			return new PhpArray(((IDictionary)array).Keys);
 		}
 
 		/// <summary>
@@ -2888,21 +2885,19 @@ namespace PHP.Library
 
             if (!strict)
             {
-                using (var enumerator = array.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                    {
-                        if (PhpComparer.CompareEq(enumerator.CurrentValue, searchValue))
-                            result.AddToEnd(enumerator.CurrentKey.Object);
-                    }
+                foreach (KeyValuePair<IntStringKey, object> entry in array)
+                {
+                    if (PhpComparer./*Default.*/CompareEq(entry.Value, searchValue))
+                        result.Add(entry.Key.Object);
+                }
             }
             else
             {
-                using (var enumerator = array.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                    {
-                        if (Operators.StrictEquality(enumerator.CurrentValue, searchValue))
-                            result.AddToEnd(enumerator.CurrentKey.Object);
-                    }
+                foreach (KeyValuePair<IntStringKey, object> entry in array)
+                {
+                    if (Operators.StrictEquality(entry.Value, searchValue))
+                        result.Add(entry.Key.Object);
+                }
             }
 
             // no need to make a deep copy since keys are immutable objects (strings, ints):
@@ -2927,11 +2922,8 @@ namespace PHP.Library
 			}
 
 			// references are not dereferenced:
-            PhpArray result = new PhpArray(array.Count);
-            using (var enumerator = array.GetFastEnumerator())
-                while (enumerator.MoveNext())
-                    result.AddToEnd(enumerator.CurrentValue);
-                
+			PhpArray result = new PhpArray(((IDictionary)array).Values);
+
 			// result is inplace deeply copied on return to PHP code:
 			result.InplaceCopyOnReturn = true;
 			return result;
@@ -3314,18 +3306,21 @@ namespace PHP.Library
 		/// </summary>
         /// <remarks>The caller argument is here just because of the second Filter() method. Phalanger shares the function properties over the overloads.</remarks>
         [ImplementsFunction("array_filter", FunctionImplOptions.NeedsClassContext)]
-        [return: PhpDeepCopy]
-        public static PhpArray Filter(PHP.Core.Reflection.DTypeDesc _, PhpArray array)
-        {
-            var _result = new PhpArray();
+		[return: PhpDeepCopy]
+		public static PhpArray Filter(PHP.Core.Reflection.DTypeDesc _, PhpArray array)
+		{
+			var _result = new PhpArray();
+			
+			foreach (KeyValuePair<IntStringKey, object> _entry in array)
+            {
+				if (Core.Convert.ObjectToBoolean(_entry.Value))
+                {
+					_result.Add(_entry.Key, _entry.Value);
+				}
+			}
 
-            using (var enumerator = array.GetFastEnumerator())
-                while (enumerator.MoveNext())
-                    if (Core.Convert.ObjectToBoolean(enumerator.CurrentValue))
-                        _result.Add(enumerator.CurrentKey, enumerator.CurrentValue);
-
-            return _result;
-        }
+			return _result;
+		}
 
 		/// <summary>
 		/// Filters an array using a specified callback.
