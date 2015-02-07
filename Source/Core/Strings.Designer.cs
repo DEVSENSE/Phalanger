@@ -160,7 +160,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot use {1} as {2} because the name is already in use.
+        ///   Looks up a localized string similar to Cannot use {0} as {1} because the name is already in use.
         /// </summary>
         internal static string alias_in_use {
             get {

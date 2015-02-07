@@ -816,6 +816,17 @@ namespace PHP.Core.Parsers
         {
             if (qname.IsFullyQualifiedName) return qname;
 
+            // skip special names:
+            if (qname.IsSimpleName)
+            {
+                if (qname.Name == Name.ParentClassName ||
+                    qname.Name == Name.SelfClassName)
+                {
+                    qname.IsFullyQualifiedName = true;
+                    return qname;
+                }
+            }
+
             // return the alias if found:
             return TranslateAlias(qname);
         }
