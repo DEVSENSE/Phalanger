@@ -245,7 +245,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Whether the value of the constant is known and stored in the constant-desc.
 		/// </summary>
-		public sealed override bool HasValue { get { return node == null; } }
+        public sealed override bool HasValue { get { return node == null && !ConstantDesc.ValueIsDeferred; } }
 
 		/// <summary>
 		/// Real storage of the constant (a field).
