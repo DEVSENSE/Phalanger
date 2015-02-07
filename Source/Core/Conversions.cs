@@ -1184,10 +1184,6 @@ namespace PHP.Core
 		/// A position where to start parsing. Returns a position where the parsing ended
 		/// (the first character not visited).
 		/// </param>
-		/// <param name="i">
-		/// Returns a position where integer-parsing ended 
-		/// (the first character not included in the resulting double value).
-		/// </param>
 		/// <param name="l">
 		/// Returns a position where long-integer-parsing ended 
 		/// (the first character not included in the resulting double value).
@@ -1210,362 +1206,391 @@ namespace PHP.Core
 		/// The return value always includes one of NumberInfo.Integer, NumberInfo.LongInteger, NumberInfo.Double
 		/// and never NumberInfo.Unconvertible (as each string is convertible to a number).
 		/// </returns>
-		private static NumberInfo IsNumber(string s, int length, ref int p, out int i, out int l, out int d,
-			out int intValue, out long longValue, out double doubleValue)
-		{
-			// invariant after return: 0 <= i <= l <= d <= p <= old(p) + length - 1.
-			NumberInfo result = 0;
+        private static NumberInfo IsNumber(string s, int length, int p, out int l, out int d,
+            out int intValue, out long longValue, out double doubleValue)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                p = l = d = intValue = 0;
+                longValue = 0;
+                doubleValue = 0.0;
+                return NumberInfo.Integer;
+            }
 
-			if (s == null) s = "";
-			if (p < 0) p = 0;
-			if (length < 0 || length > s.Length - p) length = s.Length - p;
-			int limit = p + length;
+            // invariant after return: 0 <= i <= l <= d <= p <= old(p) + length - 1.
+            NumberInfo result = 0;
 
-			// int:
-			intValue = 0;                       // integer value of already read part of the string
-			i = -1;                             // last position of an integer part of the string
+            if (p < 0) p = 0;
+            if (length < 0 || length > s.Length - p) length = s.Length - p;
+            int limit = p + length;
 
-			// long:
-			longValue = 0;                      // long integer value of already read part of the string
-			l = -1;                             // last position of an long integer part of the string
+            // long:
+            longValue = 0;                      // long integer value of already read part of the string
+            l = -1;                             // last position of an long integer part of the string
 
-			// double:
-			int exponent = 0;                   // the value of exponent
-			double expBase = 10;                // sign of the exponent (equivalent to bases 10 and 0.1)
-			double div = 10;                    // decimal factor
-			int e = -1;                         // position where the exponent has started by 'e', 'E', 'd', or 'D'
-			doubleValue = 0.0;                  // double value of already read part of the string
-			d = -1;
+            // double:
+            int exponent = 0;                   // the value of exponent
+            double expBase = 10;                // sign of the exponent (equivalent to bases 10 and 0.1)
+            int e = -1;                         // position where the exponent has started by 'e', 'E', 'd', or 'D'
 
-			// common:
-			bool contains_digit = false;        // whether a digit is contained in the string
-			int sign = +1;                      // a sign of whole number
-			int state = 0;                      // automaton state
+            doubleValue = 0.0;                  // double value; initialized once <l> is assigned
+            long doubleFrac = 0;                // fraction part of parsed double; more precision than incremental and faster 
+            int doubleFracLength = 0;           // fraction part of double length, if < 0 we have to fallback to double behaviour
+            d = -1;                             // last position where the double has ended
 
-			// patterns and states:
-			// [:white:]*[+-]?0?[0-9]*[.]?[0-9]*([dDeE][+-]?[0-9]+)?
-			//  0000000   11  2  222   2   333    4444  55   666     
-			// [:white:]*[+-]?0(x|X)[0-9A-Fa-f]*    // TODO: PHP does not resolve [+-] at the beginning, however Phalanger does
-			//  0000000   11  2 777  888888888  
+            // common:
+            bool contains_digit = false;        // whether a digit is contained in the string
+            bool sign = false;                  // whether a sign of whole number is minus
+            int state = 0;                      // automaton state
 
-			while (p < limit)
-			{
-				char c = s[p];
+            // patterns and states:
+            // [:white:]*[+-]?0?[0-9]*[.]?[0-9]*([dDeE][+-]?[0-9]+)?
+            //  0000000   11  2  222   2   333    4444  55   666     
+            // [:white:]*[+-]?0(x|X)[0-9A-Fa-f]*    // TODO: PHP does not resolve [+-] at the beginning, however Phalanger does
+            //  0000000   11  2 777  888888888  
 
-				switch (state)
-				{
-					case 0: // expecting whitespaces to be skipped
-						{
-							if (!Char.IsWhiteSpace(c))
-							{
-								state = 1;
-								goto case 1;
-							}
-							break;
-						}
+            while (p < limit)
+            {
+                char c = s[p];
 
-					case 1: // expecting result + or - or .
-						{
-							if (c >= '0' && c <= '9')
-							{
-								state = 2;
-								goto case 2;
-							}
+                switch (state)
+                {
+                    case 0: // expecting whitespaces to be skipped
+                        {
+                            if (!Char.IsWhiteSpace(c))
+                            {
+                                state = 1;
+                                goto case 1;
+                            }
+                            break;
+                        }
 
-							if (c == '-')
-							{
-								sign = -1;
-								state = 2;
-								break;
-							}
+                    case 1: // expecting result + or - or .
+                        {
+                            if (c >= '0' && c <= '9')
+                            {
+                                state = 2;
+                                goto case 2;
+                            }
 
-							if (c == '+')
-							{
-								state = 2;
-								break;
-							}
+                            if (c == '-')
+                            {
+                                sign = true;// -1;
+                                state = 2;
+                                break;
+                            }
 
-							// ends reading (long) integer:
-							i = l = p;
+                            if (c == '+')
+                            {
+                                state = 2;
+                                break;
+                            }
 
-							// switch to decimals in next turn:
-							if (c == '.')
-							{
-								state = 3;
-								break;
-							}
+                            // ends reading (long) integer:
+                            l = p;
 
-							// unexpected character:
-							goto Done;
-						}
+                            // switch to decimals in next turn:
+                            if (c == '.')
+                            {
+                                state = 3;
+                                break;
+                            }
 
-					case 2: // expecting result
-						{
-							// a single leading zero:
-							if (c == '0' && !contains_digit)
-							{
-								contains_digit = true;
-								state = 7;
-								break;
-							}
+                            // unexpected character:
+                            goto Done;
+                        }
 
-							if (c >= '0' && c <= '9')
-							{
-								int num = (int)(c - '0');
-								contains_digit = true;
+                    case 2: // expecting result
+                        {
+                            // a single leading zero:
+                            if (c == '0' && !contains_digit)
+                            {
+                                contains_digit = true;
+                                state = 7;
+                                break;
+                            }
 
-								doubleValue = doubleValue * 10 + num;
+                            if (c >= '0' && c <= '9')
+                            {
+                                int num = (int)(c - '0');
+                                contains_digit = true;
 
-								// if still reading a long integer (we may read a double only since integer has already overflown):
-								if (l == -1)
-								{
-									if (longValue < Int64.MaxValue / 10 || (longValue == Int64.MaxValue / 10 && num <= Int64.MaxValue % 10))
-									{
-										longValue = longValue * 10 + num;
+                                // if still reading a long integer (we may read a double only since integer has already overflown):
+                                if (l == -1)
+                                {
+                                    if (longValue < Int64.MaxValue / 10 || (longValue == Int64.MaxValue / 10 && num <= Int64.MaxValue % 10))
+                                    {
+                                        longValue = longValue * 10 + num;
+                                    }
+                                    else
+                                    {
+                                        // we need double now:
+                                        doubleValue = unchecked((double)longValue);
 
-										// if still reading an integer:
-										if (i == -1)
-										{
-											if (longValue <= Int32.MaxValue)
-											{
-												intValue = (int)longValue;
-											}
-											else if (sign == -1)
-											{
-												// last integer position:
-												i = (-longValue == Int32.MinValue) ? p + 1 : p;
-												intValue = Int32.MinValue;
-											}
-											else
-											{
-												// last integer position:
-												i = p;
-												intValue = Int32.MaxValue;
-											}
-										}
-									}
-									else if (sign == -1)
-									{
-										// last long integer position:
-										l = p;
-										longValue = Int64.MinValue;
-									}
-									else
-									{
-										// last long integer position:
-										l = p;
-										longValue = Int64.MaxValue;
-									}
-								}
-								break;
-							}
+                                        // last long integer position:
+                                        l = p;
 
-							// ends reading (long) integer:
-							i = l = p;
+                                        longValue = sign ? Int64.MinValue : Int64.MaxValue;
+                                    }
+                                }
+                                else
+                                {
+                                    doubleValue = unchecked(doubleValue * 10.0 + (double)num);   // now we are updating just double, long is not big enought
+                                }
 
-							// switch to decimals in next turn:
-							if (c == '.')
-							{
-								state = 3;
-								break;
-							}
+                                break;
+                            }
 
-							// switch to exponent in next turn:
-							if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
-							{
-								e = p;
-								state = 4;
-								break;
-							}
+                            // ends reading (long) integer:
+                            if (l == -1)
+                            {
+                                // init doubleValue:
+                                doubleValue = unchecked((double)longValue);
 
-							// unexpected character:
-							goto Done;
-						}
+                                // last long integer position:
+                                if (sign) longValue *= -1;
+                                l = p;
+                            }
 
-					case 3: // expecting decimals
-						{
-							Debug.Assert(i >= 0 && l >= 0, "Reading double.");
+                            // switch to decimals in next turn:
+                            if (c == '.')
+                            {
+                                state = 3;
+                                break;
+                            }
 
-							// reading decimals:
-							if (c >= '0' && c <= '9')
-							{
-								int num = (int)(c - '0');
-								doubleValue += num / div;
-								div *= 10;
-								break;
-							}
+                            // switch to exponent in next turn:
+                            if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
+                            {
+                                e = p;
+                                state = 4;
+                                break;
+                            }
 
-							// switch to exponent in next turn:
-							if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
-							{
-								e = p;
-								state = 4;
-								break;
-							}
+                            // unexpected character:
+                            goto Done;
+                        }
 
-							// unexpected character:
-							goto Done;
-						}
+                    case 3: // expecting decimals
+                        {
+                            Debug.Assert(l >= 0, "Reading double.");
 
-					case 4: // expecting exponent + or -
-						{
-							Debug.Assert(i >= 0 && l >= 0, "Reading double.");
+                            // reading decimals:
+                            if (c >= '0' && c <= '9')
+                            {
+                                if (doubleFrac <= ((long.MaxValue - 9) / 10))   // long can still hold the fraction
+                                {
+                                    doubleFrac = doubleFrac * 10 + (c - '0');
+                                    ++doubleFracLength;
+                                }
+                                else
+                                {
+                                    // general behaviour?
+                                }
 
-							// switch to exponent immediately:
-							if (c >= '0' && c <= '9')
-							{
-								state = 6;
-								goto case 6;
-							}
+                                break;
 
-							// switch to exponent in next turn:
-							if (c == '-')
-							{
-								expBase = 0.1;
-								state = 5;
-								break;
-							}
+                                //// general behaviour
+                                //doubleValue += (c - '0') / (div *= 10.0);
+                                //break;
+                            }
 
-							// switch to exponent in next turn:
-							if (c == '+')
-							{
-								state = 5;
-								break;
-							}
+                            // switch to exponent in next turn:
+                            if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
+                            {
+                                e = p;
+                                state = 4;
+                                break;
+                            }
 
-							// unexpected characters:
-							goto Done;
-						}
+                            // unexpected character:
+                            goto Done;
+                        }
 
-					case 5: // expecting exponent after the sign
-						{
-							state = 6;
-							goto case 6;
-						}
+                    case 4: // expecting exponent + or -
+                        {
+                            Debug.Assert(l >= 0, "Reading double.");
 
-					case 6: // expecting exponent without the sign
-						{
-							if (c >= '0' && c <= '9')
-							{
-								int num = (int)(c - '0');
+                            // switch to exponent immediately:
+                            if (c >= '0' && c <= '9')
+                            {
+                                state = 6;
+                                goto case 6;
+                            }
 
-								// if exponent exceeds max{log(MaxValue),|log(Epsilon)|} < 400 then
-								// the result is either infinity or zero, the first is excluded by the condition below;
-								// if the result is zero, we can read arbitrarily long exponent:
-								if (exponent > 400)
-									break;
+                            // switch to exponent in next turn:
+                            if (c == '-')
+                            {
+                                expBase = 0.1;
+                                state = 5;
+                                break;
+                            }
 
-								exponent = exponent * 10 + num;
+                            // switch to exponent in next turn:
+                            if (c == '+')
+                            {
+                                state = 5;
+                                break;
+                            }
 
-								// continues reading exponent if the total value is not infinite:
-								if (doubleValue * Math.Pow(expBase, exponent) != Double.PositiveInfinity)
-									break;
-							}
+                            // unexpected characters:
+                            goto Done;
+                        }
 
-							// unexpected character:
-							goto Done;
-						}
+                    case 5: // expecting exponent after the sign
+                        {
+                            state = 6;
+                            goto case 6;
+                        }
 
-					case 7: // a single leading zero read:
-						{
-							// check for hexa integer:
-							if (c == 'x' || c == 'X')
-							{
-								// end of double reading:
-								d = p;
+                    case 6: // expecting exponent without the sign
+                        {
+                            if (c >= '0' && c <= '9')
+                            {
+                                // if exponent exceeds max{log(MaxValue),|log(Epsilon)|} < 400 then
+                                // the result is either infinity or zero, the first is excluded by the condition below;
+                                // if the result is zero, we can read arbitrarily long exponent:
+                                if (exponent > 400)
+                                    break;
 
-								state = 8;
-								break;
-							}
+                                exponent = exponent * 10 + (int)(c - '0');
 
-							// other cases -> back to integer reading:
-							state = 2;
-							goto case 2;
-						}
+                                // continues reading exponent if the total value is not infinite:
+                                if (exponent == 0 ||
+                                    unchecked
+                                    (   ((l == -1) ? (double)longValue : doubleValue)   // integral part
+                                        + ((doubleFrac > 0) ? ((double)doubleFrac / Math.Pow(10.0, (double)doubleFracLength)) : 0.0)    // frac part
+                                    ) * Math.Pow(expBase, exponent) != Double.PositiveInfinity) // exp
+                                    break;
+                            }
 
-					case 8: // hexa integer
-						{
-							result |= NumberInfo.IsHexadecimal;
+                            // unexpected character:
+                            goto Done;
+                        }
 
-							int num = AlphaNumericToDigit(c);
+                    case 7: // a single leading zero read:
+                        {
+                            // check for hexa integer:
+                            if (c == 'x' || c == 'X')
+                            {
+                                // end of double reading:
+                                d = p;
 
-							// unexpected character:
-							if (num <= 15)
-							{
-								if (longValue < Int64.MaxValue / 16 || (longValue == Int64.MaxValue / 16 && num <= Int64.MaxValue % 16))
-								{
-									longValue = longValue * 16 + num;
+                                state = 8;
+                                break;
+                            }
 
-									if (longValue <= Int32.MaxValue)
-									{
-										intValue = (int)longValue;
-									}
-									else if (sign == -1)
-									{
-										// last hexa integer position:
-										i = (-longValue == Int32.MinValue) ? p + 1 : p;
-										intValue = Int32.MinValue;
-									}
-									else
-									{
-										// last hexa integer position:
-										i = p;
-										intValue = Int32.MaxValue;
-									}
-								}
-								else if (sign == -1)
-								{
-									// last hexa long integer position:
-									l = p;
-									longValue = Int64.MinValue;
-								}
-								else
-								{
-									// last hexa long integer position:
-									l = p;
-									longValue = Int64.MaxValue;
-								}
-								break;
-							}
+                            // other cases -> back to integer reading:
+                            state = 2;
+                            goto case 2;
+                        }
 
-							goto Done;
-						}
-				}
-				p++;
-			}
+                    case 8: // hexa integer
+                        {
+                            result |= NumberInfo.IsHexadecimal;
 
-		Done:
+                            int num = AlphaNumericToDigit(c);
 
-			// an exponent ends with 'e', 'd', 'E', 'D', '-', or '+':
-			if (state == 4 || state == 5)
-			{
-				Debug.Assert(i >= 0 && l >= 0 && e >= 0, "Reading exponent of double.");
+                            // unexpected character:
+                            if (num <= 15)
+                            {
+                                if (l == -1)
+                                {
+                                    if (longValue < Int64.MaxValue / 16 || (longValue == Int64.MaxValue / 16 && num <= Int64.MaxValue % 16))
+                                    {
+                                        longValue = longValue * 16 + num;
+                                    }
+                                    else
+                                    {
+                                        doubleValue = unchecked((double)longValue);
 
-				// shift back:
-				p = e;
-			}
+                                        // last hexa long integer position:
+                                        l = p;
+                                        longValue = sign ? Int64.MinValue : Int64.MaxValue;
+                                    }
+                                }
+                                else
+                                {
+                                    doubleValue = unchecked(doubleValue * 16.0 + (double)num);
+                                    l = p;  // last position is advanced even the long is too long?
+                                }
 
-			// if double index hasn't stopped neither the exponent nor sign have been applied yet:
-			if (d == -1) { doubleValue *= Math.Pow(expBase, exponent) * sign; d = p; }
+                                break;
+                            }
 
-			// if long/integer index hasn't stopped the sign hasn't been applied yet:
-			if (l == -1) { longValue *= sign; l = p; }
-			if (i == -1) { intValue *= sign; i = p; }
-			
-			// determine the type comparing strictly d, l, i:
-			if (d > l) result |= NumberInfo.Double;
-			else if (l > i) result |= NumberInfo.LongInteger;
-			else result |= NumberInfo.Integer;
-			
-			// the string is a number if it was entirely parsed and contains a digit:
-			if (contains_digit && p == limit)
-				result |= NumberInfo.IsNumber;
+                            goto Done;
+                        }
+                }
+                p++;
+            }
 
-			if ((result & NumberInfo.IsHexadecimal) != 0)
-				doubleValue = unchecked((double)longValue);
+        Done:
 
-			return result;
-		}
+            // an exponent ends with 'e', 'd', 'E', 'D', '-', or '+':
+            if (state == 4 || state == 5)
+            {
+                Debug.Assert(l >= 0 && e >= 0, "Reading exponent of double.");
+
+                // shift back:
+                p = e;
+            }
+
+            // if long/integer index hasn't stopped the sign hasn't been applied yet:
+            if (l == -1) { doubleValue = unchecked((double)longValue); if (sign) longValue *= -1; l = p; }
+            
+            // determine int/long type:
+            // try fit long into int:
+            intValue = unchecked((int)longValue);
+            if (intValue == longValue)
+            {
+                result |= NumberInfo.Integer;
+            }
+            else
+            {
+                result |= NumberInfo.LongInteger;
+                intValue = (longValue < 0) ? int.MinValue : int.MaxValue;
+            }
+
+            // if double index hasn't stopped neither the fraction, exponent nor sign have not been applied yet:
+            if (d == -1)
+            {
+                // reconstruct fraction part
+                if (doubleFrac != 0)    // => doubleFracLength > 0
+                {
+                    switch (doubleFracLength)
+                    {
+                        case 0: Debug.Fail(); break;
+                        case 1: doubleValue += (double)doubleFrac * 0.1; break;
+                        case 2: doubleValue += (double)doubleFrac * 0.01; break;
+                        case 3: doubleValue += (double)doubleFrac * 0.001; break;
+                        case 4: doubleValue += (double)doubleFrac * 0.0001; break;
+                        case 5: doubleValue += (double)doubleFrac * 0.00001; break;
+                        case 6: doubleValue += (double)doubleFrac * 0.000001; break;
+                        case 7: doubleValue += (double)doubleFrac * 0.0000001; break;
+                        default: doubleValue += (double)doubleFrac / Math.Pow(10.0, (double)doubleFracLength); break;   // more precise than (X * 0.1^length)
+                    }
+                }
+
+                // apply an exponent:
+                if (exponent != 0)
+                    doubleValue *= Math.Pow(expBase, exponent);
+
+                // last double value position:
+                d = p;
+            }
+
+            if (sign) doubleValue *= -1.0;
+
+            // determine the double type comparing strictly d, l:
+            if (d > l) result = result & ~NumberInfo.TypeMask | NumberInfo.Double;  // remove Integer|LongInteger, add Double
+
+            // the string is a number if it was entirely parsed and contains a digit:
+            if (contains_digit && p == limit)
+                result |= NumberInfo.IsNumber;
+
+            //
+            return result;
+        }
 
 		/// <summary>
 		/// Converts value of an arbitrary PHP/CLR type into integer value, long integer value or double value using 
@@ -1648,8 +1673,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="str"/> is a <B>null</B> reference.</exception>
 		public static NumberInfo StringToNumber(string str, out int intValue, out long longValue, out double doubleValue)
 		{
-			int i, l, d, p = 0;
-			return IsNumber(str, -1, ref p, out i, out l, out d, out intValue, out longValue, out doubleValue);
+            int l, d;
+			return IsNumber(str, -1, 0, out l, out d, out intValue, out longValue, out doubleValue);
 		}
 
 		/// <summary>
@@ -1659,10 +1684,10 @@ namespace PHP.Core
 		/// <returns>The result of conversion.</returns>
 		public static int StringToInteger(string str)
 		{
-			int ival, i, l, d, p = 0;
+			int ival, l, d;
 			double dval;
 			long lval;
-			IsNumber(str, -1, ref p, out i, out l, out d, out ival, out lval, out dval);
+			IsNumber(str, -1, 0, out l, out d, out ival, out lval, out dval);
 
 			return ival;
 		}
@@ -1674,10 +1699,10 @@ namespace PHP.Core
 		/// <returns>The result of conversion.</returns>
 		public static long StringToLongInteger(string str)
 		{
-			int ival, i, l, d, p = 0;
+            int ival, l, d;
 			double dval;
 			long lval;
-			IsNumber(str, -1, ref p, out i, out l, out d, out ival, out lval, out dval);
+			IsNumber(str, -1, 0, out l, out d, out ival, out lval, out dval);
 
 			return lval;
 		}
@@ -1689,33 +1714,12 @@ namespace PHP.Core
 		/// <returns>The result of conversion.</returns>
 		public static double StringToDouble(string str)
 		{
-			int ival, i, l, d, p = 0;
+            int ival, l, d;
 			double dval;
 			long lval;
-			IsNumber(str, -1, ref p, out i, out l, out d, out ival, out lval, out dval);
+			IsNumber(str, -1, 0, out l, out d, out ival, out lval, out dval);
 
 			return dval;
-		}
-
-		/// <summary>
-		/// Converts a part of a string starting on a specified position to an integer.
-		/// </summary>
-		/// <param name="str">The string to be parsed.</param>
-		/// <param name="length">Maximal length of the substring to parse.</param>
-		/// <param name="position">
-		/// The position where to start. Points to the first character after the substring storing the integer
-		/// when returned.
-		/// </param>
-		/// <returns>The integer stored in the <paramref name="str"/>.</returns>
-		public static int SubstringToInteger(string str, int length, ref int position)
-		{
-			int d, l, p = position;
-			int ival;
-			long lval;
-			double dval;
-			IsNumber(str, length, ref p, out position, out l, out d, out ival, out lval, out dval);
-
-			return ival;
 		}
 
 		/// <summary>
@@ -1730,11 +1734,11 @@ namespace PHP.Core
 		/// <returns>The integer stored in the <paramref name="str"/>.</returns>
 		public static long SubstringToLongInteger(string str, int length, ref int position)
 		{
-			int i, d, p = position;
+			int d;
 			int ival;
 			long lval;
 			double dval;
-			IsNumber(str, length, ref p, out i, out position, out d, out ival, out lval, out dval);
+            IsNumber(str, length, position, out position, out d, out ival, out lval, out dval);
 
 			return lval;
 		}
@@ -1751,11 +1755,11 @@ namespace PHP.Core
 		/// <returns>The double stored in the <paramref name="str"/>.</returns>
 		public static double SubstringToDouble(string str, int length, ref int position)
 		{
-			int i, l, p = position;
+            int l;
 			int ival;
 			long lval;
 			double dval;
-			IsNumber(str, length, ref p, out i, out l, out position, out ival, out lval, out dval);
+            IsNumber(str, length, position, out l, out position, out ival, out lval, out dval);
 
 			return dval;
 		}
@@ -2226,7 +2230,7 @@ namespace PHP.Core
 			static TestCase[] cases = new TestCase[]
 			{
 				//           string                 number?    p   i   l   d       iv       lv  dv
-				new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
+                new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
 				new TestCase("0x",                    true,    2,  2,  2,  1,       0,       0,  0.0),
 				new TestCase("0X",                    true,    2,  2,  2,  1,       0,       0,  0.0),
 				new TestCase("00x1",                 false,    2,  2,  2,  2,       0,       0,  0.0),
@@ -2270,7 +2274,11 @@ namespace PHP.Core
 				new TestCase(null,                   false,    0,  0,  0,  0,       0,       0,  0.0),
 				new TestCase("10e1111111111111111",  false,    6,  2,  2,  6,      10,      10,  Double.PositiveInfinity),
 				new TestCase("10e-1111111111111111",  true,   20,  2,  2, 20,      10,      10,  0.0),
-				new TestCase("0e-1111111111111111",   true,   19,  1,  1, 19,       0,       0,  0.0),    
+				new TestCase("0e-1111111111111111",   true,   19,  1,  1, 19,       0,       0,  0.0),
+                new TestCase("89.99",                 true,    5,  2,  2,  5,      89,      89,  89.99),
+                new TestCase("-12.3",                 true,    5,  3,  3,  5,     -12,     -12, -12.3),
+                new TestCase("0.12345678901234567890123456789",true,   31,  1,  1, 31,       0,       0,  0.12345678901234567890123456789),
+			    //new TestCase("0.00000000000034567890123456789",true,   31,  1,  1, 31,       0,       0,  0.00000000000034567890123456789),
 			};
 
 			[Test]
@@ -2278,14 +2286,14 @@ namespace PHP.Core
 			{
 				foreach (TestCase c in cases)
 				{
-					int d, i, l, iv, p = 0;
+					int d, l, iv, p = 0;
 					double dv;
 					long lv;
-					Convert.NumberInfo info = Core.Convert.IsNumber(c.s, -1, ref p, out i, out l, out d, out iv, out lv, out dv);
+					Convert.NumberInfo info = Core.Convert.IsNumber(c.s, -1, p, out l, out d, out iv, out lv, out dv);
 
 					Debug.Assert(c.isnum == ((info & Convert.NumberInfo.IsNumber) != 0));
-					Debug.Assert(c.p == p);
-					Debug.Assert(c.i == i);
+					//Debug.Assert(c.p == p);
+					//Debug.Assert(c.i == i);
 					Debug.Assert(c.l == l);
 					Debug.Assert(c.d == d);
 					Debug.Assert(c.iv == iv);
