@@ -1,6 +1,5 @@
 PATH = %PATH%;"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools"
 
-gacutil -f -i ShmChannel.dll
 gacutil -f -i PhpNetCore.dll
 gacutil -f -i PhpNetClassLibrary.dll
 gacutil -f -i PhpNetMsSql.dll
