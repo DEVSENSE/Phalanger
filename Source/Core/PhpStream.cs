@@ -471,7 +471,7 @@ namespace PHP.Core
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawTell"]/*'/>
 		protected virtual int RawTell()
 		{
-			PhpException.Throw(PhpError.Warning, CoreResources.GetString("wrapper_op_unsupported", "Seek"));
+            PhpException.Throw(PhpError.Warning, CoreResources.GetString("wrapper_op_unsupported", "Seek"));
 			return -1;
 		}
 
@@ -569,7 +569,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				// The raw stream reached EOF and all the data is processed.
+                // The raw stream reached EOF and all the data is processed.
 				if (RawEof)
 				{
 					// Check the buffers as quickly as possible.
@@ -1796,25 +1796,28 @@ namespace PHP.Core
 					break;
 
 				case FileAccess.Write:
-					// Maybe we can seek inside of the buffer but we allow only backward skips.
-					if ((newpos >= writeOffset) && (newpos < writeOffset + writePosition))
-					{
-						// We are inside the current buffer, great.
-						writePosition = newpos - writeOffset;
-					}
-					else
-					{
-						// Flush write buffers and proceed to the default handling.
-						FlushWriteBuffer();
+                    // The following does not currently work since other methods do not take unempty writebuffer into account
 
-						// Notice that for a filtered stream, seeking is not a good idea
-						if (IsWriteFiltered)
-						{
-							PhpException.Throw(PhpError.Notice,
-								CoreResources.GetString("stream_seek_filtered", (textWriteFilter != null) ? "text" : "filtered"));
-						}
-						return SeekInternal(offset, current, whence);
+                    //// Maybe we can seek inside of the buffer but we allow only backward skips.
+                    //if ((newpos >= writeOffset) && (newpos < writeOffset + writePosition))
+                    //{
+                    //    // We are inside the current buffer, great.
+                    //    writePosition = newpos - writeOffset;
+                    //}
+                    //else
+                    //{
+
+					// Flush write buffers and proceed to the default handling.
+					FlushWriteBuffer();
+
+					// Notice that for a filtered stream, seeking is not a good idea
+					if (IsWriteFiltered)
+					{
+						PhpException.Throw(PhpError.Notice,
+							CoreResources.GetString("stream_seek_filtered", (textWriteFilter != null) ? "text" : "filtered"));
 					}
+					return SeekInternal(offset, current, whence);
+                    
 					break;
 			}
 			return true;
@@ -1862,7 +1865,7 @@ namespace PHP.Core
 
 				// No data should be buffered when seeking the underlying stream!
 				Debug.Assert(readBuffers == null);
-				Debug.Assert(writeBuffer == null);
+				Debug.Assert(writeBuffer == null || writePosition == 0);
 				readPosition = writePosition = 0;
 
 				// EX: This is inaccurate, but there is no better information avalable (w/o processing the whole stream)
@@ -2133,15 +2136,15 @@ namespace PHP.Core
 				if (CurrentAccess != FileAccess.Write) return -1;
 
 				// Data passed via filters to output buffers (not filtered yet!)
-				return writeFilteredCount;
-				//        try
-				//        {
-				//          return RawTell() + this.writePosition;
-				//        }
-				//        catch (Exception)
-				//        {
-				//          return this.writeOffset + this.writePosition;
-				//        }
+                return writeFilteredCount;
+                //try
+                //{
+                //  return RawTell() + this.writePosition;
+                //}
+                //catch (Exception)
+                //{
+                //  return this.writeOffset + this.writePosition;
+                //}
 			}
 		}
 
@@ -2153,16 +2156,16 @@ namespace PHP.Core
 				if (CurrentAccess != FileAccess.Read) return -1;
 
 				// Data physically read - data still in buffers
-				return readFilteredCount - ReadBufferLength;
-				//        try
-				//        {
-				//          return RawTell() - ReadBufferLength;
-				//          // The position in the stream minus the data remaining in the buffers
-				//        }
-				//        catch (Exception)
-				//        {
-				//          return this.readOffset + this.readPosition;
-				//        }
+                return readFilteredCount - ReadBufferLength;
+                //try
+                //{
+                //  return RawTell() - ReadBufferLength;
+                //  // The position in the stream minus the data remaining in the buffers
+                //}
+                //catch (Exception)
+                //{
+                //  return this.readOffset + this.readPosition;
+                //}
 			}
 		}
 
