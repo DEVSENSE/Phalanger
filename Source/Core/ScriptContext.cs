@@ -758,7 +758,7 @@ namespace PHP.Core
             if (GetClassConstant(name, out desc, quiet))
             {
                 if (desc != null)
-                    return PhpVariable.Dereference(desc.LiteralValue);
+                    return PhpVariable.Dereference(desc.GetValue(this));
             }
             else
             {

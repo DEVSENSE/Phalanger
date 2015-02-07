@@ -672,19 +672,6 @@ namespace PHP.Core.Emit
 			MethodBuilder populator = DefinePopulateTypeDescMethod(phpType.RealTypeBuilder);
 			ILEmitter il = new ILEmitter(populator);
 
-			// thread static field init
-			if (phpType.Builder.HasThreadStaticFields)
-			{
-				// [ typeDesc.SetStaticInit(new Action<ScriptContext>(__tsinit)) ]
-
-				il.Ldarg(0);
-				il.Emit(OpCodes.Ldnull);
-				il.Emit(OpCodes.Ldftn, phpType.StaticFieldInitMethodInfo);
-				il.Emit(OpCodes.Newobj, Constructors.Action_ScriptContext);
-
-				il.Emit(OpCodes.Call, Methods.SetStaticInit);
-			}
-
 			// methods
 			foreach (KeyValuePair<Name, DRoutineDesc> pair in phpType.TypeDesc.Methods)
 			{

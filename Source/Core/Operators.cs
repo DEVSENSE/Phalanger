@@ -4264,7 +4264,8 @@ namespace PHP.Core
                     }
             }
 
-            return PhpVariable.Dereference(constant.LiteralValue);
+            // make sure that the constant has been initialized for this request
+            return PhpVariable.Dereference(constant.GetValue(context));
         }
 
         #endregion
