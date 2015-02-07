@@ -989,6 +989,7 @@ namespace PHP.Core
 			else cil.Emit(OpCodes.Newobj, Constructors.PhpSmartReference.Void);
 
 			// store it in the field
+            Debug.Assert(field.IsStatic == field.RealField.IsStatic);
 			cil.Emit(field.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, field.RealField);
 		}
 
