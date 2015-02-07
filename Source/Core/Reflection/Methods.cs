@@ -877,7 +877,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// PHP routine result should be checked for deep-copy.
 		/// </summary>
-		public override bool ReturnValueDeepCopyEmitted { get { return true; } }
+		public override bool ReturnValueDeepCopyEmitted { get { return false; } }
 
 		internal abstract bool IsExported { get; }
 

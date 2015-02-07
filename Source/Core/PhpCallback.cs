@@ -101,12 +101,6 @@ namespace PHP.Core
 		/// </summary>
 		private DObject instance;
 
-        /// <summary>
-        /// Type used to call this routine.
-        /// Used for late static binding.
-        /// </summary>
-        private DTypeDesc lateStaticBindType;
-
 		/// <summary>
 		/// <B>true</B> if <see cref="instance"/> is just a dummy instance created ad-hoc to be able to call an instance method
 		/// statically, <B>false</B> otherwise.
@@ -117,7 +111,7 @@ namespace PHP.Core
 		/// Type context (determined at bind time).
 		/// </summary>
 		private DTypeDesc callingContext;
-        
+
 		/// <summary>
 		/// Returns <B>true</B> if this callback is bound, <B>false</B> otherwise.
 		/// </summary>
@@ -174,9 +168,6 @@ namespace PHP.Core
 			{
 				if (IsBound) throw new InvalidOperationException(CoreResources.GetString("cannot_change_target_instance"));
 				instance = value;
-
-                if (instance != null)
-                    lateStaticBindType = instance.TypeDesc;
 			}
 		}
 
@@ -207,7 +198,7 @@ namespace PHP.Core
 		public PhpCallback(RoutineDelegate functionDelegate, ScriptContext context)
 		{
 			// create a new DRoutineDesc based on the passed delegate
-			routineDesc = new PhpRoutineDesc(PhpMemberAttributes.Static | PhpMemberAttributes.NamespacePrivate, functionDelegate, false);
+			routineDesc = new PhpRoutineDesc(PhpMemberAttributes.Static | PhpMemberAttributes.NamespacePrivate, functionDelegate);
 
 			this.context = context;
 			this.state = State.Bound;
@@ -222,8 +213,8 @@ namespace PHP.Core
 		public PhpCallback(DObject instance, DRoutineDesc handle, ScriptContext context)
 		{
 			if (handle == null) throw new ArgumentNullException("handle");
-            if (!handle.IsStatic)
-            {
+			if (!handle.IsStatic)
+			{
 				if (instance == null) throw new ArgumentNullException("instance");
 				this.instance = instance;
 			}
@@ -231,24 +222,29 @@ namespace PHP.Core
 			this.context = context;
 			this.routineDesc = handle;
 			this.state = State.Bound;
-
-            if (instance != null)
-                this.lateStaticBindType = instance.TypeDesc;
 		}
 
 		/// <summary>
 		/// Creates an unbound PHP function callback given a function name.
 		/// </summary>
 		/// <param name="functionName">The target PHP function name.</param>
-        public PhpCallback(string functionName)
-        {
-            if (functionName == null) throw new ArgumentNullException("functionName");
+		public PhpCallback(string functionName)
+		{
+			if (functionName == null) throw new ArgumentNullException("functionName");
 
-            this.state =
-                (Name.IsClassMemberSyntax(functionName, out this.className, out this.targetName))
-                ? this.state = State.UnboundStaticMethod
-                : this.state = State.UnboundFunction;
-        }
+            //if (functionName.Contains("::"))
+            //{
+            //    int pos = functionName.IndexOf("::");
+            //    this.className = functionName.Substring(0, pos);
+            //    this.targetName = functionName.Substring(pos + 2);
+            //    this.state = State.UnboundStaticMethod;
+            //}
+            //else
+            {
+                this.targetName = functionName;
+                this.state = State.UnboundFunction;
+            }			
+		}
 
 		/// <summary>
 		/// Creates an unbound PHP function callback given a function name and <see cref="ScriptContext"/>.
@@ -259,7 +255,7 @@ namespace PHP.Core
             :this(functionName)
 		{
 			if (context == null) throw new ArgumentNullException("context");
-			this.context = context;
+			this.context = context;			
 		}
 
 		/// <summary>
@@ -284,10 +280,15 @@ namespace PHP.Core
 		/// <param name="methodName">The target PHP method name.</param>
 		/// <param name="context">The script context to call the method with.</param>
 		public PhpCallback(string className, string methodName, ScriptContext context)
-            :this(className, methodName)
 		{
 			if (context == null) throw new ArgumentNullException("context");
+			if (className == null) throw new ArgumentNullException("className");
+			if (methodName == null) throw new ArgumentNullException("methodName");
+
 			this.context = context;
+			this.className = className;
+			this.targetName = methodName;
+			this.state = State.UnboundStaticMethod;
 		}
 
 		/// <summary>
@@ -303,25 +304,7 @@ namespace PHP.Core
 			this.instance = instance;
 			this.targetName = targetName;
 			this.state = State.UnboundInstanceMethod;
-            this.lateStaticBindType = instance.TypeDesc;
 		}
-
-        /// <summary>
-        /// Creates bounded PHP instance method callback. Used when we already know the routine.
-        /// </summary>
-        /// <param name="instance">The target PHP object.</param>
-        /// <param name="routine">The target PHP method.</param>
-        internal PhpCallback(DObject instance, DRoutineDesc routine)
-        {
-            Debug.Assert(instance != null);
-            Debug.Assert(routine != null);
-
-            this.instance = instance;
-            this.targetName = routine.Member.FullName;
-            this.state = State.Bound;
-            this.routineDesc = routine;
-            this.lateStaticBindType = instance.TypeDesc;
-        }
 
 		#endregion
 
@@ -375,8 +358,8 @@ namespace PHP.Core
 					{
 						if (context == null) context = ScriptContext.CurrentContext;
 
-                        if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
-                        else callingContext = caller;
+						if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
+						else callingContext = caller;
 
 						// try to find the CLR method
 
@@ -389,7 +372,6 @@ namespace PHP.Core
 
 						// find the method
                         bool is_caller_method;
-                        lateStaticBindType = type;
 						routineDesc = Operators.GetStaticMethodDesc(type, targetName,
                             ref instance, callingContext, context, quiet, false, out is_caller_method);
 
@@ -402,8 +384,8 @@ namespace PHP.Core
 
 				case State.UnboundInstanceMethod:
 					{
-                        if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
-                        else callingContext = caller;
+						if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
+						else callingContext = caller;
 
 						// ask the instance for a handle to the method
 						bool is_caller_method;
@@ -417,7 +399,7 @@ namespace PHP.Core
 			return true;
 		}
 
-        public void SwitchContext(ScriptContext/*!*/ newContext)
+		public void SwitchContext(ScriptContext/*!*/ newContext)
 		{
 			if (state != State.Bound && state != State.BoundToCaller)
 				throw new InvalidOperationException();
@@ -434,7 +416,6 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="args">Arguments to be passed to target function or method (can be <see cref="PhpReference"/>s).</param>
 		/// <returns>The value returned by the called function or method (can be a <see cref="PhpReference"/>).</returns>
-        [Emitted]
 		public object Invoke(params object[] args)
 		{
 			if (!IsBound && !Bind()) return null;
@@ -475,7 +456,6 @@ namespace PHP.Core
 			else stack.AddFrame(args);
 
 			stack.Callback = true;
-            stack.LateStaticBindType = this.lateStaticBindType;
 			return routineDesc.Invoke(instance, stack, callingContext);
 		}
 
@@ -579,11 +559,16 @@ namespace PHP.Core
 					}
 
 				default:
-					Debug.Fail(null); return null;
+					Debug.Fail(); return null;
 			}
 		}
 
-        /// <summary>
+        string IPhpConvertible.ToString(DTypeDesc caller)
+        {
+            return ((IPhpConvertible)this).ToString();
+        }
+
+		/// <summary>
 		/// Converts instance to its string representation according to PHP conversion algorithm.
 		/// </summary>
 		/// <param name="success">Indicates whether conversion was successful.</param>
@@ -646,7 +631,7 @@ namespace PHP.Core
 					}
 
 				default:
-					Debug.Fail(null); return null;
+					Debug.Fail(); return null;
 			}
 		}
 
@@ -662,9 +647,6 @@ namespace PHP.Core
 			targetName = info.GetString("targetName");
 			instance = (PhpObject)info.GetValue("instance", typeof(PhpObject));
 			state = (State)info.GetValue("state", typeof(State));
-
-            if (instance != null)
-                lateStaticBindType = instance.TypeDesc;
 		}
 
 
