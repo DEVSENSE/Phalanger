@@ -280,8 +280,8 @@ namespace PHP.Core
 		private static void WriteLogo(TextWriter output)
 		{
 			Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-			output.Write("<h1>Phalanger {0}.{1}.{2}{3} {4}</h1>",
-                ver.Major, ver.Minor, ver.Build,
+			output.Write("<h1>Phalanger {0}{1} {2}</h1>",
+                ver.ToString(3),
 #if DEBUG
                 ", DEBUG,",
 #else

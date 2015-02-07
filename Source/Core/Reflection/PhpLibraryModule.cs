@@ -103,8 +103,8 @@ namespace PHP.Core.Reflection
                 if (dynamicWrapper != Assembly.RealAssembly)
                     real_types = Assembly.RealAssembly.GetTypes();
             }
-
-			foreach (Type type in real_types)
+            
+            foreach (Type type in real_types)
 			{
                 ReflectArgfulls(types, functions, constants, type, full);
 			}
@@ -413,14 +413,14 @@ namespace PHP.Core.Reflection
 			try
 			{
 				// builds wrapper if it doesn't exist:
-				if (!File.Exists(wrapper_name))
+                if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_name))
 				{
 					Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_name.Replace('\\', '/')));
 					mutex.WaitOne();
 					try
 					{
 						// if the file still does not exist, we are in charge!
-						if (!File.Exists(wrapper_name))
+                        if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_name))
 							LibraryBuilder.CreateDynamicWrapper(real_assembly, wrappers_dir);
 					}
 					finally
@@ -491,7 +491,27 @@ namespace PHP.Core.Reflection
         internal static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass)
         {
             var name = ass.GetName(false);
-            return String.Concat(name.Name, DynamicAssemblySuffix, ".", name.Version.ToString(4), ".dll");
+            return String.Concat(name.Name, DynamicAssemblySuffix, /*".", name.Version.ToString(2),*/ ".dll");
+        }
+
+        /// <summary>
+        /// Check wheter dynamic wrapper for given <see cref="Assembly"/> <paramref name="ass"/> does exist and is up to date.
+        /// </summary>
+        /// <param name="ass">Class library assembly.</param>
+        /// <param name="wrapper_name">Wrapper file name corresponding to the given assembly <paramref name="ass"/>.</param>
+        /// <returns>True iff there is a valid up-to-date dynamic wrapper for given assembly.</returns>
+        private static bool IsDynamicWrapperUpToDate(Assembly/*!*/ass, string/*!*/wrapper_name)
+        {
+            Debug.Assert(ass != null);
+            Debug.Assert(wrapper_name != null);
+
+            if (File.Exists(wrapper_name))
+            {
+                if (File.GetLastWriteTimeUtc(ass.Location) < File.GetLastWriteTimeUtc(wrapper_name))
+                    return true;
+            }
+
+            return false;
         }
 
 		#endregion
