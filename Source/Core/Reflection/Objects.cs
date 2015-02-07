@@ -1696,8 +1696,8 @@ namespace PHP.Core.Reflection
 
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
             }
-            
-            return null;
+
+            return new PhpBytes();
 		}
 
 		private object InvokeToString(out GetMemberResult lookupResult)
@@ -1776,7 +1776,7 @@ namespace PHP.Core.Reflection
 
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
             }
-            return null;
+            return string.Empty;
 		}
 
 		/// <summary>
