@@ -294,7 +294,7 @@ bool CBootstrapperDlg::VcInstalled()
 bool CBootstrapperDlg::CoreInstalled()
 {
 	CRegKey key;
-	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v2.1", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
+	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v3.0", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
 
 	char buf[1024];
 	ULONG count = sizeof(buf);
