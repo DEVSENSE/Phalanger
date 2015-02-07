@@ -22,7 +22,6 @@ using System.Runtime.Serialization;
 using PHP;
 using PHP.Core;
 using System.Net.Mail;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -80,11 +79,6 @@ namespace PHP.Library
 			/// </summary>
 			public string DefaultFromHeader = null;
 
-            /// <summary>
-            /// Whether to add <c>X-PHP-Originating-Script</c> header to sent mails.
-            /// </summary>
-            public bool AddXHeader = false;
-
             public MailerSection()
             {
                 
@@ -123,10 +117,6 @@ namespace PHP.Library
 						SmtpPort = ConfigUtils.ParseInteger(value, 0, UInt16.MaxValue, node);
 						break;
 
-                    case "AddXHeader":
-                        AddXHeader = string.Equals(value, true.ToString(), StringComparison.OrdinalIgnoreCase);
-                        break;
-
 					default:
 						return false;
 				}
@@ -153,8 +143,7 @@ namespace PHP.Library
                     if (config == null) return;
 
                     RequestContext context = RequestContext.CurrentContext;
-                    if (context == null) return;
-
+                    Debug.Assert(context != null);
                     HttpCookie cookie = AspNetSessionHandler.GetCookie(context.HttpContext);
 
                     if (config.Session.CacheExpire >= 0)
@@ -442,7 +431,6 @@ namespace PHP.Library
 				case "sendmail_from": return PhpIni.GSR(ref local.Mailer.DefaultFromHeader, @default.Mailer.DefaultFromHeader, value, action);
 				case "SMTP": return PhpIni.GSR(ref local.Mailer.SmtpServer, @default.Mailer.SmtpServer, value, action);
 				case "smtp_port": return PhpIni.GSR(ref local.Mailer.SmtpPort, @default.Mailer.SmtpPort, value, action);
-                case "mail.add_x_header": return PhpIni.GSR(ref local.Mailer.AddXHeader, @default.Mailer.AddXHeader, value, action);
 
 				case "highlight.bg": return PhpIni.GSR(ref local.Highlighting.Background, @default.Highlighting.Background, value, action);
 				case "highlight.comment": return PhpIni.GSR(ref local.Highlighting.Comment, @default.Highlighting.Comment, value, action);
@@ -549,7 +537,6 @@ namespace PHP.Library
 			IniOptions.Register("smtp_port", IniFlags.Supported | IniFlags.Local, d, s);
 			IniOptions.Register("sendmail_from", IniFlags.Supported | IniFlags.Local, d, s);
 			IniOptions.Register("sendmail_path", IniFlags.Unsupported | IniFlags.Global, d, s);
-            IniOptions.Register("mail.add_x_header", IniFlags.Supported | IniFlags.Local, d, s);
 
 			// session:
 			IniOptions.Register("session.cache_expire", IniFlags.Supported | IniFlags.Local | IniFlags.Http, d, s);

@@ -71,22 +71,6 @@ namespace PHP.Library
 			// get current configuration, we need some fields for mailing
 			LibraryConfiguration config = LibraryConfiguration.Local;
 
-			// set basic mail fields
-            string from = null;
-
-			if (!String.IsNullOrEmpty(config.Mailer.DefaultFromHeader))
-			{
-				try
-				{
-					from = config.Mailer.DefaultFromHeader;
-				}
-				catch (FormatException ex)
-				{
-                    PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", ex.Message));
-					return false;
-				}
-			}
-
 			// set SMTP server we are using
             RawSmtpClient client = new RawSmtpClient(config.Mailer.SmtpServer, config.Mailer.SmtpPort);
 
@@ -94,7 +78,7 @@ namespace PHP.Library
             {
                 client.Connect();
                 client.SendMessage(
-                    from, to,
+                    config.Mailer.DefaultFromHeader, to,
                     subject,
                     string.Format(
                         "X-PHP-Originating-Script: 1:{0}\n{1}", ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path,
@@ -687,8 +671,9 @@ namespace PHP.Library
             }
 
             /// <summary>
-            /// Prepares the data lines from supplied message properties. All data will be send as
-            /// ASCII if possible, otherwise 
+            /// Starts mail transaction and prepares the data lines from supplied message properties.
+            /// Processes provided headers to determine cc, bcc and from values.
+            /// All data will be send as ASCII if possible.
             /// </summary>
             /// <param name="from">Sender of the mail.</param>
             /// <param name="to">Recipients of the mail.</param>
@@ -696,10 +681,11 @@ namespace PHP.Library
             /// <param name="headers">Additional headers.</param>
             /// <param name="body">Message body.</param>
             /// <returns>List of message body lines.</returns>
-            private IEnumerable<string>/*!*/ProcessMessageData(string from, string to, string subject, string headers, string body)
+            private IEnumerable<string>/*!*/ProcessMessageHeaders(string from, string to, string subject, string headers, string body)
             {
                 Dictionary<string, int> headerHashtable = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 List<KeyValuePair<string, string>> headerList = new List<KeyValuePair<string, string>>();
+                List<string> recipients = new List<string>(1) { to };
 
                 //parse headers
                 if (headers != null)
@@ -720,12 +706,26 @@ namespace PHP.Library
                                 headerList.Add(new KeyValuePair<string, string>(name, value));
 
                                 // process known headers:
+                                if (from == null && name.EqualsOrdinalIgnoreCase("from"))
+                                    from = value;
                                 if (name.EqualsOrdinalIgnoreCase("cc") || name.EqualsOrdinalIgnoreCase("bcc"))
-                                    PostRcptTo(value);
+                                    recipients.Add(value); //PostRcptTo(value); // postponed until we are discovering from address
                             }
                         }
                     }
 
+                // check from address:
+                if (from == null)
+                    throw new SmtpException(LibResources.GetString("smtp_sendmail_from_not_set"));
+
+                // start mail transaction:
+                Post(FormatEmailAddress(from, "MAIL FROM:<{0}>"));
+                Ack("250");
+
+                for (int i = 0; i < recipients.Count; i++)
+                    PostRcptTo(recipients[i]);
+
+                // additional message lines:
                 List<string> ret = new List<string>();
 
                 // Date:
@@ -757,7 +757,7 @@ namespace PHP.Library
                 while (bodyReader.Peek() != -1)
                     ret.Add(bodyReader.ReadLine());
 
-                return ret.ToArray();
+                return ret;
             }
 
             /// <summary>
@@ -858,16 +858,11 @@ namespace PHP.Library
                 if (!_connected)
                     throw new SmtpException("NOT CONNECTED");
                 
-                // start mail transaction
-                Post(FormatEmailAddress(from, "MAIL FROM:<{0}>"));
-                Ack("250");
-
-                PostRcptTo(to);
-
-                // process headers (may contain additional recipients)
+                // start mail transaction and
+                // process headers (may contain additional recipients and from address)
                 // and prepare data that is broken up to form data lines.
                 // Note ProcessMessageData may add additional recipients, so it must be called before "DATA" section.
-                var dataLines = ProcessMessageData(from, to, subject, headers, body);
+                var dataLines = ProcessMessageHeaders(from, to, subject, headers, body);
 
                 // send DATA
                 Post("DATA");
