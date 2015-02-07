@@ -315,6 +315,12 @@ namespace PHP.Core.AST
 		public NamespaceDecl Namespace { get { return ns; } }
 		private readonly NamespaceDecl ns;
 
+        /// <summary>
+        /// Aliases copied from current scope (global or namespace) which were valid in place of this type declaration.
+        /// Used for deferred class declaration in run time, when creating transient compilation unit.
+        /// </summary>
+        private readonly Dictionary<string, QualifiedName> validAliases;
+
 		/// <summary>
 		/// Name of the base class.
 		/// </summary>
@@ -399,6 +405,11 @@ namespace PHP.Core.AST
             this.headingEndPosition = headingEndPosition;
 			this.declarationBodyPosition = declarationBodyPosition;
             this.partialKeyword = isPartial;
+
+            // remember current aliases:
+            var aliases = (ns != null) ? ns.Aliases : sourceUnit.Aliases;
+            if (aliases.Count > 0)
+                validAliases = new Dictionary<string, QualifiedName>(aliases);
 
 			// create stuff necessary for inclusion resolving process, other structures are created duirng analysis:
 			QualifiedName qn = (ns != null) ? new QualifiedName(name, ns.QualifiedName) : new QualifiedName(name);
@@ -710,7 +721,10 @@ namespace PHP.Core.AST
                 analyzer.ErrorSink.Add(Warnings.IncompleteClass, analyzer.SourceUnit, position, this.name);
 
 				// we return an eval
-				EvalEx evalEx = new EvalEx(entireDeclarationPosition, analyzer.SourceUnit.GetSourceCode(entireDeclarationPosition));
+                EvalEx evalEx = new EvalEx(
+                    entireDeclarationPosition, analyzer.SourceUnit.GetSourceCode(entireDeclarationPosition),
+                    (this.Namespace != null && this.Namespace.QualifiedName.Namespaces.Length > 0) ? this.Namespace.QualifiedName : (QualifiedName?)null,
+                    this.validAliases);
 				Statement stmt = new ExpressionStmt(entireDeclarationPosition, evalEx);
 
 				// this annotation is for the duck-type generation - we need to know the original typedecl

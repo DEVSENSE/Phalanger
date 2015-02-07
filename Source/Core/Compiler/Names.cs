@@ -694,6 +694,51 @@ namespace PHP.Core
 		}
 
         /// <summary>
+        /// Builds <see cref="QualifiedName"/> with first element aliased if posible.
+        /// </summary>
+        /// <param name="qname"></param>
+        /// <param name="aliases"></param>
+        /// <param name="currentNamespace">Current namespace to be prepended if no alias if found.</param>
+        /// <returns></returns>
+        internal static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName>/*!*/aliases, QualifiedName?currentNamespace)
+        {
+            if (qname.IsFullyQualifiedName)
+                return qname;
+
+            // get first part of the qualified name:
+            string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
+            
+            // return the alias if found:
+            QualifiedName alias;
+            if (aliases.TryGetValue(first, out alias))
+            {
+                if (qname.IsSimpleName)
+                    return alias;
+
+                // [ alias.namespaces, alias.name, qname.namespaces+1 ]
+                Name[] names = new Name[ qname.namespaces.Length + alias.namespaces.Length];
+                for (int i = 0; i < alias.namespaces.Length; ++i) names[i] = alias.namespaces[i];
+                names[alias.namespaces.Length] = alias.name;
+                for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.namespaces.Length + j] = qname.namespaces[j];
+
+                return new QualifiedName(qname.name, names) { IsFullyQualifiedName = true };
+            }
+            else
+            {
+                if (currentNamespace.HasValue)
+                {
+                    Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
+                    return new QualifiedName(qname, currentNamespace.Value);
+                }
+                else
+                {
+                    qname.IsFullyQualifiedName = true;
+                    return qname;
+                }
+            }   
+        }
+
+        /// <summary>
         /// Convert namespaces + name into list of strings.
         /// </summary>
         /// <returns>String List of namespaces (additionaly with <see cref="Name"/> component if it is not empty).</returns>
