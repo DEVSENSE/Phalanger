@@ -17,7 +17,6 @@ using System.Data.SqlTypes;
 using System.Collections;
 
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library.Data
 {
@@ -188,7 +187,7 @@ namespace PHP.Library.Data
 				else return new PhpBytes(((SqlGuid)dbValue).ToByteArray());
 			}
 
-			Debug.Fail(null);
+			Debug.Fail();
 			return dbValue.ToString();
 		}
 
