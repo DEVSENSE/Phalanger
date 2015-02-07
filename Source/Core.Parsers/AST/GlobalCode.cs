@@ -138,7 +138,7 @@ namespace PHP.Core.AST
         /// Finish parsing of namespace, complete its position.
         /// </summary>
         /// <param name="p"></param>
-        public void UpdatePosition(Text.Span p)
+        internal void UpdatePosition(Text.Span p)
         {
             this.Span = p;
         }

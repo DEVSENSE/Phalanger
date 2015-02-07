@@ -243,7 +243,7 @@ namespace PHP.Core.Reflection
 		}
 		protected DTypeDesc[] interfaces;
 
-		internal Dictionary<Name, DRoutineDesc> Methods
+		public Dictionary<Name, DRoutineDesc> Methods
 		{
 			get
 			{
@@ -263,7 +263,7 @@ namespace PHP.Core.Reflection
 		protected Dictionary<Name, DRoutineDesc> methods;
 
 		// TODO: OrderedHashtable
-		internal Dictionary<VariableName, DPropertyDesc> Properties
+		public Dictionary<VariableName, DPropertyDesc> Properties
 		{
 			get
 			{
@@ -282,7 +282,7 @@ namespace PHP.Core.Reflection
 		}
 		protected Dictionary<VariableName, DPropertyDesc> properties;
 
-		internal Dictionary<VariableName, DConstantDesc> Constants
+		public Dictionary<VariableName, DConstantDesc> Constants
 		{
 			get
 			{
