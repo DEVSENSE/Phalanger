@@ -1001,12 +1001,11 @@ namespace PHP.Core.Parsers
             if (qname.IsSimpleName)
             {
 
-                //if (qname.Name == Name.ParentClassName ||
-                //    qname.Name == Name.SelfClassName)
-                {
-                    if (reservedTypeNames.Contains(qname.Name.Value))
-                        return qname;
-                }
+                //if (qname.IsReservedClassName)
+                //    return qname;
+            
+                if (reservedTypeNames.Contains(qname.Name.Value))
+                    return qname;
 
                 //if ((features & LanguageFeatures.ClrSemantics) != 0)
                 //{

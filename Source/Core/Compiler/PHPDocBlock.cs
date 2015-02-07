@@ -765,7 +765,7 @@ namespace PHP.Core
                 for (int i = 1; i < str.Length; i++)
                 {
                     char c = str[i];
-                    if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != TypeNamesSeparator)
+                    if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != TypeNamesSeparator && c != QualifiedName.Separator)
                         return false;
                 }
 
