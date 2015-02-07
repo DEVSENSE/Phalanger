@@ -16,7 +16,6 @@ TODO:
 using System;
 using System.Text;
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -83,7 +82,7 @@ namespace PHP.Library
         public static PhpArray ParseString(string ini, bool processSections, int scanner_mode)
         {
             if (scanner_mode != (int)ScannerMode.Normal)  // TODO: handle value 1
-                PhpException.ArgumentValueNotSupported("scanner_mode", scanner_mode);
+                PhpException.ArgumentValueNotSupported("scanner_mode");
 
             if (string.IsNullOrEmpty(ini))
                 return null;
@@ -172,7 +171,7 @@ namespace PHP.Library
         public static PhpArray ParseFile(string fileName, bool processSections, int scanner_mode)
 		{
             if (scanner_mode != (int)ScannerMode.Normal)  // TODO: handle value 1
-                PhpException.ArgumentValueNotSupported("scanner_mode", scanner_mode);
+                PhpException.ArgumentValueNotSupported("scanner_mode");
 
 			// we're using binary mode because CR/LF stuff should be preserved for multiline values
 			using (PhpStream stream = PhpStream.Open(fileName, "rb", StreamOpenOptions.ReportErrors,
@@ -360,7 +359,7 @@ namespace PHP.Library
 			/// </summary>
 			public object GetConstantValue(string name)
 			{
-				return scriptContext.GetConstantValue(name, true, true);
+				return scriptContext.GetConstantValue(name, true, false);
 			}
 
 			#endregion
@@ -694,13 +693,8 @@ namespace PHP.Library
 
 			// check for decimal number
 			int pos = start;
-			long res = Core.Convert.SubstringToLongInteger(line, length, ref pos);
-            if (pos == start + length)
-            {
-                int ires = unchecked((int)res);
-                if (ires == res) return ires;   // is Int32 big enough?
-                return res;
-            }
+			int res = Core.Convert.SubstringToInteger(line, length, ref pos);
+			if (pos == start + length) return res;
 
 			string val = line.Substring(start, length);
 

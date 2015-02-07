@@ -27,7 +27,6 @@ using System.Text.RegularExpressions;
 using DirectoryEx = PHP.CoreCLR.DirectoryEx;
 #else
 using DirectoryEx = System.IO.Directory;
-using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -38,6 +37,64 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
 	public static class PhpPath
 	{
+		#region Enums: GlobOptions
+
+		/// <summary>
+		/// Flags used in call to <c>glob()</c>.
+		/// </summary>
+		[Flags]
+		public enum GlobOptions
+		{
+			/// <summary>
+			/// No flags.
+			/// </summary>
+			None = 0,
+
+			/// <summary>
+			/// Append / to matching directories.
+			/// </summary>
+			[ImplementsConstant("GLOB_MARK")]
+			Mark = 0x0008,
+
+			/// <summary>
+			/// Return pattern itself if nothing matches.
+			/// </summary>
+			[ImplementsConstant("GLOB_NOCHECK")]
+			NoCheck = 0x0010,
+
+			/// <summary>
+			/// Don't sort.
+			/// </summary>
+			[ImplementsConstant("GLOB_NOSORT")]
+			NoSort = 0x0020,
+
+			/// <summary>
+			/// Expand braces ala csh.
+			/// </summary>
+			[ImplementsConstant("GLOB_BRACE")]
+			Brace = 0x0080,
+
+			/// <summary>
+			/// Disable backslash escaping.
+			/// </summary>
+			[ImplementsConstant("GLOB_NOESCAPE")]
+			NoEscape = 0x1000,
+
+			/// <summary>
+			/// List directories only.
+			/// </summary>
+			[ImplementsConstant("GLOB_ONLYDIR")]
+			OnlyDir = 0x40000000,
+
+			/// <summary>
+			/// List directories only.
+			/// </summary>
+			[ImplementsConstant("GLOB_ERR")]
+			StopOnError = 0x4
+		}
+
+		#endregion
+
 		#region Scheme, Url, Absolute Path
 
 		/// <summary>
@@ -70,12 +127,7 @@ namespace PHP.Library
 		internal static string GetUrl(string/*!*/ absolutePath)
 		{
 			// Assert that the path is absolute
-            Debug.Assert(
-                !string.IsNullOrEmpty(absolutePath) &&
-                (absolutePath.IndexOf(':') > 0 ||   // there is a protocol (http://) or path is rooted (c:\)
-                    (Path.VolumeSeparatorChar != ':' && // or on linux, if there is no protocol, file path is rooted
-                        (absolutePath[0] == Path.DirectorySeparatorChar || absolutePath[0] == Path.AltDirectorySeparatorChar)))                      
-                );
+			Debug.Assert(absolutePath.IndexOf(':') > 0);
 
 			if (Path.IsPathRooted(absolutePath))
 				return String.Concat("file://", absolutePath);
@@ -168,7 +220,7 @@ namespace PHP.Library
 		[PureFunction]
         public static string GetBase(string path)
 		{
-			return GetBase(path, null);
+			return GetBase(path, "");
 		}
 
 		/// <summary>
@@ -183,29 +235,29 @@ namespace PHP.Library
 		/// <param name="path">A <see cref="string"/> containing a path to a file.</param>
 		/// <param name="suffix">A <see cref="string"/> containing suffix to be cut off the path if present.</param>
 		/// <returns>The path conponent of the given <paramref name="path"/>.</returns>
-        [ImplementsFunction("basename")]
+		[ImplementsFunction("basename")]
         [PureFunction]
         public static string GetBase(string path, string suffix)
-        {
-            if (String.IsNullOrEmpty(path)) return string.Empty;
+		{
+			if (String.IsNullOrEmpty(path)) return "";
+			if (suffix == null) suffix = "";
 
-            int end = path.Length - 1;
-            while (end >= 0 && IsDirectorySeparator(path[end])) end--;
+			int end = path.Length - 1;
+			while (end >= 0 && IsDirectorySeparator(path[end])) end--;
 
-            int start = end;
-            while (start >= 0 && !IsDirectorySeparator(path[start])) start--;
-            start++;
+			int start = end;
+			while (start >= 0 && !IsDirectorySeparator(path[start])) start--;
+			start++;
 
-            int name_length = end - start + 1;
-            if (!string.IsNullOrEmpty(suffix) &&
-                suffix.Length < name_length &&
-                String.Compare(path, end - suffix.Length + 1, suffix, 0, suffix.Length, StringComparison.CurrentCultureIgnoreCase) == 0)
-            {
-                name_length -= suffix.Length;
-            }
+			int name_length = end - start + 1;
+			if (suffix.Length < name_length &&
+			  String.Compare(path, end - suffix.Length + 1, suffix, 0, suffix.Length, StringComparison.CurrentCultureIgnoreCase) == 0)
+			{
+				name_length -= suffix.Length;
+			}
 
-            return path.Substring(start, name_length);
-        }
+			return path.Substring(start, name_length);
+		}
 
 		private static bool IsDirectorySeparator(char c)
 		{
@@ -429,6 +481,414 @@ namespace PHP.Library
 
 			return realpath;
 		}
+
+		#endregion
+
+		#region NS: fnmatch, glob
+
+		/// <summary>
+		/// Matches the given path against a pattern. Not supported.
+		/// </summary>
+		/// <param name="pattern">A <see cref="string"/> containing a wildcard.</param>
+		/// <param name="path">The <see cref="string"/> to be matched.</param>
+		/// <returns><c>true</c> if the <paramref name="path"/> matches with the given 
+		/// wildcard <paramref name="pattern"/>.</returns>
+		[ImplementsFunction("fnmatch")]
+		public static bool Match(string pattern, string path)
+		{
+			return Match(pattern, path, 0);
+		}
+
+		/// <summary>
+		/// Matches the given path against a pattern. Not supported.
+		/// </summary>
+		/// <param name="pattern">A <see cref="string"/> containing a wildcard.</param>
+		/// <param name="path">The <see cref="string"/> to be matched.</param>
+		/// <param name="flags">Additional flags (undocumented in PHP).</param>
+		/// <returns><c>true</c> if the <paramref name="path"/> matches with the given 
+		/// wildcard <paramref name="pattern"/>.</returns>
+        [ImplementsFunction("fnmatch", FunctionImplOptions.NotSupported)]
+		public static bool Match(string pattern, string path, int flags)
+		{
+			PhpException.FunctionNotSupported();
+			return false;
+		}
+
+		/// <summary>
+		/// Find pathnames matching a pattern.
+		/// </summary>
+		[ImplementsFunction("glob")]
+		public static PhpArray Glob(string pattern)
+		{
+			return Glob(pattern, GlobOptions.None);
+		}
+
+		/// <summary>
+		/// Find pathnames matching a pattern.
+		/// </summary>
+		[ImplementsFunction("glob")]
+		public static PhpArray Glob(string pattern, GlobOptions flags)
+		{
+			if (pattern == null)
+				return new PhpArray(0, 0);
+
+			PhpArray result = new PhpArray();
+
+			if (pattern == "")
+			{
+				if ((flags & GlobOptions.NoCheck) != 0) result.Add(pattern);
+				return result;
+			}
+
+			// drive specification is present:
+			string root;
+			int colon = pattern.IndexOf(':');
+			if (colon != -1)
+			{
+				root = pattern.Substring(0, colon + 1);
+				pattern = pattern.Substring(colon + 1);
+			}
+			else
+			{
+				root = null;
+			}
+
+			List<string> components = GlobSplit(pattern, flags);
+			components.Add(((flags & GlobOptions.Mark) != 0) ? Path.DirectorySeparatorChar.ToString() : "");
+
+			Debug.Assert(components.Count % 2 == 0);
+
+			try
+			{
+				if (components[0] == "")
+				{
+					if (root == null)
+					{
+						try { root = Path.GetPathRoot(ScriptContext.CurrentContext.WorkingDirectory); }
+						catch { }
+						if (String.IsNullOrEmpty(root))
+							root = Path.GetPathRoot(Environment.CurrentDirectory);
+
+						// remove ending slash:
+						root = root.Substring(0, root.Length - 1);
+					}
+
+					// start with root dir:
+					GlobRecursive(components, 2, root + "\\", root + components[1], flags, result);
+				}
+				else
+				{
+					GlobRecursive(components, 0, ScriptContext.CurrentContext.WorkingDirectory, "", flags, result);
+				}
+			}
+			catch (ArgumentNullException)
+			{
+				throw;
+			}
+			catch (Exception)
+			{
+			}
+
+			if (result.Count == 0 && (flags & GlobOptions.NoCheck) != 0) result.Add(pattern);
+			return result;
+		}
+
+		private static void GlobRecursive(List<string>/*!*/ components, int index, string/*!*/ currentDir, string/*!*/ prefix,
+		  GlobOptions flags, PhpArray/*!*/ result)
+		{
+			bool is_last_component = index == components.Count - 2;
+			string pattern = components[index];
+			string separator = components[index + 1];
+
+			Debug.Assert(!String.IsNullOrEmpty(pattern) && separator != null);
+
+            string[] items;
+			bool[] is_dir;
+
+			try
+			{
+				GlobReadDirectoryContent(currentDir, flags, out items, out is_dir);
+			}
+			catch (ArgumentNullException)
+			{
+				throw;
+			}
+			catch (Exception)
+			{
+				if ((flags & GlobOptions.StopOnError) != 0) throw;
+				return;
+			}
+
+			Regex regex = new Regex(pattern, RegexOptions.Singleline);
+			for (int i = 0; i < items.Length; i++)
+			{
+				Match match = regex.Match(items[i]);
+				if (match.Success && match.Index == 0 && match.Length == items[i].Length)
+				{
+					if (is_last_component || !is_dir[i])
+					{
+                        if (items[i] != "." && items[i] != "..")
+                        {
+                            if (is_dir[i])
+                                result.Add(String.Concat(prefix, items[i], separator));
+                            else
+                                result.Add(String.Concat(prefix, items[i]));
+                        }
+					}
+					else
+					{
+						GlobRecursive(components, index + 2, Path.Combine(currentDir, items[i]),
+						  String.Concat(prefix, items[i], separator), flags, result);
+					}
+				}
+			}
+		}
+
+		private static void GlobReadDirectoryContent(string/*!*/ currentDir, GlobOptions flags, out string[] items, out bool[] isDir)
+		{
+			string[] directories = DirectoryEx.GetDirectories(currentDir);
+			string[] files;
+			if ((flags & GlobOptions.OnlyDir) == 0)
+				files = DirectoryEx.GetFiles(currentDir);
+			else
+				files = ArrayUtils.EmptyStrings;
+
+			items = new string[directories.Length + files.Length + 2];
+			isDir = new bool[items.Length];
+
+            // directories
+            int index = 0;
+            items[index] = ".";
+            isDir[index ++] = true;
+            items[index] = "..";
+            isDir[index++] = true;
+            for (int i = 0; i < directories.Length; i++, index++)
+            {
+                isDir[index] = true;
+                items[index] = Path.GetFileName(directories[i]);     // Path.GetFileName should not be necessary in .NET 5 ... now, DirectoryEx.GetDirectories returns full paths if currentDir contains ".."
+            }
+
+            for (int i = 0; i < files.Length; i++, index++)
+            {
+                isDir[index] = false;
+                items[index] = Path.GetFileName(files[i]);      // as above
+            }
+
+            if ((flags & GlobOptions.NoSort) == 0)
+				Array.Sort<string, bool>(items, isDir);
+		}
+
+		private static List<string> GlobSplit(string/*!*/ pattern, GlobOptions flags)
+		{
+			List<string> result = new List<string>();
+
+			int component_start = 0;
+			int i = 0;
+			while (i < pattern.Length)
+			{
+				if (pattern[i] == '\\' || pattern[i] == '/')
+				{
+					result.Add(PatternToRegExPattern(pattern.Substring(component_start, i - component_start), flags));
+					component_start = i;
+
+					i++;
+					while (i < pattern.Length && (pattern[i] == '\\' || pattern[i] == '/')) i++;
+
+					result.Add(pattern.Substring(component_start, i - component_start));
+					component_start = i;
+				}
+				else
+				{
+					i++;
+				}
+			}
+
+			if (component_start < pattern.Length)
+				result.Add(PatternToRegExPattern(pattern.Substring(component_start, i - component_start), flags));
+
+			return result;
+		}
+
+		private static string/*!*/ PatternToRegExPattern(string/*!*/ pattern, GlobOptions flags)
+		{
+			StringBuilder result = new StringBuilder(pattern.Length);
+
+			int i = 0;
+			while (i < pattern.Length)
+			{
+				switch (pattern[i])
+				{
+					case '*':
+						result.Append(".*");
+						i++;
+						break;
+
+					case '?':
+						result.Append('.');
+						i++;
+						break;
+
+					case '{':
+						if ((flags & GlobOptions.Brace) != 0)
+						{
+							int closing = IndexOfClosingBrace(pattern, i, '{', '}');
+							if (closing > i)
+							{
+								while (i <= closing)
+								{
+									switch (pattern[i])
+									{
+										case '{': result.Append('('); break;
+										case '}': result.Append(')'); break;
+										case ',': result.Append('|'); break;
+
+										default:
+											result.Append('[');
+											result.Append(pattern[i]);
+											result.Append(']');
+											break;
+									}
+									i++;
+								}
+							}
+							else
+							{
+								result.Append("\\{");
+								i++;
+							}
+						}
+						else
+						{
+							result.Append("\\{");
+							i++;
+						}
+						break;
+
+					case '[':
+						{
+							int closing = pattern.IndexOf(']', i + 1);
+							if (closing > i + 1)
+							{
+								int result_length = result.Length;
+								result.Append(pattern, i, closing - i + 1);
+
+								if (result[result_length + 1] == '!')
+								{
+									if (result[result_length + 2] == ']')
+									{
+										result[result_length + 1] = '\\';
+										result[result_length + 2] = '^';
+										result.Append(']');
+									}
+									else
+										result[result_length + 1] = '^';
+								}
+
+								i = closing + 1;
+							}
+							else
+							{
+								result.Append("\\[");
+								i++;
+							}
+							break;
+						}
+
+					case ']':
+						result.Append("\\]");
+						i++;
+						break;
+
+					case '^':
+						result.Append("\\^");
+						i++;
+						break;
+
+					default:
+						result.Append('[');
+						result.Append(pattern[i]);
+						result.Append(']');
+						i++;
+						break;
+				}
+			}
+
+			return result.ToString();
+		}
+
+		private static int IndexOfClosingBrace(string/*!*/ str, int start, char left, char right)
+		{
+			int count = 0;
+			for (int i = start; i < str.Length; i++)
+			{
+				if (str[i] == left)
+				{
+					count++;
+				}
+				else if (str[i] == right)
+				{
+					if (count == 1)
+						return i;
+
+					if (count == 0)
+						return -1;
+
+					count--;
+				}
+			}
+			return -1;
+		}
+
+		#region Unit Tests
+#if DEBUG
+
+		[Test]
+		private static void TestPatternToRegExPattern()
+		{
+			string[] cases = new string[] { "*.*", "?", "{Ne,{Ss,Se},Pr}*", "[a-z][!A][!]", "{Ne,{Ss,Se,Pr}", "[", "[!", "[a", "[]", "[!]" };
+			string[] results = new string[] 
+				{ ".*[.].*", ".", "([N][e]|([S][s]|[S][e])|[P][r]).*", 
+				"[a-z][^A][\\^]", @"\{[N][e][,]([S][s]|[S][e]|[P][r])", @"\[", @"\[[!]", @"\[[a]", "\\[\\]", "[\\^]" };
+
+			for (int i = 0; i < cases.Length; i++)
+			{
+				string s = PatternToRegExPattern(cases[i], GlobOptions.Brace);
+				Debug.Assert(results[i] == s);
+				new Regex(results[i]);
+			}
+		}
+
+		[Test]
+		private static void TestGlobSplit()
+		{
+			string[] cases = new string[] { @"C:\D\", @"\x\y", @"\/\/\/\x\/\/xx\" };
+			string[] results = new string[] { @"[C][:];\;[D];\", @";\;[x];\;[y]", @";\/\/\/\;[x];\/\/;[x][x];\" };
+
+			for (int i = 0; i < cases.Length; i++)
+			{
+				List<string> al = GlobSplit(cases[i], GlobOptions.Brace);
+				string[] sal = new string[al.Count];
+				for (int j = 0; j < al.Count; j++)
+					sal[j] = al[j];
+
+				string s = String.Join(";", sal);
+				Debug.Assert(results[i] == s);
+			}
+		}
+
+		// [Test(true)]
+		private static void TestGlob()
+		{
+			PhpArray result;
+			PhpVariable.Dump(result = Glob(@"C:\*"));
+			PhpVariable.Dump(result = Glob(@"//\*"));
+			PhpVariable.Dump(result = Glob(@"/[xW]*/*"));
+			PhpVariable.Dump(result = Glob(@"C:\Web/{E,S}*/???", GlobOptions.Brace | GlobOptions.Mark));
+		}
+
+#endif
+		#endregion
+
 
 		#endregion
 	}

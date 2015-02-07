@@ -12,7 +12,6 @@
 
 using System;
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -50,96 +49,26 @@ namespace PHP.Library
 		/// <summary>
 		/// Determines whether a constant is defined.
 		/// </summary>
-        /// <param name="context">Current <see cref="ScriptContext"/>.</param>
 		/// <param name="name">The name of the constant.</param>
 		/// <returns>Whether the constant is defined.</returns>
 		[ImplementsFunction("defined")]
         [PureFunction(typeof(PhpConstants), "Defined_Analyze")]
-		public static bool Defined(ScriptContext context, string name)
+		public static bool Defined(string name)
 		{
-            return context.IsConstantDefined(name);
+			return ScriptContext.CurrentContext.IsConstantDefined(name);
         }
 
-        #region analyzer of: defined(), constant()
+        #region analyzer of defined
 
-        /// <summary>
-        /// Try to find constant by given <paramref name="name"/> in compile time.
-        /// </summary>
-        /// <param name="analyzer">Actual <see cref="Analyzer"/>.</param>
-        /// <param name="name">Constant name, including class constants.</param>
-        /// <param name="exists">Outputs <c>true</c> or <c>false</c> if the existance of the constant was determined.</param>
-        /// <returns>Constant descriptor.</returns>
-        private static PHP.Core.Reflection.DConstant EvaluateConstant(Analyzer analyzer, string name, out bool? exists)
+        public static bool Defined_Analyze(Analyzer analyzer, string name)
         {
-            if (name == null)
-                name = string.Empty;
-
-            // try global constant:
             QualifiedName? alias;
-            var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Text.Span.Invalid, false);
+            var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
 
-            if (constant != null)
-            {
-                exists = true;  // we surely know, the constant is defined.
-                return constant;
-            }
-            
-            // try class constant:
-            string typename, constname;
-            if (Name.IsClassMemberSyntax(name, out typename, out constname))
-            {
-                var type = analyzer.SourceUnit.ResolveTypeName(new QualifiedName(new Name(typename)), analyzer.CurrentScope, out alias, null, PHP.Core.Text.Span.Invalid, false);
+            if (constant == null || constant.IsUnknown)
+                throw new ArgumentException("name");
 
-                if (type != null && !type.IsUnknown)
-                {
-                    Core.Reflection.ClassConstant classconst;
-                    type.GetConstant(new VariableName(constname), null /* class constants are global only */, out classconst);
-                    Debug.Assert(classconst == null || classconst.IsPublic, "Class constant are expected to be public only.");
-                    exists = (classconst != null);  // we surely know, wheter the constant is or is not defined.
-                    return classconst;
-                }
-            }
-
-            // special constants defined in runtime, but definitely defined:
-            if (name == "PHALANGER")
-            {
-                exists = true;
-                return null;
-            }
-
-            // do not evaluate in compile time
-            exists = null;   // we are not sure about existance of this constant.
-            return null;
-        }
-
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
-        {
-            bool? exists;
-            var constant = EvaluateConstant(analyzer, name, out exists);
-
-            if (exists != null)
-                return new Core.Compiler.AST.FunctionCallEvaluateInfo()
-                {
-                    value = exists.Value    // constant existance is known in compile time
-                };
-
-            // check in run time:
-            return null;
-        }
-
-        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo Constant_Analyze(Analyzer analyzer, string name)
-        {
-            bool? exists;
-            var constant = EvaluateConstant(analyzer, name, out exists);
-
-            if (constant != null && constant.HasValue)
-                return new Core.Compiler.AST.FunctionCallEvaluateInfo()
-                {
-                    value = constant.Value  // evaluated value in compile time
-                };
-
-            // check in run time:
-            return null;
+            return true;    // constant exists in compile time
         }
 
         #endregion
@@ -150,13 +79,12 @@ namespace PHP.Library
 		/// <param name="name">The name of the constant.</param>
 		/// <returns>The value.</returns>
 		[ImplementsFunction("constant")]
-        [PureFunction(typeof(PhpConstants), "Constant_Analyze")]
-        public static object Constant(string name)
+		public static object Constant(string name)
 		{
 			return ScriptContext.CurrentContext.GetConstantValue(name, false, false);
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Retrieves defined constants.
 		/// </summary>
 		/// <returns>The array which contains pairs (constant name,constant value).</returns>
@@ -206,7 +134,7 @@ namespace PHP.Library
 			//User constants
 			internalArray = new PhpArray(0, context.GetDefinedUserConstantCount());
 			context.GetDefinedUserConstants(internalArray);
-			resultArray.Add("user", internalArray);
+			resultArray.Add("User", internalArray);
 
             return resultArray;
         }
