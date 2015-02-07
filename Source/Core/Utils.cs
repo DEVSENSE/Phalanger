@@ -1796,14 +1796,6 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Applies function <paramref name="f"/> to every element in <paramref name="en"/>
-        /// </summary>
-        public static IEnumerable<K> Map<T, K>(IEnumerable<T> en, Func<T, K> f)
-        {
-            foreach (T el in en) yield return f(el);
-        }
-
-        /// <summary>
         /// Filters a collection <paramref name="en"/> using a function <paramref name="f"/>
         /// </summary>
         public static IEnumerable<T> Filter<T>(IEnumerable<T> en, Func<T, bool> f)

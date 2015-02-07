@@ -16,6 +16,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -3204,8 +3205,8 @@ namespace PHP.Core.Reflection
 			IEnumerable<MethodInfo> tmf = tm;
 //#endif
 
-			IDictionary<string, IList<MethodInfo>> all_methods = CollectionUtils.BuildListDictionary<string, MethodInfo>
-				(CollectionUtils.Map<MethodInfo, string>(tmf, delegate(MethodInfo m) { return m.Name; }), tmf);
+            IDictionary<string, IList<MethodInfo>> all_methods = CollectionUtils.BuildListDictionary<string, MethodInfo>
+                (tmf.Select(_m => _m.Name), tmf);
 
 			// TODO: statistics: how many visible overloads in AVG?
 			Dictionary<Name, DRoutineDesc> methods = new Dictionary<Name, DRoutineDesc>(real_methods.Length / 2);
