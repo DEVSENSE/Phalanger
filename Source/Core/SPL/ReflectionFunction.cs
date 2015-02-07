@@ -490,7 +490,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object/*bool*/isDisabled(ScriptContext context)
         {
-            throw new NotImplementedException();
+            return false;   // not supported by Phalanger yet
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -726,15 +726,120 @@ namespace PHP.Library.SPL
             return ((ReflectionFunction)instance).invokeArgs(stack.Context, args);
         }
 
-        //public bool isAbstract ( void )
-        //public bool isConstructor ( void )
-        //public bool isDestructor ( void )
-        //public bool isFinal ( void )
-        //public bool isPrivate ( void )
-        //public bool isProtected ( void )
-        //public bool isPublic ( void )
-        //public bool isStatic ( void )
+        [ImplementsMethod]
+        public virtual object/*bool*/isAbstract(ScriptContext context)
+        {
+            return method != null && method.IsAbstract;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isAbstract(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isAbstract(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object/*bool*/isConstructor(ScriptContext context)
+        {
+            return method != null && method.IsConstructor;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isConstructor(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isConstructor(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object/*bool*/isDestructor(ScriptContext context)
+        {
+            return method != null && DObject.SpecialMethodNames.Destruct.Value.EqualsOrdinalIgnoreCase(method.MakeFullName());
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isDestructor(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isDestructor(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object/*bool*/isFinal(ScriptContext context)
+        {
+            return method != null && method.IsFinal;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isFinal(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isFinal(stack.Context);
+        }
+        
+        [ImplementsMethod]
+        public virtual object/*bool*/isPrivate(ScriptContext context)
+        {
+            return method != null && method.IsPrivate;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isPrivate(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isPrivate(stack.Context);
+        }
+        
+        [ImplementsMethod]
+        public virtual object/*bool*/isProtected(ScriptContext context)
+        {
+            return method != null && method.IsProtected;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isProtected(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isProtected(stack.Context);
+        }
+        
+        [ImplementsMethod]
+        public virtual object/*bool*/isPublic(ScriptContext context)
+        {
+            return method != null && method.IsPublic;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isPublic(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isPublic(stack.Context);
+        }
+        
+        [ImplementsMethod]
+        public virtual object/*bool*/isStatic(ScriptContext context)
+        {
+            return method != null && method.IsStatic;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isStatic(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).isStatic(stack.Context);
+        }
+
         //public void setAccessible ( bool $accessible )
+        [ImplementsMethod]
+        public virtual object/*bool*/setAccessible(ScriptContext context, object accessible)
+        {
+            if (this.method == null)
+                return false;
+
+            bool baccessible = Core.Convert.ObjectToBoolean(accessible);
+            // TODO: remember private method accessibility
+            return null;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setAccessible(object instance, PhpStack stack)
+        {
+            var accessible = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).setAccessible(stack.Context, accessible);
+        }
         
         public override object/*string*/__toString(ScriptContext context)
         {
