@@ -333,48 +333,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_3A5D3338561445548D0AECA91BAE3BA9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_CC4F262A5BD54A45ACEC21BF1A50A104"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_BAB63D43B36443A5A6EFFAC710FBA2C0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_F5E9BB74779448F30BF790F1FAD2D73A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_5EBCBF26166D4CDCAC45B752DAB89CC6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "OwnerKey" = "8:_4CBD162795834FE4ACCE8D5AA4BB9C2C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_2D2CA71EE072492CAC881FA0005F72E1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -747,716 +705,68 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5590A2C4E45640E69D08F7D605EBDE71"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
+        "OwnerKey" = "8:_1CC20FABAD884386A951A1AE76E8B081"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_03EE80F99B3149C68ED9106412D4B600"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
         "OwnerKey" = "8:_CC4F262A5BD54A45ACEC21BF1A50A104"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_FEE427F3BC7C4F71B34D8B7F5DA5CE6F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_FD85C243369B4EB6BDE45E89782F1B1C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_F7C2146B7B3044D1BE8B18CA6965A755"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_F76C18CC6FF648A2980285E41B6799E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_F358927D4B7840C69E4E57A642204644"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_E924A51544E74805B1E851F98FB32ABD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_E677E7B124534C658F6592D9DD315769"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_E5A9891C54334176B1C71CF985FBCA1D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_E58BB0AB97D546C6BED650C387334201"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_E387DFF9A71F4F3F980442A5375B6FB2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_DEA98E59E94947E7A44F8E1FEFB26C74"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_D6F8404F30654B8EA5E4B1C7BBDD3F65"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_D67347563E3741AFBBEF44CDD6C4060B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_D52883990AB3478FB103EAF91B2A4956"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_D348C83CE67E4FB4B6E4D4EEA26FBE3D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_CE84FDC26E5B436EB30E765B9038C735"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_CA104FA2F2804AE989AA84C46A0B592A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_C5A35DACAE8E46D2BD791ACBC009124B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_BCB114BBFD894706AA4DB290832AEEA3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
         "OwnerKey" = "8:_BAB63D43B36443A5A6EFFAC710FBA2C0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_B727F787F65340878237949644B294D6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_B61B7EB772184C3DB20C8883DB4084B6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_B5285BCFC32C470EBC98D09727784DD5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_AAA3EA7417254EE495B277DF500F1CF5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_A903B63106C8468FA0C97AC4349C4608"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_A613D0FFC4D646AA941848BA6F447911"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_A4B8EFA3AB0C45B98AEBE9774A7FC63D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_A3BA4878A9BE4A2F8781E97B38F233C7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_A2CD9BEE1DEC4FA18CD0C86228B35A58"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_9C8EE9F0B6294C8AB75E0B979F1EBF85"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_9C0A038EC7E945A1870900393EEF152D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_9777DE7302AC437E8BBFFE12371FA7E3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_9139AED16F9C4353A25FA1A2F247E378"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_8DED78A4047D4F0B8F9A4DD9520451DF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
         "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_F5E9BB74779448F30BF790F1FAD2D73A"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
+        "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_8ABAB2A779884D1EBC6E141795537EF0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_886B76C0EF2947F6B24BF53F210EA873"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_8863042D1BC74A2F8F54422A6941DD89"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_880F5A5646B840479A2379B70DBE8AB5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_87A15A1CE6DF4F6AB875987F66836503"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_869D35AC332B41B29D10CB4C3D3008D4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_84BAF3AD3FCF4A5BB76B908B78D791B1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_83B6C4038E774976B57638FBD0F7682D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_81F5CBC4155E46CFBF21D35B1BE217E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_809F4F712CCD45888DD5716043BCCB4B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_7E44CFD999784353B426702DA190D875"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_7BC44C9BD35C4FD69D101EC6A5D5CC5A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_7B230D5B77EB40A8890C5713279BD9B3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_770B6544C9054E2483479D879D3BA540"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_74D66605155541049E4E2C892F07EE74"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_746C615C8AAC454E99DCFBD115E7BBA0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_74536FC26826492AAAC0ACEEB063D302"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_73F9791F7E954914AA90C9D04BE3F5C1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_6F8A822CCEEA4E8988E7C8C6D6EB9FF6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_6D762BBB874C489698C473BA81E4D409"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_6BF746569C54423FB578EF0481828215"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_6AA8EAEFC15143B7AFAC75FCFE9EA869"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_66E3428932C941B9A2140ABD11FB0A35"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_5FFFDF8DF13F4A90BF93BA22019FA258"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_5F32629CCC444D2796D8B4D120166DBD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
         "OwnerKey" = "8:_5EBCBF26166D4CDCAC45B752DAB89CC6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_59CCB3190FE64A14B56F40C401BE4BA9"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
+        "OwnerKey" = "8:_35BCCCDBFA564F0886C4D1EDF0E700C1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_593E11F3119B42A4BCE5E99172A8DD58"
+        "MsmKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
+        "OwnerKey" = "8:_F803B17242209315D5ADFED9EE933E78"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_593171E376EE42E3BC0CCA04797EC2F2"
+        "MsmKey" = "8:_551A65B5F56920DAAAE27CA15D12D31B"
+        "OwnerKey" = "8:_690C90485FD6616366B64B4BA6C05434"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_58D7AF3CD04D479B88A58315D2A94450"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_5869114A6FDC47C1816F81FC5A26785C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_4CBD162795834FE4ACCE8D5AA4BB9C2C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_4B47B42D0ADA4C6984992DB6D646B839"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_4A0320E3767940C7AE692B66F94817BD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_497AB549E1DA4DD8B5D22083F9D6D908"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_48E3DB5F1BB4473EAC91990F53B7D6CC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_46FB03AD6A834B5094F7CA1E439C70EA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_4569D91011BB48A8A3E10C81AED476BA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_4457035993C24D8CB9ACF9230B87D4F0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_41FFB0D745C143F78104B125C17894B6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_4002F63460BA409CAAF0982D7E436A7A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_3DD815D342C54DFAAEBD0654411FFC96"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_3CB2535E821F44C4811D785B6AB32BDE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_3C97E5A1E9F8479AB701991244CA957C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_3A9B770849074A48B8158455053ECC51"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_3A5D3338561445548D0AECA91BAE3BA9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_394CF50BA8084C9D9212FA2DF05F0C4A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_3723BC5EF0B146E3905088FA6C0CDEE4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_36A4DEEC7E4F41D3BDBFD036B9D43D82"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_35F4EC15DF414A7FAAE9C8F2D46442D8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_33B793F59A8542FBA7B25E90730BD743"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_33A7F0273B314AAC88F211A57C4E529E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_339D9168B80D4C9E9770EC23267A722B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_2EB29A81AC7D4CB785E63DF107EE5089"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_2D2CA71EE072492CAC881FA0005F72E1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_2A7F061DC9674D248F1486C931CE323B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_2A5CA418790B42799FF05EFF425519BA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_2607216F77304C20A204EB64840F611F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_258C35B9E6E14677A380161038CB9B99"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_24DEBA3FB3B24607A5E8939CE6600974"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_249ABD1CB65D48E4BC7947E11E2C579A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_23BB502142E64E3CABF5827859944FF2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_21D4A5D635724F089B01E184FBB94965"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_21785AECE83D49ABAC0F77E15F4D34D6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_1F2EBF9DC24D42AD94BECCBC454022F1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_1CD612BDC0364D1CA4BAB6905072BADB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_1A97885D35C84DB0AE1FC9803316A241"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_1A429DE170D04E78AB341886BAF31E19"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_169B26CC7038405B8664B77864E54B09"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_1274E93E8FA8477FAD7FF26E0407AC05"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_1229F41DFF994C389633F1415C85E410"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_120219D86EEB4B32BA867BC6C84C6F25"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_0FC11C9E7B8548DD8E9F25C6B62E318E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_0E371A6A995C427693ACA4C696CFCECD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_0B99003264F248349B06956473016557"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_0A0D3AAF917C4B0396113ED7F0BFEE95"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "OwnerKey" = "8:_04574405143A4B68A5FE75292D71144B"
+        "MsmKey" = "8:_5590A2C4E45640E69D08F7D605EBDE71"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1631,6 +941,594 @@
         {
         "MsmKey" = "8:_685CCB0C46544FDEBA5B7C46C4FC1E96"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_03EE80F99B3149C68ED9106412D4B600"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_FEE427F3BC7C4F71B34D8B7F5DA5CE6F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_FD85C243369B4EB6BDE45E89782F1B1C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_F7C2146B7B3044D1BE8B18CA6965A755"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_F76C18CC6FF648A2980285E41B6799E6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_F358927D4B7840C69E4E57A642204644"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_E924A51544E74805B1E851F98FB32ABD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_E677E7B124534C658F6592D9DD315769"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_E5A9891C54334176B1C71CF985FBCA1D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_E58BB0AB97D546C6BED650C387334201"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_E387DFF9A71F4F3F980442A5375B6FB2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_DEA98E59E94947E7A44F8E1FEFB26C74"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_D6F8404F30654B8EA5E4B1C7BBDD3F65"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_D67347563E3741AFBBEF44CDD6C4060B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_D52883990AB3478FB103EAF91B2A4956"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_D348C83CE67E4FB4B6E4D4EEA26FBE3D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_CE84FDC26E5B436EB30E765B9038C735"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_CA104FA2F2804AE989AA84C46A0B592A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_C5A35DACAE8E46D2BD791ACBC009124B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_BCB114BBFD894706AA4DB290832AEEA3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_B727F787F65340878237949644B294D6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_B61B7EB772184C3DB20C8883DB4084B6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_B5285BCFC32C470EBC98D09727784DD5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_AAA3EA7417254EE495B277DF500F1CF5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_A903B63106C8468FA0C97AC4349C4608"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_A613D0FFC4D646AA941848BA6F447911"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_A3BA4878A9BE4A2F8781E97B38F233C7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_A2CD9BEE1DEC4FA18CD0C86228B35A58"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_9C8EE9F0B6294C8AB75E0B979F1EBF85"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_9C0A038EC7E945A1870900393EEF152D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_8DED78A4047D4F0B8F9A4DD9520451DF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_8ABAB2A779884D1EBC6E141795537EF0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_886B76C0EF2947F6B24BF53F210EA873"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_8863042D1BC74A2F8F54422A6941DD89"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_880F5A5646B840479A2379B70DBE8AB5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_87A15A1CE6DF4F6AB875987F66836503"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_869D35AC332B41B29D10CB4C3D3008D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_84BAF3AD3FCF4A5BB76B908B78D791B1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_81F5CBC4155E46CFBF21D35B1BE217E6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_809F4F712CCD45888DD5716043BCCB4B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_7E44CFD999784353B426702DA190D875"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_7BC44C9BD35C4FD69D101EC6A5D5CC5A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_7B230D5B77EB40A8890C5713279BD9B3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_770B6544C9054E2483479D879D3BA540"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_74D66605155541049E4E2C892F07EE74"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_746C615C8AAC454E99DCFBD115E7BBA0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_74536FC26826492AAAC0ACEEB063D302"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_73F9791F7E954914AA90C9D04BE3F5C1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_6F8A822CCEEA4E8988E7C8C6D6EB9FF6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_6D762BBB874C489698C473BA81E4D409"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_6AA8EAEFC15143B7AFAC75FCFE9EA869"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_66E3428932C941B9A2140ABD11FB0A35"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_5FFFDF8DF13F4A90BF93BA22019FA258"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_5F32629CCC444D2796D8B4D120166DBD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_59CCB3190FE64A14B56F40C401BE4BA9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_593E11F3119B42A4BCE5E99172A8DD58"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_593171E376EE42E3BC0CCA04797EC2F2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_58D7AF3CD04D479B88A58315D2A94450"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_5869114A6FDC47C1816F81FC5A26785C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_4B47B42D0ADA4C6984992DB6D646B839"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_497AB549E1DA4DD8B5D22083F9D6D908"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_48E3DB5F1BB4473EAC91990F53B7D6CC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_46FB03AD6A834B5094F7CA1E439C70EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_4569D91011BB48A8A3E10C81AED476BA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_4457035993C24D8CB9ACF9230B87D4F0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_41FFB0D745C143F78104B125C17894B6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_4002F63460BA409CAAF0982D7E436A7A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_3CB2535E821F44C4811D785B6AB32BDE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_3C97E5A1E9F8479AB701991244CA957C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_394CF50BA8084C9D9212FA2DF05F0C4A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_3723BC5EF0B146E3905088FA6C0CDEE4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_36A4DEEC7E4F41D3BDBFD036B9D43D82"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_35F4EC15DF414A7FAAE9C8F2D46442D8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_33B793F59A8542FBA7B25E90730BD743"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_33A7F0273B314AAC88F211A57C4E529E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_339D9168B80D4C9E9770EC23267A722B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_2EB29A81AC7D4CB785E63DF107EE5089"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_2D2CA71EE072492CAC881FA0005F72E1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_2A7F061DC9674D248F1486C931CE323B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_2A5CA418790B42799FF05EFF425519BA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_2607216F77304C20A204EB64840F611F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_24DEBA3FB3B24607A5E8939CE6600974"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_249ABD1CB65D48E4BC7947E11E2C579A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_23BB502142E64E3CABF5827859944FF2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_21D4A5D635724F089B01E184FBB94965"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_21785AECE83D49ABAC0F77E15F4D34D6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_1CD612BDC0364D1CA4BAB6905072BADB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_1A97885D35C84DB0AE1FC9803316A241"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_1A429DE170D04E78AB341886BAF31E19"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_169B26CC7038405B8664B77864E54B09"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_1274E93E8FA8477FAD7FF26E0407AC05"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_1229F41DFF994C389633F1415C85E410"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_120219D86EEB4B32BA867BC6C84C6F25"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_0FC11C9E7B8548DD8E9F25C6B62E318E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_0E371A6A995C427693ACA4C696CFCECD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_0B99003264F248349B06956473016557"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_0A0D3AAF917C4B0396113ED7F0BFEE95"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "OwnerKey" = "8:_04574405143A4B68A5FE75292D71144B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1965,24 +1863,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_85C8B4D569B4B7F4C7DD85363ABE5AB2"
-        "OwnerKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_85C8B4D569B4B7F4C7DD85363ABE5AB2"
-        "OwnerKey" = "8:_35BCCCDBFA564F0886C4D1EDF0E700C1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_85C8B4D569B4B7F4C7DD85363ABE5AB2"
-        "OwnerKey" = "8:_1CC20FABAD884386A951A1AE76E8B081"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_863B27B7DD6C46C09F45CF73522F2DF1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2141,6 +2021,12 @@
         {
         "MsmKey" = "8:_9777DE7302AC437E8BBFFE12371FA7E3"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2355,6 +2241,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B105C164F659103B7F185EBAA709F610"
+        "OwnerKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B14617C1D77C462BA92A481415183D87"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2465,6 +2357,18 @@
         {
         "MsmKey" = "8:_BB4A2E29D5A843F1B5BB08850DC26F47"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB8854AF45320D232BA02A9FC8F83B70"
+        "OwnerKey" = "8:_1CC20FABAD884386A951A1AE76E8B081"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB8854AF45320D232BA02A9FC8F83B70"
+        "OwnerKey" = "8:_35BCCCDBFA564F0886C4D1EDF0E700C1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2639,6 +2543,48 @@
         {
         "MsmKey" = "8:_D348C83CE67E4FB4B6E4D4EEA26FBE3D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_3A5D3338561445548D0AECA91BAE3BA9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_CC4F262A5BD54A45ACEC21BF1A50A104"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_BAB63D43B36443A5A6EFFAC710FBA2C0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_5EBCBF26166D4CDCAC45B752DAB89CC6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "OwnerKey" = "8:_4CBD162795834FE4ACCE8D5AA4BB9C2C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2889,66 +2835,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_CC4F262A5BD54A45ACEC21BF1A50A104"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_BAB63D43B36443A5A6EFFAC710FBA2C0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_F5E9BB74779448F30BF790F1FAD2D73A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_5EBCBF26166D4CDCAC45B752DAB89CC6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_35BCCCDBFA564F0886C4D1EDF0E700C1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
-        "OwnerKey" = "8:_1CC20FABAD884386A951A1AE76E8B081"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F5E9BB74779448F30BF790F1FAD2D73A"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_F69CC9E12D1B4514856FA82CF4D56B39"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2993,6 +2879,126 @@
         {
         "MsmKey" = "8:_F7C2146B7B3044D1BE8B18CA6965A755"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_1F2EBF9DC24D42AD94BECCBC454022F1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_CC4F262A5BD54A45ACEC21BF1A50A104"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_BAB63D43B36443A5A6EFFAC710FBA2C0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_A4B8EFA3AB0C45B98AEBE9774A7FC63D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_9777DE7302AC437E8BBFFE12371FA7E3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_9139AED16F9C4353A25FA1A2F247E378"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_83B6C4038E774976B57638FBD0F7682D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_6BF746569C54423FB578EF0481828215"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_5EBCBF26166D4CDCAC45B752DAB89CC6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_4CBD162795834FE4ACCE8D5AA4BB9C2C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_4A0320E3767940C7AE692B66F94817BD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_3DD815D342C54DFAAEBD0654411FFC96"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_3A9B770849074A48B8158455053ECC51"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_3A5D3338561445548D0AECA91BAE3BA9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "OwnerKey" = "8:_258C35B9E6E14677A380161038CB9B99"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3089,18 +3095,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F76C18CC6FF648A2980285E41B6799E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F5E9BB74779448F30BF790F1FAD2D73A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F35EB0F20EB9D428F32093EA10B44D03"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3316,6 +3310,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3359,12 +3359,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_869D35AC332B41B29D10CB4C3D3008D4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_85C8B4D569B4B7F4C7DD85363ABE5AB2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3532,12 +3526,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_563AF232937244DF3F9F4246ECDA19E3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_4CBD162795834FE4ACCE8D5AA4BB9C2C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3628,6 +3616,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D48F7958AE7BED2CE63681EE312998AA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_394CF50BA8084C9D9212FA2DF05F0C4A"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3683,12 +3677,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_2D2CA71EE072492CAC881FA0005F72E1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2BC386F56FF11C2007D681DB802D1656"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3754,6 +3742,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F803B17242209315D5ADFED9EE933E78"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1CD612BDC0364D1CA4BAB6905072BADB"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3761,6 +3755,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1CC20FABAD884386A951A1AE76E8B081"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_54E52BF9E17020A5DE3AFBD079BB2B68"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_BB8854AF45320D232BA02A9FC8F83B70"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3838,6 +3844,24 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_690C90485FD6616366B64B4BA6C05434"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_551A65B5F56920DAAAE27CA15D12D31B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_B105C164F659103B7F185EBAA709F610"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_518A5155C5324C62933D0FF95E2A2551"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3850,13 +3874,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -4069,7 +4093,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_03EE80F99B3149C68ED9106412D4B600"
@@ -4120,7 +4144,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_04574405143A4B68A5FE75292D71144B"
@@ -4291,7 +4315,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0A0D3AAF917C4B0396113ED7F0BFEE95"
@@ -4322,7 +4346,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0B99003264F248349B06956473016557"
@@ -4353,7 +4377,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0E371A6A995C427693ACA4C696CFCECD"
@@ -4404,7 +4428,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0FC11C9E7B8548DD8E9F25C6B62E318E"
@@ -4435,7 +4459,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_120219D86EEB4B32BA867BC6C84C6F25"
@@ -4466,7 +4490,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1229F41DFF994C389633F1415C85E410"
@@ -4517,7 +4541,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1274E93E8FA8477FAD7FF26E0407AC05"
@@ -4608,7 +4632,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_169B26CC7038405B8664B77864E54B09"
@@ -4739,7 +4763,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1A429DE170D04E78AB341886BAF31E19"
@@ -4770,7 +4794,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1A97885D35C84DB0AE1FC9803316A241"
@@ -4832,7 +4856,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1CD612BDC0364D1CA4BAB6905072BADB"
@@ -4974,7 +4998,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_21785AECE83D49ABAC0F77E15F4D34D6"
@@ -5025,7 +5049,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_21D4A5D635724F089B01E184FBB94965"
@@ -5056,7 +5080,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_23BB502142E64E3CABF5827859944FF2"
@@ -5087,7 +5111,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_249ABD1CB65D48E4BC7947E11E2C579A"
@@ -5118,7 +5142,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_24DEBA3FB3B24607A5E8939CE6600974"
@@ -5180,7 +5204,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2607216F77304C20A204EB64840F611F"
@@ -5271,7 +5295,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2A5CA418790B42799FF05EFF425519BA"
@@ -5302,7 +5326,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2A7F061DC9674D248F1486C931CE323B"
@@ -5329,42 +5353,11 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2BC386F56FF11C2007D681DB802D1656"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_2BC386F56FF11C2007D681DB802D1656"
-                    {
-                    "Name" = "8:PhpNetClassLibrary.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:PhpNetClassLibrary.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2D2CA71EE072492CAC881FA0005F72E1"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2D2CA71EE072492CAC881FA0005F72E1"
@@ -5435,7 +5428,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2EB29A81AC7D4CB785E63DF107EE5089"
@@ -5486,7 +5479,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_339D9168B80D4C9E9770EC23267A722B"
@@ -5517,7 +5510,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_33A7F0273B314AAC88F211A57C4E529E"
@@ -5548,7 +5541,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_33B793F59A8542FBA7B25E90730BD743"
@@ -5650,7 +5643,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_35F4EC15DF414A7FAAE9C8F2D46442D8"
@@ -5681,7 +5674,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_36A4DEEC7E4F41D3BDBFD036B9D43D82"
@@ -5712,7 +5705,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3723BC5EF0B146E3905088FA6C0CDEE4"
@@ -5763,7 +5756,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_394CF50BA8084C9D9212FA2DF05F0C4A"
@@ -5896,7 +5889,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3C97E5A1E9F8479AB701991244CA957C"
@@ -5927,7 +5920,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3CB2535E821F44C4811D785B6AB32BDE"
@@ -6049,7 +6042,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4002F63460BA409CAAF0982D7E436A7A"
@@ -6160,7 +6153,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_41FFB0D745C143F78104B125C17894B6"
@@ -6211,7 +6204,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4457035993C24D8CB9ACF9230B87D4F0"
@@ -6262,7 +6255,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4569D91011BB48A8A3E10C81AED476BA"
@@ -6313,7 +6306,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_46FB03AD6A834B5094F7CA1E439C70EA"
@@ -6344,7 +6337,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_48E3DB5F1BB4473EAC91990F53B7D6CC"
@@ -6415,7 +6408,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_497AB549E1DA4DD8B5D22083F9D6D908"
@@ -6497,7 +6490,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4B47B42D0ADA4C6984992DB6D646B839"
@@ -6795,6 +6788,68 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_54E52BF9E17020A5DE3AFBD079BB2B68"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.2.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_54E52BF9E17020A5DE3AFBD079BB2B68"
+                    {
+                    "Name" = "8:ShmChannel.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:ShmChannel.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_551A65B5F56920DAAAE27CA15D12D31B"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_551A65B5F56920DAAAE27CA15D12D31B"
+                    {
+                    "Name" = "8:ShmChannel.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:ShmChannel.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5590A2C4E45640E69D08F7D605EBDE71"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Samples\\LinqAndGenerics\\Linq.php"
@@ -6813,37 +6868,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_563AF232937244DF3F9F4246ECDA19E3"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_563AF232937244DF3F9F4246ECDA19E3"
-                    {
-                    "Name" = "8:PhpNetCore.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:PhpNetCore.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_567157A8FC9947798BC99E76109EE072"
@@ -6910,7 +6934,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5869114A6FDC47C1816F81FC5A26785C"
@@ -6961,7 +6985,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_58D7AF3CD04D479B88A58315D2A94450"
@@ -7012,7 +7036,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_593171E376EE42E3BC0CCA04797EC2F2"
@@ -7043,7 +7067,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_593E11F3119B42A4BCE5E99172A8DD58"
@@ -7074,7 +7098,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_59CCB3190FE64A14B56F40C401BE4BA9"
@@ -7216,7 +7240,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5F32629CCC444D2796D8B4D120166DBD"
@@ -7267,7 +7291,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5FFFDF8DF13F4A90BF93BA22019FA258"
@@ -7438,7 +7462,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_66E3428932C941B9A2140ABD11FB0A35"
@@ -7525,6 +7549,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_690C90485FD6616366B64B4BA6C05434"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_690C90485FD6616366B64B4BA6C05434"
+                    {
+                    "Name" = "8:PhpNetCore.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetCore.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6978B04DE0744FCB942E80553D9D7979"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_pdf.dll"
@@ -7549,7 +7604,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6AA8EAEFC15143B7AFAC75FCFE9EA869"
@@ -7651,7 +7706,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6D762BBB874C489698C473BA81E4D409"
@@ -7702,7 +7757,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6F8A822CCEEA4E8988E7C8C6D6EB9FF6"
@@ -7953,7 +8008,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_73F9791F7E954914AA90C9D04BE3F5C1"
@@ -8004,7 +8059,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_74536FC26826492AAAC0ACEEB063D302"
@@ -8035,7 +8090,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_746C615C8AAC454E99DCFBD115E7BBA0"
@@ -8066,7 +8121,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_74D66605155541049E4E2C892F07EE74"
@@ -8137,7 +8192,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_770B6544C9054E2483479D879D3BA540"
@@ -8299,7 +8354,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7B230D5B77EB40A8890C5713279BD9B3"
@@ -8350,7 +8405,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7BC44C9BD35C4FD69D101EC6A5D5CC5A"
@@ -8481,7 +8536,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7E44CFD999784353B426702DA190D875"
@@ -8563,7 +8618,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_809F4F712CCD45888DD5716043BCCB4B"
@@ -8614,7 +8669,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_81F5CBC4155E46CFBF21D35B1BE217E6"
@@ -8776,7 +8831,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_84BAF3AD3FCF4A5BB76B908B78D791B1"
@@ -8823,37 +8878,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_85C8B4D569B4B7F4C7DD85363ABE5AB2"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_85C8B4D569B4B7F4C7DD85363ABE5AB2"
-                    {
-                    "Name" = "8:PhpNetCore.IL.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:PhpNetCore.IL.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_863B27B7DD6C46C09F45CF73522F2DF1"
             {
             "SourcePath" = "8:..\\..\\Deployment\\TypeDefs\\php_mssql.xml"
@@ -8878,7 +8902,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_869D35AC332B41B29D10CB4C3D3008D4"
@@ -8929,7 +8953,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_87A15A1CE6DF4F6AB875987F66836503"
@@ -8960,7 +8984,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_880F5A5646B840479A2379B70DBE8AB5"
@@ -9031,7 +9055,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8863042D1BC74A2F8F54422A6941DD89"
@@ -9062,7 +9086,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_886B76C0EF2947F6B24BF53F210EA873"
@@ -9164,7 +9188,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8ABAB2A779884D1EBC6E141795537EF0"
@@ -9297,7 +9321,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8DED78A4047D4F0B8F9A4DD9520451DF"
@@ -9506,6 +9530,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9889BDB3C0925616DD997E6E396BFE08"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.2.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_9889BDB3C0925616DD997E6E396BFE08"
+                    {
+                    "Name" = "8:php4ts.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:php4ts.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_98A67CA9148C4E608AB25DC1C4B617F3"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\zlib1.dll"
@@ -9670,7 +9725,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9C0A038EC7E945A1870900393EEF152D"
@@ -9701,7 +9756,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9C8EE9F0B6294C8AB75E0B979F1EBF85"
@@ -9852,7 +9907,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A2CD9BEE1DEC4FA18CD0C86228B35A58"
@@ -9883,7 +9938,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A3BA4878A9BE4A2F8781E97B38F233C7"
@@ -9985,7 +10040,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A613D0FFC4D646AA941848BA6F447911"
@@ -10056,7 +10111,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A903B63106C8468FA0C97AC4349C4608"
@@ -10107,7 +10162,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_AAA3EA7417254EE495B277DF500F1CF5"
@@ -10294,6 +10349,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B105C164F659103B7F185EBAA709F610"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_B105C164F659103B7F185EBAA709F610"
+                    {
+                    "Name" = "8:PhpNetCore.IL.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetCore.IL.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B14617C1D77C462BA92A481415183D87"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\sablot.dll"
@@ -10438,7 +10524,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B5285BCFC32C470EBC98D09727784DD5"
@@ -10489,7 +10575,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B61B7EB772184C3DB20C8883DB4084B6"
@@ -10560,7 +10646,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B727F787F65340878237949644B294D6"
@@ -10718,6 +10804,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BB8854AF45320D232BA02A9FC8F83B70"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_BB8854AF45320D232BA02A9FC8F83B70"
+                    {
+                    "Name" = "8:PhpNetCore.IL.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetCore.IL.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BBE557562E9B4BBE9E6FC1B1C752484F"
             {
             "SourcePath" = "8:..\\..\\Deployment\\WebSamples\\ASP.NET\\FormsAuth\\Default.aspx.php"
@@ -10742,7 +10859,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_BCB114BBFD894706AA4DB290832AEEA3"
@@ -10944,7 +11061,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C5A35DACAE8E46D2BD791ACBC009124B"
@@ -11035,7 +11152,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_CA104FA2F2804AE989AA84C46A0B592A"
@@ -11217,7 +11334,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_CE84FDC26E5B436EB30E765B9038C735"
@@ -11348,7 +11465,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D348C83CE67E4FB4B6E4D4EEA26FBE3D"
@@ -11375,6 +11492,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D48F7958AE7BED2CE63681EE312998AA"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_D48F7958AE7BED2CE63681EE312998AA"
+                    {
+                    "Name" = "8:PhpNetClassLibrary.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetClassLibrary.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D4E96CF6A2C94F9FA1D5ED5045363BE7"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Samples\\ConsoleApplication\\quadratic\\build.cmd"
@@ -11399,7 +11547,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D52883990AB3478FB103EAF91B2A4956"
@@ -11450,7 +11598,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D67347563E3741AFBBEF44CDD6C4060B"
@@ -11501,7 +11649,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D6F8404F30654B8EA5E4B1C7BBDD3F65"
@@ -11632,7 +11780,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_DEA98E59E94947E7A44F8E1FEFB26C74"
@@ -11863,7 +12011,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E387DFF9A71F4F3F980442A5375B6FB2"
@@ -11914,7 +12062,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E58BB0AB97D546C6BED650C387334201"
@@ -11945,7 +12093,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E5A9891C54334176B1C71CF985FBCA1D"
@@ -11976,7 +12124,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E677E7B124534C658F6592D9DD315769"
@@ -12078,7 +12226,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E924A51544E74805B1E851F98FB32ABD"
@@ -12300,7 +12448,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F358927D4B7840C69E4E57A642204644"
@@ -12325,68 +12473,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F35EB0F20EB9D428F32093EA10B44D03"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.2.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F35EB0F20EB9D428F32093EA10B44D03"
-                    {
-                    "Name" = "8:ShmChannel.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:ShmChannel.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F5E9BB74779448F30BF790F1FAD2D73A"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.2.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_F5E9BB74779448F30BF790F1FAD2D73A"
-                    {
-                    "Name" = "8:php4ts.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:php4ts.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F69CC9E12D1B4514856FA82CF4D56B39"
@@ -12473,7 +12559,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F76C18CC6FF648A2980285E41B6799E6"
@@ -12544,7 +12630,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F7C2146B7B3044D1BE8B18CA6965A755"
@@ -12569,6 +12655,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F803B17242209315D5ADFED9EE933E78"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_F803B17242209315D5ADFED9EE933E78"
+                    {
+                    "Name" = "8:PhpNetCore.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetCore.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F8D663FD1393410D9E788949DC6C63C0"
@@ -12695,7 +12812,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_FD85C243369B4EB6BDE45E89782F1B1C"
@@ -12746,7 +12863,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_FEE427F3BC7C4F71B34D8B7F5DA5CE6F"
@@ -13334,20 +13451,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Phalanger 2.2"
-        "ProductCode" = "8:{8A720914-2FF4-45F1-9BB2-DAD4FBF4066C}"
-        "PackageCode" = "8:{E952F83F-CB61-41B6-B341-8300BE8983A8}"
+        "ProductName" = "8:Phalanger 3.0"
+        "ProductCode" = "8:{43F0DA3F-15C1-491D-B58F-02C2001A9958}"
+        "PackageCode" = "8:{2AA43733-9658-4796-94F8-541E283A42B0}"
         "UpgradeCode" = "8:{95478229-8324-40E1-8D9D-D3253CC726BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.1"
+        "ProductVersion" = "8:3.0"
         "Manufacturer" = "8:The Phalanger Team"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://phalanger.codeplex.com/discussions"
-        "Title" = "8:Phalanger 2.2 for .NET 4.0"
+        "Title" = "8:Phalanger 3.0 for .NET 4.0"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Miloslav Beno, Daniel Balas, Jakub Misek"
         "Keywords" = "8:Phalanger, PHP, .NET, compiler"
