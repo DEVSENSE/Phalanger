@@ -448,9 +448,10 @@ namespace PHP.Core
 			Debug.Assert(comparer != null);
 
             // try to compare two PhpBytes instances
-            PhpBytes other;
-            if ((other = obj as PhpBytes) != null)
+            if (obj != null && obj.GetType() == typeof(PhpBytes))
             {
+                var other = (PhpBytes)obj;
+
                 // if both PhpByte instances share the same internal byte array:
                 if (this._data == other._data) return 0;
 
