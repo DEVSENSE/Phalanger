@@ -197,7 +197,7 @@ namespace PHP.Library
 			//User constants
 			internalArray = new PhpArray(0, context.GetDefinedUserConstantCount());
 			context.GetDefinedUserConstants(internalArray);
-			resultArray.Add("User", internalArray);
+			resultArray.Add("user", internalArray);
 
             return resultArray;
         }
