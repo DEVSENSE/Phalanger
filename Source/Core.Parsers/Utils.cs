@@ -1205,6 +1205,17 @@ namespace PHP.Core
         {
             list.RemoveAt(list.Count - 1);
         }
+
+        /// <summary>
+        /// Gets the last element of given list.
+        /// </summary>
+        /// <typeparam name="T">Type of the list elements.</typeparam>
+        /// <param name="list">List.</param>
+        /// <returns>Last element of given list.</returns>
+        public static T Last<T>(this IList<T>/*!*/list)
+        {
+            return list[list.Count];
+        }
     }
 
     #endregion
@@ -1221,6 +1232,11 @@ namespace PHP.Core
         /// Empty int array.
         /// </summary>
         public static readonly int[] EmptyIntegers = new int[0];
+
+        /// <summary>
+        /// Empty ushort array.
+        /// </summary>
+        public static readonly ushort[] EmptyUShorts = new ushort[0];
 
         /// <summary>
         /// Empty object array.
