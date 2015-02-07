@@ -13,18 +13,8 @@
 using System;
 using System.Globalization;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Win32;
-using System.Xml;
-
-using System.ComponentModel;
-using System.Runtime.Serialization;
-using System.Runtime.InteropServices;
-
 using PHP.Core;
-using PHP.Core.Reflection;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -32,437 +22,62 @@ using PHP.CoreCLR;
 
 namespace PHP.Library
 {
-    #region DateTimeZone
-
-    /// <summary>
-    /// Representation of time zone.
-    /// </summary>
-#if !SILVERLIGHT
-    [Serializable]
-#endif
-    [ImplementsType]
-    public class DateTimeZone : PhpObject
-    {
-        internal TimeZoneInfo timezone;
-
-        #region Construction
-
-        public DateTimeZone(ScriptContext/*!*/context, TimeZoneInfo/*!*/resolvedTimeZone)
-            : this(context, true)
-        {
-            Debug.Assert(context != null);
-            Debug.Assert(resolvedTimeZone != null);
-
-            this.timezone = resolvedTimeZone;
-        }
-
-        /// <summary>
-        /// For internal purposes only.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public DateTimeZone(ScriptContext context, bool newInstance)
-            : base(context, newInstance)
-        { }
-
-        /// <summary>
-        /// For internal purposes only.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public DateTimeZone(ScriptContext context, DTypeDesc caller)
-            : base(context, caller)
-        { }
-
-#if !SILVERLIGHT
-        /// <summary>Deserializing constructor.</summary>
-        protected DateTimeZone(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
-#endif
-
-        #endregion
-
-        #region Methods
-
-        // public __construct ( string $timezone )
-        [ImplementsMethod]
-        public object __construct(ScriptContext/*!*/context, object timezone_name)
-        {
-            if (timezone_name != null)
-            {
-                var zoneName = PHP.Core.Convert.ObjectToString(timezone_name);
-                this.timezone = PhpTimeZone.GetTimeZone(zoneName);
-
-                if (this.timezone == null)
-                    PhpException.Throw(PhpError.Notice, LibResources.GetString("unknown_timezone", zoneName));
-            }
-            else
-            {
-                this.timezone = PhpTimeZone.CurrentTimeZone;
-            }
-
-            return null;
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object __construct(object instance, PhpStack stack)
-        {
-            var arg1 = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((DateTimeZone)instance).__construct(stack.Context, arg1);
-        }
-
-        //public array getLocation ( void )
-        [ImplementsMethod]
-        public object getLocation(ScriptContext/*!*/context)
-        {
-            throw new NotImplementedException();
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getLocation(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((DateTimeZone)instance).getLocation(stack.Context);
-        }
-
-        //public string getName ( void )
-        [ImplementsMethod]
-        public object getName(ScriptContext/*!*/context)
-        {
-            return (timezone != null) ? timezone.Id : null;
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getName(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((DateTimeZone)instance).getName(stack.Context);
-        }
-
-        //public int getOffset ( DateTime $datetime )
-        [ImplementsMethod]
-        public object getOffset(ScriptContext/*!*/context, object datetime)
-        {
-            if (this.timezone == null)
-                return false;
-
-            if (datetime == null)
-            {
-                PhpException.ArgumentNull("datetime");
-                return false;
-            }
-
-            var dt = datetime as __PHP__DateTime;
-            if (dt == null)
-            {
-                PhpException.InvalidArgumentType("datetime", "DateTime");
-                return false;
-            }
-
-            return (int)this.timezone.BaseUtcOffset.TotalSeconds + (this.timezone.IsDaylightSavingTime(dt.Time) ? 3600 : 0);
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getOffset(object instance, PhpStack stack)
-        {
-            var arg1 = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((DateTimeZone)instance).getOffset(stack.Context, arg1);
-        }
-
-        //public array getTransitions ([ int $timestamp_begin [, int $timestamp_end ]] )
-        [ImplementsMethod]
-        public object getTransitions(ScriptContext/*!*/context, [Optional]object timestamp_begin, [Optional]object timestamp_end)
-        {
-            // TODO: timestamp_begin, timestamp_end
-
-            var rules = this.timezone.GetAdjustmentRules();
-            var array = new PhpArray(rules.Length);
-
-            //var now = DateTime.UtcNow;
-            for (int i = 0; i < rules.Length; i++)
-            {
-                var rule = rules[i];
-
-                // TODO: timezone transitions
-                //if (rule.DateStart > now || rule.DateEnd < now) continue;
-                //var transition = new PhpArray(5);
-                //transition["ts"] = (int)(new DateTime(now.Year, rule.DaylightTransitionStart.Month, rule.DaylightTransitionStart.Day) - DateTimeUtils.UtcStartOfUnixEpoch).TotalSeconds;
-                ////transition["time"] = ;
-                ////transition["offset"] = ;
-                //transition["isdst"] = 1;
-                ////transition["abbr"] = ;
-
-                //array.Add(transition);
-            }
-
-            return array;
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getTransitions(object instance, PhpStack stack)
-        {
-            var arg1 = stack.PeekValueOptional(1);
-            var arg2 = stack.PeekValueOptional(2);
-            stack.RemoveFrame();
-            return ((DateTimeZone)instance).getTransitions(stack.Context, arg1, arg2);
-        }
-
-        //public static array listAbbreviations ( void )
-        [ImplementsMethod]
-        public object listAbbreviations(ScriptContext/*!*/context)
-        {
-            throw new NotImplementedException();
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object listAbbreviations(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((DateTimeZone)instance).listAbbreviations(stack.Context);
-        }
-
-        //public static array listIdentifiers ([ int $what = DateTimeZone::ALL [, string $country = NULL ]] )
-        [ImplementsMethod]
-        public static object listIdentifiers(ScriptContext/*!*/context, [Optional]object what, [Optional]object country)
-        {
-            throw new NotImplementedException();
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object listIdentifiers(object instance, PhpStack stack)
-        {
-            var arg1 = stack.PeekValueOptional(1);
-            var arg2 = stack.PeekValueOptional(2);
-            stack.RemoveFrame();
-            return listIdentifiers(stack.Context, arg1, arg2);
-        }
-
-        #endregion
-    }
-
-    #endregion
-
 	/// <summary>
 	/// Provides timezone information for PHP functions.
 	/// </summary>
-    [ImplementsExtension(LibraryDescriptor.ExtDate)]
-    public static class PhpTimeZone
-    {
-        private const string EnvVariableName = "TZ";
+	[ImplementsExtension(LibraryDescriptor.ExtDate)]
+	public static class PhpTimeZone
+	{
+		private const string EnvVariableName = "TZ";
 
-        private struct TimeZoneInfoItem
-        {
-            /// <summary>
-            /// Comparer of <see cref="TimeZoneInfoItem"/>, comparing its <see cref="TimeZoneInfoItem.PhpName"/>.
-            /// </summary>
-            public class Comparer : IComparer<TimeZoneInfoItem>
-            {
-                public int Compare(TimeZoneInfoItem x, TimeZoneInfoItem y)
-                {
-                    return StringComparer.OrdinalIgnoreCase.Compare(x.PhpName, y.PhpName);
-                }
-            }
+		/// <summary>
+		/// Registers <see cref="Clear"/> called on request end.
+		/// </summary>
+		static PhpTimeZone()
+		{
+			RequestContext.RequestEnd += new Action(Clear);
+		}
 
-            /// <summary>
-            /// PHP time zone name.
-            /// </summary>
-            public readonly string PhpName;
-
-            /// <summary>
-            /// Actual <see cref="TimeZoneInfo"/> from .NET.
-            /// </summary>
-            public readonly TimeZoneInfo Info;
-
-            /// <summary>
-            /// An abbrevation, not supported.
-            /// </summary>
-            public readonly string Abbrevation;
-
-            /// <summary>
-            /// Not listed item used only as an alias for another time zone.
-            /// </summary>
-            public readonly bool IsAlias;
-
-            internal TimeZoneInfoItem(string/*!*/phpName, TimeZoneInfo/*!*/info, string abbrevation, bool isAlias)
-            {
-                // alter the ID with php-like name
-                if (!phpName.EqualsOrdinalIgnoreCase(info.Id))
-                    info = TimeZoneInfo.CreateCustomTimeZone(phpName, info.BaseUtcOffset, info.DisplayName, info.StandardName, info.DaylightName, info.GetAdjustmentRules());
-
-                //
-                this.PhpName = phpName;
-                this.Info = info;
-                this.Abbrevation = abbrevation;
-                this.IsAlias = isAlias;
-            }
-        }
-
-        /// <summary>
-        /// Registers <see cref="Clear"/> called on request end.
-        /// </summary>
-        static PhpTimeZone()
-        {
-            RequestContext.RequestEnd += new Action(Clear);
-
-            // initialize tz database (from system time zone database)
-            timezones = InitializeTimeZones();
-        }
-
-        #region timezones
-
-        /// <summary>
-        /// PHP time zone database.
-        /// </summary>
-        private readonly static TimeZoneInfoItem[]/*!!*/timezones;
-
-        private static TimeZoneInfoItem[]/*!!*/InitializeTimeZones()
-        {
-            // read list of initial timezones
-            var sortedTZ = new SortedSet<TimeZoneInfoItem>(
-                EnvironmentUtils.IsWindows ? InitialTimeZones_Windows() : InitialTimeZones_Mono(),
-                new TimeZoneInfoItem.Comparer());
-
-            // add additional time zones:
-            sortedTZ.Add(new TimeZoneInfoItem("UTC", TimeZoneInfo.Utc, null, false));
-            sortedTZ.Add(new TimeZoneInfoItem("Etc/UTC", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("Etc/GMT-0", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("GMT", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("GMT0", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("UCT", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("Universal", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("Zulu", TimeZoneInfo.Utc, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("MET", sortedTZ.First(t => t.PhpName == "Europe/Rome").Info, null, true));
-            sortedTZ.Add(new TimeZoneInfoItem("WET", sortedTZ.First(t => t.PhpName == "Europe/Berlin").Info, null, true));     
-            //{ "PRC"              
-            //{ "ROC"              
-            //{ "ROK"   
-            // W-SU = 
-            //{ "Poland"           
-            //{ "Portugal"         
-            //{ "PRC"              
-            //{ "ROC"              
-            //{ "ROK"              
-            //{ "Singapore"      = Asia/Singapore  
-            //{ "Turkey"  
-
-            //
-            return sortedTZ.ToArray();
-        }
-
-        private static IEnumerable<TimeZoneInfoItem>/*!!*/InitialTimeZones_Windows()
-        {
-            Debug.Assert(EnvironmentUtils.IsWindows);
-
-            // time zone cache:
-            var tzcache = new Dictionary<string, TimeZoneInfo>(128, StringComparer.OrdinalIgnoreCase);
-            Func<string, TimeZoneInfo> cachelookup = (id) =>
-            {
-                TimeZoneInfo tz;
-                if (!tzcache.TryGetValue(id, out tz))
-                {
-                    TimeZoneInfo winTZ = null;
-                    try
-                    {
-                        winTZ = TimeZoneInfo.FindSystemTimeZoneById(id);
-                    }
-                    catch { }
-
-                    tzcache[id] = tz = winTZ;   // null in case "id" is not defined in Windows registry (probably missing Windows Update)
-                }
-
-                return tz;
-            };
-
-            // collect php time zone names and match them with Windows TZ IDs:
-            var tzdoc = new XmlDocument();
-            tzdoc.LoadXml(Strings.WindowsTZ);
-            foreach (XmlNode tz in tzdoc.DocumentElement.SelectNodes(@"//windowsZones/mapTimezones/mapZone"))
-            {
-                // <mapZone other="Dateline Standard Time" type="Etc/GMT+12"/>
-                // @other = Windows TZ ID
-                // @type = PHP TZ names, separated by space
-
-                var windowsId = tz.Attributes["other"].Value;
-                var phpIds = tz.Attributes["type"].Value;
-
-                var windowsTZ = cachelookup(windowsId);
-                if (windowsTZ != null)  // TZ not defined in Windows registry, ignore such time zone // TODO: show a warning
-                    foreach (var phpTzName in phpIds.Split(' '))
-                    {
-                        Debug.Assert(!string.IsNullOrWhiteSpace(phpTzName));
-
-                        bool isAlias = !phpTzName.Contains('/') || phpTzName.Contains("GMT");   // whether to display such tz within timezone_identifiers_list()
-                        yield return new TimeZoneInfoItem(phpTzName, windowsTZ, null, isAlias);
-                    }
-            }
-
-            //
-            //{ "US/Alaska"        
-            //{ "US/Aleutian"      
-            //{ "US/Arizona"       
-            yield return new TimeZoneInfoItem("US/Central", cachelookup("Central Standard Time"), null, true);
-            //{ "US/East-Indiana"  
-            //{ "US/Eastern"       
-            yield return new TimeZoneInfoItem("US/Hawaii", cachelookup("Hawaiian Standard Time"), null, true);
-            //{ "US/Indiana-Starke"
-            //{ "US/Michigan"      
-            //{ "US/Mountain"      
-            //{ "US/Pacific"       
-            //{ "US/Pacific-New"   
-            //{ "US/Samoa"   
-        }
-
-        private static IEnumerable<TimeZoneInfoItem>/*!!*/InitialTimeZones_Mono()
-        {
-            Debug.Assert(!EnvironmentUtils.IsDotNetFramework);
-
-            var tzns = TimeZoneInfo.GetSystemTimeZones();
-            if (tzns == null)
-                yield break;
-
-            foreach (var x in tzns)
-            {
-                bool isAlias = !x.Id.Contains('/') || x.Id.Contains("GMT");   // whether to display such tz within timezone_identifiers_list()                    
-                yield return new TimeZoneInfoItem(x.Id, x, null, isAlias);
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Gets the current time zone for PHP date-time library functions. Associated with the current thread.
-        /// </summary>
+		/// <summary>
+		/// Gets the current time zone for PHP date-time library functions. Associated with the current thread.
+		/// </summary>
         /// <remarks>It returns the time zone set by date_default_timezone_set PHP function.
         /// If no time zone was set, the time zone is determined in following order:
         /// 1. the time zone set in configuration
         /// 2. the time zone of the current system
         /// 3. default UTC time zone</remarks>
-        public static TimeZoneInfo CurrentTimeZone
-        {
-            get
-            {
+		public static TimeZone CurrentTimeZone
+		{
+			get
+			{
                 // timezone is set by date_default_timezone_set(), return this one
-                if (_default != null)
-                    return _default;
+				if (_default != null)
+					return _default;
 
                 // default timezone was not set, use & cache the current timezone
                 return (_current ?? (_current = new CurrentTimeZoneCache())).TimeZone;
-            }
+			}
 #if DEBUG   // for unit tests only
             internal set
             {
                 _current = new CurrentTimeZoneCache(value);
             }
 #endif
-        }
+		}
 
-        /// <summary>
-        /// Time zone set as current. <B>null</B> initially.
-        /// </summary>
+		/// <summary>
+		/// Time zone set as current. <B>null</B> initially.
+		/// </summary>
 #if !SILVERLIGHT
-        [ThreadStatic]
+		[ThreadStatic]
 #endif
-        private static TimeZoneInfo _default;
+		private static TimeZone _default;
 
-        /// <summary>
-        /// Time zone set as current. <B>null</B> initially.
-        /// </summary>
+		/// <summary>
+		/// Time zone set as current. <B>null</B> initially.
+		/// </summary>
 #if !SILVERLIGHT
-        [ThreadStatic]
+		[ThreadStatic]
 #endif
         private static CurrentTimeZoneCache _current;
 
@@ -477,7 +92,7 @@ namespace PHP.Library
             {
             }
 #if DEBUG
-            internal CurrentTimeZoneCache(TimeZoneInfo timezone)
+            internal CurrentTimeZoneCache(TimeZone timezone)
             {
                 this._timeZone = timezone;
                 this._changedFunc = (_) => false;
@@ -487,7 +102,7 @@ namespace PHP.Library
             /// <summary>
             /// Get the TimeZone set by the current process. Depends on environment variable, or local configuration, or system time zone.
             /// </summary>
-            public TimeZoneInfo TimeZone
+            public TimeZone TimeZone
             {
                 get
                 {
@@ -498,19 +113,19 @@ namespace PHP.Library
                 }
             }
 
-            private TimeZoneInfo _timeZone;
+            private TimeZone _timeZone;
 
             /// <summary>
             /// Function that determines if the current timezone should be rechecked.
             /// </summary>
-            private Func<TimeZoneInfo/*!*/, bool> _changedFunc;
+            private Func<TimeZone/*!*/, bool> _changedFunc;
 
             /// <summary>
             /// Finds out the time zone in the way how PHP does.
             /// </summary>
-            private static TimeZoneInfo DetermineTimeZone(out Func<TimeZoneInfo, bool> changedFunc)
+            private static TimeZone DetermineTimeZone(out Func<TimeZone, bool> changedFunc)
             {
-                TimeZoneInfo result;
+                TimeZone result;
 
                 // check environment variable:
 #if !SILVERLIGHT
@@ -521,7 +136,7 @@ namespace PHP.Library
                     if (result != null)
                     {
                         // recheck the timezone only if the environment variable changes
-                        changedFunc = (timezone) => !String.Equals(timezone.StandardName, Environment.GetEnvironmentVariable(EnvVariableName), StringComparison.OrdinalIgnoreCase);
+                        changedFunc = (timezone) => String.Compare(timezone.StandardName, Environment.GetEnvironmentVariable(EnvVariableName), true) != 0;
                         // return the timezone set in environment
                         return result;
                     }
@@ -535,223 +150,1464 @@ namespace PHP.Library
                 if (config.Date.TimeZone != null)
                 {
                     // recheck the timezone only if the local configuration changes, ignore the environment variable from this point at all
-                    changedFunc = (timezone) => LibraryConfiguration.Local.Date.TimeZone != timezone;
+                    changedFunc = (timezone) => config.Date.TimeZone != timezone;
                     return config.Date.TimeZone;
                 }
 
                 // convert current system time zone to PHP zone:
-                result = SystemToPhpTimeZone(TimeZoneInfo.Local);
-                
+                result = SystemToPhpTimeZone(TimeZone.CurrentTimeZone);
+
                 // UTC:
                 if (result == null)
-                    result = DateTimeUtils.UtcTimeZone;// GetTimeZone("UTC");
+                    result = GetTimeZone("UTC");
 
-                PhpException.Throw(PhpError.Strict, LibResources.GetString("using_implicit_timezone", result.Id));
+                PhpException.Throw(PhpError.Strict, LibResources.GetString("using_implicit_timezone", result.StandardName));
 
                 // recheck the timezone when the TimeZone in local configuration is set
-                changedFunc = (timezone) => LibraryConfiguration.Local.Date.TimeZone != null;
+                changedFunc = (timezone) => config.Date.TimeZone != null;
                 return result;
             }
-
+                        
         }
 
         #endregion
 
         /// <summary>
-        /// Clears thread static field. Called on request end.
-        /// </summary>
-        private static void Clear()
-        {
-            _current = null;
-            _default = null;
-        }
+		/// Clears thread static field. Called on request end.
+		/// </summary>
+		private static void Clear()
+		{
+			_current = null;
+			_default = null;
+		}
 
 #if !SILVERLIGHT
-        /// <summary>
-        /// Gets/sets/resets legacy configuration setting "date.timezone".
-        /// </summary>
-        internal static object GsrTimeZone(LibraryConfiguration/*!*/ local, LibraryConfiguration/*!*/ @default, object value, IniAction action)
-        {
-            string result = (local.Date.TimeZone != null) ? local.Date.TimeZone.StandardName : null;
+		/// <summary>
+		/// Gets/sets/resets legacy configuration setting "date.timezone".
+		/// </summary>
+		internal static object GsrTimeZone(LibraryConfiguration/*!*/ local, LibraryConfiguration/*!*/ @default, object value, IniAction action)
+		{
+			string result = (local.Date.TimeZone != null) ? local.Date.TimeZone.StandardName : null;
 
-            switch (action)
-            {
-                case IniAction.Set:
-                    {
-                        string name = Core.Convert.ObjectToString(value);
-                        TimeZoneInfo zone = GetTimeZone(name);
+			switch (action)
+			{
+				case IniAction.Set:
+					{
+						string name = Core.Convert.ObjectToString(value);
+						TimeZone zone = GetTimeZone(name);
 
-                        if (zone == null)
-                        {
-                            PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_timezone", name));
-                        }
-                        else
-                        {
-                            local.Date.TimeZone = zone;
-                        }
-                        break;
-                    }
+						if (zone == null)
+						{
+							PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_timezone", name));
+						}
+						else
+						{
+							local.Date.TimeZone = zone;
+						}
+						break;
+					}
 
-                case IniAction.Restore:
-                    local.Date.TimeZone = @default.Date.TimeZone;
-                    break;
-            }
-            return result;
-        }
+				case IniAction.Restore:
+					local.Date.TimeZone = @default.Date.TimeZone;
+					break;
+			}
+			return result;
+		}
 #endif
 
-        /// <summary>
-        /// Gets an instance of <see cref="TimeZone"/> corresponding to specified PHP name for time zone.
-        /// </summary>
-        /// <param name="phpName">PHP time zone name.</param>
-        /// <returns>The time zone or a <B>null</B> reference.</returns>
-        public static TimeZoneInfo GetTimeZone(string/*!*/ phpName)
-        {
-            if (string.IsNullOrEmpty(phpName))
-                return null;
+		/// <summary>
+		/// Gets an instance of <see cref="TimeZone"/> corresponding to specified PHP name for time zone.
+		/// </summary>
+		/// <param name="phpName">PHP time zone name.</param>
+		/// <returns>The time zone or a <B>null</B> reference.</returns>
+		public static TimeZone GetTimeZone(string/*!*/ phpName)
+		{
+			if (phpName == null) return null;
 
-            // simple binary search (not the Array.BinarySearch)
-            var timezones = PhpTimeZone.timezones;
-            int a = 0, b = timezones.Length - 1;
-            while (a <= b)
-            {
-                int x = (a + b) >> 1;
-                int comparison = StringComparer.OrdinalIgnoreCase.Compare(timezones[x].PhpName, phpName);
-                if (comparison == 0)
-                    return timezones[x].Info;
-                
-                if (comparison < 0)
-                    a = x + 1;
-                else //if (comparison > 0)
-                    b = x - 1;
-            }
+			if (zones == null) InitTables();
+            
+#if !SILVERLIGHT
+			int zone_idx = Array.BinarySearch(zones, 0, zones.Length, phpName, CaseInsensitiveComparer.DefaultInvariant);
+#else
+            int zone_idx = Array.BinarySearch(zones, 0, zones.Length, phpName, StringComparer.InvariantCultureIgnoreCase);
+#endif
 
-            return null;
-        }
+			if (zone_idx < 0) return null;
 
-        /// <summary>
-        /// Tries to match given <paramref name="systemTimeZone"/> to our fixed <see cref="timezones"/>.
-        /// </summary>
-        private static TimeZoneInfo SystemToPhpTimeZone(TimeZoneInfo systemTimeZone)
-        {
-            if (systemTimeZone == null)
-                return null;
+			return GetTimeZoneByIndex(zone_idx);
+		}
 
-            var tzns = timezones;
-            for (int i = 0; i < tzns.Length; i++)
-            {
-                var tz = tzns[i].Info;
-                if (tz != null && tz.DisplayName.EqualsOrdinalIgnoreCase(systemTimeZone.DisplayName) && tz.HasSameRules(systemTimeZone))
-                    return tz;
-            }
+		/// <summary>
+		/// Creates a time zone given the index in <see cref="zones"/> array.
+		/// </summary>
+		private static TimeZone GetTimeZoneByIndex(int zoneIndex)
+		{
+			Debug.Assert(zones != null && data != null);
 
-            return null;
-        }
+			string php_name = zones[zoneIndex];
+			int dst_idx = data[zoneIndex, 1];
 
-        #region date_default_timezone_get, date_default_timezone_set
+			return new CustomTimeZone(
+			  php_name,
+			  php_name,
+			  data[zoneIndex, 0] * 15,
+			  daylightChanges[dst_idx, 0],
+			  daylightChanges[dst_idx, 1],
+			  daylightChanges[dst_idx, 2],
+			  daylightChanges[dst_idx, 3]);
+		}
 
-        [ImplementsFunction("date_default_timezone_set")]
-        public static bool SetCurrentTimeZone(string zoneName)
-        {
-            var zone = GetTimeZone(zoneName);
-            if (zone == null)
-            {
-                PhpException.Throw(PhpError.Notice, LibResources.GetString("unknown_timezone", zoneName));
-                return false;
-            }
-            _default = zone;
-            return true;
-        }
+		/// <summary>
+		/// Converts a specified zone to the PHP zone. Searches <see cref="data"/> array for zone offset.
+		/// </summary>
+		private static TimeZone SystemToPhpTimeZone(TimeZone/*!*/ zone)
+		{
+			DateTime now = DateTime.Now;
+			DaylightTime dst = zone.GetDaylightChanges(now.Year);
 
-        [ImplementsFunction("date_default_timezone_get")]
-        public static string GetCurrentTimeZone()
-        {
+           
+
+
+			// calculates offset in quarters of hour:
+			int qoffset = (int)DateTimeUtils.GetStandardUtcOffset(zone).TotalMinutes / 15;
+
+			if (zones == null) InitTables();
+
+			int index = -1;
+
+			for (int i = 0; i < data.GetLength(0); i++)
+			{
+				if (data[i, 0] == qoffset)
+				{
+					// partial match
+					if (index < 0) index = i;
+
+					int dst_idx = data[i, 1];
+					if ((dst_idx == 0 && dst.Delta.Ticks == 0) ||
+						(daylightChanges[dst_idx, 0] == dst.Start.Month &&
+						daylightChanges[dst_idx, 1] == dst.Start.Day &&
+						daylightChanges[dst_idx, 2] == dst.End.Month &&
+						daylightChanges[dst_idx, 3] == dst.End.Day))
+					{
+						// exact match
+						return GetTimeZoneByIndex(i);
+					}
+				}
+			}
+
+			return (index >= 0 ? GetTimeZoneByIndex(index) : null);
+		}
+
+		#region Predefined Time Zones
+
+		/// <summary>
+		/// Custom time zone.
+		/// </summary>
+		public sealed class CustomTimeZone : CustomTimeZoneBase
+		{
+			public override string DaylightName { get { return daylightName; } }
+			private readonly string daylightName;
+
+			public override string StandardName { get { return standardName; } }
+			private readonly string standardName;
+
+			private readonly int delta;
+			private readonly int offset;
+
+			private readonly int dstStartMonth;
+			private readonly int dstStartDay;
+			private readonly int dstEndMonth;
+			private readonly int dstEndDay;
+
+			public override TimeSpan GetUtcOffset(DateTime time)
+			{
+				return this.IsDaylightSavingTime(time) ?
+				  TimeSpan.FromMinutes(offset + 60 * delta) :
+				  TimeSpan.FromMinutes(offset);
+			}
+
+			public override DaylightTime GetDaylightChanges(int year)
+			{
+				return new DaylightTime
+				(
+				  (dstStartMonth >= 0) ? new DateTime(year, dstStartMonth, dstStartDay) : DateTime.MinValue,
+				  (dstStartMonth >= 0) ? new DateTime(year, dstEndMonth, dstEndDay) : DateTime.MinValue,
+				  TimeSpan.FromHours(delta)
+				);
+			}
+
+			public CustomTimeZone(string daylightName, string standardName, int offset,
+			  int dstStartMonth, int dstStartDay, int dstEndMonth, int dstEndDay)
+			{
+				this.daylightName = daylightName;
+				this.standardName = standardName;
+				this.offset = offset;
+				this.dstStartMonth = dstStartMonth;
+				this.dstStartDay = dstStartDay;
+				this.dstEndMonth = dstEndMonth;
+				this.dstEndDay = dstEndDay;
+				this.delta = dstStartMonth >= 0 ? 1 : 0;
+			}
+		}
+
+#if DEBUG
+
+		/// <summary>
+		/// Nepal time zone (+05:45 UTC) for debugging purposes.
+		/// </summary>
+		private sealed class _NepalTimeZone : CustomTimeZoneBase
+		{
+			public override string DaylightName { get { return "Nepal Standard Time"; } }
+			public override string StandardName { get { return "Nepal Standard Time"; } }
+
+			public override TimeSpan GetUtcOffset(DateTime time)
+			{
+				return new TimeSpan(0, 5, 45, 0, 0);
+			}
+
+			public override DaylightTime GetDaylightChanges(int year)
+			{
+				return new DaylightTime
+				(
+				  new DateTime(0),
+				  new DateTime(0),
+				  new TimeSpan(0)
+				);
+			}
+		}
+
+		/// <summary>
+		/// Pacific time zone (-08:00 UTC) for debugging purposes.
+		/// </summary>
+		private sealed class _PacificTimeZone : CustomTimeZoneBase
+		{
+			public override string DaylightName { get { return "Pacific Daylight Time"; } }
+			public override string StandardName { get { return "Pacific Standard Time"; } }
+
+			public override TimeSpan GetUtcOffset(DateTime time)
+			{
+				return this.IsDaylightSavingTime(time) ?
+				  new TimeSpan(0, -7, 0, 0, 0) : new TimeSpan(0, -8, 0, 0, 0);
+			}
+
+			public override DaylightTime GetDaylightChanges(int year)
+			{
+				return new DaylightTime
+				(
+				  new DateTime(year, 4, 3),
+				  new DateTime(year, 10, 30),
+				  new TimeSpan(0, 1, 0, 0, 0)
+				);
+			}
+		}
+
+		internal static readonly TimeZone NepalTimeZone = new _NepalTimeZone();
+		internal static readonly TimeZone PacificTimeZone = new _PacificTimeZone();
+
+#endif
+
+		#endregion
+
+		#region date_default_timezone_get, date_default_timezone_set
+
+		[ImplementsFunction("date_default_timezone_set")]
+		public static bool SetCurrentTimeZone(string zoneName)
+		{
+			TimeZone zone = GetTimeZone(zoneName);
+			if (zone == null)
+			{
+				PhpException.Throw(PhpError.Notice, LibResources.GetString("unknown_timezone", zoneName));
+				return false;
+			}
+			_default = zone;
+			return true;
+		}
+
+		[ImplementsFunction("date_default_timezone_get")]
+		public static string GetCurrentTimeZone()
+		{
             var timezone = CurrentTimeZone;
 
-            return (timezone != null) ? timezone.Id : null;
-        }
+            return (timezone != null) ? timezone.StandardName : null;
+		}
 
-        #endregion
+		#endregion
 
-        #region timezone_identifiers_list, timezone_version_get
+        #region timezone_identifiers_list (NS)
 
-        [ImplementsFunction("timezone_identifiers_list")]
+        [ImplementsFunction("timezone_identifiers_list", FunctionImplOptions.NotSupported)]
         public static PhpArray IdentifierList()
         {
-            var timezones = PhpTimeZone.timezones;
-
-            // copy names to PHP array:
-            var array = new PhpArray(timezones.Length);
-            for (int i = 0; i < timezones.Length; i++)
-                if (!timezones[i].IsAlias)
-                    array.AddToEnd(timezones[i].PhpName);
-
-            //
-            return array;
+            return null;
         }
 
+        #endregion
+
+        #region PHP Time Zone Tables
+
         /// <summary>
-        /// Gets the version of used the time zone database.
-        /// </summary>
-        [ImplementsFunction("timezone_version_get")]
-        public static string GetTZVersion()
-        {
-            try
+		/// Sorted list of PHP zone names.
+		/// </summary>
+		private static string[] zones;
+
+		/// <summary>
+		/// Each zone is defined by two numbers: 
+		/// 1) number of quarters of hour from GMT (without DST)
+		/// 2) daylight changes index
+		/// </summary>
+		private static sbyte[,] data;
+
+		/// <summary>
+		/// Daylight changes { month-start, day-start, month-end, day-end }. 
+		/// </summary>
+		private static int[,] daylightChanges;
+
+		internal static void InitTables()
+		{
+
+			// generated by TimeZones.php script //
+
+            #region Generated
+
+            zones = new string[]
             {
-                using (var reg = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones"))
-                    return reg.GetValue("TzVersion", 0).ToString() + ".system";
-            }
-            catch { }
+              "Africa/Abidjan",
+              "Africa/Accra",
+              "Africa/Addis_Ababa",
+              "Africa/Algiers",
+              "Africa/Asmera",
+              "Africa/Bamako",
+              "Africa/Bangui",
+              "Africa/Banjul",
+              "Africa/Bissau",
+              "Africa/Blantyre",
+              "Africa/Brazzaville",
+              "Africa/Bujumbura",
+              "Africa/Cairo",
+              "Africa/Casablanca",
+              "Africa/Ceuta",
+              "Africa/Conakry",
+              "Africa/Dakar",
+              "Africa/Dar_es_Salaam",
+              "Africa/Djibouti",
+              "Africa/Douala",
+              "Africa/El_Aaiun",
+              "Africa/Freetown",
+              "Africa/Gaborone",
+              "Africa/Harare",
+              "Africa/Johannesburg",
+              "Africa/Kampala",
+              "Africa/Khartoum",
+              "Africa/Kigali",
+              "Africa/Kinshasa",
+              "Africa/Lagos",
+              "Africa/Libreville",
+              "Africa/Lome",
+              "Africa/Luanda",
+              "Africa/Lubumbashi",
+              "Africa/Lusaka",
+              "Africa/Malabo",
+              "Africa/Maputo",
+              "Africa/Maseru",
+              "Africa/Mbabane",
+              "Africa/Mogadishu",
+              "Africa/Monrovia",
+              "Africa/Nairobi",
+              "Africa/Ndjamena",
+              "Africa/Niamey",
+              "Africa/Nouakchott",
+              "Africa/Ouagadougou",
+              "Africa/Porto-Novo",
+              "Africa/Sao_Tome",
+              "Africa/Timbuktu",
+              "Africa/Tripoli",
+              "Africa/Tunis",
+              "Africa/Windhoek",
+              "America/Adak",
+              "America/Anchorage",
+              "America/Anguilla",
+              "America/Antigua",
+              "America/Araguaina",
+              "America/Argentina/Buenos_Aires",
+              "America/Argentina/Catamarca",
+              "America/Argentina/ComodRivadavia",
+              "America/Argentina/Cordoba",
+              "America/Argentina/Jujuy",
+              "America/Argentina/La_Rioja",
+              "America/Argentina/Mendoza",
+              "America/Argentina/Rio_Gallegos",
+              "America/Argentina/San_Juan",
+              "America/Argentina/Tucuman",
+              "America/Argentina/Ushuaia",
+              "America/Aruba",
+              "America/Asuncion",
+              "America/Atka",
+              "America/Bahia",
+              "America/Barbados",
+              "America/Belem",
+              "America/Belize",
+              "America/Boa_Vista",
+              "America/Bogota",
+              "America/Boise",
+              "America/Buenos_Aires",
+              "America/Cambridge_Bay",
+              "America/Campo_Grande",
+              "America/Cancun",
+              "America/Caracas",
+              "America/Catamarca",
+              "America/Cayenne",
+              "America/Cayman",
+              "America/Chicago",
+              "America/Chihuahua",
+              "America/Coral_Harbour",
+              "America/Cordoba",
+              "America/Costa_Rica",
+              "America/Cuiaba",
+              "America/Curacao",
+              "America/Danmarkshavn",
+              "America/Dawson",
+              "America/Dawson_Creek",
+              "America/Denver",
+              "America/Detroit",
+              "America/Dominica",
+              "America/Edmonton",
+              "America/Eirunepe",
+              "America/El_Salvador",
+              "America/Ensenada",
+              "America/Fort_Wayne",
+              "America/Fortaleza",
+              "America/Glace_Bay",
+              "America/Godthab",
+              "America/Goose_Bay",
+              "America/Grand_Turk",
+              "America/Grenada",
+              "America/Guadeloupe",
+              "America/Guatemala",
+              "America/Guayaquil",
+              "America/Guyana",
+              "America/Halifax",
+              "America/Havana",
+              "America/Hermosillo",
+              "America/Indiana/Indianapolis",
+              "America/Indiana/Knox",
+              "America/Indiana/Marengo",
+              "America/Indiana/Vevay",
+              "America/Indianapolis",
+              "America/Inuvik",
+              "America/Iqaluit",
+              "America/Jamaica",
+              "America/Jujuy",
+              "America/Juneau",
+              "America/Kentucky/Louisville",
+              "America/Kentucky/Monticello",
+              "America/Knox_IN",
+              "America/La_Paz",
+              "America/Lima",
+              "America/Los_Angeles",
+              "America/Louisville",
+              "America/Maceio",
+              "America/Managua",
+              "America/Manaus",
+              "America/Martinique",
+              "America/Mazatlan",
+              "America/Mendoza",
+              "America/Menominee",
+              "America/Merida",
+              "America/Mexico_City",
+              "America/Miquelon",
+              "America/Monterrey",
+              "America/Montevideo",
+              "America/Montreal",
+              "America/Montserrat",
+              "America/Nassau",
+              "America/New_York",
+              "America/Nipigon",
+              "America/Nome",
+              "America/Noronha",
+              "America/North_Dakota/Center",
+              "America/Panama",
+              "America/Pangnirtung",
+              "America/Paramaribo",
+              "America/Phoenix",
+              "America/Port_of_Spain",
+              "America/Port-au-Prince",
+              "America/Porto_Acre",
+              "America/Porto_Velho",
+              "America/Puerto_Rico",
+              "America/Rainy_River",
+              "America/Rankin_Inlet",
+              "America/Recife",
+              "America/Regina",
+              "America/Rio_Branco",
+              "America/Rosario",
+              "America/Santiago",
+              "America/Santo_Domingo",
+              "America/Sao_Paulo",
+              "America/Scoresbysund",
+              "America/Shiprock",
+              "America/St_Johns",
+              "America/St_Kitts",
+              "America/St_Lucia",
+              "America/St_Thomas",
+              "America/St_Vincent",
+              "America/Swift_Current",
+              "America/Tegucigalpa",
+              "America/Thule",
+              "America/Thunder_Bay",
+              "America/Tijuana",
+              "America/Toronto",
+              "America/Tortola",
+              "America/Vancouver",
+              "America/Virgin",
+              "America/Whitehorse",
+              "America/Winnipeg",
+              "America/Yakutat",
+              "America/Yellowknife",
+              "Antarctica/Casey",
+              "Antarctica/Davis",
+              "Antarctica/DumontDUrville",
+              "Antarctica/Mawson",
+              "Antarctica/McMurdo",
+              "Antarctica/Palmer",
+              "Antarctica/Rothera",
+              "Antarctica/South_Pole",
+              "Antarctica/Syowa",
+              "Antarctica/Vostok",
+              "Arctic/Longyearbyen",
+              "Asia/Aden",
+              "Asia/Almaty",
+              "Asia/Amman",
+              "Asia/Anadyr",
+              "Asia/Aqtau",
+              "Asia/Aqtobe",
+              "Asia/Ashgabat",
+              "Asia/Ashkhabad",
+              "Asia/Baghdad",
+              "Asia/Bahrain",
+              "Asia/Baku",
+              "Asia/Bangkok",
+              "Asia/Beirut",
+              "Asia/Bishkek",
+              "Asia/Brunei",
+              "Asia/Calcutta",
+              "Asia/Choibalsan",
+              "Asia/Chongqing",
+              "Asia/Chungking",
+              "Asia/Colombo",
+              "Asia/Dacca",
+              "Asia/Damascus",
+              "Asia/Dhaka",
+              "Asia/Dili",
+              "Asia/Dubai",
+              "Asia/Dushanbe",
+              "Asia/Gaza",
+              "Asia/Harbin",
+              "Asia/Hong_Kong",
+              "Asia/Hovd",
+              "Asia/Irkutsk",
+              "Asia/Istanbul",
+              "Asia/Jakarta",
+              "Asia/Jayapura",
+              "Asia/Jerusalem",
+              "Asia/Kabul",
+              "Asia/Kamchatka",
+              "Asia/Karachi",
+              "Asia/Kashgar",
+              "Asia/Katmandu",
+              "Asia/Krasnoyarsk",
+              "Asia/Kuala_Lumpur",
+              "Asia/Kuching",
+              "Asia/Kuwait",
+              "Asia/Macao",
+              "Asia/Macau",
+              "Asia/Magadan",
+              "Asia/Makassar",
+              "Asia/Manila",
+              "Asia/Muscat",
+              "Asia/Nicosia",
+              "Asia/Novosibirsk",
+              "Asia/Omsk",
+              "Asia/Oral",
+              "Asia/Phnom_Penh",
+              "Asia/Pontianak",
+              "Asia/Pyongyang",
+              "Asia/Qatar",
+              "Asia/Qyzylorda",
+              "Asia/Rangoon",
+              "Asia/Riyadh",
+              "Asia/Saigon",
+              "Asia/Sakhalin",
+              "Asia/Samarkand",
+              "Asia/Seoul",
+              "Asia/Shanghai",
+              "Asia/Singapore",
+              "Asia/Taipei",
+              "Asia/Tashkent",
+              "Asia/Tbilisi",
+              "Asia/Tehran",
+              "Asia/Tel_Aviv",
+              "Asia/Thimbu",
+              "Asia/Thimphu",
+              "Asia/Tokyo",
+              "Asia/Ujung_Pandang",
+              "Asia/Ulaanbaatar",
+              "Asia/Ulan_Bator",
+              "Asia/Urumqi",
+              "Asia/Vientiane",
+              "Asia/Vladivostok",
+              "Asia/Yakutsk",
+              "Asia/Yekaterinburg",
+              "Asia/Yerevan",
+              "Atlantic/Azores",
+              "Atlantic/Azores",
+              "Atlantic/Bermuda",
+              "Atlantic/Bermuda",
+              "Atlantic/Canary",
+              "Atlantic/Canary",
+              "Atlantic/Cape_Verde",
+              "Atlantic/Cape_Verde",
+              "Atlantic/Faeroe",
+              "Atlantic/Faeroe",
+              "Atlantic/Jan_Mayen",
+              "Atlantic/Jan_Mayen",
+              "Atlantic/Madeira",
+              "Atlantic/Madeira",
+              "Atlantic/Reykjavik",
+              "Atlantic/Reykjavik",
+              "Atlantic/South_Georgia",
+              "Atlantic/South_Georgia",
+              "Atlantic/St_Helena",
+              "Atlantic/St_Helena",
+              "Atlantic/Stanley",
+              "Atlantic/Stanley",
+              "Brazil/Acre",
+              "Brazil/DeNoronha",
+              "Brazil/East",
+              "Brazil/West",
+              "Canada/Atlantic",
+              "Canada/Central",
+              "Canada/Eastern",
+              "Canada/East-Saskatchewan",
+              "Canada/Mountain",
+              "Canada/Newfoundland",
+              "Canada/Pacific",
+              "Canada/Saskatchewan",
+              "Canada/Yukon",
+              "CET",
+              "Chile/Continental",
+              "Chile/EasterIsland",
+              "CST6CDT",
+              "Cuba",
+              "EET",
+              "Egypt",
+              "Eire",
+              "EST",
+              "EST5EDT",
+              "Etc/GMT",
+              "Etc/GMT+0",
+              "Etc/GMT+1",
+              "Etc/GMT+10",
+              "Etc/GMT+11",
+              "Etc/GMT+12",
+              "Etc/GMT+2",
+              "Etc/GMT+3",
+              "Etc/GMT+4",
+              "Etc/GMT+5",
+              "Etc/GMT+6",
+              "Etc/GMT+7",
+              "Etc/GMT+8",
+              "Etc/GMT+9",
+              "Etc/GMT0",
+              "Etc/GMT-0",
+              "Etc/GMT-1",
+              "Etc/GMT-10",
+              "Etc/GMT-11",
+              "Etc/GMT-12",
+              "Etc/GMT-13",
+              "Etc/GMT-14",
+              "Etc/GMT-2",
+              "Etc/GMT-3",
+              "Etc/GMT-4",
+              "Etc/GMT-5",
+              "Etc/GMT-6",
+              "Etc/GMT-7",
+              "Etc/GMT-8",
+              "Etc/GMT-9",
+              "Etc/Greenwich",
+              "Etc/UCT",
+              "Etc/Universal",
+              "Etc/UTC",
+              "Etc/Zulu",
+              "Europe/Amsterdam",
+              "Europe/Andorra",
+              "Europe/Athens",
+              "Europe/Belfast",
+              "Europe/Belgrade",
+              "Europe/Berlin",
+              "Europe/Bratislava",
+              "Europe/Brussels",
+              "Europe/Bucharest",
+              "Europe/Budapest",
+              "Europe/Chisinau",
+              "Europe/Copenhagen",
+              "Europe/Dublin",
+              "Europe/Gibraltar",
+              "Europe/Helsinki",
+              "Europe/Istanbul",
+              "Europe/Kaliningrad",
+              "Europe/Kiev",
+              "Europe/Lisbon",
+              "Europe/Ljubljana",
+              "Europe/London",
+              "Europe/Luxembourg",
+              "Europe/Madrid",
+              "Europe/Malta",
+              "Europe/Mariehamn",
+              "Europe/Minsk",
+              "Europe/Monaco",
+              "Europe/Moscow",
+              "Europe/Nicosia",
+              "Europe/Oslo",
+              "Europe/Paris",
+              "Europe/Prague",
+              "Europe/Riga",
+              "Europe/Rome",
+              "Europe/Samara",
+              "Europe/San_Marino",
+              "Europe/Sarajevo",
+              "Europe/Simferopol",
+              "Europe/Skopje",
+              "Europe/Sofia",
+              "Europe/Stockholm",
+              "Europe/Tallinn",
+              "Europe/Tirane",
+              "Europe/Tiraspol",
+              "Europe/Uzhgorod",
+              "Europe/Vaduz",
+              "Europe/Vatican",
+              "Europe/Vienna",
+              "Europe/Vilnius",
+              "Europe/Warsaw",
+              "Europe/Zagreb",
+              "Europe/Zaporozhye",
+              "Europe/Zurich",
+              "Factory",
+              "GB",
+              "GB-Eire",
+              "GMT",
+              "GMT+0",
+              "GMT0",
+              "GMT-0",
+              "Greenwich",
+              "Hongkong",
+              "HST",
+              "Iceland",
+              "Indian/Antananarivo",
+              "Indian/Chagos",
+              "Indian/Christmas",
+              "Indian/Cocos",
+              "Indian/Comoro",
+              "Indian/Kerguelen",
+              "Indian/Mahe",
+              "Indian/Maldives",
+              "Indian/Mauritius",
+              "Indian/Mayotte",
+              "Indian/Reunion",
+              "Iran",
+              "Israel",
+              "Jamaica",
+              "Japan",
+              "Kwajalein",
+              "Libya",
+              "MET",
+              "Mexico/BajaNorte",
+              "Mexico/BajaSur",
+              "Mexico/General",
+              "MST",
+              "MST7MDT",
+              "Navajo",
+              "NZ",
+              "NZ-CHAT",
+              "Pacific/Apia",
+              "Pacific/Auckland",
+              "Pacific/Chatham",
+              "Pacific/Easter",
+              "Pacific/Efate",
+              "Pacific/Enderbury",
+              "Pacific/Fakaofo",
+              "Pacific/Fiji",
+              "Pacific/Funafuti",
+              "Pacific/Galapagos",
+              "Pacific/Gambier",
+              "Pacific/Guadalcanal",
+              "Pacific/Guam",
+              "Pacific/Honolulu",
+              "Pacific/Johnston",
+              "Pacific/Kiritimati",
+              "Pacific/Kosrae",
+              "Pacific/Kwajalein",
+              "Pacific/Majuro",
+              "Pacific/Marquesas",
+              "Pacific/Midway",
+              "Pacific/Nauru",
+              "Pacific/Niue",
+              "Pacific/Norfolk",
+              "Pacific/Noumea",
+              "Pacific/Pago_Pago",
+              "Pacific/Palau",
+              "Pacific/Pitcairn",
+              "Pacific/Ponape",
+              "Pacific/Port_Moresby",
+              "Pacific/Rarotonga",
+              "Pacific/Saipan",
+              "Pacific/Samoa",
+              "Pacific/Tahiti",
+              "Pacific/Tarawa",
+              "Pacific/Tongatapu",
+              "Pacific/Truk",
+              "Pacific/Wake",
+              "Pacific/Wallis",
+              "Pacific/Yap",
+              "Poland",
+              "Portugal",
+              "PRC",
+              "PST8PDT",
+              "ROC",
+              "ROK",
+              "Singapore",
+              "Turkey",
+              "UCT",
+              "Universal",
+              "US/Alaska",
+              "US/Aleutian",
+              "US/Arizona",
+              "US/Central",
+              "US/Eastern",
+              "US/East-Indiana",
+              "US/Hawaii",
+              "US/Indiana-Starke",
+              "US/Michigan",
+              "US/Mountain",
+              "US/Pacific",
+              "US/Pacific-New",
+              "US/Samoa",
+              "UTC",
+              "WET",
+              "W-SU",
+              "Zulu",
+            };
 
-            // no windows update installed
-            return "0.system";
-        }
+                        data = new sbyte[,]
+            {
+              {  0, 0}, // Africa/Abidjan
+              {  0, 0}, // Africa/Accra
+              { 12, 0}, // Africa/Addis_Ababa
+              {  4, 0}, // Africa/Algiers
+              { 12, 0}, // Africa/Asmera
+              {  0, 0}, // Africa/Bamako
+              {  4, 0}, // Africa/Bangui
+              {  0, 0}, // Africa/Banjul
+              {  0, 0}, // Africa/Bissau
+              {  8, 0}, // Africa/Blantyre
+              {  4, 0}, // Africa/Brazzaville
+              {  8, 0}, // Africa/Bujumbura
+              {  8, 1}, // Africa/Cairo
+              {  0, 0}, // Africa/Casablanca
+              {  4, 2}, // Africa/Ceuta
+              {  0, 0}, // Africa/Conakry
+              {  0, 0}, // Africa/Dakar
+              { 12, 0}, // Africa/Dar_es_Salaam
+              { 12, 0}, // Africa/Djibouti
+              {  4, 0}, // Africa/Douala
+              {  0, 0}, // Africa/El_Aaiun
+              {  0, 0}, // Africa/Freetown
+              {  8, 0}, // Africa/Gaborone
+              {  8, 0}, // Africa/Harare
+              {  8, 0}, // Africa/Johannesburg
+              { 12, 0}, // Africa/Kampala
+              { 12, 0}, // Africa/Khartoum
+              {  8, 0}, // Africa/Kigali
+              {  4, 0}, // Africa/Kinshasa
+              {  4, 0}, // Africa/Lagos
+              {  4, 0}, // Africa/Libreville
+              {  0, 0}, // Africa/Lome
+              {  4, 0}, // Africa/Luanda
+              {  8, 0}, // Africa/Lubumbashi
+              {  8, 0}, // Africa/Lusaka
+              {  4, 0}, // Africa/Malabo
+              {  8, 0}, // Africa/Maputo
+              {  8, 0}, // Africa/Maseru
+              {  8, 0}, // Africa/Mbabane
+              { 12, 0}, // Africa/Mogadishu
+              {  0, 0}, // Africa/Monrovia
+              { 12, 0}, // Africa/Nairobi
+              {  4, 0}, // Africa/Ndjamena
+              {  4, 0}, // Africa/Niamey
+              {  0, 0}, // Africa/Nouakchott
+              {  0, 0}, // Africa/Ouagadougou
+              {  4, 0}, // Africa/Porto-Novo
+              {  0, 0}, // Africa/Sao_Tome
+              {  0, 0}, // Africa/Timbuktu
+              {  8, 0}, // Africa/Tripoli
+              {  4, 0}, // Africa/Tunis
+              {  8, 3}, // Africa/Windhoek
+              {-36, 4}, // America/Adak
+              {-32, 4}, // America/Anchorage
+              {-16, 0}, // America/Anguilla
+              {-16, 0}, // America/Antigua
+              {-12, 5}, // America/Araguaina
+              {-12, 0}, // America/Argentina/Buenos_Aires
+              {-12, 0}, // America/Argentina/Catamarca
+              {-12, 0}, // America/Argentina/ComodRivadavia
+              {-12, 0}, // America/Argentina/Cordoba
+              {-12, 0}, // America/Argentina/Jujuy
+              {-12, 0}, // America/Argentina/La_Rioja
+              {-12, 0}, // America/Argentina/Mendoza
+              {-12, 0}, // America/Argentina/Rio_Gallegos
+              {-12, 0}, // America/Argentina/San_Juan
+              {-12, 0}, // America/Argentina/Tucuman
+              {-12, 0}, // America/Argentina/Ushuaia
+              {-16, 0}, // America/Aruba
+              {-12, 6}, // America/Asuncion
+              {-36, 4}, // America/Atka
+              {-12, 5}, // America/Bahia
+              {-16, 0}, // America/Barbados
+              {-12, 0}, // America/Belem
+              {-24, 0}, // America/Belize
+              {-16, 0}, // America/Boa_Vista
+              {-20, 0}, // America/Bogota
+              {-24, 4}, // America/Boise
+              {-12, 0}, // America/Buenos_Aires
+              {-24, 4}, // America/Cambridge_Bay
+              {-16, 5}, // America/Campo_Grande
+              {-24, 7}, // America/Cancun
+              {-18, 0}, // America/Caracas
+              {-12, 0}, // America/Catamarca
+              {-12, 0}, // America/Cayenne
+              {-20, 0}, // America/Cayman
+              {-20, 4}, // America/Chicago
+              {-28, 7}, // America/Chihuahua
+              {-20, 0}, // America/Coral_Harbour
+              {-12, 0}, // America/Cordoba
+              {-24, 0}, // America/Costa_Rica
+              {-16, 5}, // America/Cuiaba
+              {-16, 0}, // America/Curacao
+              {  0, 0}, // America/Danmarkshavn
+              {-28, 4}, // America/Dawson
+              {-28, 0}, // America/Dawson_Creek
+              {-24, 4}, // America/Denver
+              {-16, 4}, // America/Detroit
+              {-16, 0}, // America/Dominica
+              {-24, 4}, // America/Edmonton
+              {-16, 0}, // America/Eirunepe
+              {-24, 0}, // America/El_Salvador
+              {-28, 4}, // America/Ensenada
+              {-16, 0}, // America/Fort_Wayne
+              {-12, 8}, // America/Fortaleza
+              {-12, 4}, // America/Glace_Bay
+              {-12, 2}, // America/Godthab
+              {-12, 4}, // America/Goose_Bay
+              {-16, 4}, // America/Grand_Turk
+              {-16, 0}, // America/Grenada
+              {-16, 0}, // America/Guadeloupe
+              {-24, 0}, // America/Guatemala
+              {-20, 0}, // America/Guayaquil
+              {-16, 0}, // America/Guyana
+              {-12, 4}, // America/Halifax
+              {-16, 4}, // America/Havana
+              {-28, 0}, // America/Hermosillo
+              {-16, 0}, // America/Indiana/Indianapolis
+              {-20, 0}, // America/Indiana/Knox
+              {-16, 0}, // America/Indiana/Marengo
+              {-16, 0}, // America/Indiana/Vevay
+              {-16, 0}, // America/Indianapolis
+              {-24, 4}, // America/Inuvik
+              {-16, 4}, // America/Iqaluit
+              {-20, 0}, // America/Jamaica
+              {-12, 0}, // America/Jujuy
+              {-32, 4}, // America/Juneau
+              {-16, 4}, // America/Kentucky/Louisville
+              {-16, 4}, // America/Kentucky/Monticello
+              {-20, 0}, // America/Knox_IN
+              {-16, 0}, // America/La_Paz
+              {-20, 0}, // America/Lima
+              {-28, 4}, // America/Los_Angeles
+              {-16, 4}, // America/Louisville
+              {-12, 8}, // America/Maceio
+              {-24, 0}, // America/Managua
+              {-16, 0}, // America/Manaus
+              {-16, 0}, // America/Martinique
+              {-28, 7}, // America/Mazatlan
+              {-12, 0}, // America/Mendoza
+              {-20, 4}, // America/Menominee
+              {-24, 7}, // America/Merida
+              {-24, 7}, // America/Mexico_City
+              { -8, 4}, // America/Miquelon
+              {-24, 7}, // America/Monterrey
+              {-12, 0}, // America/Montevideo
+              {-16, 4}, // America/Montreal
+              {-16, 0}, // America/Montserrat
+              {-16, 4}, // America/Nassau
+              {-16, 4}, // America/New_York
+              {-16, 4}, // America/Nipigon
+              {-32, 4}, // America/Nome
+              { -8, 8}, // America/Noronha
+              {-20, 4}, // America/North_Dakota/Center
+              {-20, 0}, // America/Panama
+              {-16, 4}, // America/Pangnirtung
+              {-12, 0}, // America/Paramaribo
+              {-28, 0}, // America/Phoenix
+              {-16, 0}, // America/Port_of_Spain
+              {-20, 0}, // America/Port-au-Prince
+              {-16, 0}, // America/Porto_Acre
+              {-16, 0}, // America/Porto_Velho
+              {-16, 0}, // America/Puerto_Rico
+              {-20, 4}, // America/Rainy_River
+              {-20, 4}, // America/Rankin_Inlet
+              {-12, 8}, // America/Recife
+              {-24, 0}, // America/Regina
+              {-16, 0}, // America/Rio_Branco
+              {-12, 0}, // America/Rosario
+              {-16, 9}, // America/Santiago
+              {-16, 0}, // America/Santo_Domingo
+              {-12, 5}, // America/Sao_Paulo
+              { -4, 2}, // America/Scoresbysund
+              {-24, 4}, // America/Shiprock
+              {-10, 4}, // America/St_Johns
+              {-16, 0}, // America/St_Kitts
+              {-16, 0}, // America/St_Lucia
+              {-16, 0}, // America/St_Thomas
+              {-16, 0}, // America/St_Vincent
+              {-24, 0}, // America/Swift_Current
+              {-24, 0}, // America/Tegucigalpa
+              {-12, 4}, // America/Thule
+              {-16, 4}, // America/Thunder_Bay
+              {-28, 4}, // America/Tijuana
+              {-16, 4}, // America/Toronto
+              {-16, 0}, // America/Tortola
+              {-28, 4}, // America/Vancouver
+              {-16, 0}, // America/Virgin
+              {-28, 4}, // America/Whitehorse
+              {-20, 4}, // America/Winnipeg
+              {-32, 4}, // America/Yakutat
+              {-24, 4}, // America/Yellowknife
+              { 32, 0}, // Antarctica/Casey
+              { 28, 0}, // Antarctica/Davis
+              { 40, 0}, // Antarctica/DumontDUrville
+              { 20, 0}, // Antarctica/Mawson
+              { 52,10}, // Antarctica/McMurdo
+              {-16, 9}, // Antarctica/Palmer
+              {-12, 0}, // Antarctica/Rothera
+              { 52,10}, // Antarctica/South_Pole
+              { 12, 0}, // Antarctica/Syowa
+              { 24, 0}, // Antarctica/Vostok
+              {  4, 2}, // Arctic/Longyearbyen
+              { 12, 0}, // Asia/Aden
+              { 24, 2}, // Asia/Almaty
+              {  8,11}, // Asia/Amman
+              { 48, 2}, // Asia/Anadyr
+              { 20, 2}, // Asia/Aqtau
+              { 20, 2}, // Asia/Aqtobe
+              { 20, 0}, // Asia/Ashgabat
+              { 20, 0}, // Asia/Ashkhabad
+              { 12,12}, // Asia/Baghdad
+              { 12, 0}, // Asia/Bahrain
+              { 16, 2}, // Asia/Baku
+              { 28, 0}, // Asia/Bangkok
+              {  8, 2}, // Asia/Beirut
+              { 24, 2}, // Asia/Bishkek
+              { 32, 0}, // Asia/Brunei
+              { 22, 0}, // Asia/Calcutta
+              { 32,13}, // Asia/Choibalsan
+              { 32, 0}, // Asia/Chongqing
+              { 32, 0}, // Asia/Chungking
+              { 22, 0}, // Asia/Colombo
+              { 24, 0}, // Asia/Dacca
+              {  8,12}, // Asia/Damascus
+              { 24, 0}, // Asia/Dhaka
+              { 36, 0}, // Asia/Dili
+              { 16, 0}, // Asia/Dubai
+              { 20, 0}, // Asia/Dushanbe
+              {  8,14}, // Asia/Gaza
+              { 32, 0}, // Asia/Harbin
+              { 32, 0}, // Asia/Hong_Kong
+              { 28,13}, // Asia/Hovd
+              { 36, 2}, // Asia/Irkutsk
+              {  8, 2}, // Asia/Istanbul
+              { 28, 0}, // Asia/Jakarta
+              { 36, 0}, // Asia/Jayapura
+              {  8,15}, // Asia/Jerusalem
+              { 18, 0}, // Asia/Kabul
+              { 48, 2}, // Asia/Kamchatka
+              { 20, 0}, // Asia/Karachi
+              { 32, 0}, // Asia/Kashgar
+              { 23, 0}, // Asia/Katmandu
+              { 32, 2}, // Asia/Krasnoyarsk
+              { 32, 0}, // Asia/Kuala_Lumpur
+              { 32, 0}, // Asia/Kuching
+              { 12, 0}, // Asia/Kuwait
+              { 32, 0}, // Asia/Macao
+              { 32, 0}, // Asia/Macau
+              { 48, 2}, // Asia/Magadan
+              { 32, 0}, // Asia/Makassar
+              { 32, 0}, // Asia/Manila
+              { 16, 0}, // Asia/Muscat
+              {  8, 2}, // Asia/Nicosia
+              { 28, 2}, // Asia/Novosibirsk
+              { 28, 2}, // Asia/Omsk
+              { 20, 2}, // Asia/Oral
+              { 28, 0}, // Asia/Phnom_Penh
+              { 28, 0}, // Asia/Pontianak
+              { 36, 0}, // Asia/Pyongyang
+              { 12, 0}, // Asia/Qatar
+              { 24, 2}, // Asia/Qyzylorda
+              { 26, 0}, // Asia/Rangoon
+              { 12, 0}, // Asia/Riyadh
+              { 28, 0}, // Asia/Saigon
+              { 44, 2}, // Asia/Sakhalin
+              { 20, 0}, // Asia/Samarkand
+              { 36, 0}, // Asia/Seoul
+              { 32, 0}, // Asia/Shanghai
+              { 32, 0}, // Asia/Singapore
+              { 32, 0}, // Asia/Taipei
+              { 20, 0}, // Asia/Tashkent
+              { 16, 2}, // Asia/Tbilisi
+              { 18,16}, // Asia/Tehran
+              {  8,15}, // Asia/Tel_Aviv
+              { 24, 0}, // Asia/Thimbu
+              { 24, 0}, // Asia/Thimphu
+              { 36, 0}, // Asia/Tokyo
+              { 32, 0}, // Asia/Ujung_Pandang
+              { 32,13}, // Asia/Ulaanbaatar
+              { 32,13}, // Asia/Ulan_Bator
+              { 32, 0}, // Asia/Urumqi
+              { 28, 0}, // Asia/Vientiane
+              { 44, 2}, // Asia/Vladivostok
+              { 40, 2}, // Asia/Yakutsk
+              { 24, 2}, // Asia/Yekaterinburg
+              { 16, 2}, // Asia/Yerevan
+              { -4, 2}, // Atlantic/Azores
+              { -4, 2}, // Atlantic/Azores
+              {-12, 4}, // Atlantic/Bermuda
+              {-12, 4}, // Atlantic/Bermuda
+              {  0, 2}, // Atlantic/Canary
+              {  0, 2}, // Atlantic/Canary
+              { -4, 0}, // Atlantic/Cape_Verde
+              { -4, 0}, // Atlantic/Cape_Verde
+              {  0, 2}, // Atlantic/Faeroe
+              {  0, 2}, // Atlantic/Faeroe
+              {  4, 2}, // Atlantic/Jan_Mayen
+              {  4, 2}, // Atlantic/Jan_Mayen
+              {  0, 2}, // Atlantic/Madeira
+              {  0, 2}, // Atlantic/Madeira
+              {  0, 0}, // Atlantic/Reykjavik
+              {  0, 0}, // Atlantic/Reykjavik
+              { -8, 0}, // Atlantic/South_Georgia
+              { -8, 0}, // Atlantic/South_Georgia
+              {  0, 0}, // Atlantic/St_Helena
+              {  0, 0}, // Atlantic/St_Helena
+              {-12,17}, // Atlantic/Stanley
+              {-12,17}, // Atlantic/Stanley
+              {-16, 0}, // Brazil/Acre
+              { -8, 8}, // Brazil/DeNoronha
+              {-12, 5}, // Brazil/East
+              {-16, 0}, // Brazil/West
+              {-12, 4}, // Canada/Atlantic
+              {-20, 4}, // Canada/Central
+              {-16, 4}, // Canada/Eastern
+              {-24, 0}, // Canada/East-Saskatchewan
+              {-24, 4}, // Canada/Mountain
+              {-10, 4}, // Canada/Newfoundland
+              {-28, 4}, // Canada/Pacific
+              {-24, 0}, // Canada/Saskatchewan
+              {-28, 4}, // Canada/Yukon
+              {  4, 2}, // CET
+              {-16, 9}, // Chile/Continental
+              {-24, 9}, // Chile/EasterIsland
+              {-20, 4}, // CST6CDT
+              {-16, 4}, // Cuba
+              {  8, 2}, // EET
+              {  8, 1}, // Egypt
+              {  0, 2}, // Eire
+              {-20, 0}, // EST
+              {-16, 4}, // EST5EDT
+              {  0, 0}, // Etc/GMT
+              {  0, 0}, // Etc/GMT+0
+              { -4, 0}, // Etc/GMT+1
+              {-40, 0}, // Etc/GMT+10
+              {-44, 0}, // Etc/GMT+11
+              {-48, 0}, // Etc/GMT+12
+              { -8, 0}, // Etc/GMT+2
+              {-12, 0}, // Etc/GMT+3
+              {-16, 0}, // Etc/GMT+4
+              {-20, 0}, // Etc/GMT+5
+              {-24, 0}, // Etc/GMT+6
+              {-28, 0}, // Etc/GMT+7
+              {-32, 0}, // Etc/GMT+8
+              {-36, 0}, // Etc/GMT+9
+              {  0, 0}, // Etc/GMT0
+              {  0, 0}, // Etc/GMT-0
+              {  4, 0}, // Etc/GMT-1
+              { 40, 0}, // Etc/GMT-10
+              { 44, 0}, // Etc/GMT-11
+              { 48, 0}, // Etc/GMT-12
+              { 52, 0}, // Etc/GMT-13
+              { 56, 0}, // Etc/GMT-14
+              {  8, 0}, // Etc/GMT-2
+              { 12, 0}, // Etc/GMT-3
+              { 16, 0}, // Etc/GMT-4
+              { 20, 0}, // Etc/GMT-5
+              { 24, 0}, // Etc/GMT-6
+              { 28, 0}, // Etc/GMT-7
+              { 32, 0}, // Etc/GMT-8
+              { 36, 0}, // Etc/GMT-9
+              {  0, 0}, // Etc/Greenwich
+              {  0, 0}, // Etc/UCT
+              {  0, 0}, // Etc/Universal
+              {  0, 0}, // Etc/UTC
+              {  0, 0}, // Etc/Zulu
+              {  4, 2}, // Europe/Amsterdam
+              {  4, 2}, // Europe/Andorra
+              {  8, 2}, // Europe/Athens
+              {  0, 2}, // Europe/Belfast
+              {  4, 2}, // Europe/Belgrade
+              {  4, 2}, // Europe/Berlin
+              {  4, 2}, // Europe/Bratislava
+              {  4, 2}, // Europe/Brussels
+              {  8, 2}, // Europe/Bucharest
+              {  4, 2}, // Europe/Budapest
+              {  8, 2}, // Europe/Chisinau
+              {  4, 2}, // Europe/Copenhagen
+              {  0, 2}, // Europe/Dublin
+              {  4, 2}, // Europe/Gibraltar
+              {  8, 2}, // Europe/Helsinki
+              {  8, 2}, // Europe/Istanbul
+              { 12, 2}, // Europe/Kaliningrad
+              {  8, 2}, // Europe/Kiev
+              {  0, 2}, // Europe/Lisbon
+              {  4, 2}, // Europe/Ljubljana
+              {  0, 2}, // Europe/London
+              {  4, 2}, // Europe/Luxembourg
+              {  4, 2}, // Europe/Madrid
+              {  4, 2}, // Europe/Malta
+              {  8, 2}, // Europe/Mariehamn
+              { 12, 2}, // Europe/Minsk
+              {  4, 2}, // Europe/Monaco
+              { 16, 2}, // Europe/Moscow
+              {  8, 2}, // Europe/Nicosia
+              {  4, 2}, // Europe/Oslo
+              {  4, 2}, // Europe/Paris
+              {  4, 2}, // Europe/Prague
+              {  8, 2}, // Europe/Riga
+              {  4, 2}, // Europe/Rome
+              { 16, 2}, // Europe/Samara
+              {  4, 2}, // Europe/San_Marino
+              {  4, 2}, // Europe/Sarajevo
+              {  8, 2}, // Europe/Simferopol
+              {  4, 2}, // Europe/Skopje
+              {  8, 2}, // Europe/Sofia
+              {  4, 2}, // Europe/Stockholm
+              {  8, 0}, // Europe/Tallinn
+              {  4, 2}, // Europe/Tirane
+              {  8, 2}, // Europe/Tiraspol
+              {  8, 2}, // Europe/Uzhgorod
+              {  4, 2}, // Europe/Vaduz
+              {  4, 2}, // Europe/Vatican
+              {  4, 2}, // Europe/Vienna
+              {  8, 0}, // Europe/Vilnius
+              {  4, 2}, // Europe/Warsaw
+              {  4, 2}, // Europe/Zagreb
+              {  8, 2}, // Europe/Zaporozhye
+              {  4, 2}, // Europe/Zurich
+              {  0, 0}, // Factory
+              {  0, 2}, // GB
+              {  0, 2}, // GB-Eire
+              {  0, 0}, // GMT
+              {  0, 0}, // GMT+0
+              {  0, 0}, // GMT0
+              {  0, 0}, // GMT-0
+              {  0, 0}, // Greenwich
+              { 32, 0}, // Hongkong
+              {-40, 0}, // HST
+              {  0, 0}, // Iceland
+              { 12, 0}, // Indian/Antananarivo
+              { 24, 0}, // Indian/Chagos
+              { 28, 0}, // Indian/Christmas
+              { 26, 0}, // Indian/Cocos
+              { 12, 0}, // Indian/Comoro
+              { 20, 0}, // Indian/Kerguelen
+              { 16, 0}, // Indian/Mahe
+              { 20, 0}, // Indian/Maldives
+              { 16, 0}, // Indian/Mauritius
+              { 12, 0}, // Indian/Mayotte
+              { 16, 0}, // Indian/Reunion
+              { 18,16}, // Iran
+              {  8,15}, // Israel
+              {-20, 0}, // Jamaica
+              { 36, 0}, // Japan
+              { 48, 0}, // Kwajalein
+              {  8, 0}, // Libya
+              {  4, 2}, // MET
+              {-28, 4}, // Mexico/BajaNorte
+              {-28, 7}, // Mexico/BajaSur
+              {-24, 7}, // Mexico/General
+              {-28, 0}, // MST
+              {-24, 4}, // MST7MDT
+              {-24, 4}, // Navajo
+              { 52,10}, // NZ
+              { 55,10}, // NZ-CHAT
+              { 56, 0}, // Pacific/Apia
+              { 52,10}, // Pacific/Auckland
+              { 55,10}, // Pacific/Chatham
+              {-24, 9}, // Pacific/Easter
+              { 44, 0}, // Pacific/Efate
+              { 52, 0}, // Pacific/Enderbury
+              {-40, 0}, // Pacific/Fakaofo
+              { 48, 0}, // Pacific/Fiji
+              { 48, 0}, // Pacific/Funafuti
+              {-24, 0}, // Pacific/Galapagos
+              {-36, 0}, // Pacific/Gambier
+              { 44, 0}, // Pacific/Guadalcanal
+              { 40, 0}, // Pacific/Guam
+              {-40, 0}, // Pacific/Honolulu
+              {-40, 0}, // Pacific/Johnston
+              { 56, 0}, // Pacific/Kiritimati
+              { 44, 0}, // Pacific/Kosrae
+              { 48, 0}, // Pacific/Kwajalein
+              { 48, 0}, // Pacific/Majuro
+              {-38, 0}, // Pacific/Marquesas
+              {-44, 0}, // Pacific/Midway
+              { 48, 0}, // Pacific/Nauru
+              {-44, 0}, // Pacific/Niue
+              { 46, 0}, // Pacific/Norfolk
+              { 44, 0}, // Pacific/Noumea
+              {-44, 0}, // Pacific/Pago_Pago
+              { 36, 0}, // Pacific/Palau
+              {-32, 0}, // Pacific/Pitcairn
+              { 44, 0}, // Pacific/Ponape
+              { 40, 0}, // Pacific/Port_Moresby
+              {-40, 0}, // Pacific/Rarotonga
+              { 40, 0}, // Pacific/Saipan
+              {-44, 0}, // Pacific/Samoa
+              {-40, 0}, // Pacific/Tahiti
+              { 48, 0}, // Pacific/Tarawa
+              { 52,18}, // Pacific/Tongatapu
+              { 40, 0}, // Pacific/Truk
+              { 48, 0}, // Pacific/Wake
+              { 48, 0}, // Pacific/Wallis
+              { 40, 0}, // Pacific/Yap
+              {  4, 2}, // Poland
+              {  0, 2}, // Portugal
+              { 32, 0}, // PRC
+              {-28, 4}, // PST8PDT
+              { 32, 0}, // ROC
+              { 36, 0}, // ROK
+              { 32, 0}, // Singapore
+              {  8, 2}, // Turkey
+              {  0, 0}, // UCT
+              {  0, 0}, // Universal
+              {-32, 4}, // US/Alaska
+              {-36, 4}, // US/Aleutian
+              {-28, 0}, // US/Arizona
+              {-20, 4}, // US/Central
+              {-16, 4}, // US/Eastern
+              {-16, 0}, // US/East-Indiana
+              {-40, 0}, // US/Hawaii
+              {-20, 0}, // US/Indiana-Starke
+              {-16, 4}, // US/Michigan
+              {-24, 4}, // US/Mountain
+              {-28, 4}, // US/Pacific
+              {-28, 4}, // US/Pacific-New
+              {-44, 0}, // US/Samoa
+              {  0, 0}, // UTC
+              {  0, 2}, // WET
+              { 16, 2}, // W-SU
+              {  0, 0}, // Zulu
+            };
 
-        #endregion
+                        daylightChanges = new int[,] {
+              { -1, -1, -1, -1 }, // 0
+              {  4, 27,  9, 28 }, // 1
+              {  3, 25, 10, 28 }, // 2
+              {  9,  2,  4,  1 }, // 3
+              {  4,  1, 10, 28 }, // 4
+              { 10, 14,  2, 18 }, // 5
+              { 10,  7,  3,  4 }, // 6
+              {  5,  6,  9, 30 }, // 7
+              { 10, 14, 12, 31 }, // 8
+              { 10, 14,  3, 11 }, // 9
+              { 10,  7,  3, 18 }, // 10
+              {  3, 29,  9, 28 }, // 11
+              {  4,  1, 10,  1 }, // 12
+              {  4, 28,  9, 29 }, // 13
+              {  4, 20, 10, 19 }, // 14
+              {  4,  9,  9, 24 }, // 15
+              {  3, 22,  9, 22 }, // 16
+              {  9,  2,  4, 15 }, // 17
+              { 11,  4,  1, 28 }, // 18
+            };
 
-        #region timezone_open, timezone_offset_get
+            #endregion
 
-        /// <summary>
-        /// Alias of new <see cref="DateTimeZone"/>
-        /// </summary>
-        [ImplementsFunction("timezone_open")]
-        [return: CastToFalse]
-        public static object TimeZoneOpen(ScriptContext/*!*/context, string timezone)
-        {
-            var tz = GetTimeZone(timezone);
-            if (tz == null)
-                return null;
 
-            return new DateTimeZone(context, tz);
-        }
+		}
 
-        /// <summary>
-        /// Alias of <see cref="DateTimeZone.getOffset"/>
-        /// </summary>
-        [ImplementsFunction("timezone_offset_get")]
-        [return: CastToFalse]
-        public static int TimeZoneOffsetGet(ScriptContext context, DateTimeZone timezone, __PHP__DateTime datetime)
-        {
-            if (timezone == null)
-                return -1;
+		#endregion
 
-            var result = timezone.getOffset(context, datetime);
-            if (result == null)
-                return -1;
+		#region Unit Testing
+#if DEBUG
 
-            return PHP.Core.Convert.ObjectToInteger(timezone.getOffset(context, datetime));
-        }
+		//[Test(true)]
+		static void SortZones()
+		{
+			InitTables();
 
-        [ImplementsFunction("timezone_transitions_get")]
-        [return: CastToFalse]
-        public static PhpArray TimeZoneGetTransitions(ScriptContext context, DateTimeZone timezone)
-        {
-            if (timezone == null)
-                return null;
+#if !SILVERLIGHT
+			Array.Sort(zones, CaseInsensitiveComparer.DefaultInvariant);
+#else
+            Array.Sort(zones, StringComparer.InvariantCultureIgnoreCase);
+#endif
 
-            return (PhpArray)timezone.getTransitions(context, Arg.Default, Arg.Default);
-        }
 
-        #endregion
-    }
+			Console.WriteLine();
+			foreach (string z in zones)
+			{
+				Console.WriteLine("\"{0}\",", z);
+			}
+		}
+
+		[Test]
+		static void TestSorted()
+		{
+			InitTables();
+			string[] sorted = (string[])zones.Clone();
+
+#if !SILVERLIGHT
+			Array.Sort(sorted, CaseInsensitiveComparer.DefaultInvariant);
+#else
+            Array.Sort(sorted, StringComparer.InvariantCultureIgnoreCase);
+#endif
+
+            for (int i = 0; i < zones.Length; i++)
+				Debug.Assert(sorted[i] == zones[i]);
+		}
+
+		[Test]
+		static void TestGetTimeZone()
+		{
+			TimeZone zone;
+
+			zone = GetTimeZone("Europe/Prague");
+			Debug.Assert(zone != null && zone.StandardName == "Europe/Prague");
+
+			zone = GetTimeZone("europe/prague");
+			Debug.Assert(zone != null && zone.StandardName == "Europe/Prague");
+
+			zone = GetTimeZone("foo");
+			Debug.Assert(zone == null);
+		}
+
+#endif
+		#endregion
+	}
 }
