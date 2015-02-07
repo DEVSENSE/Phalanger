@@ -1031,6 +1031,61 @@ namespace PHP.Library.SPL
     }
 
     /// <summary>
+    /// Exception thrown if a value does not match with a set of values.
+    /// Typically this happens when a function calls another function and expects the return value
+    /// to be of a certain type or value not including arithmetic or buffer related errors.
+    /// </summary>
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class UnexpectedValueException  : RuntimeException
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { throw new NotImplementedException(); }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public UnexpectedValueException (ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public UnexpectedValueException (ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected UnexpectedValueException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
+
+    /// <summary>
     /// Exception thrown if a value does not adhere to a defined valid data domain.
     /// </summary>
     [ImplementsType]
