@@ -293,6 +293,11 @@ namespace PHP.Core.Parsers
 			return encoding.GetByteCount(buffer, token_start, token_end - token_start);
 		}
 
+        public int GetTokenCharLength()
+        {
+            return token_end - token_start;
+        }
+
 		protected char GetTokenChar(int index)
 		{
 			return buffer[token_start + index];

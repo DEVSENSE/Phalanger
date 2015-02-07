@@ -11,7 +11,13 @@ using Pair = System.Tuple<object,object>;
 namespace PHP.Core.Parsers
 {
 	#region Helpers
-
+    
+    /// <summary>
+    /// Sink for specific language elements.
+    /// Methods of this interface are called by the parser.
+    /// In this way implementers are notified about declarations already during parsing,
+    /// note root AST is not available at this time.
+    /// </summary>
 	public interface IReductionsSink
 	{
 		void InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ decl);
@@ -20,7 +26,7 @@ namespace PHP.Core.Parsers
 		void GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl);
 	}
 
-	// Due to a MCS bug, it has to be in the other partial class in generated (Generated/Parser.cs)
+    // Due to a MCS bug, it has to be in the other partial class in generated (Generated/Parser.cs)
     // .. uncomment the following once it is fixed!
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
@@ -205,7 +211,7 @@ namespace PHP.Core.Parsers
 		public SourceUnit SourceUnit { get { return sourceUnit; } }
 		private SourceUnit sourceUnit;
 
-		private IReductionsSink reductionsSink;
+		private IReductionsSink/*!*/reductionsSink;
 		private bool unicodeSemantics;
 		private TextReader reader;
 		private Scope currentScope;
@@ -251,7 +257,7 @@ namespace PHP.Core.Parsers
 		}
 
 		public GlobalCode Parse(SourceUnit/*!*/ sourceUnit, TextReader/*!*/ reader, ErrorSink/*!*/ errors,
-			IReductionsSink/*!*/ reductionsSink, Parsers.Position initialPosition, Lexer.LexicalStates initialLexicalState,
+			IReductionsSink reductionsSink, Parsers.Position initialPosition, Lexer.LexicalStates initialLexicalState,
 			LanguageFeatures features)
 		{
 			Debug.Assert(reader != null && errors != null);
@@ -261,10 +267,10 @@ namespace PHP.Core.Parsers
             this.errors = errors;
             this.features = features;
             this.reader = reader;
-            this.reductionsSink = reductionsSink;
+            this.reductionsSink = reductionsSink ?? NullReductionSink;
             InitializeFields();
 
-			this.scanner = new Scanner(initialPosition, reader, sourceUnit, errors, features);
+            this.scanner = new Scanner(initialPosition, reader, sourceUnit, errors, reductionsSink as ICommentsSink, features);
 			this.scanner.CurrentLexicalState = initialLexicalState;
 			this.currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
 
