@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using PHP.Core.AST;
 using PHP.Core.Reflection;
-using Pair = System.Tuple<object,object>;
+using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
 
 namespace PHP.Core.Parsers
 {
@@ -154,7 +154,7 @@ namespace PHP.Core.Parsers
 		}
 
 		#endregion
-
+        
         #region TmpMemberInfo
 
         /// <summary>
@@ -478,8 +478,40 @@ namespace PHP.Core.Parsers
 			}
 		}
 
-		private VarLikeConstructUse/*!*/ CreateVariableUse(Position pos, VarLikeConstructUse/*!*/ variable, VarLikeConstructUse/*!*/ property,
-	  Pair parameters, VarLikeConstructUse chain)
+        private FcnParam/*!*/ CreateFcnParam(FcnParam/*!*/fcnParam, Expression/*!*/arrayDereference)
+        {
+            var arrayKeyList = fcnParam.Item3;
+            if (arrayKeyList == null)
+                arrayKeyList = new List<Expression>(1);
+
+            arrayKeyList.Add(arrayDereference);
+
+            return new FcnParam(fcnParam.Item1, fcnParam.Item2, arrayKeyList);
+        }
+
+        private static VarLikeConstructUse/*!*/ CreateFcnArrayDereference(Position pos, VarLikeConstructUse/*!*/varUse, List<Expression> arrayKeysExpression)
+        {
+            if (arrayKeysExpression != null && arrayKeysExpression.Count > 0)
+            {
+                // wrap fcnCall into ItemUse
+                foreach (var keyExpr in arrayKeysExpression)
+                    varUse = new ItemUse(pos, varUse, keyExpr, true);
+            }
+
+            return varUse;
+        }
+
+        private static VarLikeConstructUse/*!*/ DereferenceFunctionArrayAccess(VarLikeConstructUse/*!*/varUse)
+        {
+            ItemUse itemUse;
+            while ((itemUse = varUse as ItemUse) != null && itemUse.IsFunctionArrayDereferencing)
+                varUse = itemUse.Array;
+
+            return varUse;
+        }
+
+		private static VarLikeConstructUse/*!*/ CreateVariableUse(Position pos, VarLikeConstructUse/*!*/ variable, VarLikeConstructUse/*!*/ property,
+                                                           FcnParam parameters, VarLikeConstructUse chain)
 		{
 			if (parameters != null)
 			{
@@ -501,9 +533,13 @@ namespace PHP.Core.Parsers
 						IndirectVarUse indirect_use = (IndirectVarUse)property;
                         property = new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 					}
-					property.IsMemberOf = variable;
-				}
-			}
+
+                    property.IsMemberOf = variable;
+                }
+
+                // wrap into ItemUse
+                property = CreateFcnArrayDereference(pos, property, parameters.Item3);
+            }
 			else
 			{
 				property.IsMemberOf = variable;
@@ -514,8 +550,15 @@ namespace PHP.Core.Parsers
 				// finds the first variable use in the chain and connects it to the property
 
 				VarLikeConstructUse first_in_chain = chain;
-				while (first_in_chain.IsMemberOf != null)
-					first_in_chain = first_in_chain.IsMemberOf;
+                for (;;)
+                {
+                    first_in_chain = DereferenceFunctionArrayAccess(first_in_chain);
+
+                    if (first_in_chain.IsMemberOf != null)
+                        first_in_chain = first_in_chain.IsMemberOf;
+                    else
+                        break;
+                }
 
 				first_in_chain.IsMemberOf = property;
 				return chain;
@@ -526,23 +569,32 @@ namespace PHP.Core.Parsers
 			}
 		}
 
-		private VarLikeConstructUse/*!*/ CreatePropertyVariable(Position pos, CompoundVarUse/*!*/ property, Pair parameters)
+        private static VarLikeConstructUse/*!*/ CreatePropertyVariable(Position pos, CompoundVarUse/*!*/ property, FcnParam parameters)
 		{
 			if (parameters != null)
 			{
 				DirectVarUse direct_use;
 				IndirectVarUse indirect_use;
+                VarLikeConstructUse fcnCall;
 
 				if ((direct_use = property as DirectVarUse) != null)
 				{
 					QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-                    return new DirectFcnCall(pos, method_name, null, property.Position, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                    fcnCall = new DirectFcnCall(pos, method_name, null, property.Position, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 				}
+                else if ((indirect_use = property as IndirectVarUse) != null)
+                {
+                    fcnCall = new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                }
+                else
+                {
+                    fcnCall = new IndirectFcnCall(pos, (ItemUse)property, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                }
 
-				if ((indirect_use = property as IndirectVarUse) != null)
-                    return new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                // wrap fcnCall into ItemUse
+                fcnCall = CreateFcnArrayDereference(pos, fcnCall, parameters.Item3);
 
-                return new IndirectFcnCall(pos, (ItemUse)property, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                return fcnCall;
 			}
 			else
 			{
@@ -550,11 +602,15 @@ namespace PHP.Core.Parsers
 			}
 		}
 
-		private VarLikeConstructUse/*!*/ CreatePropertyVariables(VarLikeConstructUse chain, VarLikeConstructUse/*!*/ member)
+		private static VarLikeConstructUse/*!*/ CreatePropertyVariables(VarLikeConstructUse chain, VarLikeConstructUse/*!*/ member)
 		{
-			if (chain != null)
+            // dereference function array access:
+            var element = DereferenceFunctionArrayAccess(member);
+            
+            // 
+            if (chain != null)
 			{
-				IndirectFcnCall ifc = member as IndirectFcnCall;
+                IndirectFcnCall ifc = element as IndirectFcnCall;
 
 				if (ifc != null && ifc.NameExpr as ItemUse != null)
 				{
@@ -563,12 +619,12 @@ namespace PHP.Core.Parsers
 				}
 				else
 				{
-					member.IsMemberOf = chain;
+                    element.IsMemberOf = chain;
 				}
 			}
 			else
 			{
-				member.IsMemberOf = null;
+                element.IsMemberOf = null;
 			}
 
 			return member;

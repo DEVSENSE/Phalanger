@@ -13,7 +13,7 @@ using PHP.Core.AST;
 using PHP.Core.AST.Linq;
 using PHP.Core.Reflection;
 using PHP.Core.Parsers.GPPG;
-using Pair = System.Tuple<object,object>;
+using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
 
 %%
 
@@ -385,7 +385,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> actual_argument                         // ActualParam!
 %type<Object> actual_argument_list                    // List<ActualParam>!
 %type<Object> actual_argument_list_opt                // List<ActualParam>!
-%type<Object> actual_arguments_opt                    // Pair of List<TypeRef> and List<ActualParam>
+%type<Object> actual_arguments_opt                    // null or FcnParam = Tuple<List<TypeRef>, List<ActualParam>, List<Expression>>	// call type parameters, actual parameters, opt array dereferencing
+%type<Object> non_empty_actual_arguments_opt		  // null or FcnParam
 %type<Object> base_ctor_call_opt                      // List<ActualParam>
 
 
@@ -402,6 +403,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> string_embedded_key                     // Expression
 %type<Object> unsupported_declare_list                // null
 %type<Object> function_call                           // FunctionCall
+%type<Object> keyed_function_call					  // VarLikeConstructUse
 %type<Object> type_ref                                // TypeRef!
 %type<Object> type_ref_list                           // List<TypeRef>
 %type<Object> qualified_static_type_ref               // GenericQualifiedName
@@ -1269,8 +1271,14 @@ type_hint_opt:
 
 
 actual_arguments_opt:
-		generic_dynamic_args_opt '(' actual_argument_list_opt ')' { $$ = new Pair($1, $3); }
-	|	/* empty */                                               { $$ = null; }
+		non_empty_actual_arguments_opt	{ $$ = $1; }
+	|	/* empty */                     { $$ = null; }
+;
+
+non_empty_actual_arguments_opt:
+		non_empty_actual_arguments_opt '[' key_opt ']'				{ $$ = CreateFcnParam((FcnParam)$1, (Expression)$3); }
+	|	non_empty_actual_arguments_opt '{' expr '}'					{ $$ = CreateFcnParam((FcnParam)$1, (Expression)$3); }
+	|	generic_dynamic_args_opt '(' actual_argument_list_opt ')'	{ $$ = new FcnParam((List<TypeRef>)$1, (List<ActualParam>)$3, null); }
 ;
 
 actual_argument_list_opt:
@@ -2018,7 +2026,7 @@ qualified_namespace_name_list:
 keyed_field_names_opt:
 		keyed_field_names_opt T_OBJECT_OPERATOR keyed_field_name
 		{ 
-			if ($1 != null) ((VariableUse)$3).IsMemberOf = (VarLikeConstructUse)$1; 
+			if ($1 != null) ((VarLikeConstructUse)$3).IsMemberOf = (VarLikeConstructUse)$1; 
 			$$ = $3; 
 		}  
 		
@@ -2122,7 +2130,7 @@ writable_chain:
 chain:
 		chain_base_with_function_calls T_OBJECT_OPERATOR keyed_field_name actual_arguments_opt member_access_chain_opt 
 		{ 
-      $$ = CreateVariableUse(@$, (VarLikeConstructUse)$1, (VarLikeConstructUse)$3, (Pair)$4, (VarLikeConstructUse)$5);
+      $$ = CreateVariableUse(@$, (VarLikeConstructUse)$1, (VarLikeConstructUse)$3, (FcnParam)$4, (VarLikeConstructUse)$5);
 		}	
 			
 	|	chain_base_with_function_calls { $$ = $1; }	
@@ -2136,12 +2144,12 @@ member_access_chain_opt:
 	|	/* empty */	{ $$ = null; }
 ;
 
-// -> (identifier|{expr})[key_opt]* (<:type_args:>(args))?
-// -> ($)*(T_VARIABLE|${expr})[key_opt]* (<:type_args:>(args))?
+// -> (identifier|{expr})[key_opt]* (<:type_args:>(args)[key_opt]*)?
+// -> ($)*(T_VARIABLE|${expr})[key_opt]* (<:type_args:>(args)[key_opt]*)?
 member_access:
 		T_OBJECT_OPERATOR keyed_field_name actual_arguments_opt 
 		{ 
-      $$ = CreatePropertyVariable(@$, (CompoundVarUse)$2, (Pair)$3);
+      $$ = CreatePropertyVariable(@$, (CompoundVarUse)$2, (FcnParam)$3);
 		}
 ;
 
@@ -2171,6 +2179,13 @@ keyed_variable:
 	|	simple_indirect_reference keyed_compound_variable	{ $$ = new IndirectVarUse(@$, $1, (Expression)$2); }	
 ;
 
+// (function_call)[key_opt]*
+keyed_function_call:
+		keyed_function_call '[' key_opt ']'			{ $$ = new ItemUse(@$, (VarLikeConstructUse)$1, (Expression)$3, true); }
+	|	keyed_function_call '{' expr '}'			{ $$ = new ItemUse(@$, (VarLikeConstructUse)$1, (Expression)$3, true); }
+	|	function_call								{ $$ = $1;}
+;
+
 // (static_type_ref::)?($)*(T_VARIABLE|${expr})[key_opt]*
 chain_base:
 		keyed_variable                                    { $$ = $1; }	
@@ -2188,11 +2203,9 @@ chain_base:
 ;
 
 chain_base_with_function_calls:
-		chain_base	    { $$ = $1; }	
-	|	function_call   { $$ = $1; }
+		chain_base			  { $$ = $1; }	
+	|	keyed_function_call   { $$ = $1; }
 ;
-
-
 
 // (identifier|{expr})[key_opt]*
 // ($)*(T_VARIABLE|${expr})[key_opt]*
