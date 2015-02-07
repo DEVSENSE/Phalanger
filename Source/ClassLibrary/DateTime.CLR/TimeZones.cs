@@ -799,10 +799,10 @@ namespace PHP.Library
             TimeZoneInfo zone;
 
             zone = GetTimeZone("Europe/Prague");
-            Debug.Assert(zone != null && zone.StandardName == "Europe/Prague");
+            Debug.Assert(zone != null && zone.Id == "Europe/Prague");
 
             zone = GetTimeZone("europe/prague");
-            Debug.Assert(zone != null && zone.StandardName == "Europe/Prague");
+            Debug.Assert(zone != null && zone.Id == "Europe/Prague");
 
             zone = GetTimeZone("foo");
             Debug.Assert(zone == null);

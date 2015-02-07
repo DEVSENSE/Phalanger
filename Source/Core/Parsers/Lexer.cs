@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using PHP.Core.Reflection;
+using System.Globalization;
 
 namespace PHP.Core.Parsers
 {
@@ -501,51 +502,12 @@ namespace PHP.Core.Parsers
 		// [0-9]+[eE][+-]?[0-9]+
 		protected double GetTokenAsDouble(int startIndex)
 		{
-			double result = 0.0;
-			char c;
-			int buffer_pos = token_start + startIndex;
-
-			while (Char.IsDigit(c = buffer[buffer_pos]))
-			{
-				result = result * 10 + c - '0';
-				buffer_pos++;
-			}
-
-			if (c == '.')
-			{
-				buffer_pos++;
-
-				double r = 0;
-				double p = 1.0;
-				while (Char.IsDigit(c = buffer[buffer_pos]))
-				{
-					r = r * 10 + c - '0';
-					p /= 10.0;
-					buffer_pos++;
-				}
-				result += r * p;
-			}
-
-			if (c == 'e' || c == 'E')
-			{
-				c = buffer[++buffer_pos];
-
-				double exp_base = 10;
-				if (c == '-') { exp_base = 0.1; c = buffer[++buffer_pos]; }
-				else if (c == '+') c = buffer[++buffer_pos];
-
-				double exponent = 0;
-
-				while (Char.IsDigit(c))
-				{
-					exponent = exponent * 10 + c - '0';
-					c = buffer[++buffer_pos];
-				}
-
-				result = result * Math.Pow(exp_base, exponent);
-			}
-
-			return result;
+            string str = new string(buffer, token_start, token_end - token_start);
+            
+            return double.Parse(
+                str,
+                NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent,
+                CultureInfo.InvariantCulture);
 		}
 
         //protected void GetTokenAsQualifiedName(int startIndex, List<string>/*!*/ result)
