@@ -497,6 +497,35 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
+        public virtual object getMethod(ScriptContext/*!*/context, object name)
+        {
+            if (typedesc == null)
+                return false;
+
+            var nameStr = PhpVariable.AsString(name);
+            if (string.IsNullOrEmpty(nameStr))
+                return false;
+
+            DRoutineDesc method;
+            if (typedesc.GetMethod(new Name(nameStr), typedesc, out method) == GetMemberResult.NotFound)
+                return false;
+
+            return new ReflectionMethod(context, true)
+            {
+                dtype = method.DeclaringType,
+                method = method,
+            };
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getMethod(object instance, PhpStack stack)
+        {
+            var name = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getMethod(stack.Context, name);
+        }
+
+        [ImplementsMethod]
         public virtual object getMethods(ScriptContext/*!*/context, object filter = null)
         {
             if (typedesc == null)

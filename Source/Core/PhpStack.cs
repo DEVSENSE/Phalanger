@@ -188,8 +188,10 @@ namespace PHP.Core
 
 			public bool AllowProtectedCall;
 
+            public DTypeDesc LateStaticBindType;
+
 			public CallState(int argCount, int typeCount, Dictionary<string, object> variables, NamingContext namingContext,
-				string calleeName, bool callback, bool allowProtectedCall)
+				string calleeName, bool callback, bool allowProtectedCall, DTypeDesc lateStaticBindType)
 			{
 				this.ArgCount = argCount;
 				this.TypeCount = typeCount;
@@ -198,6 +200,7 @@ namespace PHP.Core
 				this.CalleeName = calleeName;
 				this.Callback = callback;
 				this.AllowProtectedCall = allowProtectedCall;
+                this.LateStaticBindType = lateStaticBindType;
 			}
 		}
 
@@ -231,6 +234,12 @@ namespace PHP.Core
 		/// </summary>
 		public bool Callback;
 
+        /// <summary>
+        /// Type used to call currently evaluated method.
+        /// </summary>
+        [Emitted]
+        public DTypeDesc LateStaticBindType;
+
 		[Emitted]
 		public NamingContext NamingContext;
 
@@ -239,7 +248,7 @@ namespace PHP.Core
 
 		internal CallState SaveCallState()
 		{
-			return new CallState(ArgCount, TypeArgCount, Variables, NamingContext, CalleeName, Callback, AllowProtectedCall);
+			return new CallState(ArgCount, TypeArgCount, Variables, NamingContext, CalleeName, Callback, AllowProtectedCall, LateStaticBindType);
 		}
 
 		internal void RestoreCallState(CallState old)
@@ -251,6 +260,7 @@ namespace PHP.Core
 			Variables = old.Variables;
 			NamingContext = old.NamingContext;
 			AllowProtectedCall = old.AllowProtectedCall;
+            LateStaticBindType = old.LateStaticBindType;
 		}
 
 		#endregion
@@ -774,8 +784,9 @@ namespace PHP.Core
 			ArgCount = 0;
 			TypeArgCount = 0;
 			Callback = false;
-			 Variables = null;
+			Variables = null;
 			NamingContext = null;
+            LateStaticBindType = null;
 		}
 
 		/// <summary>
@@ -789,6 +800,7 @@ namespace PHP.Core
 		{
 			Top -= (encodedActualCount & 0xffff) + 1;  // +1 for encoded args count
 			TypesTop -= (encodedActualCount >> 16);
+            LateStaticBindType = null;
 		}
 
 		/// <summary>
@@ -821,7 +833,7 @@ namespace PHP.Core
 			Callback = false;
 			Variables = null;
 			NamingContext = null;
-			return encoded_args_count;
+            return encoded_args_count;
 		}
 
 		/// <summary>

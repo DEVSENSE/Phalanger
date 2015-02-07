@@ -396,8 +396,7 @@ namespace PHP.Core.Emit
                 _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
                 _IsConstantDefined, _GetConstantValue, _DeclareConstant, _RegisterDObjectForFinalization,
                 _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle, _DeclareIncompleteTypeHelper, _IncompleteTypeDeclared,
-                _GetWorkingDirectory,
-                _PushLateStaticBindType, _PopLateStaticBindType;
+                _GetWorkingDirectory;
 
             public static MethodInfo RunApplication { get { if (_RunApplication == null) _RunApplication = _this.GetMethod("RunApplication", new Type[] { typeof(Delegate), typeof(string), typeof(string) }); return _RunApplication; } }
             public static MethodInfo GetCurrentContext { get { if (_GetCurrentContext == null) _GetCurrentContext = _this.GetMethod("get_CurrentContext"); return _GetCurrentContext; } }
@@ -431,9 +430,6 @@ namespace PHP.Core.Emit
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
             public static MethodInfo DeclareIncompleteTypeHelper { get { return _DeclareIncompleteTypeHelper ?? (_DeclareIncompleteTypeHelper = _this.GetMethod("DeclareIncompleteTypeHelper")); } }
             public static MethodInfo IncompleteTypeDeclared { get { return _IncompleteTypeDeclared ?? (_IncompleteTypeDeclared = _this.GetMethod("IncompleteTypeDeclared")); } }
-
-            public static MethodInfo PushLateStaticBindType { get { return _PushLateStaticBindType ?? (_PushLateStaticBindType = _this.GetMethod("PushLateStaticBindType")); } }
-            public static MethodInfo PopLateStaticBindType { get { return _PopLateStaticBindType ?? (_PopLateStaticBindType = _this.GetMethod("PopLateStaticBindType")); } }
         }
 
         #endregion
@@ -1214,7 +1210,7 @@ namespace PHP.Core.Emit
 	{
 		static FieldInfo _DObject_TypeDesc, _PhpReference_Value, _ScriptContext_Stack,
 			_ScriptContext_Default, _ScriptContext_AutoGlobals, _ScriptContext_HttpVarsArrays,
-			_PhpStack_ArgCount, _PhpStack_Context, _PhpStack_Variables, _PhpStack_NamingContext, _PhpStack_AllowProtectedCall,
+            _PhpStack_ArgCount, _PhpStack_Context, _PhpStack_Variables, _PhpStack_NamingContext, _PhpStack_AllowProtectedCall, _PhpStack_LateStaticBindType,
 	        _PhpStack_CalleeName, _Arg_Default, _Arg_DefaultType, _ScriptContext_EvalId, _ScriptContext_EvalRelativeSourcePath,
 			_ScriptContext_EvalLine, _ScriptContext_EvalColumn, _PhpUserException_UserException,
 			_LinqContext_outerType, _LinqContext_typeHandle, _LinqContext_variables, _LinqContext_context,
@@ -1268,6 +1264,7 @@ namespace PHP.Core.Emit
 		public static FieldInfo PhpStack_NamingContext { get { if (_PhpStack_NamingContext == null)   _PhpStack_NamingContext = typeof(PhpStack).GetField("NamingContext"); return _PhpStack_NamingContext; } }
 		public static FieldInfo PhpStack_CalleeName { get { if (_PhpStack_CalleeName == null)  _PhpStack_CalleeName = typeof(PhpStack).GetField("CalleeName"); return _PhpStack_CalleeName; } }
 		public static FieldInfo PhpStack_AllowProtectedCall { get { if (_PhpStack_AllowProtectedCall == null)   _PhpStack_AllowProtectedCall = typeof(PhpStack).GetField("AllowProtectedCall"); return _PhpStack_AllowProtectedCall; } }
+        public static FieldInfo PhpStack_LateStaticBindType { get { return _PhpStack_LateStaticBindType ?? (_PhpStack_LateStaticBindType = typeof(PhpStack).GetField("LateStaticBindType")); } }
 
 		public static FieldInfo ScriptContext_EvalLine { get { if (_ScriptContext_EvalLine == null) _ScriptContext_EvalLine = typeof(ScriptContext).GetField("EvalLine"); return _ScriptContext_EvalLine; } }
 		public static FieldInfo ScriptContext_EvalColumn { get { if (_ScriptContext_EvalColumn == null) _ScriptContext_EvalColumn = typeof(ScriptContext).GetField("EvalColumn"); return _ScriptContext_EvalColumn; } }

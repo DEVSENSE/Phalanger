@@ -161,6 +161,12 @@ namespace PHP.Core
 		public IPlace/*!*/ TypeContextPlace;
 		public void EmitLoadClassContext() { TypeContextPlace.EmitLoad(il); }
 
+        /// <summary>
+        /// A place to load late static bind type from.
+        /// It may be a local variable with value copied from <see cref="PhpStack.LateStaticBindType"/>.
+        /// </summary>
+        public IPlace LateStaticBindTypePlace;
+
 		/// <summary>
 		/// A place to load <see cref="NamingContext"/> representing current name context from.
 		/// </summary>
@@ -1667,11 +1673,16 @@ namespace PHP.Core
         /// <param name="flags">Ignored.</param>
         internal void EmitLoadStaticTypeDesc(ResolveTypeFlags flags)
         {
-            // 1. instance method can access this.TypeDesc // if this != null
-            if (this.SelfPlace != LiteralPlace.Null)    // inside instance method (or global code or instance method called statically)
+            // 1. if we have a local variable with the type place
+            if (this.LateStaticBindTypePlace != null)
+            {
+                this.LateStaticBindTypePlace.EmitLoad(this.il);
+            }
+            else
+            // 2. instance method can access this.TypeDesc // if this != null
+            if (this.SelfPlace != LiteralPlace.Null && this.LocationStack.InMethodDecl)    // inside instance method (or instance method called statically)
             {
                 this.EmitLoadSelf();
-                // TODO: if (self != null)
                 this.IL.Emit(OpCodes.Call, Properties.DObject_TypeDesc.GetGetMethod());
             }
             else

@@ -573,9 +573,6 @@ namespace PHP.Library.SPL
         /// <summary>
         /// Constructs a ReflectionFunction object.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="arg">The name of the function to reflect or a closure.</param>
-        /// <returns></returns>
         [ImplementsMethod]
         public virtual object __construct(ScriptContext context, object @class, object methodname)
         {
@@ -715,6 +712,8 @@ namespace PHP.Library.SPL
             // invoke the routine
             var stack = context.Stack;
             stack.AddFrame(values ?? ArrayUtils.EmptyObjects);
+            stack.LateStaticBindType = dtype;
+
             return method.Invoke(dobj, stack);
         }
 

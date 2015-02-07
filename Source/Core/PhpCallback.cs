@@ -101,6 +101,12 @@ namespace PHP.Core
 		/// </summary>
 		private DObject instance;
 
+        /// <summary>
+        /// Type used to call this routine.
+        /// Used for late static binding.
+        /// </summary>
+        private DTypeDesc lateStaticBindType;
+
 		/// <summary>
 		/// <B>true</B> if <see cref="instance"/> is just a dummy instance created ad-hoc to be able to call an instance method
 		/// statically, <B>false</B> otherwise.
@@ -168,6 +174,9 @@ namespace PHP.Core
 			{
 				if (IsBound) throw new InvalidOperationException(CoreResources.GetString("cannot_change_target_instance"));
 				instance = value;
+
+                if (instance != null)
+                    lateStaticBindType = instance.TypeDesc;
 			}
 		}
 
@@ -213,8 +222,8 @@ namespace PHP.Core
 		public PhpCallback(DObject instance, DRoutineDesc handle, ScriptContext context)
 		{
 			if (handle == null) throw new ArgumentNullException("handle");
-			if (!handle.IsStatic)
-			{
+            if (!handle.IsStatic)
+            {
 				if (instance == null) throw new ArgumentNullException("instance");
 				this.instance = instance;
 			}
@@ -222,6 +231,9 @@ namespace PHP.Core
 			this.context = context;
 			this.routineDesc = handle;
 			this.state = State.Bound;
+
+            if (instance != null)
+                this.lateStaticBindType = instance.TypeDesc;
 		}
 
 		/// <summary>
@@ -291,6 +303,7 @@ namespace PHP.Core
 			this.instance = instance;
 			this.targetName = targetName;
 			this.state = State.UnboundInstanceMethod;
+            this.lateStaticBindType = instance.TypeDesc;
 		}
 
         /// <summary>
@@ -307,6 +320,7 @@ namespace PHP.Core
             this.targetName = routine.Member.FullName;
             this.state = State.Bound;
             this.routineDesc = routine;
+            this.lateStaticBindType = instance.TypeDesc;
         }
 
 		#endregion
@@ -375,6 +389,7 @@ namespace PHP.Core
 
 						// find the method
                         bool is_caller_method;
+                        lateStaticBindType = type;
 						routineDesc = Operators.GetStaticMethodDesc(type, targetName,
                             ref instance, callingContext, context, quiet, false, out is_caller_method);
 
@@ -460,6 +475,7 @@ namespace PHP.Core
 			else stack.AddFrame(args);
 
 			stack.Callback = true;
+            stack.LateStaticBindType = this.lateStaticBindType;
 			return routineDesc.Invoke(instance, stack, callingContext);
 		}
 
@@ -646,6 +662,9 @@ namespace PHP.Core
 			targetName = info.GetString("targetName");
 			instance = (PhpObject)info.GetValue("instance", typeof(PhpObject));
 			state = (State)info.GetValue("state", typeof(State));
+
+            if (instance != null)
+                lateStaticBindType = instance.TypeDesc;
 		}
 
 
