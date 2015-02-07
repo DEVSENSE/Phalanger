@@ -34,7 +34,7 @@ namespace PHP.Library.Data
         #region getIterator
         [PhpVisible]
         [ImplementsMethod]
-        public object getIterator(ScriptContext context)
+        public virtual object getIterator(ScriptContext context)
         {
             throw new NotImplementedException();
         }
@@ -55,7 +55,7 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style/*=null*/, object cursor_orientation/*FETCH_ORI_NEXT*/, object cursor_offset/*0*/)
+        public virtual object fetch(ScriptContext context, object fetch_style/*=null*/, object cursor_orientation/*FETCH_ORI_NEXT*/, object cursor_offset/*0*/)
         {
             PDOFetchType ft;
             if (fetch_style == null || fetch_style == Arg.Default)
@@ -140,7 +140,7 @@ namespace PHP.Library.Data
         #region close
         [PhpVisible]
         [ImplementsMethod]
-        public object closeCursor(ScriptContext context)
+        public virtual object closeCursor(ScriptContext context)
         {
             this.CloseReader();
             return null;
@@ -292,7 +292,7 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
-        public object bindValue(ScriptContext context, object parameter, object value, object data_type/*=null*/)
+        public virtual object bindValue(ScriptContext context, object parameter, object value, object data_type/*=null*/)
         {
             PDOParamType? dt = null;
             if (data_type != null && data_type != Arg.Default)
@@ -422,7 +422,7 @@ namespace PHP.Library.Data
         }
 
         [PhpVisible, ImplementsMethod]
-        public object execute(ScriptContext context, [Optional] object input_parameters)
+        public virtual object execute(ScriptContext context, [Optional] object input_parameters)
         {
             return this.ExecuteInternal((input_parameters != Arg.Default) ? input_parameters : null);
         }
@@ -439,7 +439,7 @@ namespace PHP.Library.Data
         #region fetchColumn
         
         [PhpVisible, ImplementsMethod]
-        public object fetchColumn(ScriptContext context, object column_number/*=0*/)
+        public virtual object fetchColumn(ScriptContext context, object column_number/*=0*/)
         {
             object ret = this.fetch(context, PDO.FETCH_NUM);
             if (ret is bool && (bool)ret == false)
@@ -461,7 +461,7 @@ namespace PHP.Library.Data
 
         #region rowCount
         [PhpVisible, ImplementsMethod]
-        public object rowCount(ScriptContext context)
+        public virtual object rowCount(ScriptContext context)
         {
             if (this.CurrentReader != null)
             {
@@ -481,7 +481,7 @@ namespace PHP.Library.Data
         #region fetchAll
         
         [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, [Optional]object fetch_style/*=null*/, [Optional]object fetch_argument/*=null*/, [Optional]object ctor_args/*=null*/)
+        public virtual object fetchAll(ScriptContext context, [Optional]object fetch_style/*=null*/, [Optional]object fetch_argument/*=null*/, [Optional]object ctor_args/*=null*/)
         {
             PhpArray arr = new PhpArray();
 
