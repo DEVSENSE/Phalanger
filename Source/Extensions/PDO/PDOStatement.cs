@@ -63,11 +63,6 @@ namespace PHP.Library.Data
                 fetch_style = this.m_pdo.getAttribute(context, (int)PDOAttributeType.PDO_ATTR_DEFAULT_FETCH_MODE);
             
             int fetch_style_int = PHP.Core.Convert.ObjectToInteger(fetch_style);
-            if (!Enum.IsDefined(typeof(PDOFetchType), fetch_style_int))
-            {
-                PDOException.Throw(context, "Invalid fetch_style value", null, null, null);
-                return null;
-            }
             ft = (PDOFetchType)fetch_style_int;
             var dr = this.CurrentReader;
             switch (ft)
@@ -80,7 +75,8 @@ namespace PHP.Library.Data
                 case PDOFetchType.PDO_FETCH_USE_DEFAULT:
                     return Fetch_Assoc(m_pdo.Driver, dr, true) ?? (object)false;
                 default:
-                    throw new NotImplementedException();
+                    PDOException.Throw(context, "Unsupported fetch_style value", null, null, null);
+                    return null;
             }
         }
 
