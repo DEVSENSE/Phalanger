@@ -260,19 +260,11 @@ namespace PHP.Core.AST
             this.IsSimpleSyntax = false;
         }
 
-		public NamespaceDecl(Position p, string/*!*/ simpleName, bool simpleSyntax)
+		public NamespaceDecl(Position p, List<string>/*!*/ names, bool simpleSyntax)
 			: base(p)
 		{
 			this.isAnonymous = false;
-			this.qualifiedName = new QualifiedName(simpleName, false);
-            this.IsSimpleSyntax = simpleSyntax;
-		}
-
-        public NamespaceDecl(Position p, List<string>/*!*/ names, bool simpleSyntax)
-			: base(p)
-		{
-			this.isAnonymous = false;
-			this.qualifiedName = new QualifiedName(names, false);
+			this.qualifiedName = new QualifiedName(names, false, true);
             this.IsSimpleSyntax = simpleSyntax;
 		}
 

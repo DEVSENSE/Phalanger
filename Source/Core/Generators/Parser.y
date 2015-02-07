@@ -228,13 +228,13 @@ using Pair = System.Tuple<object,object>;
 %token T_INSTANCEOF
 %token T_NAMESPACE
 %token T_NAMESPACE_C
-%token<Object> T_NAMESPACE_NAME          // List<string>
+%token T_NS_SEPARATOR
+%token T_USE
 
 /* PHP6 */
 
 %token T_BINARY_DOUBLE
 %token T_BINARY_HEREDOC
-%token T_IMPORT
 
 /* PHP/CLR */
 
@@ -457,21 +457,22 @@ using Pair = System.Tuple<object,object>;
 
 %type<Integer> attribute_target_opt          // CustomAttribute.Targets
 
-%type<Object> extends_opt                   // GenericQualifiedName?
-%type<Object> namespace_name                 // QualifiedName (with a base name)
+%type<Object> extends_opt                    // GenericQualifiedName?
+%type<Object> qualified_namespace_name       // QualifiedName	// has base name
+%type<Object> namespace_name_list			 // List<string>
 
 %% /* Productions */
 
 start:
-	  colons_opt import_list 
-	  { 
-			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
-		}
-	| colons_opt import_list top_statement_list 
-	  { 
-			astRoot = new GlobalCode((List<Statement>)$3, sourceUnit);
-		}
-	| colons_opt non_empty_top_statement 
+//	  colons_opt import_list 
+//	  { 
+//			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
+//		}
+//	| colons_opt import_list top_statement_list 
+//	  { 
+//			astRoot = new GlobalCode((List<Statement>)$3, sourceUnit);
+//		}
+	  colons_opt non_empty_top_statement 
 	  { 
 	    	astRoot = new GlobalCode(NewList<Statement>( $2 ), sourceUnit);
 		}
@@ -508,20 +509,23 @@ import_list:
 ;
 
 import_statement: /* PHP-NS, PHP/CLR */
-		T_IMPORT T_CLASS T_NAMESPACE_NAME ';'                    { AddImport(@$, DeclarationKind.Type, (List<string>)$3, null); }            
-	|	T_IMPORT T_CLASS T_NAMESPACE_NAME T_AS identifier ';'    { AddImport(@$, DeclarationKind.Type, (List<string>)$3, (string)$5); }      
-	|	T_IMPORT T_INTERFACE T_NAMESPACE_NAME ';'                { AddImport(@$, DeclarationKind.Type, (List<string>)$3, null); }             /* PHP/CLR */
-	|	T_IMPORT T_INTERFACE T_NAMESPACE_NAME T_AS identifier ';'{ AddImport(@$, DeclarationKind.Type, (List<string>)$3, (string)$5); }       /* PHP/CLR */
-	|	T_IMPORT T_FUNCTION T_NAMESPACE_NAME ';'                 { AddImport(@$, DeclarationKind.Function, (List<string>)$3, null); }         
-	|	T_IMPORT T_FUNCTION T_NAMESPACE_NAME T_AS identifier ';' { AddImport(@$, DeclarationKind.Function, (List<string>)$3, (string)$5); }   
-	|	T_IMPORT T_CONST T_NAMESPACE_NAME ';'                    { AddImport(@$, DeclarationKind.Constant, (List<string>)$3, null); }         /* PHP/CLR */
-	|	T_IMPORT T_CONST T_NAMESPACE_NAME T_AS identifier ';'    { AddImport(@$, DeclarationKind.Constant, (List<string>)$3, (string)$5); }   /* PHP/CLR */
-	|	T_IMPORT T_NAMESPACE T_NAMESPACE_NAME ';'                { AddImport((List<string>)$3); }                                            
-	|	T_IMPORT T_NAMESPACE identifier ';'                      { AddImport((string)$3); }
+// TODO: T_USE qualified_namespace_name;
+// TODO: T_USE qualified_namespace_name T_AS identifier;
+// TODO: T_USE multiple_use_opt;
+//		T_IMPORT T_CLASS T_NAMESPACE_NAME ';'                    { AddImport(@$, DeclarationKind.Type, (List<string>)$3, null); }            
+//	|	T_IMPORT T_CLASS T_NAMESPACE_NAME T_AS identifier ';'    { AddImport(@$, DeclarationKind.Type, (List<string>)$3, (string)$5); }      
+//	|	T_IMPORT T_INTERFACE T_NAMESPACE_NAME ';'                { AddImport(@$, DeclarationKind.Type, (List<string>)$3, null); }             /* PHP/CLR */
+//	|	T_IMPORT T_INTERFACE T_NAMESPACE_NAME T_AS identifier ';'{ AddImport(@$, DeclarationKind.Type, (List<string>)$3, (string)$5); }       /* PHP/CLR */
+//	|	T_IMPORT T_FUNCTION T_NAMESPACE_NAME ';'                 { AddImport(@$, DeclarationKind.Function, (List<string>)$3, null); }         
+//	|	T_IMPORT T_FUNCTION T_NAMESPACE_NAME T_AS identifier ';' { AddImport(@$, DeclarationKind.Function, (List<string>)$3, (string)$5); }   
+//	|	T_IMPORT T_CONST T_NAMESPACE_NAME ';'                    { AddImport(@$, DeclarationKind.Constant, (List<string>)$3, null); }         /* PHP/CLR */
+//	|	T_IMPORT T_CONST T_NAMESPACE_NAME T_AS identifier ';'    { AddImport(@$, DeclarationKind.Constant, (List<string>)$3, (string)$5); }   /* PHP/CLR */
+//	|	T_IMPORT T_NAMESPACE T_NAMESPACE_NAME ';'                { AddImport((List<string>)$3); }                                            
+//	|	T_IMPORT T_NAMESPACE identifier ';'                      { AddImport((string)$3); }
 	
 	// errors:
-	|	T_IMPORT ERROR { errors.Add(Errors.MissingImportedEntity, SourceUnit, @2); yyerrok(); } T_NAMESPACE_NAME  ';' { AddImport((List<string>)$4); }
-	|	T_IMPORT ERROR { errors.Add(Errors.MissingImportedEntity, SourceUnit, @2); yyerrok(); } identifier        ';' { AddImport((string)$4); }
+//	|	T_IMPORT ERROR { errors.Add(Errors.MissingImportedEntity, SourceUnit, @2); yyerrok(); } T_NAMESPACE_NAME  ';' { AddImport((List<string>)$4); }
+//	|	T_IMPORT ERROR { errors.Add(Errors.MissingImportedEntity, SourceUnit, @2); yyerrok(); } identifier        ';' { AddImport((string)$4); }
 ;
 
 top_statement_list:
@@ -554,7 +558,7 @@ namespace_declaration_statement:   /* PHP 5.3 */
 			currentNamespace = null;
 		}
 		
-	|	T_NAMESPACE T_NAMESPACE_NAME 
+	|	T_NAMESPACE namespace_name_list 
 		{ 
 			currentNamespace = new NamespaceDecl(@$, (List<string>)$2, false);
 		} 
@@ -565,26 +569,11 @@ namespace_declaration_statement:   /* PHP 5.3 */
 			currentNamespace = null;
 		}
 		
-	|	T_NAMESPACE identifier 
-		{ 
-			currentNamespace = new NamespaceDecl(@$, (string)$2, false);
-		} 
-		'{' namespace_statement_list_opt '}' 
-		{
-			currentNamespace.Statements = (List<Statement>)$5;
-			$$ = currentNamespace;
-			currentNamespace = null;
-		}
-	|	T_NAMESPACE T_NAMESPACE_NAME ';'
+	|	T_NAMESPACE namespace_name_list ';'
 		{ 
 			$$ = currentNamespace = new NamespaceDecl(@$, (List<string>)$2, true);
 			currentNamespace.Statements = new List<Statement>();
 		}		
-	|	T_NAMESPACE identifier ';'
-		{ 
-			$$ = currentNamespace = new NamespaceDecl(@$, (string)$2, true);
-			currentNamespace.Statements = new List<Statement>();
-		}
 ;
 
 namespace_statement_list_opt: 	 /* PHP 5.3 */
@@ -822,19 +811,19 @@ attribute_list:
 ;
 
 attribute:
-		namespace_name 
+		qualified_namespace_name 
 		{ 
 			$$ = new CustomAttribute(@$, (QualifiedName)$1, emptyActualParamListIndex, emptyNamedActualParamListIndex);
 		}
-	| namespace_name '(' attribute_arg_list ')' 
+	|	qualified_namespace_name '(' attribute_arg_list ')' 
 		{ 
 			$$ = new CustomAttribute(@$, (QualifiedName)$1, (List<ActualParam>)$3, emptyNamedActualParamListIndex);
 		}
-	| namespace_name '(' attribute_named_arg_list ')' 
+	|	qualified_namespace_name '(' attribute_named_arg_list ')' 
 		{ 
 			$$ = new CustomAttribute(@$, (QualifiedName)$1, emptyActualParamListIndex, (List<NamedActualParam>)$3);
 		}
-	| namespace_name '(' attribute_arg_list ',' attribute_named_arg_list ')' 
+	|	qualified_namespace_name '(' attribute_arg_list ',' attribute_named_arg_list ')' 
 		{ 
 			$$ = new CustomAttribute(@$, (QualifiedName)$1, (List<ActualParam>)$3, (List<NamedActualParam>)$5);
 		}
@@ -1700,7 +1689,7 @@ linq_into_clause_opt:
 ;
 
 function_call:
-		namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
+		qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
 		  $$ = new DirectFcnCall(@$, (QualifiedName)$1, (List<ActualParam>)$4, (List<TypeRef>)$2); 
 		}
@@ -1724,14 +1713,14 @@ function_call:
 ;
 
 qualified_static_type_ref:
-		namespace_name generic_dynamic_args_opt
+		qualified_namespace_name generic_dynamic_args_opt
 		{ 
 			$$ = new GenericQualifiedName((QualifiedName)$1, TypeRef.ToStaticTypeRefs((List<TypeRef>)$2, errors, sourceUnit)); 
 		}
 ;
 
 type_ref:
-		namespace_name generic_dynamic_args_opt
+		qualified_namespace_name generic_dynamic_args_opt
 		{ 
 			$$ = new DirectTypeRef(@$, (QualifiedName)$1, (List<TypeRef>)$2);
 		}
@@ -1782,9 +1771,34 @@ indirect_type_ref:
 	  }
 ;
 
-namespace_name:   	 
-		T_NAMESPACE_NAME  { $$ = new QualifiedName((List<string>)$1, true); }
-	|	identifier        { $$ = new QualifiedName((string)$1, true); }
+qualified_namespace_name:
+		namespace_name_list
+		{ $$ = new QualifiedName((List<string>)$1, true, false); }
+
+	|	T_NS_SEPARATOR namespace_name_list
+		{ $$ = new QualifiedName((List<string>)$2, true, true); }
+
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name_list
+		{
+			if (currentNamespace != null)
+			{
+				$$ = new QualifiedName(
+					ListAdd<string>(currentNamespace.QualifiedName.ToStringList(), $3 ),
+					true, true);
+			}
+			else
+			{
+				errors.Add(Errors.NamespaceKeywordUsedOutsideOfNamespace, SourceUnit, @1);
+				yyerrok();
+
+				$$ = new QualifiedName((List<string>)$3, true, true);
+			}
+		}
+;
+
+namespace_name_list:
+		identifier										{ $$ = NewList<string>($1); }
+	|	namespace_name_list T_NS_SEPARATOR identifier	{ $$ = $1; ListAdd<string>($$, $3 ); }
 ;
 
 keyed_field_names_opt:
@@ -1841,7 +1855,7 @@ pseudo_constant:
 ;
 
 global_constant:
-	namespace_name                { $$ = new GlobalConstUse(@$, (QualifiedName)$1); }
+	qualified_namespace_name                { $$ = new GlobalConstUse(@$, (QualifiedName)$1); }
 ;
 
 class_constant:

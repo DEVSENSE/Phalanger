@@ -2031,4 +2031,7 @@ non-infringement.
   <data name="method_cannot_take_arguments" xml:space="preserve">
     <value>Method {0}::{1}() cannot take arguments</value>
   </data>
+  <data name="namespace_keyword_outside_namespace" xml:space="preserve">
+    <value>Namespace keyword used outside namespace declaration</value>
+  </data>
 </root>

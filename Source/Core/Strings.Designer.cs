@@ -3685,6 +3685,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Namespace keyword used outside namespace declaration.
+        /// </summary>
+        internal static string namespace_keyword_outside_namespace {
+            get {
+                return ResourceManager.GetString("namespace_keyword_outside_namespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NetworkUtils are not supported on this system..
         /// </summary>
         internal static string networkutils_unsupported {

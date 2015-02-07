@@ -57,21 +57,15 @@ namespace PHP.Core
 		/// </summary>
 		Linq = 16,
 
-		/// <summary>
-		/// TO BE REMOVED!
-        /// Enables PHP6 keywords such as <c>import</c>.
-		/// </summary>
-		V6Keywords = 32,
-
-		/// <summary>
+        /// <summary>
 		/// Enables Unicode escapes in strings (\U, \u, \C).
 		/// </summary>
-		UnicodeSemantics = 64,
+		UnicodeSemantics = 32,
 
 		/// <summary>
 		/// Allows to treat values of PHP types as CLR objects (e.g. $s = "string"; $s->GetHashCode()).
 		/// </summary>
-		ClrSemantics = 128,
+		ClrSemantics = 64,
 
 		/// <summary>
 		/// Features enabled by default in the standard mode. Corresponds to the currently supported version of PHP 
@@ -86,8 +80,7 @@ namespace PHP.Core
 
 		Php4 = ShortOpenTags | AspTags,
 		Php5 = Php4 | V5Keywords,
-		Php6 = Php5 | V6Keywords | UnicodeSemantics,
-		PhpClr = Php6 | TypeKeywords | Linq | ClrSemantics
+		PhpClr = Php5 | UnicodeSemantics | TypeKeywords | Linq | ClrSemantics
 	}
 
 	#endregion
@@ -810,12 +803,7 @@ namespace PHP.Core
 			/// </summary>
 			public bool V5Keywords { get { return (_languageFeatures & LanguageFeatures.V5Keywords) != 0; } }
 
-			/// <summary>
-			/// Gets whether <see cref="PHP.Core.LanguageFeatures.V6Keywords"/> feature is enabled.
-			/// </summary>
-			public bool V6Keywords { get { return (_languageFeatures & LanguageFeatures.V6Keywords) != 0; } }
-
-			/// <summary>
+            /// <summary>
 			/// Gets whether <see cref="PHP.Core.LanguageFeatures.UnicodeSemantics"/> feature is enabled.
 			/// </summary>
 			public bool UnicodeSemantics { get { return (_languageFeatures & LanguageFeatures.UnicodeSemantics) != 0; } }

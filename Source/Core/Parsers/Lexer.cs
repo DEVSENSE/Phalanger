@@ -548,28 +548,28 @@ namespace PHP.Core.Parsers
 			return result;
 		}
 
-		protected void GetTokenAsQualifiedName(int startIndex, List<string>/*!*/ result)
-		{
-			Debug.Assert(result != null);
+        //protected void GetTokenAsQualifiedName(int startIndex, List<string>/*!*/ result)
+        //{
+        //    Debug.Assert(result != null);
 
-			int current_name = token_start + startIndex;
-			int next_separator = token_start + startIndex;
+        //    int current_name = token_start + startIndex;
+        //    int next_separator = token_start + startIndex;
 
-			for (; ; )
-			{
-				while (next_separator < token_end && buffer[next_separator] != '\\')
-					next_separator++;
+        //    for (; ; )
+        //    {
+        //        while (next_separator < token_end && buffer[next_separator] != '\\')
+        //            next_separator++;
 
-				if (next_separator == token_end) break;
+        //        if (next_separator == token_end) break;
 
-				result.Add(new String(buffer, current_name, next_separator - current_name));
-				next_separator += QualifiedName.Separator.ToString().Length;
-				current_name = next_separator;
-			}
+        //        result.Add(new String(buffer, current_name, next_separator - current_name));
+        //        next_separator += QualifiedName.Separator.ToString().Length;
+        //        current_name = next_separator;
+        //    }
 
-			// last item:
-			result.Add(new String(buffer, current_name, token_end - current_name));
-        }
+        //    // last item:
+        //    result.Add(new String(buffer, current_name, token_end - current_name));
+        //}
 
         #region GetTokenAs*QuotedString
 

@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Emit;
 using PHP.Core.Emit;
-using System.Linq;
 
 namespace PHP.Core
 {
@@ -56,9 +55,9 @@ namespace PHP.Core
 				throw new ArgumentNullException("sink");
 				
 			if (name != null)
-                sink.Add(FatalErrors.InvalidCommandLineArgument, null, Text.Span.Invalid, name, Message);
+				sink.Add(FatalErrors.InvalidCommandLineArgument, null, Parsers.Position.Invalid, name, Message);
 			else
-                sink.Add(FatalErrors.InvalidCommandLineArgumentNoName, null, Text.Span.Invalid, Message);
+				sink.Add(FatalErrors.InvalidCommandLineArgumentNoName, null, Parsers.Position.Invalid, Message);
 		}
 	}
 	
@@ -68,24 +67,10 @@ namespace PHP.Core
 	
 	[Serializable]
 	public sealed class CompilationParameters
-    {
-        #region Nested struct: ReferenceItem
-
-        /// <summary>
-        /// Represents referenced assembly.
-        /// </summary>
-        [Serializable]
-        public struct ReferenceItem
-        {
-            public string Reference;
-            public string LibraryRoot;
-        }
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
+	{
+		#region Properties
+	
+		/// <summary>
 		/// Targets. Valid targets from command line are "dll", "console", "web" and "winexe" (in future versions).
 		/// </summary>
 		public Targets Target { get { return target; } set { target = value; } }
@@ -122,6 +107,19 @@ namespace PHP.Core
 		private FullPath outPath;
 
 		/// <summary>
+		/// Full path (without file name) where the duck-typing interfaces are generated.
+		/// This is optional and can be 'null'.
+		/// </summary>
+		public string DuckPath { get { return duckPath; } set { duckPath = value; } }
+		private string duckPath;
+
+		/// <summary>
+		/// Namespace for the Duck-type generated interfaces (when DuckPath is specified)
+		/// </summary>
+		public string DuckNamespace { get { return duckNamespace; } set { duckNamespace = value; } }
+		private string duckNamespace;
+
+		/// <summary>
 		/// Full path to the documentation file that should be generated.
 		/// </summary>
 		public FullPath DocPath { get { return docPath; } set { docPath = value; } }
@@ -148,12 +146,6 @@ namespace PHP.Core
 		/// </summary>
 		public bool? Debuggable { get { return debuggable; } set { debuggable = value; } }
 		private bool? debuggable;
-
-        /// <summary>
-        /// Whether to force saving the resulting assembly with 32BIT+ flag.
-        /// </summary>
-        /// <remarks>This is useful for debuggers or deployment when 64bit execution is not supported.</remarks>
-        public bool Force32Bit { get; set; }
 
 		public bool? StaticInclusions { get { return staticInclusions; } set { staticInclusions = value; } }
 		private bool? staticInclusions;
@@ -201,8 +193,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Full paths to referenced assemblies.
 		/// </summary>
-        public List<ReferenceItem>/*!*/ References { get { return references; } }
-        private List<ReferenceItem>/*!*/ references = new List<ReferenceItem>();
+		public List<string>/*!*/ References { get { return references; } }
+		private List<string>/*!*/ references = new List<string>();
 
 		/// <summary>
 		/// Full paths to referenced resources.
@@ -223,11 +215,6 @@ namespace PHP.Core
 			set { if (value == null) throw new ArgumentNullException("value"); disableWarningNumbers = value; } 
 		}
 		private int[]/*!*/ disableWarningNumbers = ArrayUtils.EmptyIntegers;
-
-        /// <summary>
-        /// Whether warnings will reported as errors, so they will cause compilation process to not finish.
-        /// </summary>
-        public bool TreatWarningsAsErrors { get; set; }
 	
 		#endregion
 	
@@ -276,10 +263,7 @@ namespace PHP.Core
 			// disableWarnings and enableWarnings sets are disjoint:
 			compilerConfig.Compiler.DisabledWarnings |= disableWarnings;
 			compilerConfig.Compiler.DisabledWarnings &= ~enableWarnings;
-            compilerConfig.Compiler.DisabledWarningNumbers = compilerConfig.Compiler.DisabledWarningNumbers.Concat(disableWarningNumbers).Distinct().ToArray();
-
-            // Treat Warnings as Errors
-            compilerConfig.Compiler.TreatWarningsAsErrors = this.TreatWarningsAsErrors;
+			compilerConfig.Compiler.DisabledWarningNumbers = disableWarningNumbers;
 
 			// sets source root (overrides any config setting):
 			compilerConfig.Compiler.SourceRoot = new FullPath(sourceRoot);
@@ -590,6 +574,8 @@ namespace PHP.Core
 			if (args == null)
 				throw new ArgumentException("args");
 
+			string duck_namespace = null;
+			string duck_path = null;
 			string option_out = null;
 			string option_entry_point = null;
 			List<string> source_paths = new List<string>();
@@ -623,8 +609,16 @@ namespace PHP.Core
 							currentOption = args[i].Substring(1, colon - 1).Trim();
 							currentValue = args[i].Substring(colon + 1).Trim();
 
-							switch (currentOption.ToLowerInvariant())
+							switch (currentOption.ToLower())
 							{
+								case "ducknamespace":
+									duck_namespace = currentValue;
+									break;
+
+								case "duckpath":
+									duck_path = currentValue;
+									break;
+
 								case "out":
 									option_out = currentValue;
 									break;
@@ -717,7 +711,7 @@ namespace PHP.Core
 
 								case "reference":
 								case "r":
-                                    ps.References.Add(new CompilationParameters.ReferenceItem() { Reference = currentValue });
+									ps.References.Add(currentValue);
 									break;
 
 								case "resource":
@@ -778,32 +772,24 @@ namespace PHP.Core
 								case "lang":
 								case "language":
 
-                                    Core.LanguageFeatures features = (LanguageFeatures)0;
-                                    foreach (var value in currentValue.ToUpperInvariant().Split(new char[]{'|'}, StringSplitOptions.RemoveEmptyEntries))
-                                        switch (value)
-                                        {
-                                            case "4":
-                                            case "PHP4":
-                                                features |= Core.LanguageFeatures.Php4;
-                                                break;
+									switch (currentValue.ToUpper())
+									{
+										case "4":
+										case "PHP4":
+											ps.LanguageFeatures = Core.LanguageFeatures.Php4;
+											break;
 
-                                            case "5":
-                                            case "PHP5":
-                                                features |= Core.LanguageFeatures.Php5;
-                                                break;
+										case "5":
+										case "PHP5":
+											ps.LanguageFeatures = Core.LanguageFeatures.Php5;
+											break;
 
-                                            case "PHP/CLR":
-                                            case "PHPCLR":
-                                            case "CLR":
-                                                features |= Core.LanguageFeatures.PhpClr;
-                                                break;
-                                            default:
-                                                features |= (LanguageFeatures)Enum.Parse(typeof(LanguageFeatures), value, true);
-                                                break;
-                                        }
-
-                                    if (features != 0)
-                                        ps.LanguageFeatures = features;
+										case "PHP/CLR":
+										case "PHPCLR":
+										case "CLR":
+											ps.LanguageFeatures = Core.LanguageFeatures.PhpClr;
+											break;
+									}
 
 									break;
 
@@ -873,6 +859,9 @@ namespace PHP.Core
 				// target not specified => assume console application:
 				if (ps.Target == Targets.None) ps.Target = Targets.Console;
 
+				// Process the duck-type interface generation option
+				ProcessDuckPath(duck_path, duck_namespace);
+
 				// script source paths:
 				ProcessPaths(source_paths, source_dirs, skip_paths, config_paths);
 
@@ -916,6 +905,23 @@ namespace PHP.Core
 			args.RemoveAt(index);
 			args.InsertRange(index, arg_list);
 		}
+
+
+		/// <summary>
+		/// Process the option that specifies output directory for duck-typing interfaces
+		/// </summary>
+		private void ProcessDuckPath(string duck_path, string duck_namespace)
+		{
+			if (duck_path != null)
+			{
+				if (!Path.IsPathRooted(duck_path))
+					duck_path = Path.Combine(ps.SourceRoot, duck_path);
+				
+				ps.DuckPath = duck_path;
+				ps.DuckNamespace = duck_namespace;
+			}
+		}
+
 
 		/// <summary>
 		/// Checks whether there are files to be compiled and modifies their paths to make them absolute.
@@ -1039,7 +1045,8 @@ namespace PHP.Core
 				return PhpScript.CompiledWebAppAssemblyName;
 			}
 		}
-        
+
+
 		/// <summary>
 		/// Processes "out" option and sets <see cref="CompilationParameters.OutPath"/> accordingly.
 		/// </summary>
@@ -1290,10 +1297,14 @@ namespace PHP.Core
 			try
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(ps.OutPath));
+
+                //for duck type output
+				if (ps.DuckPath != null)
+					Directory.CreateDirectory(ps.DuckPath);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				errorSink.Add(FatalErrors.ErrorCreatingFile, null, ErrorPosition.Invalid, ps.OutPath, ex.Message);
+				errorSink.Add(FatalErrors.ErrorCreatingFile, null, ErrorPosition.Invalid, ps.OutPath);
 			}	
 				
 			AssemblyKinds kind;
@@ -1319,11 +1330,12 @@ namespace PHP.Core
 					break;
 
 				default:
-                    throw new ArgumentException();
+					Debug.Fail();
+					throw null;
 			}
 
 			PhpAssemblyBuilder assembly_builder = PhpAssemblyBuilder.Create(applicationContext, kind, ps.Pure, ps.OutPath,
-				ps.DocPath, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug, ps.Force32Bit);
+				ps.DocPath, ps.DuckPath, ps.DuckNamespace, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug);
 
 			assembly_builder.IsMTA = ps.IsMTA;
 			
@@ -1331,30 +1343,26 @@ namespace PHP.Core
 
 			ICompilerManager manager = (!ps.Pure) ? new ApplicationCompilerManager(applicationContext, assembly_builder) : null;
 
-            try
-            {
-                CompilationContext context = new CompilationContext(applicationContext, manager, config, errorSink, config.Compiler.SourceRoot);
+			try
+			{
+				CompilationContext context = new CompilationContext(applicationContext, manager, config, errorSink, config.Compiler.SourceRoot);
 
-                assembly_builder.Build(EnumerateScripts(ps.SourcePaths, ps.SourceDirs, ps.FileExtensions, context), context);
+				assembly_builder.Build(EnumerateScripts(ps.SourcePaths, ps.SourceDirs, ps.FileExtensions, context), context);
 
-                if (!context.Errors.AnyError && (ps.Target == Targets.Console || ps.Target == Targets.WinApp))
-                    CopyApplicationConfigFile(config.Compiler.SourceRoot, ps.OutPath);
-            }
-            catch (CompilerException e)
-            {
-                errorSink.Add(e.ErrorInfo, null, ErrorPosition.Invalid, e.ErrorParams);
-            }
-            catch (InvalidSourceException e)
-            {
-                e.Report(errorSink);
-            }
-            catch (Exception e)
-            {
+				if (!context.Errors.AnyError && (ps.Target == Targets.Console || ps.Target == Targets.WinApp))
+					CopyApplicationConfigFile(config.Compiler.SourceRoot, ps.OutPath);
+			}
+			catch (CompilerException e)
+			{
+				errorSink.Add(e.ErrorInfo, null, ErrorPosition.Invalid, e.ErrorParams);
+			}
+			catch (Exception e)
+			{
 #if DEBUG
-                //Console.WriteLine("Unexpected error: {0}", e.ToString());// removed, exception added into the error sink, so it's displayed in the VS Integration too
+				//Console.WriteLine("Unexpected error: {0}", e.ToString());// removed, exception added into the error sink, so it's displayed in the VS Integration too
 #endif
                 errorSink.AddInternalError(e);  // compilation will fail, error will be displayed in Errors by VS Integration               
-            }
+			}
 			finally
 			{
 #if DEBUG
@@ -1508,10 +1516,6 @@ namespace PHP.Core
                 result.LoadFromFile(appContext, path);
             }
 
-            // load libraries lazily
-            result.LoadLibraries(appContext);
-
-            //
             return result;
         }
 
@@ -1603,10 +1607,9 @@ namespace PHP.Core
 			{
 				errorSink.DisabledGroups = compiler_config.Compiler.DisabledWarnings;
 				errorSink.DisabledWarnings = compiler_config.Compiler.DisabledWarningNumbers;
-                errorSink.TreatWarningsAsErrors = compiler_config.Compiler.TreatWarningsAsErrors;
 			
 				// initializes log:
-				DebugUtils.ConsoleInitialize(Path.GetDirectoryName(ps.OutPath));
+				Debug.ConsoleInitialize(Path.GetDirectoryName(ps.OutPath));
 
 				Compile(app_context, compiler_config, errorSink, ps);
 			}

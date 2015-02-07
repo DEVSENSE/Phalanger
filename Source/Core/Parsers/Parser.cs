@@ -650,7 +650,7 @@ namespace PHP.Core.Parsers
 		/// </summary>
 		public void AddImport(Position position, DeclarationKind kind, List<string>/*!*/ names, string aliasName)
 		{
-			QualifiedName qn = new QualifiedName(names, true);
+			QualifiedName qn = new QualifiedName(names, true, true);
 			Name alias = (aliasName != null) ? new Name(aliasName) : qn.Name;
 
 			switch (kind)
@@ -677,7 +677,7 @@ namespace PHP.Core.Parsers
 		/// </summary>
 		public void AddImport(List<string>/*!*/ namespaceNames)
 		{
-			sourceUnit.AddImportedNamespace(new QualifiedName(namespaceNames, false));
+			sourceUnit.AddImportedNamespace(new QualifiedName(namespaceNames, false, true));
 		}
 
 		/// <summary>
@@ -703,35 +703,38 @@ namespace PHP.Core.Parsers
 		private static readonly List<TypeRef> emptyTypeRefList = new List<TypeRef>(1);
 
 
-		private static void ListAdd<T>(object list, object item)
+		private static List<T>/*!*/ListAdd<T>(object list, object item)
 		{
-            //if (item != null)
+            Debug.Assert(list is List<T>);
+            //Debug.Assert(item is T);
+
+            var tlist = (List<T>)list;
+
+            NamespaceDecl nsitem;
+                
+            // little hack when appending statement after simple syntaxed namespace:
+
+            // namespace A;
+            // foo();   // <-- add this statement into namespace A
+
+            if (tlist.Count > 0 &&
+                (nsitem = tlist[tlist.Count - 1] as NamespaceDecl) != null &&
+                nsitem.IsSimpleSyntax &&
+                !(item is NamespaceDecl))
             {
-                Debug.Assert(list is List<T>);
-                //Debug.Assert(item is T);
-
-                var tlist = (List<T>)list;
-
-                NamespaceDecl nsitem;
-
-                // little hack when appending statement after simple syntaxed namespace:
-
-                // namespace A;
-                // foo();   // <-- add this statement into namespace A
-
-                if (tlist.Count > 0 &&
-                    (nsitem = tlist[tlist.Count - 1] as NamespaceDecl) != null &&
-                    nsitem.IsSimpleSyntax &&
-                    !(item is NamespaceDecl))
-                {
-                    // adding a statement after simple namespace declaration => add the statement into the namespace:
-                    ListAdd<T>(nsitem.Statements, (T)item);
-                }
-                else
-                {
-                    tlist.Add((T)item);
-                }
+                // adding a statement after simple namespace declaration => add the statement into the namespace:
+                ListAdd<T>(nsitem.Statements, (T)item);
             }
+            else if (item is List<T>)
+            {
+                tlist.AddRange((List<T>)item);
+            }
+            else
+            {
+                tlist.Add((T)item);
+            }
+
+            return tlist;
 		}
 
         private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
