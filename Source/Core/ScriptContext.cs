@@ -410,7 +410,7 @@ namespace PHP.Core
         private Stack<DTypeDesc> _currentLateStaticBinding;
 
         /// <summary>
-        /// Get the value indicating if SPL autload functions are enabled. (If spl_autoload_register was used.)
+        /// Get the value indicating if SPL autoload functions are enabled. (If spl_autoload_register was used.)
         /// </summary>
         public bool IsSplAutoloadEnabled { get { return splAutoloadFunctions != null; } }
 
