@@ -29,8 +29,11 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class LambdaFunctionExpr : Expression, IHasSourceUnit
     {
-        //public NamespaceDecl Namespace { get { return ns; } }
-        //private readonly NamespaceDecl ns
+        /// <summary>
+        /// Gets namespace containing this lambda expression. Can be <c>null</c>.
+        /// </summary>
+        public NamespaceDecl Namespace { get { return ns; } }
+        private readonly NamespaceDecl ns;
 
         public override Operations Operation
         {
@@ -89,7 +92,7 @@ namespace PHP.Core.AST
 
             this.sourceUnit = sourceUnit;
             
-            //this.ns = ns;
+            this.ns = ns;
             this.signature = new Signature(aliasReturn, formalParams);
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
