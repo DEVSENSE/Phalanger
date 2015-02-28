@@ -84,7 +84,7 @@ namespace PHP.Library
 			[ImplementsConstant("E_DEPRECATED")]
 			E_DEPRECATED = PhpError.Deprecated,
             /// <summary>Deprecated error.</summary>
-            [ImplementsConstant("E_USER_DEPRECATED ")]
+            [ImplementsConstant("E_USER_DEPRECATED")]
             E_USER_DEPRECATED = PhpError.UserDeprecated,
             
 		}
