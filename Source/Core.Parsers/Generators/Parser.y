@@ -110,7 +110,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %left T_LOGICAL_AND
 %right T_PRINT
 %right T_YIELD
-%left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL
+%left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL T_POW_EQUAL
 %left '?' ':'
 %left T_BOOLEAN_OR
 %left T_BOOLEAN_AND
@@ -124,6 +124,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %left '*' '/' '%'
 %right '!' '~' T_INC T_DEC '@' TypeCast
 %right '['
+%right T_POW
 %nonassoc T_NEW T_INSTANCEOF T_TYPEOF T_CLONE
 
 /* terminals declaration */
@@ -234,6 +235,9 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_NAMESPACE_C
 %token T_NS_SEPARATOR
 %token T_USE
+%token T_ELLIPSIS        // ...
+%token T_POW             // **
+%token T_POW_EQUAL       // **=
 
 /* PHP6 */
 
@@ -1606,6 +1610,7 @@ assignment_expression:
 	|	writable_chain T_PLUS_EQUAL expr { $$ = new ValueAssignEx(@$, Operations.AssignAdd, (VariableUse)$1, (Expression)$3); }
 	|	writable_chain T_MINUS_EQUAL expr	{ $$ = new ValueAssignEx(@$, Operations.AssignSub, (VariableUse)$1, (Expression)$3); }
 	|	writable_chain T_MUL_EQUAL expr	{ $$ = new ValueAssignEx(@$, Operations.AssignMul, (VariableUse)$1, (Expression)$3); 	}
+	|	writable_chain T_POW_EQUAL expr	{ $$ = new ValueAssignEx(@$, Operations.AssignPow, (VariableUse)$1, (Expression)$3); 	}
 	|	writable_chain T_DIV_EQUAL expr	{ $$ = new ValueAssignEx(@$, Operations.AssignDiv, (VariableUse)$1, (Expression)$3); }	
 	|	writable_chain T_CONCAT_EQUAL expr { $$ = new ValueAssignEx(@$, Operations.AssignAppend, (VariableUse)$1, (Expression)$3); }	
 	|	writable_chain T_MOD_EQUAL expr	{ $$ = new ValueAssignEx(@$, Operations.AssignMod, (VariableUse)$1, (Expression)$3); }	
@@ -1650,6 +1655,7 @@ expr_without_chain:
 	|	expr '+' expr                   { $$ = new BinaryEx(@$, Operations.Add, (Expression)$1, (Expression)$3); }
 	|	expr '-' expr                   { $$ = new BinaryEx(@$, Operations.Sub, (Expression)$1, (Expression)$3); }	
 	|	expr '*' expr	                  { $$ = new BinaryEx(@$, Operations.Mul, (Expression)$1, (Expression)$3); }
+	|	expr T_POW expr	                  { $$ = new BinaryEx(@$, Operations.Pow, (Expression)$1, (Expression)$3); }
 	|	expr '/' expr	                  { $$ = new BinaryEx(@$, Operations.Div, (Expression)$1, (Expression)$3); }
 	|	expr '%' expr 	                { $$ = new BinaryEx(@$, Operations.Mod, (Expression)$1, (Expression)$3); }
 	|	expr T_SL expr	                { $$ = new BinaryEx(@$, Operations.ShiftLeft, (Expression)$1, (Expression)$3); }

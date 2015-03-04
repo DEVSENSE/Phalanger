@@ -372,6 +372,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_MINUS:                // -
 					case Tokens.T_PIPE:                 // |
 					case Tokens.T_MUL:                  // *
+                    case Tokens.T_POW:                  // **
 					case Tokens.T_DOT:                  // .
 					case Tokens.T_SR_EQUAL:             // >>=
 					case Tokens.T_SL_EQUAL:             // <<=
@@ -382,6 +383,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_CONCAT_EQUAL:         // .=
 					case Tokens.T_DIV_EQUAL:            // /=
 					case Tokens.T_MUL_EQUAL:            // *=
+                    case Tokens.T_POW_EQUAL:            // **=
 					case Tokens.T_MINUS_EQUAL:          // -=
 					case Tokens.T_PLUS_EQUAL:           // +=
 					case Tokens.T_BOOLEAN_OR:           // ||      
@@ -399,6 +401,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_DOUBLE_COLON:         // ::
 					case Tokens.T_COLON:                // :
 					case Tokens.T_DOUBLE_ARROW:         // =>
+                    case Tokens.T_ELLIPSIS:             // ...
 						tokenCategory = TokenCategory.Operator;
 						return token;
 

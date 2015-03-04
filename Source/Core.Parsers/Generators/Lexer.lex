@@ -235,7 +235,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"__autoload"   		{ return Tokens.T_AUTOLOAD; }
 <ST_IN_SCRIPTING>"true"         		{ return Tokens.T_TRUE; }
 <ST_IN_SCRIPTING>"false"        		{ return Tokens.T_FALSE; }
-<ST_IN_SCRIPTING>"null"             { return Tokens.T_NULL; }
+<ST_IN_SCRIPTING>"null"					{ return Tokens.T_NULL; }
 
 <ST_IN_SCRIPTING>"=>"           		{ return Tokens.T_DOUBLE_ARROW; }
 <ST_IN_SCRIPTING>"++"           		{ return Tokens.T_INC; }
@@ -249,6 +249,8 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"+="           		{ return Tokens.T_PLUS_EQUAL; }
 <ST_IN_SCRIPTING>"-="           		{ return Tokens.T_MINUS_EQUAL; }
 <ST_IN_SCRIPTING>"*="           		{ return Tokens.T_MUL_EQUAL; }
+<ST_IN_SCRIPTING>"*\*"					{ return Tokens.T_POW; }
+<ST_IN_SCRIPTING>"*\*="					{ return Tokens.T_POW_EQUAL; }
 <ST_IN_SCRIPTING>"/="           		{ return Tokens.T_DIV_EQUAL; }
 <ST_IN_SCRIPTING>".="           		{ return Tokens.T_CONCAT_EQUAL; }
 <ST_IN_SCRIPTING>"%="           		{ return Tokens.T_MOD_EQUAL; }
@@ -269,6 +271,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>{TOKENS}          	{ return (Tokens)GetTokenChar(0); }
 <ST_IN_SCRIPTING>{LABEL}           	{ return Tokens.T_STRING; }
 <ST_IN_SCRIPTING>{NS_SEPARATOR}		{ return Tokens.T_NS_SEPARATOR; }
+<ST_IN_SCRIPTING>"..."				{ return Tokens.T_ELLIPSIS; }
 <ST_IN_SCRIPTING>{WHITESPACE}      	{ return Tokens.T_WHITESPACE; }
 <ST_IN_SCRIPTING>{LNUM}            	{ return Tokens.ParseDecimalNumber; }
 <ST_IN_SCRIPTING>{HNUM}            	{ return Tokens.ParseHexadecimalNumber; }

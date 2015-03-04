@@ -60,7 +60,7 @@ namespace PHP.Core.AST
 		Identical, NotIdentical,
 		LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual,
 		ShiftLeft, ShiftRight,
-		Add, Sub, Mul, Div, Mod,
+		Add, Sub, Mul, Div, Mod, Pow,
 		Concat,
 
 		// n-ary ops:
@@ -74,6 +74,7 @@ namespace PHP.Core.AST
 		AssignAdd,
 		AssignSub,
 		AssignMul,
+        AssignPow,
 		AssignDiv,
 		AssignMod,
 		AssignAnd,

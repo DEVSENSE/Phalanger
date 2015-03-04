@@ -136,6 +136,9 @@ namespace PHP.Core.Compiler.AST
                     case Operations.Mul:
                         return Operators.Multiply(leftValue, rightValue);
 
+                    case Operations.Pow:
+                        return Operators.Pow(leftValue, rightValue);
+
                     case Operations.Div:
                         return Operators.Divide(leftValue, rightValue);
 
@@ -184,6 +187,7 @@ namespace PHP.Core.Compiler.AST
                     case Operations.Add:
                     case Operations.Sub:
                     case Operations.Mul:
+                    case Operations.Pow:
                     case Operations.Div:
                     case Operations.Mod:
                     case Operations.Concat:
@@ -390,6 +394,12 @@ namespace PHP.Core.Compiler.AST
                                 }
                                 break;
                         }
+                        break;
+                    
+                    case Operations.Pow:
+                        codeGenerator.EmitBoxing(node.LeftExpr.Emit(codeGenerator));
+                        codeGenerator.EmitBoxing(node.RightExpr.Emit(codeGenerator));
+                        returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Pow.Object_Object);
                         break;
 
                     case Operations.Mod:

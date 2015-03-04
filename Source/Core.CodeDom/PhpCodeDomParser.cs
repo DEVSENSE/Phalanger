@@ -924,6 +924,7 @@ namespace PHP.Core.CodeDom
                     case Operations.Or: return CodeBinaryOperatorType.BooleanOr; ;
                     //case Operations.Plus: return CodeBinaryOperatorType.Add;
                     case Operations.Sub: return CodeBinaryOperatorType.Subtract;
+                    case Operations.Pow:
                     default: throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unsup_binop, op, (int)op), element);
                 }
             }
@@ -944,6 +945,7 @@ namespace PHP.Core.CodeDom
                     case Operations.AssignMul: return CodeBinaryOperatorType.Multiply;
                     case Operations.AssignOr: return CodeBinaryOperatorType.BitwiseOr;
                     case Operations.AssignSub: return CodeBinaryOperatorType.Subtract;
+                    case Operations.AssignPow:
                     default: throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unsup_assign, op, (int)op), element);
                 }
             }
@@ -970,6 +972,7 @@ namespace PHP.Core.CodeDom
                     case Operations.AssignDiv:
                     case Operations.AssignMod:
                     case Operations.AssignMul:
+                    case Operations.AssignPow:
                     case Operations.AssignOr:
                     case Operations.AssignSub://Left = (Left § Right)
                         return new CodeBinaryOperatorExpression(

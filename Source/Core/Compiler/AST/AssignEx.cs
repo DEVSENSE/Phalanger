@@ -76,6 +76,9 @@ namespace PHP.Core.Compiler.AST
                         // x[] *= y -> x[] = 0 * y
                         else if (oldop == Operations.AssignMul)
                             valueassignex.rvalue = new BinaryEx(node.Span, Operations.Mul, new NullLiteral(node.Span), valueassignex.rvalue);
+                        // x[] **= y -> x[] = 0 * y
+                        else if (oldop == Operations.AssignPow)
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.Pow, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] /= y -> x[] = 0 / y
                         else if (oldop == Operations.AssignDiv)
                             valueassignex.rvalue = new BinaryEx(node.Span, Operations.Div, new NullLiteral(node.Span), valueassignex.rvalue);
@@ -323,6 +326,11 @@ namespace PHP.Core.Compiler.AST
                                 }
                                 break;
                             }
+
+                        case Operations.AssignPow:
+                            codeGenerator.EmitBoxing(right_type);
+                            result = codeGenerator.EmitMethodCall(Methods.Operators.Pow.Object_Object);
+                            break;
 
                         case Operations.AssignMod:
 
