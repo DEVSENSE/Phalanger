@@ -1138,6 +1138,22 @@ namespace PHP.Core.Parsers
             return token;
         }
 
+        /// <summary>
+        /// Gets formal parameter flags.
+        /// </summary>
+        /// <param name="byref">Whether the parameter is prefixed with <c>&amp;</c> character.</param>
+        /// <param name="variadic">Whether the parameter is prefixed with <c>...</c>.</param>
+        /// <returns>Parameter flags.</returns>
+        private static FormalParam.Flags FormalParamFlags(bool byref, bool variadic)
+        {
+            FormalParam.Flags flags = FormalParam.Flags.Default;
+
+            if (byref) flags |= FormalParam.Flags.IsByRef;
+            if (variadic) flags |= FormalParam.Flags.IsVariadic;
+
+            return flags;
+        }
+
 		#endregion
 	}
 }

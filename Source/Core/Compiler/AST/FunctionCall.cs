@@ -255,8 +255,8 @@ namespace PHP.Core.Compiler.AST
 
                     node.CallSignature = new CallSignature(
                         new List<ActualParam>(2) {
-                                new ActualParam(arg1.Span, arg1, false),
-                                new ActualParam(arg2.Span, arg2, false)
+                                new ActualParam(arg1.Span, arg1),
+                                new ActualParam(arg2.Span, arg2)
                             },
                         new List<TypeRef>());
                 }
@@ -316,7 +316,7 @@ namespace PHP.Core.Compiler.AST
                             var path_param = node.CallSignature.Parameters[0];
                             var path_expr = path_param.Expression;
                             if (path_expr is PseudoConstUse && ((PseudoConstUse)path_expr).Type == PseudoConstUse.Types.File)
-                                node.CallSignature.Parameters[0] = new ActualParam(path_param.Span, new StringLiteral(path_expr.Span, analyzer.SourceUnit.SourceFile.RelativePath.Path), false);
+                                node.CallSignature.Parameters[0] = new ActualParam(path_param.Span, new StringLiteral(path_expr.Span, analyzer.SourceUnit.SourceFile.RelativePath.Path));
                         }
                 }
             }
@@ -982,8 +982,8 @@ namespace PHP.Core.Compiler.AST
 
                     node.CallSignature = new CallSignature(
                         new List<ActualParam>(2) {
-                                new ActualParam(arg1.Span, arg1, false),
-                                new ActualParam(arg2.Span, arg2, false)
+                                new ActualParam(arg1.Span, arg1),
+                                new ActualParam(arg2.Span, arg2)
                             },
                         new List<TypeRef>());
                 }

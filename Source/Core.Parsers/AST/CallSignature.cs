@@ -26,21 +26,42 @@ namespace PHP.Core.AST
     [Serializable]
 	public sealed class ActualParam : LangElement
 	{
-		public Expression/*!*/ Expression { get { return expression; } }
-		internal Expression/*!*/ expression;
+        [Flags]
+        public enum Flags
+        {
+            Default = 0,
+            IsByRef = 1,
+            IsVariadic = 2,
+        }
+
+		public Expression/*!*/ Expression { get { return _expression; } }
+		internal Expression/*!*/_expression;
 
         /// <summary>
         /// Gets value indicating whether the parameter is prefixed by <c>&amp;</c> character.
         /// </summary>
-        public bool Ampersand { get { return ampersand; } }
-		private bool ampersand;
+        public bool Ampersand { get { return (_flags & Flags.IsByRef) != 0; } }
 
-		public ActualParam(Text.Span p, Expression param, bool ampersand)
+        /// <summary>
+        /// Gets value indicating whether the parameter is passed with <c>...</c> prefix and so it has to be unpacked before passing to the function call.
+        /// </summary>
+        public bool IsVariadic { get { return (_flags & Flags.IsVariadic) != 0; } }
+        
+        /// <summary>
+        /// Flags describing use of the parameter.
+        /// </summary>
+        private Flags _flags;
+
+        public ActualParam(Text.Span p, Expression param)
+            : this(p, param, Flags.Default)
+        { }
+
+        public ActualParam(Text.Span p, Expression param, Flags flags)
 			: base(p)
 		{
 			Debug.Assert(param != null);
-			this.expression = param;
-			this.ampersand = ampersand;
+			_expression = param;
+            _flags = flags;
 		}
 
 		/// <summary>

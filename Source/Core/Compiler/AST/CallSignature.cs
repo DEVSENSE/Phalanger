@@ -41,6 +41,8 @@ namespace PHP.Core.Compiler.AST
 
                 analyzer.EnterActParam();
 
+                if (node.IsVariadic) throw new NotImplementedException();
+
                 if (analyzer.ActParamDeclIsUnknown())
                 {
                     // we don't know whether the parameter will be passed by reference at run-time:
@@ -81,7 +83,7 @@ namespace PHP.Core.Compiler.AST
                     }
                 }
 
-                node.expression = node.Expression.Analyze(analyzer, info).Literalize();
+                node._expression = node.Expression.Analyze(analyzer, info).Literalize();
 
                 // TODO: if signature is known, act. param has type hint and expression has known type; check if type hint matches expression
 

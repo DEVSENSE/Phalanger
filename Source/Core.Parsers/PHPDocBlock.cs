@@ -1566,7 +1566,10 @@ namespace PHP.Core
                     }
                 }
 
-                return new AST.FormalParam(Text.Span.Invalid, paramname, typehint, byref, null, new List<AST.CustomAttribute>());
+                return new AST.FormalParam(
+                    Text.Span.Invalid, paramname, typehint,
+                    byref ? AST.FormalParam.Flags.IsByRef : AST.FormalParam.Flags.Default,
+                    null, null);
             }
 
             #region Helpers

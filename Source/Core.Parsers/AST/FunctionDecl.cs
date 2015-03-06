@@ -31,6 +31,20 @@ namespace PHP.Core.AST
     [Serializable]
 	public sealed class FormalParam : LangElement
 	{
+        [Flags]
+        public enum Flags
+        {
+            Default = 0,
+            IsByRef = 1,
+            IsOut = 2,
+            IsVariadic = 4,
+        }
+
+        /// <summary>
+        /// Flags describing the parameter.
+        /// </summary>
+        private Flags _flags;
+
 		/// <summary>
 		/// Name of the argument.
 		/// </summary>
@@ -40,14 +54,25 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Whether the parameter is &amp;-modified.
 		/// </summary>
-        public bool PassedByRef { get { return passedByRef; } }
-		private bool passedByRef;
+        public bool PassedByRef { get { return (_flags & Flags.IsByRef) != 0; } }
 
 		/// <summary>
 		/// Whether the parameter is an out-parameter. Set by applying the [Out] attribute.
 		/// </summary>
-        public bool IsOut { get { return isOut; } internal set { isOut = value; } }
-		private bool isOut;
+        public bool IsOut
+        {
+            get { return (_flags & Flags.IsOut) != 0; }
+            internal set
+            {
+                if (value) _flags |= Flags.IsOut;
+                else _flags &= ~Flags.IsOut;
+            }
+        }
+
+        /// <summary>
+        /// Gets value indicating whether the parameter is variadic and so passed parameters will be packed into the array as passed as one parameter.
+        /// </summary>
+        public bool IsVariadic { get { return (_flags & Flags.IsVariadic) != 0; } }
 
 		/// <summary>
 		/// Initial value expression. Can be <B>null</B>.
@@ -75,7 +100,7 @@ namespace PHP.Core.AST
 
         #region Construction
 
-		public FormalParam(Text.Span span, string/*!*/ name, object typeHint, bool passedByRef,
+        public FormalParam(Text.Span span, string/*!*/ name, object typeHint, Flags flags,
 				Expression initValue, List<CustomAttribute> attributes)
             : base(span)
 		{
@@ -83,7 +108,7 @@ namespace PHP.Core.AST
 
 			this.name = new VariableName(name);
 			this.typeHint = typeHint;
-			this.passedByRef = passedByRef;
+            this._flags = flags;
 			this.initValue = initValue;
             if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);

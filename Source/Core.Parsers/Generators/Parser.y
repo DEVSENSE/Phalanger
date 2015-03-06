@@ -301,6 +301,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %type<Integer> simple_indirect_reference              // int - number of indirections
 %type<Integer> reference_opt                          // 0 (false) or 1 (true)
+%type<Integer> variadic_opt                           // 0 (false) or 1 (true)
 %type<Object> identifier                              // String
 
 %type<Object> start 
@@ -893,7 +894,7 @@ attribute_named_arg_list:
 ;
 
 attribute_arg:
-	expr { $$ = new ActualParam(@$, (Expression)$1, false); }
+	expr { $$ = new ActualParam(@$, (Expression)$1, ActualParam.Flags.Default); }
 ;
 
 attribute_named_arg:
@@ -1110,6 +1111,10 @@ reference_opt:
 	|	'&'					{ $$ = 1; }
 ;
 
+variadic_opt:
+		/* empty */ { $$ = 0; }
+	|	T_ELLIPSIS  { $$ = 1; }
+;
 
 foreach_optional_arg:
 		/* empty */											{ $$ = null; }
@@ -1238,16 +1243,16 @@ formal_parameter_list:
 ;
 
 formal_parameter:         
-    attributes_opt type_hint_opt reference_opt T_VARIABLE                   
-    { 
-			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, null, (List<CustomAttribute>)$1)
+    attributes_opt type_hint_opt reference_opt variadic_opt T_VARIABLE                   
+    {
+			$$ = new FormalParam(@5, (string)$5, $2, FormalParamFlags((int)$3 == 1, (int)$4 == 1), null, (List<CustomAttribute>)$1)
 			{
 				TypeHintPosition = @2
 			};
 		}
-  | attributes_opt type_hint_opt reference_opt T_VARIABLE '=' constant_inititalizer 
+  | attributes_opt type_hint_opt reference_opt variadic_opt T_VARIABLE '=' constant_inititalizer 
 		{ 
-			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, (Expression)$6, (List<CustomAttribute>)$1)
+			$$ = new FormalParam(@5, (string)$5, $2, FormalParamFlags((int)$3 == 1, (int)$4 == 1), (Expression)$7, (List<CustomAttribute>)$1)
 			{
 				TypeHintPosition = @2
 			};
@@ -1294,13 +1299,17 @@ actual_argument_list:
 actual_argument:
     expr
     {
-			$$ = new ActualParam(@$, (Expression)$1, false);
+		$$ = new ActualParam(@$, (Expression)$1, ActualParam.Flags.Default);
     }
   | '&' writable_chain 
     {
-      // deprecated; only for error reporting
-      $$ = new ActualParam(CombinePositions(@1, @2), (Expression)$2, true);
+		// deprecated; only for error reporting
+		$$ = new ActualParam(@$, (Expression)$2, ActualParam.Flags.IsByRef);
     }
+  | T_ELLIPSIS expr
+    {
+		$$ = new ActualParam(@$, (Expression)$2, ActualParam.Flags.IsVariadic);
+	}
 ;
 
 global_var_list:
@@ -1749,7 +1758,10 @@ lambda_function_use_var_list:
 ;
 
 lambda_function_use_var:
-		reference_opt T_VARIABLE		{ $$ = new FormalParam(@2, (string)$2, null, (int)$1 == 1, null, null); }
+		reference_opt T_VARIABLE
+		{
+			$$ = new FormalParam(@2, (string)$2, null, FormalParamFlags((int)$1 == 1, false), null, null);
+		}
 ;
 
 concat_exprs:

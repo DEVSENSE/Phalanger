@@ -158,6 +158,9 @@ namespace PHP.Core.Compiler.AST
                     // out can be used only on by-ref params:
                     analyzer.ErrorSink.Add(Errors.OutAttributeOnByValueParam, analyzer.SourceUnit, node.Span, node.Name);
                 }
+
+                if (node.IsVariadic)
+                    throw new NotImplementedException();
             }
 
             #endregion
@@ -249,7 +252,7 @@ namespace PHP.Core.Compiler.AST
                     alias_mask[i] = param.PassedByRef;
                     type_hints[i] = paramcompiler.ResolvedTypeHint;
 
-                    if (param.InitValue == null)
+                    if (param.InitValue == null && !param.IsVariadic)   // optional parameters
                     {
                         if (last_param_was_optional)
                         {
