@@ -1962,6 +1962,8 @@ namespace PHP.Core.CodeDom
                 switch (__.Type)
                 {
                     case PseudoConstUse.Types.Class:
+                        return new CodePrimitiveExpression(currentClass);   // in case of a trait, current class name should be returned instead of the trait
+                    case PseudoConstUse.Types.Trait:
                         return new CodePrimitiveExpression(currentClass);
                     case PseudoConstUse.Types.File:
                         return new CodePrimitiveExpression(currentFile);

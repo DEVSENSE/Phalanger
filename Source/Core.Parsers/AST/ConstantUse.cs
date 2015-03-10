@@ -167,14 +167,14 @@ namespace PHP.Core.AST
     #region PseudoConstUse
 
     /// <summary>
-	/// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __CLASS__, __NAMESPACE__)
+	/// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __CLASS__, __TRAIT__, __NAMESPACE__)
 	/// </summary>
     [Serializable]
     public sealed class PseudoConstUse : Expression
 	{
         public override Operations Operation { get { return Operations.PseudoConstUse; } }
 
-		public enum Types { Line, File, Class, Function, Method, Namespace, Dir }
+		public enum Types { Line, File, Class, Trait, Function, Method, Namespace, Dir }
 
 		private Types type;
         /// <summary>Type of pseudoconstant</summary>

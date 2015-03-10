@@ -1998,6 +1998,7 @@ pseudo_constant:
 	|	T_FILE 			                { $$ = new PseudoConstUse(@$, PseudoConstUse.Types.File); }		
 	|	T_DIR 			                { $$ = new PseudoConstUse(@$, PseudoConstUse.Types.Dir); }		
 	|	T_CLASS_C		                { $$ = new PseudoConstUse(@$, PseudoConstUse.Types.Class); }	
+	|	T_TRAIT_C						{ $$ = new PseudoConstUse(@$, PseudoConstUse.Types.Trait); }
 	|	T_METHOD_C	                { $$ = new PseudoConstUse(@$, PseudoConstUse.Types.Method); }		
 	|	T_FUNC_C		                { $$ = new PseudoConstUse(@$, PseudoConstUse.Types.Function); }				
 	|	T_NAMESPACE_C	              { $$ = new PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }

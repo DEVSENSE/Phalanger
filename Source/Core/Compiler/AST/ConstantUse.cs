@@ -319,6 +319,12 @@ namespace PHP.Core.Compiler.AST
 
                         return string.Empty;
 
+                    case PseudoConstUse.Types.Trait:
+                        if (analyzer.CurrentType != null && analyzer.CurrentType.TypeDesc.IsTrait)
+                            return analyzer.CurrentType.FullName;
+
+                        return string.Empty;
+
                     case PseudoConstUse.Types.Function:
                         if (analyzer.CurrentRoutine != null)
                             return analyzer.CurrentRoutine.FullName;
