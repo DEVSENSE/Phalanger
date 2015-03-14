@@ -1032,7 +1032,7 @@ namespace PHP.Core
     [DebuggerNonUserCode]
     public sealed class NamingContext
 	{
-        #region Properties
+        #region Fields & Properties
 
         /// <summary>
         /// Current namespace.
@@ -1042,7 +1042,21 @@ namespace PHP.Core
         /// <summary>
         /// PHP aliases. Can be null.
         /// </summary>
-        public readonly Dictionary<string, QualifiedName> Aliases;
+        public Dictionary<string, QualifiedName> Aliases { get { return _aliases; } }
+
+        /// <summary>
+        /// Function aliases. Can be null.
+        /// </summary>
+        public Dictionary<string, QualifiedName> FunctionAliases { get { return _functionAliases; } }
+
+        /// <summary>
+        /// Constant aliases. Can be null.
+        /// </summary>
+        public Dictionary<string, QualifiedName> ConstantAliases { get { return _constantAliases; } }
+
+        private Dictionary<string, QualifiedName> _aliases;
+        private Dictionary<string, QualifiedName> _functionAliases;
+        private Dictionary<string, QualifiedName> _constantAliases;
 
         #endregion
 
@@ -1067,7 +1081,7 @@ namespace PHP.Core
             }
 
             // aliases (just initialize dictionary, items added later):
-            this.Aliases = (aliases > 0) ? new Dictionary<string, QualifiedName>(aliases) : null;
+            _aliases = (aliases > 0) ? new Dictionary<string, QualifiedName>(aliases, StringComparer.OrdinalIgnoreCase) : null;
         }
 
         /// <summary>
@@ -1078,16 +1092,7 @@ namespace PHP.Core
             Debug.Assert(!currentNamespace.HasValue || string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
 
             this.CurrentNamespace = currentNamespace;
-            this.Aliases = aliases;
-        }
-
-        /// <summary>
-        /// Initializes naming context from a namespace declaration.
-        /// </summary>
-        /// <param name="ns">Namespace declaration. Cannot be <c>null</c>.</param>
-        public NamingContext(AST.NamespaceDecl/*!*/ns)
-            :this(ns.QualifiedName, ns.Aliases)
-        {
+            _aliases = aliases;
         }
 
         /// <summary>
@@ -1095,17 +1100,60 @@ namespace PHP.Core
         /// </summary>
         /// <param name="alias">Alias name.</param>
         /// <param name="qualifiedName">Aliased namespace. Not starting with <see cref="QualifiedName.Separator"/>.</param>
+        /// <remarks>Used when constructing naming context at runtime.</remarks>
         public void AddAlias(string alias, string qualifiedName)
         {
             Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(!string.IsNullOrEmpty(qualifiedName));
-            Debug.Assert(this.Aliases != null);
             Debug.Assert(qualifiedName[0] != QualifiedName.Separator);   // not starting with separator
 
-            this.Aliases.Add(alias, new QualifiedName(qualifiedName.Split(QualifiedName.Separator), true, true));
+            AddAlias(alias, new QualifiedName(qualifiedName.Split(QualifiedName.Separator), true, true));
         }
 
-        #endregion        
+        private static bool AddAlias(Dictionary<string, QualifiedName>/*!*/dict, string alias, QualifiedName qname)
+        {
+            var count = dict.Count;
+            dict[alias] = qname;
+            return count != dict.Count;  // item was added
+        }
+
+        /// <summary>
+        /// Adds an alias into the context.
+        /// </summary>
+        public bool AddAlias(string alias, QualifiedName qname)
+        {
+            var aliases = _aliases;
+            if (aliases == null)
+                _aliases = aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+
+            return AddAlias(aliases, alias, qname);
+        }
+
+        /// <summary>
+        /// Adds a function alias into the context.
+        /// </summary>
+        public bool AddFunctionAlias(string alias, QualifiedName qname)
+        {
+            var aliases = _functionAliases;
+            if (aliases == null)
+                _functionAliases = aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+
+            return AddAlias(aliases, alias, qname);
+        }
+
+        /// <summary>
+        /// Adds a constant into the context.
+        /// </summary>
+        public bool AddConstantAlias(string alias, QualifiedName qname)
+        {
+            var aliases = _constantAliases;
+            if (aliases == null)
+                _constantAliases = aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+
+            return AddAlias(aliases, alias, qname);
+        }
+
+        #endregion
     }
 
 	#endregion

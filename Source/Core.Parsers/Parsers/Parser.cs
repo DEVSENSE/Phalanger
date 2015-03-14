@@ -268,9 +268,9 @@ namespace PHP.Core.Parsers
                 this.currentNamespace = new AST.NamespaceDecl(default(Text.Span), sourceUnit.CurrentNamespace.Value.ToStringList(), true);
 
                 // add aliases into the namespace:
-                if (sourceUnit.Aliases.Count > 0)
-                    foreach (var alias in sourceUnit.Aliases)
-                        this.currentNamespace.Aliases.Add(alias.Key, alias.Value);
+                if (sourceUnit.Naming.Aliases != null)
+                    foreach (var alias in sourceUnit.Naming.Aliases)
+                        this.currentNamespace.Naming.AddAlias(alias.Key, alias.Value);
             }
             else
             {
@@ -727,7 +727,8 @@ namespace PHP.Core.Parsers
 
         private void CheckTypeNameInUse(Name typeName, Text.Span span)
         {
-            if (CurrentScopeAliases.ContainsKey(typeName.Value) || reservedTypeNames.Contains(typeName.Value))
+            var aliases = this.CurrentNaming.Aliases;
+            if (reservedTypeNames.Contains(typeName.Value) || (aliases != null && aliases.ContainsKey(typeName.Value)))
                 errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, span, CurrentNamespaceName + typeName.Value);
         }
 
@@ -739,6 +740,8 @@ namespace PHP.Core.Parsers
 		private void CheckTypeParameterNames(List<FormalTypeParam> typeParams, string/*!*/declarerName)
 		{
 			if (typeParams == null) return;
+            
+            var aliases = this.CurrentNaming.Aliases;
 
 			for (int i = 0; i < typeParams.Count; i++)
 			{
@@ -746,7 +749,7 @@ namespace PHP.Core.Parsers
 				{
 					ErrorSink.Add(Errors.GenericParameterCollidesWithDeclarer, SourceUnit, typeParams[i].Span, declarerName);
 				}
-                else if (CurrentScopeAliases.ContainsKey(typeParams[i].Name.Value))
+                else if (aliases != null && aliases.ContainsKey(typeParams[i].Name.Value))
                 {
                     ErrorSink.Add(Errors.GenericAlreadyInUse, SourceUnit, typeParams[i].Span, typeParams[i].Name.Value);
                 }
@@ -851,21 +854,30 @@ namespace PHP.Core.Parsers
         /// <summary>
         /// Dictionary of PHP aliases for the current scope.
         /// </summary>
-        private Dictionary<string, QualifiedName>/*!*/ CurrentScopeAliases
+        private NamingContext/*!*/ CurrentNaming
         {
             get
             {
-                return (currentNamespace != null) ? currentNamespace.Aliases : this.sourceUnit.Aliases;
+                return (currentNamespace != null) ? currentNamespace.Naming : this.sourceUnit.Naming;
             }
         }
 
-        /// <summary>
-        /// Add PHP alias (through <c>use</c> keyword).
-        /// </summary>
-        /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
-        private void AddAlias(QualifiedName fullQualifiedName)
+        private void AddAliases(List<KeyValuePair<string, QualifiedName>>/*!*/list)
         {
-            AddAlias(fullQualifiedName, fullQualifiedName.Name.Value);
+            foreach (var pair in list)
+                AddAlias(pair.Value, pair.Key);
+        }
+
+        private void AddFunctionAliases(List<KeyValuePair<string, QualifiedName>>/*!*/list)
+        {
+            foreach (var pair in list)
+                AddFunctionAlias(pair.Value, pair.Key);
+        }
+
+        private void AddConstAliases(List<KeyValuePair<string, QualifiedName>>/*!*/list)
+        {
+            foreach (var pair in list)
+                AddConstAlias(pair.Value, pair.Key);
         }
 
         /// <summary>
@@ -873,15 +885,14 @@ namespace PHP.Core.Parsers
         /// </summary>
         /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
         /// <param name="alias">If not null, represents the alias name. Otherwise the last component from <paramref name="fullQualifiedName"/> is used.</param>
-        private void AddAlias(QualifiedName fullQualifiedName, string/*!*/alias)
+        private void AddAlias(QualifiedName fullQualifiedName, string alias)
         {
             Debug.Assert(!string.IsNullOrEmpty(fullQualifiedName.Name.Value));
-            Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(fullQualifiedName.IsFullyQualifiedName);
 
-            //if (sourceUnit.CompilationUnit.IsTransient)   // J: supported, as it is in PHP. Simply within this transient sourceUnit
-            //    throw new NotImplementedException("Adding an alias from within eval is not supported.");
-            
+            //
+            alias = alias ?? fullQualifiedName.Name.Value;
+
             // check if it aliases itself:
             QualifiedName qualifiedAlias = new QualifiedName(
                 new Name(alias),
@@ -890,18 +901,31 @@ namespace PHP.Core.Parsers
             if (fullQualifiedName == qualifiedAlias) return;    // ignore
             
             // add the alias:
+            var naming = this.CurrentNaming;
             
-            // check for alias duplicity:
-            if (!CurrentScopeAliases.ContainsKey(alias) && !reservedTypeNames.Contains(alias))
+            // check for alias duplicity and add the alias:
+            // TODO: check if there is no conflict with some class declaration (this should be in runtime ... but this overriding looks like useful features)
+            if (reservedTypeNames.Contains(alias) || !naming.AddAlias(alias, fullQualifiedName))
             {
-                // TODO: check if there is no conflict with some class declaration (this should be in runtime ... but this overriding looks like useful features)
-
-                // add alias into the scope
-                CurrentScopeAliases.Add(alias, fullQualifiedName);
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos/*TODO: position of the alias itself*/, fullQualifiedName.NamespacePhpName, alias);
             }
-            else
+        }
+
+        private void AddFunctionAlias(QualifiedName qname, string alias)
+        {
+            alias = alias ?? qname.Name.Value;
+            if (!this.CurrentNaming.AddFunctionAlias(alias, qname))
             {
-                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos, fullQualifiedName.NamespacePhpName, alias);
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos/*TODO: position of the alias itself*/, qname.NamespacePhpName, alias);
+            }
+        }
+
+        private void AddConstAlias(QualifiedName qname, string alias)
+        {
+            alias = alias ?? qname.Name.Value;
+            if (!this.CurrentNaming.AddConstantAlias(alias, qname))
+            {
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos/*TODO: position of the alias itself*/, qname.NamespacePhpName, alias);
             }
         }
 
@@ -989,7 +1013,7 @@ namespace PHP.Core.Parsers
 
             return QualifiedName.TranslateAlias(
                 qname,
-                CurrentScopeAliases,
+                this.CurrentNaming.Aliases,
                 (IsInGlobalNamespace || sourceUnit.HasImportedNamespaces) ? (QualifiedName?)null : currentNamespace.QualifiedName);  // do not use current namespace, if there are imported namespace ... will be resolved later
         }
 

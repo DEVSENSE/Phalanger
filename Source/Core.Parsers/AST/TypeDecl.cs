@@ -130,12 +130,6 @@ namespace PHP.Core.AST
 		private readonly NamespaceDecl ns;
 
         /// <summary>
-        /// Aliases copied from current scope (global or namespace) which were valid in place of this type declaration.
-        /// Used for deferred class declaration in run time, when creating transient compilation unit.
-        /// </summary>
-        internal readonly Dictionary<string, QualifiedName> validAliases;
-
-		/// <summary>
 		/// Name of the base class.
 		/// </summary>
 		private readonly GenericQualifiedName? baseClassName;
@@ -246,11 +240,6 @@ namespace PHP.Core.AST
             this.headingEndPosition = headingEndPosition;
 			this.declarationBodyPosition = declarationBodyPosition;
             this.partialKeyword = isPartial;
-
-            // remember current aliases:
-            var aliases = (ns != null) ? ns.Aliases : sourceUnit.Aliases;
-            if (aliases.Count > 0)
-                validAliases = new Dictionary<string, QualifiedName>(aliases);
 		}
 
         /// <summary>

@@ -308,8 +308,8 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> non_empty_top_statement                 // Statement
 %type<Object> top_statement                           // Statement
 %type<Object> top_statement_list                      // List<Statement> 
-%type<Object> use_statement_content_list              // null
-%type<Object> use_statement_content                   // null
+%type<Object> use_statement_content_list              // List<KeyValuePair<string, QualifiedName>>
+%type<Object> use_statement_content                   // KeyValuePair<string, QualifiedName>
 %type<Object> ns_separator_opt						  // null
 %type<Object> use_statement		                      // EmptyStmt
 %type<Object> import_statement		                  // EmptyStmt
@@ -522,17 +522,19 @@ import_statement: /* pure mode */
 ;
 
 use_statement: /* PHP 5.3 */
-		T_USE use_statement_content_list ';'	{ /* nop */ $$ = new EmptyStmt(@$); }
+		T_USE use_statement_content_list ';'			{ $$ = new EmptyStmt(@$); AddAliases((List<KeyValuePair<string, QualifiedName>>)$2); }
+	|	T_USE T_FUNCTION use_statement_content_list ';'	{ $$ = new EmptyStmt(@$); AddFunctionAliases((List<KeyValuePair<string, QualifiedName>>)$3); }
+	|	T_USE T_CONST use_statement_content_list ';'	{ $$ = new EmptyStmt(@$); AddConstAliases((List<KeyValuePair<string, QualifiedName>>)$3); }
 ;
 
 use_statement_content_list: /* PHP 5.3 */
-		use_statement_content_list ',' ns_separator_opt use_statement_content	{ /* nop */ }
-	|	ns_separator_opt use_statement_content									{ /* nop */ }
+		use_statement_content_list ',' ns_separator_opt use_statement_content	{ $$ = ListAdd<KeyValuePair<string, QualifiedName>>($1, $4); }
+	|	ns_separator_opt use_statement_content									{ $$ = NewList<KeyValuePair<string, QualifiedName>>($2); }
 ;
 
 use_statement_content: /* PHP 5.3 */
-		namespace_name_list					{ AddAlias(new QualifiedName((List<string>)$1, true, true)); }
-	|	namespace_name_list T_AS identifier	{ AddAlias(new QualifiedName((List<string>)$1, true, true), (string)$3); }
+		namespace_name_list					{ $$ = new KeyValuePair<string, QualifiedName>(null, new QualifiedName((List<string>)$1, true, true)); }
+	|	namespace_name_list T_AS identifier	{ $$ = new KeyValuePair<string, QualifiedName>((string)$3, new QualifiedName((List<string>)$1, true, true)); }
 ;
 
 top_statement_list:

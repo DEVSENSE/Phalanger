@@ -212,7 +212,7 @@ namespace PHP.Core.Reflection
 			Debug.Assert(sourceCode != null && sourceFile != null && encoding != null);
 			Debug.Assert(!client);
 			this.sourceUnit = new SourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
-			this.sourceUnit.AddImportedNamespaces(namingContext);
+            this.sourceUnit.Naming = namingContext ?? new NamingContext(null, null);    // cant be null
 		}
 
 		#region Declaration look-up

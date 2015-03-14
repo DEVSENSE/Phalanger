@@ -97,22 +97,22 @@ namespace PHP.Core.AST
         /// </summary>
         public readonly bool IsSimpleSyntax;
 
-        public QualifiedName QualifiedName { get { return qualifiedName; } }
+        public QualifiedName QualifiedName { get { return this.qualifiedName; } }
         private QualifiedName qualifiedName;
 
         /// <summary>
-        /// Dictionary of PHP aliases.
+        /// Naming context defining aliases.
         /// </summary>
-        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
-        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+        public NamingContext/*!*/ Naming { get { return this.naming; } }
+        private readonly NamingContext naming;
 
-        public bool IsAnonymous { get { return isAnonymous; } }
+        public bool IsAnonymous { get { return this.isAnonymous; } }
         private readonly bool isAnonymous;
 
         public List<Statement>/*!*/ Statements
         {
-            get { return statements; }
-            internal /* friend Parser */ set { statements = value; }
+            get { return this.statements; }
+            internal /* friend Parser */ set { this.statements = value; }
         }
         private List<Statement>/*!*/ statements;
 
@@ -124,6 +124,7 @@ namespace PHP.Core.AST
             this.isAnonymous = true;
             this.qualifiedName = new QualifiedName(Core.Name.EmptyBaseName, Core.Name.EmptyNames);
             this.IsSimpleSyntax = false;
+            this.naming = new NamingContext(null, null);
         }
 
         public NamespaceDecl(Text.Span p, List<string>/*!*/ names, bool simpleSyntax)
@@ -132,6 +133,7 @@ namespace PHP.Core.AST
             this.isAnonymous = false;
             this.qualifiedName = new QualifiedName(names, false, true);
             this.IsSimpleSyntax = simpleSyntax;
+            this.naming = new NamingContext(this.qualifiedName, null);
         }
 
         /// <summary>

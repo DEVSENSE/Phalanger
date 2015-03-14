@@ -635,11 +635,12 @@ namespace PHP.Core.Compiler.AST
                     codeGenerator.EnterLambdaDeclaration(il, false, LiteralPlace.Null, new IndexedPlace(PlaceHolder.Argument, 0), LiteralPlace.Null, LiteralPlace.Null);
                     if (true)
                     {
+                        var naming  = (node.Namespace != null) ? node.Namespace.Naming : node.SourceUnit.Naming;  // current naming context aliases
                         codeGenerator.EmitEval(
                             EvalKinds.SyntheticEval,
                             LiteralUtils.Create(node.Span, this.typeDefinitionCode, AccessType.Read),
                             node.Span,
-                            (node.Namespace != null) ? node.Namespace.QualifiedName : (QualifiedName?)null, node.validAliases);
+                            (node.Namespace != null) ? node.Namespace.QualifiedName : (QualifiedName?)null, naming.Aliases);
                         il.Emit(OpCodes.Pop);
                         il.Emit(OpCodes.Ret);
                     }

@@ -46,17 +46,24 @@ namespace PHP.Core
         protected ILineBreaks innerLineBreaks;
 
         /// <summary>
-        /// Dictionary of PHP aliases.
+        /// Naming context defining aliases.
         /// </summary>
-        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
-        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+        public NamingContext/*!*/ Naming
+        {
+            get { return this.naming; }
+            internal set
+            {
+                if (value == null) throw new ArgumentNullException();
+                this.naming = value;
+            }
+        }
+        private NamingContext/*!*/naming;
 
         /// <summary>
         /// Current namespace (in case we are compiling through eval from within namespace).
         /// </summary>
-        public QualifiedName? CurrentNamespace { get { return currentNamespace; } }
-        private QualifiedName? currentNamespace = null;
-
+        public QualifiedName? CurrentNamespace { get { return this.naming.CurrentNamespace; } }
+        
         public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
         private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
         public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count != 0; } }
@@ -89,6 +96,7 @@ namespace PHP.Core
             this.sourceFile = sourceFile;
             this.encoding = encoding;
             this.innerLineBreaks = lineBreaks;
+            this.naming = new NamingContext(null, null);
         }
 
         #endregion
@@ -176,24 +184,6 @@ namespace PHP.Core
 
             return (index < 0 || mappedLines[index] == DefaultLine) ? realLine :
                 mappedLines[index] + realLine - mappedLinesAnchors[index];
-        }
-
-        #endregion
-
-        #region Namespaces
-
-        /// <summary>
-        /// Used to merge namespaces included by the caller of 'eval' function.
-        /// </summary>
-        /// <param name="namingContext">Naming context of the caller.</param>
-        public void AddImportedNamespaces(NamingContext namingContext)
-        {
-            if (namingContext == null) return;
-
-            this.currentNamespace = namingContext.CurrentNamespace;
-            if (namingContext.Aliases != null)
-                foreach (var alias in namingContext.Aliases)
-                    this.Aliases.Add(alias.Key, alias.Value);
         }
 
         #endregion

@@ -537,7 +537,7 @@ namespace PHP.Core.CodeDom
 
                 currentLineBreaks = gc.SourceUnit;
 
-                PushAliases(gc.SourceUnit.Aliases);
+                PushAliases(gc.SourceUnit.Naming);
                 ret.Namespaces.Add(DefaultNamespace);
                 
 
@@ -568,15 +568,19 @@ namespace PHP.Core.CodeDom
 
             private Dictionary<string, string> CurrentBlockAliases { get { return (aliases.Count > 0) ? aliases.Peek() : null; } }
             private Stack<Dictionary<string, string>>/*!*/aliases = new Stack<Dictionary<string, string>>();
-            private void PushAliases(Dictionary<string, QualifiedName>/*!*/aliases)
+            private void PushAliases(NamingContext/*!*/naming)
             {
-                Debug.Assert(aliases != null);
+                Debug.Assert(naming != null);
                 Dictionary<string, string> clrAliases = new Dictionary<string, string>(aliases.Count);
-                foreach (var pair in aliases)
-                    clrAliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+                if (naming.Aliases != null)
+                {
+                    foreach (var pair in naming.Aliases)
+                        clrAliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+                }
 
                 this.aliases.Push(clrAliases);
             }
+
             private void PopAliases()
             {
                 Debug.Assert(this.aliases.Count > 0);
@@ -2270,7 +2274,7 @@ namespace PHP.Core.CodeDom
             /// <param name="block">Block this namespace is containded in (should be <see cref="FileContext"/>)</param>
             protected void TranslateNamespace(NamespaceDecl /*!*/ sNamespace, IBlockContext /*!*/ block)
             {
-                PushAliases(sNamespace.Aliases);
+                PushAliases(sNamespace.Naming);
 
                 CodeNamespace cNamespace = (CodeNamespace)
                     block.AddObject(new CodeNamespace(getCLRName(sNamespace.QualifiedName)), sNamespace);
