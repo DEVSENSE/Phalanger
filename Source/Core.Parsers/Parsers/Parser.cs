@@ -568,7 +568,7 @@ namespace PHP.Core.Parsers
         {
             QualifiedName? fallbackQName;
 
-            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.CurrentNaming.FunctionAliases);
             return new DirectFcnCall(pos, qname, fallbackQName, qnamePosition, args, typeArgs);
         }
 
@@ -584,7 +584,7 @@ namespace PHP.Core.Parsers
             }
             else
             {
-                TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.CurrentNaming.ConstantAliases);
             }
             
             return new GlobalConstUse(pos, qname, fallbackQName);
@@ -597,9 +597,20 @@ namespace PHP.Core.Parsers
         /// <param name="qname"></param>
         /// <param name="fallbackQName"></param>
         /// <remarks>Used for handling global function call and global constant use.
+        /// <param name="aliases">Optional. Dictionary of aliases for the <paramref name="qname"/>.</param>
         /// In PHP entity in current namespace is tried first, then it falls back to global namespace.</remarks>
-        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName)
+        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<string, QualifiedName> aliases)
         {
+            // aliasing
+            QualifiedName tmp;
+            if (qname.IsSimpleName && aliases != null && aliases.TryGetValue(qname.Name.Value, out tmp))
+            {
+                qname = tmp;
+                fallbackQName = null;
+                return;
+            }
+
+            //
             qname = TranslateNamespace(qname);
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
