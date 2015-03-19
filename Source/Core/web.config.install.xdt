@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <configSections xdt:Transform="InsertIfMissing">
+		<section name="phpNet" type="PHP.Core.ConfigurationSectionHandler, PhpNetCore" xdt:Transform="InsertIfMissing" />
+	</configSections>
+
+	<system.webServer xdt:Transform="InsertIfMissing">
+		<handlers xdt:Transform="InsertIfMissing">
+			<add
+				name="PhalangerHandler"
+				path="*.php" verb="*"
+				type="PHP.Core.RequestHandler, PhpNetCore"
+				resourceType="Unspecified"
+				preCondition="integratedMode"
+				xdt:Transform="InsertIfMissing" />
+		</handlers>
+		<defaultDocument xdt:Transform="InsertIfMissing">
+			<files xdt:Transform="InsertIfMissing">
+				<add value="index.php" xdt:Transform="InsertIfMissing" />
+			</files>
+		</defaultDocument>
+	</system.webServer>
+
+	<phpNet xdt:Transform="InsertIfMissing">
+		<error-control xdt:Transform="InsertIfMissing">
+			<set name="HtmlMessages" value="false" phpName="html_errors" xdt:Transform="InsertIfMissing" />
+		</error-control>
+	</phpNet>
+</configuration>

@@ -26,7 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>Bin\Debug\PhpNetClassLibrary.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
+    <FileAlignment>512</FileAlignment>
     <NoStdLib>false</NoStdLib>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
@@ -36,17 +36,33 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>419430400</BaseAddress>
+    <BaseAddress>4194304</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>Bin\Release\PhpNetClassLibrary.xml</DocumentationFile>
-    <DebugSymbols>false</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>512</FileAlignment>
     <NoStdLib>false</NoStdLib>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseGAC|AnyCPU'">
+    <OutputPath>bin\ReleaseGAC\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>4194304</BaseAddress>
+    <DocumentationFile>..\..\Deployment\Release\PhpNetClassLibrary.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <FileAlignment>512</FileAlignment>
+    <NoWarn>436,1591,1591,419</NoWarn>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -225,6 +241,7 @@
     <Compile Include="Web.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="ClassLibrary.nuspec" />
     <None Include="Resources\WindowsTZ.xml" />
     <EmbeddedResource Include="Strings.resx">
       <SubType>Designer</SubType>
@@ -240,6 +257,8 @@
     <None Include="Generators\json.lex" />
     <None Include="Generators\json.y" />
     <None Include="Generators\StrToTime.lex" />
+    <Content Include="web.config.install.xdt" />
+    <Content Include="web.config.uninstall.xdt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

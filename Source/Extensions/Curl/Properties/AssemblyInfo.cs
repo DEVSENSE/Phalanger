@@ -7,7 +7,7 @@ using PHP.Core;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Phalanger Curl")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Phalanger Curl Extension")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("47fb135d-f29f-42de-9435-5ee36249648e")]

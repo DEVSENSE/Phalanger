@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<phpNet xdt:Transform="InsertIfMissing">
+		<classLibrary xdt:Transform="InsertIfMissing">
+			<add assembly="PhpNetZlib" xdt:Transform="InsertIfMissing" />
+		</classLibrary>
+	</phpNet>
+</configuration>

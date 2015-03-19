@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PhpNet.Extension.PDO</id>
+    <version>0.1</version>
+    <title>Phalanger PDO Extension</title>
+    <authors>The Phalanger Project</authors>
+    <owners>The Phalanger Project</owners>
+    <licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Phalanger/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/DEVSENSE/Phalanger</projectUrl>
+    <iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=Phalanger&amp;DownloadId=240061</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Phalanger PHP Data Objects Extension</description>
+    <releaseNotes>Bug fixes and performance improvements</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>PHP Phalanger Extension Data Objects PDO database</tags>
+    <dependencies>
+      <dependency id="PhpNet.Core" />
+      <dependency id="PhpNet.ClassLibrary" />
+    </dependencies>
+  </metadata>
+</package>

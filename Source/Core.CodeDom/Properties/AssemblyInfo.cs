@@ -7,7 +7,7 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Core.CodeDom")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Phalanger CodeDom provider for on-the-fly compilation")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

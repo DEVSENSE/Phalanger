@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PhpNet.Extension.Zlib</id>
+    <version>0.1</version>
+    <title>Phalanger Zlib Extension</title>
+    <authors>The Phalanger Project</authors>
+    <owners>The Phalanger Project</owners>
+    <licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Phalanger/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/DEVSENSE/Phalanger</projectUrl>
+    <iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=Phalanger&amp;DownloadId=240061</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Phalanger Zlib Compression Extension</description>
+    <releaseNotes>Bug fixes and performance improvements</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>PHP Phalanger Extension ZLib Compression Decompression</tags>
+    <dependencies>
+      <dependency id="PhpNet.Core" />
+      <dependency id="PhpNet.ClassLibrary" />
+      <dependency id="zlib.net" version="1.0.4.0" />
+    </dependencies>
+  </metadata>
+</package>

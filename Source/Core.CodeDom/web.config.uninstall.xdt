@@ -1,0 +1,5 @@
+<?xml version="1.0"?><configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<system.codedom>		<compilers>			<compiler language="PHP" xdt:Transform="Remove" xdt:Locator="Match(language)" />
+		</compilers>
+	</system.codedom>
+</configuration>

@@ -131,7 +131,7 @@ namespace PHP.Library.Data
 
             Delegate d = new Func<object[], object>(callback.Invoke);
 
-            SQLiteFunction.RegisterFunction(func_name, FunctionType.Scalar, nbr_arg, d);
+            SQLiteFunction.RegisterFunction(func_name, nbr_arg, FunctionType.Scalar, null, d, null);
             return null;
         }
 

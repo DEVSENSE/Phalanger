@@ -10,19 +10,25 @@
   <PropertyGroup>  
     <DocumentationFile>$(OutputPath)$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
-	
-  <PropertyGroup>
-    <PreBuildEvent>
-cd "$(RootDir)"
-"$(ToolsDir)UpdateFileVersionFromChangeset.cmd" "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
-	</PreBuildEvent>
-    <PostBuildEvent>
-if [$(TargetExt)]==[.dll] if [$(SignAssembly)]==[true] (
-   echo Installing $(TargetName) into GAC ...
-   "$(ToolsDir)gacutil" /u $(TargetName) 1&gt;nul
-   "$(ToolsDir)gacutil" /f /i "$(TargetPath)" 1&gt;nul
-)
-    </PostBuildEvent>
-  </PropertyGroup>
   
+  <Target Name="BeforeBuild">
+    <Exec Command="&quot;$(ToolsDir)UpdateFileVersionFromChangeset.cmd&quot; &quot;$(RootDir)&quot; &quot;$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs&quot;"></Exec>
+  </Target>
+
+  <Target Name="AfterBuild" Condition=" '$(Configutation)' == 'ReleaseGAC' ">
+    <Exec Command="&quot;$(ToolsDir)gacutil&quot; /u &quot;$(TargetName)&quot;"></Exec>
+    <Exec Command="&quot;$(ToolsDir)gacutil&quot; /f /i &quot;$(TargetPath)&quot;"></Exec>
+  </Target>
+
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
+    <PropertyGroup>
+      <OutputNugetPath>$(OutputPath)..\Release-NuGet</OutputNugetPath>
+    </PropertyGroup>
+
+    <!-- Only download a new copy of nuget.exe if we don't have a copy available -->
+    <!--WebDownload Condition="!Exists('nuget.exe')" Filename="nuget.exe" FileUri="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" /-->
+
+    <MakeDir Directories="$(OutputNugetPath)" />
+    <Exec Command="&quot;$(ToolsDir)nuget&quot; pack &quot;$(MSBuildProjectFullPath)&quot; -IncludeReferencedProjects -Symbols -Prop Configuration=Release -OutputDirectory &quot;$(OutputNugetPath)&quot;"></Exec>
+  </Target>
 </Project>

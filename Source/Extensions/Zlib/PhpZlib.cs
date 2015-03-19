@@ -19,7 +19,7 @@ using System.Data.SqlClient;
 using PHP.Core;
 using System.Collections.Generic;
 
-using ComponentAce.Compression.Libs.zlib;
+using zlib;
 
 namespace PHP.Library.Zlib
 {
@@ -62,9 +62,11 @@ namespace PHP.Library.Zlib
         internal const int GZIP_HEADER_LENGTH = 10;
         internal const int GZIP_FOOTER_LENGTH = 8;
 
+		internal static string z_error = "";
+
         internal static string zError(int status)
         {
-            return Deflate.z_errmsg[zlibConst.Z_NEED_DICT - status];
+            return z_error;
         }
 
         #region gzclose, gzopen
@@ -641,6 +643,8 @@ namespace PHP.Library.Zlib
             {
                 status = zs.deflateEnd();
             }
+
+			z_error = zs.msg;
 
             if (status == zlibConst.Z_OK)
             {

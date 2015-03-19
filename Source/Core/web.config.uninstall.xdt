@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <configSections>
+		<section name="phpNet" xdt:Transform="Remove" xdt:Locator="Match(name)" />
+	</configSections>
+
+	<system.webServer>
+		<handlers>
+			<add name="PhalangerHandler" xdt:Transform="Remove" xdt:Locator="Match(name)" />
+		</handlers>
+		<defaultDocument>
+			<files>
+				<add value="index.php" xdt:Transform="Remove" xdt:Locator="Match(value)" />
+			</files>
+		</defaultDocument>
+	</system.webServer>
+
+	<phpNet>
+		<error-control>
+			<set name="HtmlMessages" xdt:Transform="Remove" xdt:Locator="Match(name)" />
+		</error-control>
+	</phpNet>
+</configuration>
