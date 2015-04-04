@@ -72,7 +72,6 @@ namespace PHP.Core.Parsers
 		T_SELF = Toks.T_SELF,
 		T_AUTOLOAD = Toks.T_AUTOLOAD,
 
-		T_ASSERT = Toks.T_ASSERT,
 		T_TRUE = Toks.T_TRUE,
 		T_FALSE = Toks.T_FALSE,
 		T_NULL = Toks.T_NULL,
@@ -166,6 +165,7 @@ namespace PHP.Core.Parsers
 		T_CONCAT_EQUAL = Toks.T_CONCAT_EQUAL,
 		T_DIV_EQUAL = Toks.T_DIV_EQUAL,
 		T_MUL_EQUAL = Toks.T_MUL_EQUAL,
+        T_POW_EQUAL = Toks.T_POW_EQUAL,
 		T_MINUS_EQUAL = Toks.T_MINUS_EQUAL,
 		T_PLUS_EQUAL = Toks.T_PLUS_EQUAL,
 		T_BOOLEAN_OR = Toks.T_BOOLEAN_OR,
@@ -179,6 +179,7 @@ namespace PHP.Core.Parsers
 		T_SR = Toks.T_SR,
 		T_SL = Toks.T_SL,
 		T_INSTANCEOF = Toks.T_INSTANCEOF,
+        T_POW = Toks.T_POW,
 
 		T_UNSET_CAST = Toks.T_UNSET_CAST,
 		T_BOOL_CAST = Toks.T_BOOL_CAST,
@@ -218,6 +219,8 @@ namespace PHP.Core.Parsers
 		T_ENDFOR = Toks.T_ENDFOR,
 		T_FOREACH = Toks.T_FOREACH,
 		T_ENDFOREACH = Toks.T_ENDFOREACH,
+        T_DECLARE = Toks.T_DECLARE,
+        T_ENDDECLARE = Toks.T_ENDDECLARE,
 		T_AS = Toks.T_AS,
 		T_SWITCH = Toks.T_SWITCH,
 		T_ENDSWITCH = Toks.T_ENDSWITCH,
@@ -273,6 +276,7 @@ namespace PHP.Core.Parsers
 		T_DOLLAR_OPEN_CURLY_BRACES = Toks.T_DOLLAR_OPEN_CURLY_BRACES,
 		T_CURLY_OPEN = Toks.T_CURLY_OPEN,
 		T_DOUBLE_COLON = Toks.T_DOUBLE_COLON,
+        T_ELLIPSIS = Toks.T_ELLIPSIS,
 	}
 
 	//public enum Tokens

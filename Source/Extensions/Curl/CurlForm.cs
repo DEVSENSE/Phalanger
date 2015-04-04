@@ -80,8 +80,7 @@ namespace PHP.Library.Curl
             foreach (var item in arr)
             {
                 var strValue = PHP.Core.Convert.ObjectToString(item.Value);
-
-                if (strValue[0] == '@')
+                if (!string.IsNullOrEmpty(strValue) && strValue[0] == '@')
                 {
                     int index = strValue.IndexOf(";type=");
                     if (index != -1)

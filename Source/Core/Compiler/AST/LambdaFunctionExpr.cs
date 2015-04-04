@@ -38,10 +38,17 @@ namespace PHP.Core.Compiler.AST
 
             public override Evaluation Analyze(LambdaFunctionExpr node, Analyzer analyzer, ExInfoFromParent info)
             {
-                function = new PhpLambdaFunction(node.Signature, analyzer.SourceUnit, node.Span);
+                // construct fake signature containing both - use params and regular params
+                var allparams = new List<FormalParam>(node.Signature.FormalParams);
+                if (node.UseParams != null)
+                    allparams.InsertRange(0, node.UseParams);
+                var signature = new Signature(false, allparams);
+
+                //
+                function = new PhpLambdaFunction(signature, analyzer.SourceUnit, node.Span);
                 function.WriteUp(new TypeSignature(FormalTypeParam.EmptyList).ToPhpRoutineSignature(function));
 
-                SignatureCompiler.AnalyzeMembers(node.Signature, analyzer, function);
+                SignatureCompiler.AnalyzeMembers(signature, analyzer, function);
 
                 //attributes.Analyze(analyzer, this);
 
@@ -54,7 +61,7 @@ namespace PHP.Core.Compiler.AST
                 analyzer.EnterFunctionDeclaration(function);
 
                 //typeSignature.Analyze(analyzer);
-                SignatureCompiler.Analyze(node.Signature, analyzer);
+                SignatureCompiler.Analyze(signature, analyzer);
 
                 node.Body.Analyze(analyzer);
 
@@ -101,18 +108,15 @@ namespace PHP.Core.Compiler.AST
                 il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
                 il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
 
-                int userParamsCount = (node.UseParams != null) ? node.UseParams.Count : 0;
-                if (node.Signature.FormalParams != null && node.Signature.FormalParams.Count > userParamsCount)
+                if (node.Signature.FormalParams != null && node.Signature.FormalParams.Length != 0)
                 {
                     // array = new PhpArray(<int_count>, <string_count>);
                     il.Emit(OpCodes.Ldc_I4, 0);
-                    il.Emit(OpCodes.Ldc_I4, node.Signature.FormalParams.Count);
+                    il.Emit(OpCodes.Ldc_I4, node.Signature.FormalParams.Length);
                     il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
 
-                    for (int i = userParamsCount; i < node.Signature.FormalParams.Count; i++)
+                    foreach (var p in node.Signature.FormalParams)
                     {
-                        var p = node.Signature.FormalParams[i];
-
                         // CALL array.SetArrayItem("&$name", "<required>" | "<optional>");
                         il.Emit(OpCodes.Dup);   // PhpArray
 
@@ -130,7 +134,7 @@ namespace PHP.Core.Compiler.AST
                     il.Emit(OpCodes.Ldnull);
                 }
 
-                if (userParamsCount > 0)
+                if (node.UseParams != null && node.UseParams.Count != 0)
                 {
                     // array = new PhpArray(<int_count>, <string_count>);
                     il.Emit(OpCodes.Ldc_I4, 0);

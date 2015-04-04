@@ -15,7 +15,7 @@ namespace PHP.Core
     /// <summary>
     /// Represents single source document.
     /// </summary>
-    public abstract class SourceUnit : ILineBreaks
+    public abstract class SourceUnit : ILineBreaks, IPropertyCollection
     {
         #region Fields & Properties
 
@@ -30,6 +30,11 @@ namespace PHP.Core
         protected AST.GlobalCode ast;
 
         /// <summary>
+        /// Set of object properties.
+        /// </summary>
+        private PropertyCollection innerProps;
+
+        /// <summary>
         /// Gets line breaks for this source unit.
         /// </summary>
         /// <remarks>Line breaks are used to resolve line and column number from given position.</remarks>
@@ -41,17 +46,24 @@ namespace PHP.Core
         protected ILineBreaks innerLineBreaks;
 
         /// <summary>
-        /// Dictionary of PHP aliases.
+        /// Naming context defining aliases.
         /// </summary>
-        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
-        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+        public NamingContext/*!*/ Naming
+        {
+            get { return this.naming; }
+            internal set
+            {
+                if (value == null) throw new ArgumentNullException();
+                this.naming = value;
+            }
+        }
+        private NamingContext/*!*/naming;
 
         /// <summary>
         /// Current namespace (in case we are compiling through eval from within namespace).
         /// </summary>
-        public QualifiedName? CurrentNamespace { get { return currentNamespace; } }
-        private QualifiedName? currentNamespace = null;
-
+        public QualifiedName? CurrentNamespace { get { return this.naming.CurrentNamespace; } }
+        
         public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
         private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
         public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count != 0; } }
@@ -84,6 +96,7 @@ namespace PHP.Core
             this.sourceFile = sourceFile;
             this.encoding = encoding;
             this.innerLineBreaks = lineBreaks;
+            this.naming = new NamingContext(null, null);
         }
 
         #endregion
@@ -175,24 +188,6 @@ namespace PHP.Core
 
         #endregion
 
-        #region Namespaces
-
-        /// <summary>
-        /// Used to merge namespaces included by the caller of 'eval' function.
-        /// </summary>
-        /// <param name="namingContext">Naming context of the caller.</param>
-        public void AddImportedNamespaces(NamingContext namingContext)
-        {
-            if (namingContext == null) return;
-
-            this.currentNamespace = namingContext.CurrentNamespace;
-            if (namingContext.Aliases != null)
-                foreach (var alias in namingContext.Aliases)
-                    this.Aliases.Add(alias.Key, alias.Value);
-        }
-
-        #endregion
-
         #region ILineBreaks Members
 
         int ILineBreaks.Count
@@ -218,6 +213,67 @@ namespace PHP.Core
         public virtual void GetLineColumnFromPosition(int position, out int line, out int column)
         {
             this.innerLineBreaks.GetLineColumnFromPosition(position, out line, out column);
+        }
+
+        #endregion
+
+        #region IPropertyCollection Members
+
+        void IPropertyCollection.SetProperty(object key, object value)
+        {
+            innerProps.SetProperty(key, value);
+        }
+
+        void IPropertyCollection.SetProperty<T>(T value)
+        {
+            innerProps.SetProperty<T>(value);
+        }
+
+        object IPropertyCollection.GetProperty(object key)
+        {
+            return innerProps.GetProperty(key);
+        }
+
+        T IPropertyCollection.GetProperty<T>()
+        {
+            return innerProps.GetProperty<T>();
+        }
+
+        bool IPropertyCollection.TryGetProperty(object key, out object value)
+        {
+            return innerProps.TryGetProperty(key, out value);
+        }
+
+        bool IPropertyCollection.TryGetProperty<T>(out T value)
+        {
+            return innerProps.TryGetProperty<T>(out value);
+        }
+
+        bool IPropertyCollection.RemoveProperty(object key)
+        {
+            return innerProps.RemoveProperty(key);
+        }
+
+        bool IPropertyCollection.RemoveProperty<T>()
+        {
+            return innerProps.RemoveProperty<T>();
+        }
+
+        void IPropertyCollection.ClearProperties()
+        {
+            innerProps.ClearProperties();
+        }
+
+        object IPropertyCollection.this[object key]
+        {
+            get
+            {
+                return innerProps[key];
+            }
+            set
+            {
+                innerProps[key] = value;
+            }
         }
 
         #endregion
@@ -262,6 +318,14 @@ namespace PHP.Core
             {
                 ast = parser.Parse(this, source_reader, errors, reductionsSink, initialState, features);
             }
+        }
+
+        /// <summary>
+        /// Initializes <c>Ast</c> with empty <see cref="AST.GlobalCode"/>.
+        /// </summary>
+        internal void SetEmptyAst()
+        {
+            this.ast = new AST.GlobalCode(new List<AST.Statement>(), this);
         }
 
         public override string GetSourceCode(Text.Span span)

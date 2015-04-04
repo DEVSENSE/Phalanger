@@ -319,11 +319,11 @@ namespace PHP.Core.Emit
 				MainHelperArgTypes);
 
 			// gives arguments names (for comfortable debugging):
-            result.DefineParameter(1, ParameterAttributes.None, PluginHandler.ConvertParameterName(PhpRoutine.ContextParamName));
-            result.DefineParameter(2, ParameterAttributes.None, PluginHandler.ConvertParameterName(PhpRoutine.LocalVariablesTableName));
-            result.DefineParameter(3, ParameterAttributes.None, PluginHandler.ConvertParameterName("<self>"));
-            result.DefineParameter(4, ParameterAttributes.None, PluginHandler.ConvertParameterName("<includer>"));
-            result.DefineParameter(5, ParameterAttributes.None, PluginHandler.ConvertParameterName("<request>"));
+            result.DefineParameter(1, ParameterAttributes.None, PhpRoutine.ContextParamName);
+            result.DefineParameter(2, ParameterAttributes.None, PhpRoutine.LocalVariablesTableName);
+            result.DefineParameter(3, ParameterAttributes.None, "<self>");
+            result.DefineParameter(4, ParameterAttributes.None, "<includer>");
+            result.DefineParameter(5, ParameterAttributes.None, "<request>");
 
 			return result;
 		}

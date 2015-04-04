@@ -207,6 +207,7 @@ namespace PHP.Core.Parsers.GPPG
 		protected abstract Rule[] Rules { get; }
 		protected abstract int ErrorToken { get; }
 		protected abstract int EofToken { get; }
+        protected virtual bool IsDocCommentToken(int tok) { return false; }
 		
 		protected virtual PositionType InvalidPosition { get { return default(PositionType); } } 
 		protected abstract PositionType CombinePositions(PositionType first, PositionType last);
@@ -239,8 +240,8 @@ namespace PHP.Core.Parsers.GPPG
             state_stack.Push(current_state_index);
 			value_stack.Push(yyval, yypos, yypos_valid);
 
-			while (true)
-			{
+            for (; ; )
+            {
                 //if (Trace)
                 //    Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
 
@@ -248,36 +249,44 @@ namespace PHP.Core.Parsers.GPPG
 
                 var current_state_parser_table = states[current_state_index].parser_table;
                 if (current_state_parser_table != null)
-				{
-					if (next == 0)
-					{
+                {
+                    if (next == 0)
+                    {
                         //if (Trace)
                         //    Console.Error.Write("Reading a token: ");
 
-						next = scanner.GetNextToken();
-					}
+                        next = scanner.GetNextToken();
+                    }
 
                     //if (Trace)
                     //    Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
 
                     current_state_parser_table.TryGetValue(next, out action);
-				}
+                }
 
-				if (action > 0)         // shift
-				{
-					Shift(action);
-				}
-				else if (action < 0)   // reduce
-				{
-					Reduce(-action);
+                if (action > 0)         // shift
+                {
+                    Shift(action);
+                }
+                else if (action < 0)   // reduce
+                {
+                    Reduce(-action);
 
-					if (action == -1)	// accept
-						return true;
-				}
-				else if (action == 0)   // error
-					if (!ErrorRecovery())
-						return false;
-			}
+                    if (action == -1)	// accept
+                        return true;
+                }
+                else if (action == 0)   // error
+                {
+                    if (IsDocCommentToken(next))
+                    {
+                        next = 0;
+                        continue;   // ignore T_DOC_COMMENT
+                    }
+
+                    if (!ErrorRecovery())
+                        return false;
+                }
+            }
 		}
 
 

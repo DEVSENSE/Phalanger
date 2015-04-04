@@ -1105,8 +1105,6 @@ namespace PHP.Core
             return rl;
         }
 
-        
-
         /// <summary>
         /// Implements binary '*' operator optimized for multiplication with an integer literal.
         /// </summary>
@@ -1204,6 +1202,68 @@ namespace PHP.Core
             }
 
             return x * dy;
+        }
+
+        #endregion
+
+        #region Pow
+
+        [Emitted]
+        public static object Pow(object x, object y)
+        {
+            Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
+
+            double dx, dy;
+            int ix, iy;
+            long lx, ly;
+            Convert.NumberInfo info;
+
+            // converts x and y to numbers:
+            info = Convert.ObjectToNumber(x, out ix, out lx, out dx) | Convert.ObjectToNumber(y, out iy, out ly, out dy);
+
+            if ((info & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
+            {
+                PhpException.UnsupportedOperandTypes();
+                return 0;
+            }
+
+            // at least one operand is convertible to a double:
+            if ((info & Convert.NumberInfo.Double) != 0 || dy < 0.0)
+                return Math.Pow(dx, dy);
+
+            if (ly == 0) return 1;
+            if (lx == 0) return 0;
+
+            long rl = 1;
+            try
+            {
+                while (ly >= 1)
+                {
+                    if ((ly & 1) != 0)
+                    {
+                        --ly;
+                        rl *= lx;
+                    }
+                    else
+                    {
+                        ly /= 2;
+                        lx *= lx;
+                    }
+                }
+            }
+            catch (OverflowException)
+            {
+                // we need double
+                return Math.Pow(dx, dy);
+            }
+
+            // int to long overflow check
+            int il = unchecked((int)rl);
+            if (il == rl)
+                return il;
+
+            // we need long
+            return rl;
         }
 
         #endregion

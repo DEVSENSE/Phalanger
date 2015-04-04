@@ -30,17 +30,17 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// A list of statements contained in the try-block.
 		/// </summary>
-		private readonly List<Statement>/*!*/ statements;
+        private readonly Statement[]/*!*/ statements;
         /// <summary>A list of statements contained in the try-block.</summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
+        public Statement[]/*!*/ Statements { get { return statements; } }
 
 		/// <summary>
         /// A list of catch statements catching exceptions thrown inside the try block. Can be a <c>null</c> reference.
 		/// </summary>
-		private readonly List<CatchItem> catches;
-        /// <summary>A list of catch statements catching exceptions thrown inside the try block. Can be a <c>null</c> reference.</summary>
-        public List<CatchItem> Catches { get { return catches; } }
-        internal bool HasCatches { get { return catches != null && catches.Count != 0; } }
+		private readonly CatchItem[]/*!*/catches;
+        /// <summary>A list of catch statements catching exceptions thrown inside the try block.</summary>
+        public CatchItem[]/*!*/Catches { get { return catches; } }
+        internal bool HasCatches { get { return catches.Length != 0; } }
 
         /// <summary>
         /// A list of statements contained in the finally-block. Can be a <c>null</c> reference.
@@ -48,15 +48,15 @@ namespace PHP.Core.AST
         private readonly FinallyItem finallyItem;
         /// <summary>A list of statements contained in the finally-block. Can be a <c>null</c> reference.</summary>
         public FinallyItem FinallyItem { get { return finallyItem; } }
-        internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Count != 0; } }
+        internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Length != 0; } }
 
-        public TryStmt(Text.Span p, List<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
+        public TryStmt(Text.Span p, IList<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
 			: base(p)
 		{
             Debug.Assert(statements != null);
             
-			this.statements = statements;
-			this.catches = catches;
+			this.statements = statements.AsArray();
+			this.catches = catches.AsArray();
             this.finallyItem = finallyItem;
 		}
 
@@ -79,9 +79,9 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// A list of statements contained in the catch-block.
 		/// </summary>
-		private readonly List<Statement>/*!*/ statements;
+        private readonly Statement[]/*!*/ statements;
         /// <summary>A list of statements contained in the catch-block.</summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
+        public Statement[]/*!*/ Statements { get { return statements; } }
 
 		/// <summary>
 		/// A variable where an exception is assigned in.
@@ -98,14 +98,14 @@ namespace PHP.Core.AST
         public GenericQualifiedName ClassName { get { return className; } }
 
         public CatchItem(Text.Span p, GenericQualifiedName className, DirectVarUse/*!*/ variable,
-			List<Statement>/*!*/ statements)
+			IList<Statement>/*!*/ statements)
 			: base(p)
 		{
 			Debug.Assert(variable != null && statements != null);
 
 			this.className = className;
 			this.variable = variable;
-			this.statements = statements;
+			this.statements = statements.AsArray();
 		}
 
         /// <summary>
@@ -127,14 +127,14 @@ namespace PHP.Core.AST
         /// <summary>
         /// A list of statements contained in the finally-block.
         /// </summary>
-        private readonly List<Statement>/*!*/statements;
+        private readonly Statement[]/*!*/statements;
         /// <summary>A list of statements contained in the try-block.</summary>
-        public List<Statement>/*!*/Statements { get { return statements; } }
+        public Statement[]/*!*/Statements { get { return statements; } }
 
-        public FinallyItem(Text.Span span, List<Statement>/*!*/statements)
+        public FinallyItem(Text.Span span, IList<Statement>/*!*/statements)
             : base(span)
         {
-            this.statements = statements;
+            this.statements = statements.AsArray();
         }
 
         public override void VisitMe(TreeVisitor visitor)

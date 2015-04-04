@@ -341,7 +341,7 @@ namespace PHP.Core
 		/// Builds AST from the given source code string.
 		/// Returns <B>null</B> if the AST cannot be built (new declarations appears in the code).
 		/// </summary>
-        internal List<Statement> BuildAst(int positionShift, string/*!*/ sourceCode)
+        internal Statement[] BuildAst(int positionShift, string/*!*/ sourceCode)
 		{
 			Parser.ReductionsCounter counter = new Parser.ReductionsCounter();
 
@@ -1288,11 +1288,10 @@ namespace PHP.Core
 			// we cannot resolve a method unless we know the inherited members:
 			if (type.IsDefinite)
 			{
-				KnownType known;
-
-				// the method is a constructor:
-				if (methodName.IsConstructName || (known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
-					return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
+                //// if the method is a constructor, 
+                //KnownType known;
+                //if (methodName.IsConstructName || (known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
+                //    return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
 
 				DRoutine routine;
 				GetMemberResult member_result;
@@ -1326,10 +1325,18 @@ namespace PHP.Core
 					case GetMemberResult.OK:
 						return routine;
 
-					case GetMemberResult.NotFound:
-                        if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
-                            ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
-						return new UnknownMethod(type, methodName.Value);
+                    case GetMemberResult.NotFound:
+                        {
+                            // allow calling CLR constructor:
+                            KnownType known;
+                            if (/*methodName.IsConstructName || */(known = type as KnownType) != null && methodName.Equals(known.QualifiedName.Name))
+                                return ResolveConstructor(type, position, referringType, referringRoutine, out checkVisibilityAtRuntime);
+
+                            //
+                            if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
+                                ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
+                            return new UnknownMethod(type, methodName.Value);
+                        }
 
 					case GetMemberResult.BadVisibility:
 						{
@@ -1566,7 +1573,8 @@ namespace PHP.Core
 
 		public void AddLambdaFcnDeclaration(FunctionDecl decl)
 		{
-			sourceUnit.Ast.Statements.Add(decl);
+            var ast = sourceUnit.Ast;
+			ast.Statements = ArrayUtils.Concat(ast.Statements, decl);
 		}
 
         internal void SetEntryPoint(PhpRoutine/*!*/ routine, Text.Span position)

@@ -37,6 +37,8 @@ namespace PHP.Core.Parsers
 		void FunctionDeclarationReduced(Parser/*!*/ parser, FunctionDecl/*!*/ decl);
 		void TypeDeclarationReduced(Parser/*!*/ parser, TypeDecl/*!*/ decl);
 		void GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl);
+        void NamespaceDeclReduced(Parser/*!*/ parser, NamespaceDecl/*!*/ decl);
+        void LambdaFunctionReduced(Parser/*!*/ parser, LambdaFunctionExpr/*!*/ decl);
 	}
 
     // Due to a MCS bug, it has to be in the other partial class in generated (Generated/Parser.cs)
@@ -60,7 +62,7 @@ namespace PHP.Core.Parsers
 	{
 		#region Reductions Sinks
 
-		public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
+        public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
 
 		private sealed class _NullReductionsSink : IReductionsSink
 		{
@@ -79,85 +81,61 @@ namespace PHP.Core.Parsers
 			void IReductionsSink.GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl)
 			{
 			}
-		}
+
+            void IReductionsSink.NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+            {
+            }
+
+            void IReductionsSink.LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+            {
+            }
+        }
 
 		public sealed class ReductionsCounter : IReductionsSink
 		{
-			public int InclusionCount { get { return inclusionCount; } }
-			private int inclusionCount;
+			public int InclusionCount { get { return _inclusionCount; } }
+			private int _inclusionCount = 0;
 
-			public int FunctionCount { get { return functionCount; } }
-			private int functionCount;
+			public int FunctionCount { get { return _functionCount; } }
+			private int _functionCount = 0;
 
-			public int TypeCount { get { return typeCount; } }
-			private int typeCount;
+			public int TypeCount { get { return _typeCount; } }
+			private int _typeCount = 0;
 
-			public int ConstantCount { get { return constantCount; } }
-			private int constantCount;
+			public int ConstantCount { get { return _constantCount; } }
+			private int _constantCount = 0;
 
-			public ReductionsCounter()
+            void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
 			{
-				this.inclusionCount = 0;
-				this.functionCount = 0;
-				this.typeCount = 0;
-				this.constantCount = 0;
-			}
-
-			void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
-			{
-				this.inclusionCount++;
+				_inclusionCount++;
 			}
 
 			void IReductionsSink.FunctionDeclarationReduced(Parser/*!*/ parser, FunctionDecl/*!*/ decl)
 			{
-				this.functionCount++;
+				_functionCount++;
 			}
 
 			void IReductionsSink.TypeDeclarationReduced(Parser/*!*/ parser, TypeDecl/*!*/ decl)
 			{
-				this.typeCount++;
+				_typeCount++;
 			}
 
 			void IReductionsSink.GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl)
 			{
-				this.constantCount++;
+				_constantCount++;
 			}
+
+            void IReductionsSink.NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+            {
+            }
+
+            void IReductionsSink.LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+            {
+            }
 		}
 
 		#endregion
         
-        #region TmpMemberInfo
-
-        /// <summary>
-        /// Singleton used to remember information about modifier + associated doc comment.
-        /// </summary>
-        private class TmpMemberInfo
-        {
-            public PhpMemberAttributes attr;
-            public object docComment;
-
-            public TmpMemberInfo(PhpMemberAttributes attr, object docComment)
-            {
-                this.Update(attr, docComment);
-            }
-
-            public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, object docComment)
-            {
-                this.attr = attr;
-                this.docComment = docComment;
-
-                return this;
-            }
-        }
-
-        /// <summary>
-        /// Singleton; used to pass information from <c>member_modifier</c> together with doc comment.
-        /// </summary>
-        private TmpMemberInfo TmpMemberInfoSingleton { get { return _tmpMemberInfoSingleton ?? (_tmpMemberInfoSingleton = new TmpMemberInfo(PhpMemberAttributes.Public, null)); } }
-        private TmpMemberInfo _tmpMemberInfoSingleton = null;
-
-        #endregion
-
         protected sealed override int EofToken
 		{
 			get { return (int)Tokens.EOF; }
@@ -167,6 +145,11 @@ namespace PHP.Core.Parsers
 		{
 			get { return (int)Tokens.ERROR; }
 		}
+
+        protected override bool IsDocCommentToken(int tok)
+        {
+            return (tok == (int)Tokens.T_DOC_COMMENT);
+        }
 
         protected override Text.Span CombinePositions(Text.Span first, Text.Span last)
         {
@@ -226,9 +209,6 @@ namespace PHP.Core.Parsers
             Name.SelfClassName.Value,
             Name.StaticClassName.Value,
             Name.ParentClassName.Value,
-            QualifiedName.False.Name.Value,
-            QualifiedName.True.Name.Value,
-            QualifiedName.Null.Name.Value,
         };
 
 		// stack of string buffers; used when processing encaps strings
@@ -288,9 +268,9 @@ namespace PHP.Core.Parsers
                 this.currentNamespace = new AST.NamespaceDecl(default(Text.Span), sourceUnit.CurrentNamespace.Value.ToStringList(), true);
 
                 // add aliases into the namespace:
-                if (sourceUnit.Aliases.Count > 0)
-                    foreach (var alias in sourceUnit.Aliases)
-                        this.currentNamespace.Aliases.Add(alias.Key, alias.Value);
+                if (sourceUnit.Naming.Aliases != null)
+                    foreach (var alias in sourceUnit.Naming.Aliases)
+                        this.currentNamespace.Naming.AddAlias(alias.Key, alias.Value);
             }
             else
             {
@@ -309,20 +289,7 @@ namespace PHP.Core.Parsers
 			reader = null;
 		}
 
-        #region DocComments
-
-        private void SetCommentSetHelper(object element, object doccomment)
-        {
-            Debug.Assert(element is AstNode);
-            if (doccomment is PHPDocBlock)
-            {
-                ((AstNode)element).Properties[typeof(PHPDocBlock)] = (PHPDocBlock)doccomment;
-            }
-        }
-
-        #endregion
-
-		#region Conditional Code, Scope
+        #region Conditional Code, Scope
 
 		private int condLevel;
 
@@ -441,7 +408,7 @@ namespace PHP.Core.Parsers
 			if (item as VariableUse == null)
 			{
                 errors.Add(FatalErrors.CheckVarUseFault, SourceUnit, span);
-				throw new CompilerException();
+                throw new CompilerException();
 			}
 		}
 
@@ -601,7 +568,7 @@ namespace PHP.Core.Parsers
         {
             QualifiedName? fallbackQName;
 
-            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.CurrentNaming.FunctionAliases);
             return new DirectFcnCall(pos, qname, fallbackQName, qnamePosition, args, typeArgs);
         }
 
@@ -609,7 +576,17 @@ namespace PHP.Core.Parsers
         {
             QualifiedName? fallbackQName;
 
-            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
+            {
+                // special global consts
+                fallbackQName = null;
+                qname.IsFullyQualifiedName = true;
+            }
+            else
+            {
+                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.CurrentNaming.ConstantAliases);
+            }
+            
             return new GlobalConstUse(pos, qname, fallbackQName);
         }
 
@@ -620,9 +597,20 @@ namespace PHP.Core.Parsers
         /// <param name="qname"></param>
         /// <param name="fallbackQName"></param>
         /// <remarks>Used for handling global function call and global constant use.
+        /// <param name="aliases">Optional. Dictionary of aliases for the <paramref name="qname"/>.</param>
         /// In PHP entity in current namespace is tried first, then it falls back to global namespace.</remarks>
-        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName)
+        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<string, QualifiedName> aliases)
         {
+            // aliasing
+            QualifiedName tmp;
+            if (qname.IsSimpleName && aliases != null && aliases.TryGetValue(qname.Name.Value, out tmp))
+            {
+                qname = tmp;
+                fallbackQName = null;
+                return;
+            }
+
+            //
             qname = TranslateNamespace(qname);
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
@@ -727,13 +715,13 @@ namespace PHP.Core.Parsers
                     CheckReservedNamesAbsence((GenericQualifiedName)static_type_ref, span);
         }
 
-		private void CheckReservedNamesAbsence(List<KeyValuePair<GenericQualifiedName, Text.Span>> genericNames)
+        private void CheckReservedNamesAbsence(List<Tuple<GenericQualifiedName, Text.Span>> genericNames)
 		{
             if (genericNames != null)
             {
                 int count = genericNames.Count;
                 for (int i = 0; i < count; i++)
-                    CheckReservedNamesAbsence(genericNames[i].Key, genericNames[i].Value);
+                    CheckReservedNamesAbsence(genericNames[i].Item1, genericNames[i].Item2);
             }
 		}
 
@@ -750,10 +738,9 @@ namespace PHP.Core.Parsers
 
         private void CheckTypeNameInUse(Name typeName, Text.Span span)
         {
-            if (CurrentScopeAliases.ContainsKey(typeName.Value) ||
-                reservedTypeNames.Contains(typeName.Value))
-                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, span,
-                     CurrentNamespaceName + typeName.Value);
+            var aliases = this.CurrentNaming.Aliases;
+            if (reservedTypeNames.Contains(typeName.Value) || (aliases != null && aliases.ContainsKey(typeName.Value)))
+                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, span, CurrentNamespaceName + typeName.Value);
         }
 
         /// <summary>
@@ -764,6 +751,8 @@ namespace PHP.Core.Parsers
 		private void CheckTypeParameterNames(List<FormalTypeParam> typeParams, string/*!*/declarerName)
 		{
 			if (typeParams == null) return;
+            
+            var aliases = this.CurrentNaming.Aliases;
 
 			for (int i = 0; i < typeParams.Count; i++)
 			{
@@ -771,7 +760,7 @@ namespace PHP.Core.Parsers
 				{
 					ErrorSink.Add(Errors.GenericParameterCollidesWithDeclarer, SourceUnit, typeParams[i].Span, declarerName);
 				}
-                else if (CurrentScopeAliases.ContainsKey(typeParams[i].Name.Value))
+                else if (aliases != null && aliases.ContainsKey(typeParams[i].Name.Value))
                 {
                     ErrorSink.Add(Errors.GenericAlreadyInUse, SourceUnit, typeParams[i].Span, typeParams[i].Name.Value);
                 }
@@ -876,21 +865,30 @@ namespace PHP.Core.Parsers
         /// <summary>
         /// Dictionary of PHP aliases for the current scope.
         /// </summary>
-        private Dictionary<string, QualifiedName>/*!*/ CurrentScopeAliases
+        private NamingContext/*!*/ CurrentNaming
         {
             get
             {
-                return (currentNamespace != null) ? currentNamespace.Aliases : this.sourceUnit.Aliases;
+                return (currentNamespace != null) ? currentNamespace.Naming : this.sourceUnit.Naming;
             }
         }
 
-        /// <summary>
-        /// Add PHP alias (through <c>use</c> keyword).
-        /// </summary>
-        /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
-        private void AddAlias(QualifiedName fullQualifiedName)
+        private void AddAliases(List<KeyValuePair<string, QualifiedName>>/*!*/list)
         {
-            AddAlias(fullQualifiedName, fullQualifiedName.Name.Value);
+            foreach (var pair in list)
+                AddAlias(pair.Value, pair.Key);
+        }
+
+        private void AddFunctionAliases(List<KeyValuePair<string, QualifiedName>>/*!*/list)
+        {
+            foreach (var pair in list)
+                AddFunctionAlias(pair.Value, pair.Key);
+        }
+
+        private void AddConstAliases(List<KeyValuePair<string, QualifiedName>>/*!*/list)
+        {
+            foreach (var pair in list)
+                AddConstAlias(pair.Value, pair.Key);
         }
 
         /// <summary>
@@ -898,15 +896,14 @@ namespace PHP.Core.Parsers
         /// </summary>
         /// <param name="fullQualifiedName">Fully qualified aliased name.</param>
         /// <param name="alias">If not null, represents the alias name. Otherwise the last component from <paramref name="fullQualifiedName"/> is used.</param>
-        private void AddAlias(QualifiedName fullQualifiedName, string/*!*/alias)
+        private void AddAlias(QualifiedName fullQualifiedName, string alias)
         {
             Debug.Assert(!string.IsNullOrEmpty(fullQualifiedName.Name.Value));
-            Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(fullQualifiedName.IsFullyQualifiedName);
 
-            //if (sourceUnit.CompilationUnit.IsTransient)   // J: supported, as it is in PHP. Simply within this transient sourceUnit
-            //    throw new NotImplementedException("Adding an alias from within eval is not supported.");
-            
+            //
+            alias = alias ?? fullQualifiedName.Name.Value;
+
             // check if it aliases itself:
             QualifiedName qualifiedAlias = new QualifiedName(
                 new Name(alias),
@@ -915,17 +912,32 @@ namespace PHP.Core.Parsers
             if (fullQualifiedName == qualifiedAlias) return;    // ignore
             
             // add the alias:
+            var naming = this.CurrentNaming;
             
-            // check for alias duplicity:
-            if (!CurrentScopeAliases.ContainsKey(alias) && !reservedTypeNames.Contains(alias))
+            // check for alias duplicity and add the alias:
+            // TODO: check if there is no conflict with some class declaration (this should be in runtime ... but this overriding looks like useful features)
+            if (reservedTypeNames.Contains(alias) || !naming.AddAlias(alias, fullQualifiedName))
             {
-                // TODO: check if there is no conflict with some class declaration (this should be in runtime ... but this overriding looks like useful features)
-
-                // add alias into the scope
-                CurrentScopeAliases.Add(alias, fullQualifiedName);
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos/*TODO: position of the alias itself*/, fullQualifiedName.NamespacePhpName, alias);
             }
-            else
-                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos, fullQualifiedName.NamespacePhpName, alias);
+        }
+
+        private void AddFunctionAlias(QualifiedName qname, string alias)
+        {
+            alias = alias ?? qname.Name.Value;
+            if (!this.CurrentNaming.AddFunctionAlias(alias, qname))
+            {
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos/*TODO: position of the alias itself*/, qname.NamespacePhpName, alias);
+            }
+        }
+
+        private void AddConstAlias(QualifiedName qname, string alias)
+        {
+            alias = alias ?? qname.Name.Value;
+            if (!this.CurrentNaming.AddConstantAlias(alias, qname))
+            {
+                errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos/*TODO: position of the alias itself*/, qname.NamespacePhpName, alias);
+            }
         }
 
         private void ReserveTypeNames(List<FormalTypeParam> typeParams)
@@ -967,24 +979,8 @@ namespace PHP.Core.Parsers
             // skip special names:
             if (qname.IsSimpleName)
             {
-
-                //if (qname.IsReservedClassName)
-                //    return qname;
-            
                 if (reservedTypeNames.Contains(qname.Name.Value))
                     return qname;
-
-                //if ((features & LanguageFeatures.ClrSemantics) != 0)
-                //{
-                //    if (qname == QualifiedName.Array ||
-                //        qname == QualifiedName.Boolean ||
-                //        qname == QualifiedName.Double ||
-                //        qname == QualifiedName.Integer ||
-                //        qname == QualifiedName.LongInteger ||
-                //        qname == QualifiedName.Object ||
-                //        qname == QualifiedName.String)
-                //        return qname;
-                //}
             }
 
             // return the alias if found:
@@ -999,7 +995,10 @@ namespace PHP.Core.Parsers
         /// <remarks>Fully qualified names are not translated.</remarks>
         private QualifiedName TranslateNamespace(QualifiedName qname)
         {
-            if (qname.IsFullyQualifiedName) return qname;
+            if (qname.IsFullyQualifiedName)
+            {
+                return qname;
+            }
 
             if (qname.IsSimpleName)
             {
@@ -1025,8 +1024,30 @@ namespace PHP.Core.Parsers
 
             return QualifiedName.TranslateAlias(
                 qname,
-                CurrentScopeAliases,
+                this.CurrentNaming.Aliases,
                 (IsInGlobalNamespace || sourceUnit.HasImportedNamespaces) ? (QualifiedName?)null : currentNamespace.QualifiedName);  // do not use current namespace, if there are imported namespace ... will be resolved later
+        }
+
+        #endregion
+
+        #region PHPDocBlock
+
+        protected object CreatePHPDocBlockStmt(object/*!*/doccomment)
+        {
+            Debug.Assert(doccomment is PHPDocBlock);
+            return new PHPDocStmt(yypos, (PHPDocBlock)doccomment);
+        }
+
+        protected object SetPHPDoc(object obj, object phpdoc)
+        {
+            Debug.Assert(obj is LangElement);
+            if (!object.ReferenceEquals(phpdoc, null))
+            {
+                Debug.Assert(phpdoc is PHPDocBlock);
+                ((LangElement)obj).SetPHPDoc((PHPDocBlock)phpdoc);
+            }
+
+            return obj;
         }
 
         #endregion
@@ -1034,7 +1055,7 @@ namespace PHP.Core.Parsers
         #region Helpers
 
         private static readonly List<Statement> emptyStatementList = new List<Statement>();
-        private static readonly List<KeyValuePair<GenericQualifiedName, Text.Span>> emptyGenericQualifiedNamePositionList = new List<KeyValuePair<GenericQualifiedName, Text.Span>>();
+        private static readonly List<Tuple<GenericQualifiedName, Text.Span>> emptyGenericQualifiedNamePositionList = new List<Tuple<GenericQualifiedName, Text.Span>>();
 		private static readonly List<FormalParam> emptyFormalParamListIndex = new List<FormalParam>();
 		private static readonly List<ActualParam> emptyActualParamListIndex = new List<ActualParam>();
 		private static readonly List<Expression> emptyExpressionListIndex = new List<Expression>();
@@ -1043,84 +1064,71 @@ namespace PHP.Core.Parsers
 		private static readonly List<FormalTypeParam> emptyFormalTypeParamList = new List<FormalTypeParam>();
 		private static readonly List<TypeRef> emptyTypeRefList = new List<TypeRef>();
 
-
-		private static List<T>/*!*/ListAdd<T>(object list, object item)
-		{
+        private static List<T>/*!*/ListAdd<T>(object list, object item)
+        {
             Debug.Assert(list is List<T>);
             //Debug.Assert(item is T);
 
             var tlist = (List<T>)list;
-
-            NamespaceDecl nsitem;
-                
-            // little hack when appending statement after simple syntaxed namespace:
-
-            // namespace A;
-            // foo();   // <-- add this statement into namespace A
-
-            if (tlist.Count > 0 &&
-                (nsitem = tlist[tlist.Count - 1] as NamespaceDecl) != null &&
-                nsitem.IsSimpleSyntax &&
-                !(item is NamespaceDecl))
+            
+            if (item is T)
             {
-                // adding a statement after simple namespace declaration => add the statement into the namespace:
-                Debug.Assert(item is T);
-                Debug.Assert(item is Statement);
-
-                nsitem.Statements.Add((Statement)item);
-                //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, ((Statement)item).Span));
-            }
-            else if (item is List<T>)
-            {
-                tlist.AddRange((List<T>)item);
-            }
-            else
-            {
-                Debug.Assert(item == null || item is T);
                 tlist.Add((T)item);
+            }
+            else if (item != null)
+            {
+                Debug.Assert(item is List<T>);
+                tlist.AddRange((List<T>)item);
             }
 
             return tlist;
-		}
-
-        private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
-        {
-            Debug.Assert(list != null);
-            Debug.Assert(item != null);
-            Debug.Assert(item is T);
-                
-            var tlist = (List<T>)list;
-
-            // little hack when prepending simple syntaxed namespace before some statements:
-            
-            // namespace A;  // == {item}
-            // stmt1; stmt2; // <-- add these stamenents into namespace A
-            // namespace B;
-
-            NamespaceDecl nsitem = item as NamespaceDecl;
-            if (nsitem != null && nsitem.IsSimpleSyntax)
-            {
-                Debug.Assert(list is List<Statement>);
-                var slist = (List<Statement>)list;
-
-                // move statements into nsitem namespace:
-                int i = 0;  // find how many Statements from tlist move to nsitem.Statements
-                while (i < slist.Count && !(slist[i] is NamespaceDecl))
-                    ++i;
-
-                if (i > 0)
-                {
-                    nsitem.Statements.AddRange(slist.Take(i));
-                    //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, slist[i - 1].Span));
-                    tlist.RemoveRange(0, i);
-                }
-            }
-                
-            // prepend the item:
-            tlist.Insert(0, (T)item);
         }
 
-		private static List<T>/*!*/NewList<T>(T item)
+        private static object/*!*/StatementListAdd(object/*!*/listObj, object itemObj)
+        {
+            Debug.Assert(listObj is List<Statement>);
+
+            if (!object.ReferenceEquals(itemObj, null))
+            {
+                Debug.Assert(itemObj is Statement);
+
+                var list = (List<Statement>)listObj;
+                var stmt = (Statement)itemObj;
+
+                NamespaceDecl nsitem;
+                
+                // little hack when appending statement after simple syntaxed namespace:
+
+                // namespace A;
+                // foo();   // <-- add this statement into namespace A
+
+                if (list.Count != 0 && (nsitem = list.Last() as NamespaceDecl) != null && nsitem.IsSimpleSyntax && !(stmt is NamespaceDecl))
+                {
+                    // adding a statement after simple namespace declaration => add the statement into the namespace:
+                    StatementListAdd(nsitem.Statements, stmt);
+                    //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, ((Statement)item).Span));
+                }
+                else
+                {
+                    if (list.Count != 0)
+                    {
+                        var last = list.Last();
+                        if (last.GetType() == typeof(PHPDocStmt))
+                            stmt.SetPHPDoc(((PHPDocStmt)last).PHPDoc);
+
+                        // last.GetType() == typeof(NamespaceDecl) && last.Statements.Last() is PHPDoc
+                        // ...
+                    }
+
+                    list.Add(stmt);
+                }
+            }
+
+            //
+            return listObj;
+        }
+
+        private static List<T>/*!*/NewList<T>(T item)
 		{
 			return new List<T>(1){ item };
         }
@@ -1156,11 +1164,29 @@ namespace PHP.Core.Parsers
                 throw new ArgumentNullException("token");
             
             // report syntax error if C# names are not allowed
-			if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
+            if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
+            {
                 this.ErrorSink.Add(FatalErrors.SyntaxError, this.SourceUnit, span, CoreResources.GetString("unexpected_token", token));
+            }
 
             //
             return token;
+        }
+
+        /// <summary>
+        /// Gets formal parameter flags.
+        /// </summary>
+        /// <param name="byref">Whether the parameter is prefixed with <c>&amp;</c> character.</param>
+        /// <param name="variadic">Whether the parameter is prefixed with <c>...</c>.</param>
+        /// <returns>Parameter flags.</returns>
+        private static FormalParam.Flags FormalParamFlags(bool byref, bool variadic)
+        {
+            FormalParam.Flags flags = FormalParam.Flags.Default;
+
+            if (byref) flags |= FormalParam.Flags.IsByRef;
+            if (variadic) flags |= FormalParam.Flags.IsVariadic;
+
+            return flags;
         }
 
 		#endregion

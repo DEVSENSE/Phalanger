@@ -158,6 +158,9 @@ namespace PHP.Core.Compiler.AST
                     // out can be used only on by-ref params:
                     analyzer.ErrorSink.Add(Errors.OutAttributeOnByValueParam, analyzer.SourceUnit, node.Span, node.Name);
                 }
+
+                if (node.IsVariadic)
+                    throw new NotImplementedException();
             }
 
             #endregion
@@ -235,12 +238,13 @@ namespace PHP.Core.Compiler.AST
             {
                 int last_mandatory_param_index = -1;
                 bool last_param_was_optional = false;
-                BitArray alias_mask = new BitArray(node.FormalParams.Count);
-                DType[] type_hints = new DType[node.FormalParams.Count];
+                var formalParams = node.FormalParams;
+                BitArray alias_mask = new BitArray(formalParams.Length);
+                DType[] type_hints = new DType[formalParams.Length];
 
-                for (int i = 0; i < node.FormalParams.Count; i++)
+                for (int i = 0; i < formalParams.Length; i++)
                 {
-                    var param = node.FormalParams[i];
+                    var param = formalParams[i];
                     var paramcompiler = param.NodeCompiler<FormalParamCompiler>();
 
                     paramcompiler.AnalyzeMembers(param, analyzer, routine, i);
@@ -248,7 +252,7 @@ namespace PHP.Core.Compiler.AST
                     alias_mask[i] = param.PassedByRef;
                     type_hints[i] = paramcompiler.ResolvedTypeHint;
 
-                    if (param.InitValue == null)
+                    if (param.InitValue == null && !param.IsVariadic)   // optional parameters
                     {
                         if (last_param_was_optional)
                         {

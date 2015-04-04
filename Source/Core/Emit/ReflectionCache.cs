@@ -177,6 +177,13 @@ namespace PHP.Core.Emit
                 public static MethodInfo Double_Object { get { return _Double_Object ?? (_Double_Object = new Func<double, object, double>(PHP.Core.Operators.Multiply).Method); } }
             }
 
+            public struct Pow
+            {
+                static MethodInfo _Object_Object;
+
+                public static MethodInfo Object_Object { get { return _Object_Object ?? (_Object_Object = new Func<object, object, object>(PHP.Core.Operators.Pow).Method); } }
+            }
+
             public struct Remainder
             {
                 static MethodInfo _Object_Object, _Object_Int32;

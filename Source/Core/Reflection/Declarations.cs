@@ -115,8 +115,8 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Set by analyzer.
 		/// </summary>
-		public bool IsUnreachable { get { return isReachable; } internal set { isReachable = value; } }
-		private bool isReachable = true;
+        public bool IsUnreachable { get { return isUnreachable; } internal set { isUnreachable = value; } }
+        private bool isUnreachable = true;
 
 		/// <summary>
 		/// Set by analyzer.

@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Diagnostics;
 
@@ -28,7 +29,7 @@ namespace PHP.Core.Compiler.AST
         {
             #region Analysis
 
-            private static List<Expression> ChainConcatenations(List<Expression>/*!*/ expressions)
+            private static IList<Expression> ChainConcatenations(IList<Expression>/*!*/ expressions)
             {
                 //return expressions;
 
@@ -36,12 +37,15 @@ namespace PHP.Core.Compiler.AST
 
                 ConcatEx expr;
 
-                for (int index = 0; index < expressions.Count; ++index)
+                for (int index = 0; index < expressions.Count; index++)
                 {
                     if ((expr = expressions[index] as ConcatEx) != null)
                     {
                         if (newExpressions == null)
-                            newExpressions = expressions.GetRange(0, index); // initial list of expression (that were not ConcatEx)
+                        {
+                            newExpressions = new List<Expression>(index);
+                            newExpressions.AddRange(expressions.Take(index)); // initial list of expressions (that were not ConcatEx)
+                        }
 
                         newExpressions.AddRange(expr.Expressions);
                     }
@@ -52,17 +56,16 @@ namespace PHP.Core.Compiler.AST
                 }
 
                 // something was chained ?? or not
-                return newExpressions ?? expressions;
+                return (IList<Expression>)newExpressions ?? expressions;
             }
 
             /// <summary>
             /// Analyze the list of expressions and separate them into a list of chunks. (HasValue and !HasValue together)
             /// </summary>
             /// <returns>List of chunks - expressions chunked by that, if they are evaluable during compilation. Cannot return null.</returns>
-            private static List<ConcatChunk> AnalyzeChunks(Analyzer/*!*/ analyzer, List<Expression>/*!*/expressions)
+            private static List<ConcatChunk> AnalyzeChunks(Analyzer/*!*/ analyzer, IList<Expression>/*!*/expressions)
             {
-                Debug.Assert(expressions != null);
-                Debug.Assert(expressions.Count > 0);
+                Debug.Assert(expressions.Any());
 
                 List<ConcatChunk> chunks = new List<ConcatChunk>();
 
@@ -120,7 +123,7 @@ namespace PHP.Core.Compiler.AST
             /// <summary>
             /// Expressions from ConcatChunks, Values are transformed into corresponding literals.
             /// </summary>
-            private static IEnumerable<Expression> ChunkExpressions(List<ConcatChunk>/*!*/concatChunks)
+            private static IEnumerable<Expression> ChunkExpressions(IEnumerable<ConcatChunk>/*!*/concatChunks)
             {
                 Debug.Assert(concatChunks != null);
                 foreach (var chunk in concatChunks)
@@ -139,11 +142,11 @@ namespace PHP.Core.Compiler.AST
 
             public override Evaluation Analyze(ConcatEx node, Analyzer analyzer, ExInfoFromParent info)
             {
-                Debug.Assert(node.Expressions.Count > 0);
+                Debug.Assert(node.Expressions.Length > 0);
                 access = info.Access;
 
                 var concatChunks = AnalyzeChunks(analyzer, node.Expressions);
-                node.Expressions = new List<Expression>(ChunkExpressions(concatChunks));   // replace expressions with optimized one
+                node.Expressions = ChunkExpressions(concatChunks).ToArray();   // replace expressions with optimized one
 
                 if (concatChunks.Count == 1 && concatChunks[0].HasValue)
                     return new Evaluation(node, concatChunks[0].Value); // can be resolved during compilation time
@@ -208,14 +211,14 @@ namespace PHP.Core.Compiler.AST
             public override PhpTypeCode Emit(ConcatEx node, CodeGenerator codeGenerator)
             {
                 Debug.Assert(access == AccessType.Read || access == AccessType.None);
-                Statistics.AST.AddNode("Class.Concat." + node.Expressions.Count);
+                Statistics.AST.AddNode("Class.Concat." + node.Expressions.Length);
 
                 PhpTypeCode result;
 
                 //
                 // For low numbers call specialized methods
                 var/*!*/expressions = node.Expressions;
-                switch (expressions.Count)
+                switch (expressions.Length)
                 {
                     case 1:
                         result = expressions[0].Emit(codeGenerator);

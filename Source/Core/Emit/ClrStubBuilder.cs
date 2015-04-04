@@ -311,7 +311,7 @@ namespace PHP.Core.Emit
 			changed = false;
 			while (typeDesc.GetMethod(name) != null)
 			{
-				name.Value += "_";
+                name = new Name(name.Value + "_");
 				changed = true;
 			}
 
@@ -401,14 +401,14 @@ namespace PHP.Core.Emit
 		/// <param name="formalParams">Formal parameters of the implementing PHP method.</param>
 		/// <param name="templateParams">Parameters of the overload being overriden/implemented/exported.</param>
 		public static void DefineStubParameters(MethodBuilder/*!*/ stub,
-			List<PHP.Core.AST.FormalParam> formalParams, ParameterInfo[]/*!*/ templateParams)
+			PHP.Core.AST.FormalParam[] formalParams, ParameterInfo[]/*!*/ templateParams)
 		{
 			for (int i = 0; i < templateParams.Length; i++)
 			{
 				string name;
 
 				// take the overriding parameter name if available
-				if (formalParams != null && i < formalParams.Count) name = formalParams[i].Name.ToString();
+				if (formalParams != null && i < formalParams.Length) name = formalParams[i].Name.ToString();
 				else name = templateParams[i].Name;
 
 				stub.DefineParameter(i + 1, templateParams[i].Attributes, name);
@@ -423,14 +423,14 @@ namespace PHP.Core.Emit
 		/// <param name="formalParams">Formal parameters of the implementing PHP method.</param>
 		/// <param name="templateParams">Parameters of the overload being overriden/implemented/exported.</param>
 		public static void DefineStubParameters(ConstructorBuilder/*!*/ stub,
-			List<PHP.Core.AST.FormalParam> formalParams, ParameterInfo[]/*!*/ templateParams)
+			PHP.Core.AST.FormalParam[] formalParams, ParameterInfo[]/*!*/ templateParams)
 		{
 			for (int i = 0; i < templateParams.Length; i++)
 			{
 				string name;
 
 				// take the overriding parameter name if available
-				if (formalParams != null && i < formalParams.Count) name = formalParams[i].Name.ToString();
+				if (formalParams != null && i < formalParams.Length) name = formalParams[i].Name.ToString();
 				else name = templateParams[i].Name;
 
 				stub.DefineParameter(i + 1, templateParams[i].Attributes, name);
@@ -492,7 +492,7 @@ namespace PHP.Core.Emit
 			int paramCount,
 			int typeParamCount,
 			PhpRoutineSignature/*!*/ signature,
-			List<PHP.Core.AST.FormalTypeParam>/*!*/ formalTypeParams)
+			PHP.Core.AST.FormalTypeParam[]/*!*/ formalTypeParams)
 		{
 			object[] parameter_types = new object[paramCount];
 			for (int i = 0; i < paramCount; i++)
@@ -557,8 +557,8 @@ namespace PHP.Core.Emit
             Type return_type = Types.Object[0];
 
             PhpRoutineSignature signature = target.Signature;
-			List<AST.FormalParam> formal_params = target.Builder.Signature.FormalParams;
-			List<AST.FormalTypeParam> formal_type_params = target.Builder.TypeSignature.TypeParams;
+			AST.FormalParam[] formal_params = target.Builder.Signature.FormalParams;
+			AST.FormalTypeParam[] formal_type_params = target.Builder.TypeSignature.TypeParams;
 
 			int gen_sig_count = signature.GenericParamCount - signature.MandatoryGenericParamCount + 1;
 			int arg_sig_count = signature.ParamCount - signature.MandatoryParamCount + 1;
@@ -625,7 +625,7 @@ namespace PHP.Core.Emit
 
 						string param_name;
 						ParameterAttributes param_attrs;
-						if (i < formal_params.Count)
+						if (i < formal_params.Length)
 						{
 							param_name = formal_params[i].Name.ToString();
 							param_attrs = (formal_params[i].IsOut ? ParameterAttributes.Out : ParameterAttributes.None);

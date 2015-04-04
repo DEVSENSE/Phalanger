@@ -35,13 +35,13 @@ namespace PHP.Core.AST
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
     [Serializable]
-    public sealed class GlobalCode : AstNode
+    public sealed class GlobalCode : AstNode, IHasSourceUnit
     {
         /// <summary>
         /// Array of nodes representing statements in PHP global code
         /// </summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
-        private readonly List<Statement>/*!*/ statements;
+        public Statement[]/*!*/ Statements { get { return statements; } internal set { statements = value; } }
+        private Statement[]/*!*/ statements;
 
         /// <summary>
         /// Represented source unit.
@@ -54,12 +54,12 @@ namespace PHP.Core.AST
         /// <summary>
         /// Initializes a new instance of the GlobalCode class.
         /// </summary>
-        public GlobalCode(List<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit)
+        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit)
         {
             Debug.Assert(statements != null && sourceUnit != null);
 
             this.sourceUnit = sourceUnit;
-            this.statements = statements;
+            this.statements = statements.AsArray();
         }
 
         #endregion
@@ -97,22 +97,22 @@ namespace PHP.Core.AST
         /// </summary>
         public readonly bool IsSimpleSyntax;
 
-        public QualifiedName QualifiedName { get { return qualifiedName; } }
+        public QualifiedName QualifiedName { get { return this.qualifiedName; } }
         private QualifiedName qualifiedName;
 
         /// <summary>
-        /// Dictionary of PHP aliases.
+        /// Naming context defining aliases.
         /// </summary>
-        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
-        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+        public NamingContext/*!*/ Naming { get { return this.naming; } }
+        private readonly NamingContext naming;
 
-        public bool IsAnonymous { get { return isAnonymous; } }
+        public bool IsAnonymous { get { return this.isAnonymous; } }
         private readonly bool isAnonymous;
 
         public List<Statement>/*!*/ Statements
         {
-            get { return statements; }
-            internal /* friend Parser */ set { statements = value; }
+            get { return this.statements; }
+            internal /* friend Parser */ set { this.statements = value; }
         }
         private List<Statement>/*!*/ statements;
 
@@ -124,6 +124,7 @@ namespace PHP.Core.AST
             this.isAnonymous = true;
             this.qualifiedName = new QualifiedName(Core.Name.EmptyBaseName, Core.Name.EmptyNames);
             this.IsSimpleSyntax = false;
+            this.naming = new NamingContext(null, null);
         }
 
         public NamespaceDecl(Text.Span p, List<string>/*!*/ names, bool simpleSyntax)
@@ -132,13 +133,14 @@ namespace PHP.Core.AST
             this.isAnonymous = false;
             this.qualifiedName = new QualifiedName(names, false, true);
             this.IsSimpleSyntax = simpleSyntax;
+            this.naming = new NamingContext(this.qualifiedName, null);
         }
 
         /// <summary>
         /// Finish parsing of namespace, complete its position.
         /// </summary>
         /// <param name="p"></param>
-        public void UpdatePosition(Text.Span p)
+        internal void UpdatePosition(Text.Span p)
         {
             this.Span = p;
         }

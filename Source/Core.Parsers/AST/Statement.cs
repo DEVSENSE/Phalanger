@@ -51,15 +51,15 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class BlockStmt : Statement
     {
-        private readonly List<Statement>/*!*/ statements;
+        private readonly Statement[]/*!*/_statements;
         /// <summary>Statements in block</summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
+        public Statement[]/*!*/ Statements { get { return _statements; } }
 
-        public BlockStmt(Text.Span span, List<Statement>/*!*/ body)
+        public BlockStmt(Text.Span span, IList<Statement>/*!*/body)
             : base(span)
         {
             Debug.Assert(body != null);
-            this.statements = body;
+            _statements = body.AsArray();
         }
 
         /// <summary>
@@ -130,6 +130,33 @@ namespace PHP.Core.AST
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitEmptyStmt(this);
+        }
+    }
+
+    #endregion
+
+    #region PHPDocStmt
+
+    /// <summary>
+    /// Empty statement containing PHPDoc block.
+    /// </summary>
+    [Serializable]
+    public sealed class PHPDocStmt : Statement
+    {
+        public PHPDocBlock/*!*/PHPDoc { get { return _phpdoc; } }
+        private readonly PHPDocBlock _phpdoc;
+
+        internal override bool SkipInPureGlobalCode() { return true; }
+
+        public PHPDocStmt(Text.Span p, PHPDocBlock/*!*/phpdoc) : base(p)
+        {
+            Debug.Assert(phpdoc != null);
+            _phpdoc = phpdoc;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitPHPDocStmt(this);
         }
     }
 
@@ -266,6 +293,31 @@ namespace PHP.Core.AST
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitStaticVarDecl(this);
+        }
+    }
+
+    #endregion
+
+    #region DeclareStmt
+
+    [Serializable]
+    public sealed class DeclareStmt : Statement
+    {
+        /// <summary>
+        /// Inner statement.
+        /// </summary>
+        public Statement Statement { get { return this.stmt; } }
+        private readonly Statement/*!*/stmt;
+
+        public DeclareStmt(Text.Span p, Statement statement)
+            : base(p)
+        {
+            this.stmt = statement;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitDeclareStmt(this);
         }
     }
 

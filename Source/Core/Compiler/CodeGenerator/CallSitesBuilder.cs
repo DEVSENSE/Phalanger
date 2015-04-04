@@ -158,7 +158,7 @@ namespace PHP.Core
                 Debug.Assert(staticCtorEmitter == null);
 
                 var containerClassName = string.Format("<{0}>o_Sitescontainer'{1}", this.userFriendlyName.Replace('.', '_'), System.Threading.Interlocked.Increment(ref nextContainerId));
-                containerClass = moduleBuilder.DefineType(PluginHandler.ConvertCallSiteName(containerClassName), TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
+                containerClass = moduleBuilder.DefineType(containerClassName, TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
 
                 staticCtorEmitter = new ILEmitter(containerClass.DefineTypeInitializer());
             }
@@ -227,7 +227,7 @@ namespace PHP.Core
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
             var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Assembly);
-            var field = this.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, attrs);
+            var field = this.DefineField(userFriendlyName, callSiteType, attrs);
 
             if (staticCtorEmitter == null) // => this.classContext != null
             {
@@ -349,8 +349,8 @@ namespace PHP.Core
             {
                 // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, <returnType> )
                 if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
-                il.LdcI4(callSignature.GenericParams.Count);
-                il.LdcI4(callSignature.Parameters.Count);
+                il.LdcI4(callSignature.GenericParams.Length);
+                il.LdcI4(callSignature.Parameters.Length);
                 if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
 
                 il.Emit(OpCodes.Ldtoken, returnType);
@@ -415,7 +415,7 @@ namespace PHP.Core
         /// <returns></returns>
         private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, IEnumerable<Type> additionalArgs, Type/*!*/returnType)
         {
-            List<Type> typeArgs = new List<Type>(callSignature.Parameters.Count + callSignature.GenericParams.Count + 6);
+            List<Type> typeArgs = new List<Type>(callSignature.Parameters.Length + callSignature.GenericParams.Length + 6);
 
             // Type[]{CallSite, <targetType>, ScriptContext, {argsType}, (DTypeDesc)?, (DTypeDesc)?, (object)?, <returnType>}:
 

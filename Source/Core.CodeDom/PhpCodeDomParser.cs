@@ -140,9 +140,9 @@ namespace PHP.Core.CodeDom
             private bool CanBeDelegateConstruction(NewEx New)
             {
                 return
-                    New.CallSignature.Parameters.Count == 1 &&
+                    New.CallSignature.Parameters.Length == 1 &&
                     New.CallSignature.Parameters[0].Expression is ArrayEx &&
-                    ((ArrayEx)New.CallSignature.Parameters[0].Expression).Items.Count == 2 &&
+                    ((ArrayEx)New.CallSignature.Parameters[0].Expression).Items.Length == 2 &&
                     ((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[0].Index == null &&
                     ((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[1].Index == null &&
                     ((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[0] is ValueItem &&
@@ -537,7 +537,7 @@ namespace PHP.Core.CodeDom
 
                 currentLineBreaks = gc.SourceUnit;
 
-                PushAliases(gc.SourceUnit.Aliases);
+                PushAliases(gc.SourceUnit.Naming);
                 ret.Namespaces.Add(DefaultNamespace);
                 
 
@@ -568,15 +568,19 @@ namespace PHP.Core.CodeDom
 
             private Dictionary<string, string> CurrentBlockAliases { get { return (aliases.Count > 0) ? aliases.Peek() : null; } }
             private Stack<Dictionary<string, string>>/*!*/aliases = new Stack<Dictionary<string, string>>();
-            private void PushAliases(Dictionary<string, QualifiedName>/*!*/aliases)
+            private void PushAliases(NamingContext/*!*/naming)
             {
-                Debug.Assert(aliases != null);
+                Debug.Assert(naming != null);
                 Dictionary<string, string> clrAliases = new Dictionary<string, string>(aliases.Count);
-                foreach (var pair in aliases)
-                    clrAliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+                if (naming.Aliases != null)
+                {
+                    foreach (var pair in naming.Aliases)
+                        clrAliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+                }
 
                 this.aliases.Push(clrAliases);
             }
+
             private void PopAliases()
             {
                 Debug.Assert(this.aliases.Count > 0);
@@ -660,7 +664,7 @@ namespace PHP.Core.CodeDom
                     }
                     else if (GParam is PrimitiveTypeName)
                     {
-                        ret.TypeArguments.Add(new CodeTypeReference(((PrimitiveTypeName)GParam).Name.LowercaseValue));
+                        ret.TypeArguments.Add(new CodeTypeReference(((PrimitiveTypeName)GParam).Name.Value.ToLowerInvariant()));
                     }
                     else
                     {
@@ -924,6 +928,7 @@ namespace PHP.Core.CodeDom
                     case Operations.Or: return CodeBinaryOperatorType.BooleanOr; ;
                     //case Operations.Plus: return CodeBinaryOperatorType.Add;
                     case Operations.Sub: return CodeBinaryOperatorType.Subtract;
+                    case Operations.Pow:
                     default: throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unsup_binop, op, (int)op), element);
                 }
             }
@@ -944,6 +949,7 @@ namespace PHP.Core.CodeDom
                     case Operations.AssignMul: return CodeBinaryOperatorType.Multiply;
                     case Operations.AssignOr: return CodeBinaryOperatorType.BitwiseOr;
                     case Operations.AssignSub: return CodeBinaryOperatorType.Subtract;
+                    case Operations.AssignPow:
                     default: throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unsup_assign, op, (int)op), element);
                 }
             }
@@ -970,6 +976,7 @@ namespace PHP.Core.CodeDom
                     case Operations.AssignDiv:
                     case Operations.AssignMod:
                     case Operations.AssignMul:
+                    case Operations.AssignPow:
                     case Operations.AssignOr:
                     case Operations.AssignSub://Left = (Left § Right)
                         return new CodeBinaryOperatorExpression(
@@ -1147,7 +1154,7 @@ namespace PHP.Core.CodeDom
                         if (cs.Length == 1) CTor = cs[0];
                         else
                             foreach (ConstructorInfo c in cs)
-                                if (c.GetParameters().Length == New.CallSignature.Parameters.Count)
+                                if (c.GetParameters().Length == New.CallSignature.Parameters.Length)
                                 {
                                     CTor = c;
                                     break;
@@ -1376,7 +1383,7 @@ namespace PHP.Core.CodeDom
                     else
                     {
                         var target = TranslateVarLikeConstructUse(use.IsMemberOf, method, IC);
-                        MethodInfo cmethod = GetHintMethod(target, name, ((DirectFcnCall)use).CallSignature.Parameters.Count, method);
+                        MethodInfo cmethod = GetHintMethod(target, name, ((DirectFcnCall)use).CallSignature.Parameters.Length, method);
                         CodeMethodInvokeExpression ret = new CodeMethodInvokeExpression(
                             target, name,
                             TranslateParams(((DirectFcnCall)use).CallSignature.Parameters, method, IC, cmethod == null ? null : cmethod.GetParameters())
@@ -1397,7 +1404,7 @@ namespace PHP.Core.CodeDom
                             TranslateParams(((IndirectFcnCall)use).CallSignature.Parameters, method, IC, null));
                         return reti;
                     }
-                    List<CodeExpression> Params = new List<CodeExpression>(2 + ((IndirectFcnCall)use).CallSignature.Parameters.Count);
+                    List<CodeExpression> Params = new List<CodeExpression>(2 + ((IndirectFcnCall)use).CallSignature.Parameters.Length);
                     Params.Add(TranslateVarLikeConstructUse(use.IsMemberOf, method, IC));
                     Params.Add(TranslateExpression(((IndirectFcnCall)use).NameExpr, method, IC));
                     Params.AddRange(TranslateParams(((IndirectFcnCall)use).CallSignature.Parameters, method, IC, null));
@@ -1411,7 +1418,7 @@ namespace PHP.Core.CodeDom
                 {
                     var ttype = new CodeTypeReferenceExpression(TranslateGenericQualifiedName(((DirectStMtdCall)use).ClassName, true));
                     string name = ((DirectStMtdCall)use).MethodName.Value;
-                    MethodInfo cmethod = GetHintMethod(ttype, name, ((DirectStMtdCall)use).CallSignature.Parameters.Count, method);
+                    MethodInfo cmethod = GetHintMethod(ttype, name, ((DirectStMtdCall)use).CallSignature.Parameters.Length, method);
                     CodeMethodInvokeExpression ret = new CodeMethodInvokeExpression(
                         ttype,
                         ((DirectStMtdCall)use).MethodName.Value,
@@ -1422,7 +1429,7 @@ namespace PHP.Core.CodeDom
                 }
                 else if (use is IndirectStMtdCall)
                 {
-                    List<CodeExpression> Params = new List<CodeExpression>(2 + ((IndirectStMtdCall)use).CallSignature.Parameters.Count);
+                    List<CodeExpression> Params = new List<CodeExpression>(2 + ((IndirectStMtdCall)use).CallSignature.Parameters.Length);
                     Params.Add(new CodeTypeOfExpression(TranslateGenericQualifiedName(((IndirectStMtdCall)use).ClassName, true)));
                     Params.Add(TranslateVariableUse(((IndirectStMtdCall)use).MethodNameVar, method, IC));
                     Params.AddRange(TranslateParams(((IndirectStMtdCall)use).CallSignature.Parameters, method, IC, null));
@@ -1445,7 +1452,7 @@ namespace PHP.Core.CodeDom
             /// <returns>Array of expressions translated from PHP to CodeDOM for each parameter</returns>
             /// <param name="TargetSignature">Parameter hints. Size doesn't have to match size of <paramref name="Params"/>. Can be even empty or null.</param>
             /// <exception cref="PhpToCodeDomNotSupportedException">May be thrown by <see cref="TranslateParam"/>.</exception>
-            protected CodeExpression[] TranslateParams(List<ActualParam> Params, MethodContextBase method, IStatementInsertContext IC, ParameterInfo[] TargetSignature)
+            protected CodeExpression[] TranslateParams(IList<ActualParam> Params, MethodContextBase method, IStatementInsertContext IC, ParameterInfo[] TargetSignature)
             {
                 if (TargetSignature == null) TargetSignature = new ParameterInfo[] { };
                 List<CodeExpression> ret = new List<CodeExpression>(Params.Count);
@@ -1515,7 +1522,7 @@ namespace PHP.Core.CodeDom
                     IC.Insert(new CodeVariableDeclarationStatement(typeof(PhpArray), varName), array);
                     IC.Insert(new CodeAssignStatement(new CodeVariableReferenceExpression(varName),
                         new CodeObjectCreateExpression(typeof(PhpArray), new CodeExpression[]{
-                            new CodePrimitiveExpression(array.Items.Count)})), array);
+                            new CodePrimitiveExpression(array.Items.Length)})), array);
                     foreach (Item item in array.Items)
                         IC.Insert(new CodeExpressionStatement(
                             new CodeMethodInvokeExpression(new CodeVariableReferenceExpression(varName),
@@ -1959,6 +1966,8 @@ namespace PHP.Core.CodeDom
                 switch (__.Type)
                 {
                     case PseudoConstUse.Types.Class:
+                        return new CodePrimitiveExpression(currentClass);   // in case of a trait, current class name should be returned instead of the trait
+                    case PseudoConstUse.Types.Trait:
                         return new CodePrimitiveExpression(currentClass);
                     case PseudoConstUse.Types.File:
                         return new CodePrimitiveExpression(currentFile);
@@ -2049,7 +2058,7 @@ namespace PHP.Core.CodeDom
             /// <param name="IC">Context for inserting additional statements</param>
             /// <returns><see cref="CodeExpression"/> containin translated expression</returns>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="List"/> contains less items then <paramref name="Start"/> + 1 =or= <paramref name="Start"/> is less than zero</exception>
-            protected CodeExpression TranslateConcatExpressionList(List<Expression> /*!*/ List, int Start, MethodContextBase /*!*/ method, IStatementInsertContext IC)
+            protected CodeExpression TranslateConcatExpressionList(IList<Expression> /*!*/ List, int Start, MethodContextBase /*!*/ method, IStatementInsertContext IC)
             {
                 if (List.Count <= Start)
                     throw new ArgumentOutOfRangeException("Start", Localizations.Strings.cdp_unsup_not_enough_expressions_in_list);
@@ -2071,7 +2080,7 @@ namespace PHP.Core.CodeDom
             /// <exception cref="PhpToCodeDomNotSupportedException"><paramref name="c"/>.<see cref="ConcatEx.Expressions">List</see> contains no expression</exception>
             protected CodeExpression TranslateConcatExpression(ConcatEx /*!*/ c, MethodContextBase /*!*/ method, IStatementInsertContext IC)
             {
-                if (c.Expressions.Count <= 0)
+                if (c.Expressions.Length == 0)
                     throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_empty_ex_list, c);
                 else
                     return TranslateConcatExpressionList(c.Expressions, 0, method, IC);
@@ -2183,7 +2192,7 @@ namespace PHP.Core.CodeDom
                     throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_indirect_type_ref, typeRef);
                 }
                 else if (typeRef is PrimitiveTypeRef)
-                    return new CodeTypeReference(((PrimitiveTypeRef)typeRef).QualifiedName.Name.LowercaseValue);
+                    return new CodeTypeReference(((PrimitiveTypeRef)typeRef).QualifiedName.Name.Value.ToLowerInvariant());
                 else throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unknown_ref_kind), typeRef);
             }
             #endregion
@@ -2265,7 +2274,7 @@ namespace PHP.Core.CodeDom
             /// <param name="block">Block this namespace is containded in (should be <see cref="FileContext"/>)</param>
             protected void TranslateNamespace(NamespaceDecl /*!*/ sNamespace, IBlockContext /*!*/ block)
             {
-                PushAliases(sNamespace.Aliases);
+                PushAliases(sNamespace.Naming);
 
                 CodeNamespace cNamespace = (CodeNamespace)
                     block.AddObject(new CodeNamespace(getCLRName(sNamespace.QualifiedName)), sNamespace);
@@ -2322,7 +2331,7 @@ namespace PHP.Core.CodeDom
                 cType.TypeAttributes = ta;
 
                 //Generic information
-                if (sType.TypeSignature.TypeParams.Count != 0)
+                if (sType.TypeSignature.TypeParams.Any())
                 {
                     foreach (var GPar in sType.TypeSignature.TypeParams)
                     {
@@ -2599,7 +2608,7 @@ namespace PHP.Core.CodeDom
                 block.AddObject(initswitchvar, statement);
                 string Label2 = LabelName(Loops.Switch, false);
                 int switchNo = switch_case++;
-                for (int i = 0; i < statement.SwitchItems.Count; i++)
+                for (int i = 0; i < statement.SwitchItems.Length; i++)
                 {
                     SwitchItem CurrentItem = statement.SwitchItems[i];
                     CodeExpression Condition;
@@ -2619,7 +2628,7 @@ namespace PHP.Core.CodeDom
                     CaseContext context = new CaseContext(Method, Block as BlockStatementContext, CurrentIf, Label2, this);
                     block.AddObject(CurrentIf, statement);
                     TranslateBlock(CurrentItem.Statements, method, context);
-                    if (i < statement.SwitchItems.Count - 1)
+                    if (i < statement.SwitchItems.Length - 1)
                     {
                         var GoTo = new CodeGotoStatement(string.Format("__switch__{0:000}__case{1:000}", switchNo, i + 1));
                         GoTo.LinePragma = getPragma(GetLine(statement.SwitchItems[i]));
@@ -2736,8 +2745,8 @@ namespace PHP.Core.CodeDom
                       (EventMode == EventModes.AllPossible || EventMode == EventModes.WithDelegateOnly) &&
                       statement.Expression is DirectFcnCall &&
                       (((DirectFcnCall)statement.Expression).QualifiedName.Name.Value == "Remove" || ((DirectFcnCall)statement.Expression).QualifiedName.Name.Value == "Add") &&
-                      ((DirectFcnCall)statement.Expression).CallSignature.GenericParams.Count == 0 &&
-                      ((DirectFcnCall)statement.Expression).CallSignature.Parameters.Count == 1 &&
+                      ((DirectFcnCall)statement.Expression).CallSignature.GenericParams.Length == 0 &&
+                      ((DirectFcnCall)statement.Expression).CallSignature.Parameters.Length == 1 &&
                       (EventMode == EventModes.AllPossible || (((DirectFcnCall)statement.Expression).CallSignature.Parameters[0].Expression is NewEx && LooksLikeDelegate((NewEx)((DirectFcnCall)statement.Expression).CallSignature.Parameters[0].Expression))) &&
                       ((DirectFcnCall)statement.Expression).IsMemberOf is DirectVarUse
                       )

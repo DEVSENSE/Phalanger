@@ -37,6 +37,7 @@ namespace PHP.Library.Data
 		/// <summary>
 		/// Underlying database connection.
 		/// </summary>
+        public IDbConnection/*!*/Connection { get { return this.connection; } }
 		protected IDbConnection/*!*/ connection;
 
 		/// <summary>

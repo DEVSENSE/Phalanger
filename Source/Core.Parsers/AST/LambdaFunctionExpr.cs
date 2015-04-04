@@ -27,10 +27,13 @@ namespace PHP.Core.AST
     /// Represents a function declaration.
     /// </summary>
     [Serializable]
-    public sealed class LambdaFunctionExpr : Expression
+    public sealed class LambdaFunctionExpr : Expression, IHasSourceUnit
     {
-        //public NamespaceDecl Namespace { get { return ns; } }
-        //private readonly NamespaceDecl ns
+        /// <summary>
+        /// Gets namespace containing this lambda expression. Can be <c>null</c>.
+        /// </summary>
+        public NamespaceDecl Namespace { get { return ns; } }
+        private readonly NamespaceDecl ns;
 
         public override Operations Operation
         {
@@ -56,18 +59,24 @@ namespace PHP.Core.AST
         private readonly List<FormalParam> useParams;
 
         //private readonly TypeSignature typeSignature;
-        private readonly List<Statement>/*!*/ body;
-        public List<Statement>/*!*/ Body { get { return body; } }
+        public Statement[]/*!*/ Body { get { return body; } }
+        private readonly Statement[]/*!*/ body;
         //private readonly CustomAttributes attributes;
 
         public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Text.Span entireDeclarationPosition;
+        private readonly Text.Span entireDeclarationPosition;
 
         public int HeadingEndPosition { get { return headingEndPosition; } }
-        private int headingEndPosition;
+        private readonly int headingEndPosition;
 
         public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private int declarationBodyPosition;
+        private readonly int declarationBodyPosition;
+
+        /// <summary>
+        /// Gets the source file <see cref="SourceUnit"/>. Cannot be <c>null</c>.
+        /// </summary>
+        public SourceUnit/*!*/SourceUnit { get { return this.sourceUnit; } }
+        private readonly SourceUnit/*!*/sourceUnit;
 
         #region Construction
 
@@ -75,26 +84,20 @@ namespace PHP.Core.AST
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             Scope scope, NamespaceDecl ns,
             bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
-            List<Statement>/*!*/ body)
+            IList<Statement>/*!*/ body)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
+            Debug.Assert(sourceUnit != null);
 
-            // inject use parameters at the begining of formal parameters
-            if (useParams != null && useParams.Count > 0)
-            {
-                if (formalParams.Count == 0)
-                    formalParams = useParams;   // also we don't want to modify Parser.emptyFormalParamListIndex singleton.
-                else
-                    formalParams.InsertRange(0, useParams);
-            }
+            this.sourceUnit = sourceUnit;
             
-            //this.ns = ns;
+            this.ns = ns;
             this.signature = new Signature(aliasReturn, formalParams);
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
             //this.attributes = new CustomAttributes(attributes);
-            this.body = body;
+            this.body = body.AsArray();
             this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;

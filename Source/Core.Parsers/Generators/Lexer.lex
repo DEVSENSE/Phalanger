@@ -129,10 +129,6 @@ NonVariableStart        [^a-zA-Z_{]
 	return Tokens.T_CLOSE_TAG; 
 }
 
-<ST_IN_SCRIPTING>("declare"|"enddeclare") {
-  return Tokens.ErrorNotSupported; 
-}
-
 <ST_IN_SCRIPTING>"exit"       			{ return Tokens.T_EXIT; }
 <ST_IN_SCRIPTING>"die"        			{ return Tokens.T_EXIT; }
 <ST_IN_SCRIPTING>"function"   			{ return Tokens.T_FUNCTION; }
@@ -150,6 +146,8 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"endfor"     			{ return Tokens.T_ENDFOR; }
 <ST_IN_SCRIPTING>"foreach"    			{ return Tokens.T_FOREACH; }
 <ST_IN_SCRIPTING>"endforeach" 			{ return Tokens.T_ENDFOREACH; }
+<ST_IN_SCRIPTING>"declare" 			    { return Tokens.T_DECLARE; }
+<ST_IN_SCRIPTING>"enddeclare" 			{ return Tokens.T_ENDDECLARE; }
 <ST_IN_SCRIPTING>"as"         			{ return Tokens.T_AS; }
 <ST_IN_SCRIPTING>"switch"     			{ return Tokens.T_SWITCH; }
 <ST_IN_SCRIPTING>"endswitch"  			{ return Tokens.T_ENDSWITCH; }
@@ -223,7 +221,6 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"<:"           		{ return Tokens.T_LGENERIC; }
 <ST_IN_SCRIPTING>":>"           		{ return Tokens.T_RGENERIC; }
                                 		         
-<ST_IN_SCRIPTING>"assert"						{ return Tokens.T_ASSERT; }
 <ST_IN_SCRIPTING>"__get"        		{ return Tokens.T_GET; }
 <ST_IN_SCRIPTING>"__set"        		{ return Tokens.T_SET; }
 <ST_IN_SCRIPTING>"__call"       		{ return Tokens.T_CALL; }
@@ -238,7 +235,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"__autoload"   		{ return Tokens.T_AUTOLOAD; }
 <ST_IN_SCRIPTING>"true"         		{ return Tokens.T_TRUE; }
 <ST_IN_SCRIPTING>"false"        		{ return Tokens.T_FALSE; }
-<ST_IN_SCRIPTING>"null"             { return Tokens.T_NULL; }
+<ST_IN_SCRIPTING>"null"					{ return Tokens.T_NULL; }
 
 <ST_IN_SCRIPTING>"=>"           		{ return Tokens.T_DOUBLE_ARROW; }
 <ST_IN_SCRIPTING>"++"           		{ return Tokens.T_INC; }
@@ -252,6 +249,8 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"+="           		{ return Tokens.T_PLUS_EQUAL; }
 <ST_IN_SCRIPTING>"-="           		{ return Tokens.T_MINUS_EQUAL; }
 <ST_IN_SCRIPTING>"*="           		{ return Tokens.T_MUL_EQUAL; }
+<ST_IN_SCRIPTING>"*\*"					{ return Tokens.T_POW; }
+<ST_IN_SCRIPTING>"*\*="					{ return Tokens.T_POW_EQUAL; }
 <ST_IN_SCRIPTING>"/="           		{ return Tokens.T_DIV_EQUAL; }
 <ST_IN_SCRIPTING>".="           		{ return Tokens.T_CONCAT_EQUAL; }
 <ST_IN_SCRIPTING>"%="           		{ return Tokens.T_MOD_EQUAL; }
@@ -272,6 +271,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>{TOKENS}          	{ return (Tokens)GetTokenChar(0); }
 <ST_IN_SCRIPTING>{LABEL}           	{ return Tokens.T_STRING; }
 <ST_IN_SCRIPTING>{NS_SEPARATOR}		{ return Tokens.T_NS_SEPARATOR; }
+<ST_IN_SCRIPTING>"..."				{ return Tokens.T_ELLIPSIS; }
 <ST_IN_SCRIPTING>{WHITESPACE}      	{ return Tokens.T_WHITESPACE; }
 <ST_IN_SCRIPTING>{LNUM}            	{ return Tokens.ParseDecimalNumber; }
 <ST_IN_SCRIPTING>{HNUM}            	{ return Tokens.ParseHexadecimalNumber; }

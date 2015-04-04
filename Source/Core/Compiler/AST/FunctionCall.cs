@@ -204,7 +204,6 @@ namespace PHP.Core.Compiler.AST
                     // warning if function requiring locals is detected (performance critical)
                     if ((opts & FunctionImplOptions.NeedsVariables) != 0 && !analyzer.CurrentScope.IsGlobal)
                         analyzer.ErrorSink.Add(Warnings.UnoptimizedLocalsInFunction, analyzer.SourceUnit, node.Span, node.QualifiedName.ToString());
-
                 }
 
                 // analyze parameters:
@@ -212,6 +211,14 @@ namespace PHP.Core.Compiler.AST
 
                 // get properties:
                 analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
+
+                // HACK: handle call to assert() function
+                if (node.QualifiedName.Name.Value.EqualsOrdinalIgnoreCase("assert"))
+                {
+                    // replace DirectFcnCall with AssertEx
+                    var newnode = new AssertEx(node.Span, node.CallSignature);
+                    return newnode.Analyze(analyzer, info);
+                }
 
                 // replaces the node if its value can be determined at compile-time:
                 object value;
@@ -248,8 +255,8 @@ namespace PHP.Core.Compiler.AST
 
                     node.CallSignature = new CallSignature(
                         new List<ActualParam>(2) {
-                                new ActualParam(arg1.Span, arg1, false),
-                                new ActualParam(arg2.Span, arg2, false)
+                                new ActualParam(arg1.Span, arg1),
+                                new ActualParam(arg2.Span, arg2)
                             },
                         new List<TypeRef>());
                 }
@@ -304,12 +311,12 @@ namespace PHP.Core.Compiler.AST
                 {
                     // basename(__FILE__, ...) -> basename("actual_file", ...)  // SourceRoot can be ignored in this case
                     if (routine.FullName.EqualsOrdinalIgnoreCase("basename"))
-                        if (node.CallSignature.Parameters.Count > 0)
+                        if (node.CallSignature.Parameters.Any())
                         {
                             var path_param = node.CallSignature.Parameters[0];
                             var path_expr = path_param.Expression;
                             if (path_expr is PseudoConstUse && ((PseudoConstUse)path_expr).Type == PseudoConstUse.Types.File)
-                                node.CallSignature.Parameters[0] = new ActualParam(path_param.Span, new StringLiteral(path_expr.Span, analyzer.SourceUnit.SourceFile.RelativePath.Path), false);
+                                node.CallSignature.Parameters[0] = new ActualParam(path_param.Span, new StringLiteral(path_expr.Span, analyzer.SourceUnit.SourceFile.RelativePath.Path));
                         }
                 }
             }
@@ -370,7 +377,7 @@ namespace PHP.Core.Compiler.AST
                             // perform parameter conversion:
                             Action<Converter<object, object>> PassArgument = (converter) =>
                                 {
-                                    if (nextCallParamIndex >= node.CallSignature.Parameters.Count)
+                                    if (nextCallParamIndex >= node.CallSignature.Parameters.Length)
                                         throw new ArgumentException("Not enough parameters in evaluable method.");
 
                                     object obj = node.CallSignature.Parameters[nextCallParamIndex++].Expression.GetValue();
@@ -392,7 +399,7 @@ namespace PHP.Core.Compiler.AST
                                 parametersInfo[i].IsDefined(typeof(ParamArrayAttribute), false))
                             {
                                 // params object[]
-                                var args = new object[node.CallSignature.Parameters.Count - nextCallParamIndex];
+                                var args = new object[node.CallSignature.Parameters.Length - nextCallParamIndex];
                                 for (int arg = 0; arg < args.Length; ++nextCallParamIndex, ++arg)
                                     args[arg] = node.CallSignature.Parameters[nextCallParamIndex].Expression.GetValue();
 
@@ -491,7 +498,7 @@ namespace PHP.Core.Compiler.AST
                     return false;
                 }
 
-                switch (callSignature.Parameters.Count)
+                switch (callSignature.Parameters.Length)
                 {
                     case 0:
                         {
@@ -851,6 +858,7 @@ namespace PHP.Core.Compiler.AST
                             php_function.DefineBuilders();
 
                             // LOAD PhpFunction.DeclareLamda(context,<delegate>);
+                            Debug.Assert(php_function.ArgLessInfo != null); 
                             codeGenerator.EmitDeclareLamdaFunction(php_function.ArgLessInfo);
 
                             // bake (not baked later as the lambda function it is not in the tables):
@@ -974,8 +982,8 @@ namespace PHP.Core.Compiler.AST
 
                     node.CallSignature = new CallSignature(
                         new List<ActualParam>(2) {
-                                new ActualParam(arg1.Span, arg1, false),
-                                new ActualParam(arg2.Span, arg2, false)
+                                new ActualParam(arg1.Span, arg1),
+                                new ActualParam(arg2.Span, arg2)
                             },
                         new List<TypeRef>());
                 }

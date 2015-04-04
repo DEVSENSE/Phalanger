@@ -60,7 +60,7 @@ namespace PHP.Core.AST
 		Identical, NotIdentical,
 		LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual,
 		ShiftLeft, ShiftRight,
-		Add, Sub, Mul, Div, Mod,
+		Add, Sub, Mul, Div, Mod, Pow,
 		Concat,
 
 		// n-ary ops:
@@ -74,6 +74,7 @@ namespace PHP.Core.AST
 		AssignAdd,
 		AssignSub,
 		AssignMul,
+        AssignPow,
 		AssignDiv,
 		AssignMod,
 		AssignAnd,
@@ -144,6 +145,11 @@ namespace PHP.Core.AST
 		public abstract Operations Operation { get; }
 
         protected Expression(Text.Span span) : base(span) { }
+
+        /// <summary>
+        /// Internal type information determined during type analysis.
+        /// </summary>
+        public ulong/*A*/TypeInfoValue { get; set; }
 
 		/// <summary>
         /// Whether the expression is allowed to be passed by reference to a routine.

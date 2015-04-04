@@ -200,7 +200,7 @@ namespace PHP.Core.Emit
 
 			// LOAD stack.PeekReferenceUnchecked(<index+1>);
 			((IPlace)stackPlace).EmitLoad(il);
-			il.LdcI4(index);
+			il.LdcI4(index + 1);
 			il.Emit(OpCodes.Call, Methods.PhpStack.PeekReferenceUnchecked);
 
 			return typeof(PhpReference);

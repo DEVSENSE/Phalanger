@@ -136,7 +136,7 @@ namespace PHP.Core.Compiler.AST
 
             /// <summary>
             /// Stores the value represented by <see cref="TabledLocalAddressStorage"/> to the runtime variables table and 
-            /// returns the <see cref="TabledLocalAddressStorage"/> back to <see cref="ILEmitter.temporaryLocals"/>.
+            /// returns the <see cref="TabledLocalAddressStorage"/> back to <c>temporaryLocals</c>.
             /// Duplicates the value if requested.
             /// </summary>
             /// <param name="node">Instance.</param>
@@ -392,7 +392,7 @@ namespace PHP.Core.Compiler.AST
             /// <returns>Delegate to a method that emits code to be executed when the actual value has been
             /// loaded on the evaluation stack.</returns>
             /// <remarks>
-            /// If the field could be resolved at compile time (because <see cref="VarLikeConstructUse.isMemberOf"/> is <c>$this</c> or a
+            /// If the field could be resolved at compile time (because <see cref="VarLikeConstructUse.IsMemberOf"/> is <c>$this</c> or a
             /// variable is proved to be of a certain type by type analysis), direct field writing code is emitted.
             /// Otherwise, <see cref="Operators.SetProperty"/> or <see cref="Operators.SetObjectProperty"/> call is emitted.
             /// </remarks>

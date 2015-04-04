@@ -69,14 +69,22 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class GotoStmt : Statement
 	{
-		private VariableName labelName;
-        /// <summary>Label that is target of goto statement</summary>
-        public VariableName LabelName { get { return labelName; } }
+		/// <summary>Label that is target of goto statement</summary>
+        public VariableName LabelName { get { return _labelName; } }
+        private VariableName _labelName;
 
-		public GotoStmt(Text.Span span, string/*!*/ labelName)
+        /// <summary>
+        /// Position of the <see cref="LabelName"/>.
+        /// </summary>
+        public Text.Span NameSpan { get { return _nameSpan; } }
+        private readonly Text.Span _nameSpan;
+        
+		public GotoStmt(Text.Span span, string/*!*/labelName, Text.Span nameSpan)
 			: base(span)
 		{
-			this.labelName = new VariableName(labelName);
+            Debug.Assert(!string.IsNullOrEmpty(labelName));
+			_labelName = new VariableName(labelName);
+            _nameSpan = nameSpan;
 		}
 
 		/// <summary>
@@ -96,8 +104,8 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class LabelStmt : Statement
 	{
-		internal VariableName Name { get { return name; } }
-		private VariableName name;
+        public VariableName Name { get { return _name; } }
+		private VariableName _name;
 
 		internal Label Label { get { return label; } set { label = value; } }
 		private Label label;
@@ -105,10 +113,20 @@ namespace PHP.Core.AST
 		internal bool IsReferred { get { return isReferred; } set { isReferred = value; } }
 		private bool isReferred;
 
-		public LabelStmt(Text.Span span, string/*!*/ name)
+        /// <summary>
+        /// Position of the <see cref="Name"/>.
+        /// </summary>
+        public Text.Span NameSpan { get { return _nameSpan; } }
+        private readonly Text.Span _nameSpan;
+        
+
+		public LabelStmt(Text.Span span, string/*!*/name, Text.Span nameSpan)
 			: base(span)
 		{
-			this.name = new VariableName(name);
+            Debug.Assert(!string.IsNullOrEmpty(name));
+
+			_name = new VariableName(name);
+            _nameSpan = nameSpan;
 		}
 
 		/// <summary>

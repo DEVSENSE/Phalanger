@@ -419,7 +419,7 @@ namespace PHP.Core.Reflection
 		{
 			// no ctor defined => default is to be used => should have no parameters;
 			// do not report errors if the declaring type is open type (constructed or a generic parameter);
-			if (declaringType.IsDefinite && IsConstructor && declaringType.IsClosed && callSignature.Parameters.Count > 0)
+            if (declaringType.IsDefinite && IsConstructor && declaringType.IsClosed && callSignature.Parameters.Any())
 			{
 				analyzer.ErrorSink.Add(Warnings.NoCtorDefined, analyzer.SourceUnit, position, declaringType.FullName);
 				declaringType.ReportError(analyzer.ErrorSink, Warnings.RelatedLocation);
@@ -1086,7 +1086,7 @@ namespace PHP.Core.Reflection
 
 			// names the first argument of the static argfull overload - the context:
 			if (IsStatic)
-                builder.ParameterBuilders[0] = ReflectionUtils.DefineParameter(argfull, 1, ParameterAttributes.None, PluginHandler.ConvertParameterName(PhpRoutine.ContextParamName));
+                builder.ParameterBuilders[0] = ReflectionUtils.DefineParameter(argfull, 1, ParameterAttributes.None, PhpRoutine.ContextParamName);
 
 			// pseudo-generic parameters:
 			foreach (GenericParameter param in signature.GenericParams)
@@ -1097,7 +1097,7 @@ namespace PHP.Core.Reflection
             {
                 ParameterBuilder param_builder;
 
-                string argName = PluginHandler.ConvertParameterName(builder.Signature.FormalParams[i].Name.Value);
+                string argName = builder.Signature.FormalParams[i].Name.Value;
 
 
                 builder.ParameterBuilders[real_index] = param_builder = ReflectionUtils.DefineParameter(
@@ -1480,10 +1480,10 @@ namespace PHP.Core.Reflection
         internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
-			if (callSignature.Parameters.Count < signature.MandatoryParamCount)
+			if (callSignature.Parameters.Length < signature.MandatoryParamCount)
 			{
 				analyzer.ErrorSink.Add(Warnings.TooFewFunctionParameters, analyzer.SourceUnit, position,
-					qualifiedName, signature.MandatoryParamCount, callSignature.Parameters.Count);
+					qualifiedName, signature.MandatoryParamCount, callSignature.Parameters.Length);
 			}
 
 			overloadSignature = signature;
@@ -1670,18 +1670,18 @@ namespace PHP.Core.Reflection
         internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
-			if (callSignature.Parameters.Count < signature.MandatoryParamCount)
+            if (callSignature.Parameters.Length < signature.MandatoryParamCount)
 			{
 				if (IsConstructor)
 				{
 					analyzer.ErrorSink.Add(Warnings.TooFewCtorParameters, analyzer.SourceUnit, position,
-						DeclaringType.FullName, signature.MandatoryParamCount, callSignature.Parameters.Count);
+                        DeclaringType.FullName, signature.MandatoryParamCount, callSignature.Parameters.Length);
 				}
 				else if (IsStatic)
 				{
 					analyzer.ErrorSink.Add(Warnings.TooFewMethodParameters, analyzer.SourceUnit, position,
 						DeclaringType.FullName, this.FullName, signature.MandatoryParamCount.ToString(),
-			callSignature.Parameters.Count.ToString());
+                        callSignature.Parameters.Length.ToString());
 				}
 			}
 
@@ -1925,8 +1925,8 @@ namespace PHP.Core.Reflection
             // when calling an instance virtual method, and some passed arguments would be ignored,
             // force dynamic call in case there will be an overload that takes more arguments
             else if (callVirt
-                && callSignature.Parameters.Count > 0   // some overload may accept less arguments, and its overload more, so we may loose some passed arguments; only if we are not passing any, we are safe
-                //&& callSignature.Parameters.Count != this.Signature.ParamCount     // TODO: only if 'Declaration should be compatible' warning would be considered as error, or overrides must not have less arguments than base overriden method
+                && callSignature.Parameters.Length > 0   // some overload may accept less arguments, and its overload more, so we may loose some passed arguments; only if we are not passing any, we are safe
+                //&& callSignature.Parameters.Length != this.Signature.ParamCount     // TODO: only if 'Declaration should be compatible' warning would be considered as error, or overrides must not have less arguments than base overriden method
                 ) runtimeVisibilityCheck = true;
             
             // emit the routine call
@@ -2360,14 +2360,14 @@ namespace PHP.Core.Reflection
         internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
-			if (callSignature.GenericParams.Count > 0)
+            if (callSignature.GenericParams.Any())
 			{
 				analyzer.ErrorSink.Add(Errors.GenericCallToLibraryFunction, analyzer.SourceUnit, position);
-				callSignature = new CallSignature(callSignature.Parameters, TypeRef.EmptyList);
+				callSignature = new CallSignature(callSignature.Parameters);
 			}
 
 			bool exact_match;
-			int result = ResolveOverload(callSignature.Parameters.Count, out exact_match);
+            int result = ResolveOverload(callSignature.Parameters.Length, out exact_match);
 
 			if (!exact_match)
 			{
@@ -2459,7 +2459,7 @@ namespace PHP.Core.Reflection
 			// number of optional arguments passed to a function (empty or a literal place):
 			if ((overload.Flags & OverloadFlags.IsVararg) != 0)
 			{
-				opt_arg_count = new IndexedPlace(PlaceHolder.None, callSignature.Parameters.Count - overload.ParamCount);
+				opt_arg_count = new IndexedPlace(PlaceHolder.None, callSignature.Parameters.Length - overload.ParamCount);
 			}
 
 			// this reference?
@@ -2950,9 +2950,9 @@ namespace PHP.Core.Reflection
 			bool found = false;
 
 			Overload overload;
-			while (i < overloads.Count && (overload = overloads[i]).MandatoryParamCount <= callSignature.Parameters.Count)
+			while (i < overloads.Count && (overload = overloads[i]).MandatoryParamCount <= callSignature.Parameters.Length)
 			{
-				if (overload.MandatoryParamCount == callSignature.Parameters.Count ||
+                if (overload.MandatoryParamCount == callSignature.Parameters.Length ||
 					(overload.Flags & OverloadFlags.IsVararg) != 0)
 				{
 					found = true;

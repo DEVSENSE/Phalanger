@@ -160,9 +160,9 @@ namespace PHP.Core.Compiler.AST
 
                 if (node.TypeParams == null) return;
 
-                Debug.Assert(declaringType.GenericParams.Length == node.TypeParams.Count);
+                Debug.Assert(declaringType.GenericParams.Length == node.TypeParams.Length);
 
-                for (int i = 0; i < node.TypeParams.Count; i++)
+                for (int i = 0; i < node.TypeParams.Length; i++)
                     node.TypeParams[i].PreAnalyze(analyzer, declaringType.GetGenericParameter(i));
             }
 
@@ -172,15 +172,15 @@ namespace PHP.Core.Compiler.AST
 
                 if (node.TypeParams == null) return;
 
-                Debug.Assert(declaringRoutine.Signature.GenericParamCount == node.TypeParams.Count);
+                Debug.Assert(declaringRoutine.Signature.GenericParamCount == node.TypeParams.Length);
 
-                for (int i = 0; i < node.TypeParams.Count; i++)
+                for (int i = 0; i < node.TypeParams.Length; i++)
                     node.TypeParams[i].PreAnalyze(analyzer, declaringRoutine.Signature.GenericParams[i]);
             }
 
             public static bool Merge(TypeSignature/*!*/node, ErrorSink/*!*/ errors, PhpType/*!*/ declaringType, TypeSignature other)
             {
-                if (node.TypeParams.Count != other.TypeParams.Count)
+                if (node.TypeParams.Length != other.TypeParams.Length)
                 {
                     errors.Add(Errors.PartialDeclarationsDifferInTypeParameterCount, declaringType.Declaration.SourceUnit,
                         declaringType.Declaration.Span, declaringType.FullName);
@@ -190,7 +190,7 @@ namespace PHP.Core.Compiler.AST
 
                 bool result = true;
 
-                for (int i = 0; i < node.TypeParams.Count; i++)
+                for (int i = 0; i < node.TypeParams.Length; i++)
                     result &= node.TypeParams[i].Merge(errors, other.TypeParams[i]);
 
                 return result;
@@ -287,7 +287,7 @@ namespace PHP.Core.Compiler.AST
 
                 // all types are known:
                 DTypeDesc base_type = ResolveBaseType(analyzer);
-                List<DTypeDesc> base_interfaces = new List<DTypeDesc>(node.ImplementsList.Count);
+                List<DTypeDesc> base_interfaces = new List<DTypeDesc>(node.ImplementsList.Length);
                 ResolveBaseInterfaces(analyzer, base_interfaces);
 
                 // pre-analyze the other versions (include partial types merging):
@@ -429,10 +429,12 @@ namespace PHP.Core.Compiler.AST
 
             private void ResolveBaseInterfaces(Analyzer/*!*/ analyzer, List<DTypeDesc>/*!*/ interfaces)
             {
-                var implementsList = node.implementsList;
-                for (int i = 0; i < node.ImplementsList.Count; i++)
+                var implementsList = node.ImplementsList;
+                var implementsSpan = node.ImplementsListPosition;
+
+                for (int i = 0; i < implementsList.Length; i++)
                 {
-                    DType base_type = analyzer.ResolveTypeName(implementsList[i].Key, type, null, implementsList[i].Value, true);
+                    DType base_type = analyzer.ResolveTypeName(implementsList[i], type, null, implementsSpan[i], true);
 
                     if (base_type.IsGenericParameter)
                     {
@@ -633,11 +635,12 @@ namespace PHP.Core.Compiler.AST
                     codeGenerator.EnterLambdaDeclaration(il, false, LiteralPlace.Null, new IndexedPlace(PlaceHolder.Argument, 0), LiteralPlace.Null, LiteralPlace.Null);
                     if (true)
                     {
+                        var naming  = (node.Namespace != null) ? node.Namespace.Naming : node.SourceUnit.Naming;  // current naming context aliases
                         codeGenerator.EmitEval(
                             EvalKinds.SyntheticEval,
                             LiteralUtils.Create(node.Span, this.typeDefinitionCode, AccessType.Read),
                             node.Span,
-                            (node.Namespace != null) ? node.Namespace.QualifiedName : (QualifiedName?)null, node.validAliases);
+                            (node.Namespace != null) ? node.Namespace.QualifiedName : (QualifiedName?)null, naming.Aliases);
                         il.Emit(OpCodes.Pop);
                         il.Emit(OpCodes.Ret);
                     }
@@ -994,7 +997,7 @@ namespace PHP.Core.Compiler.AST
                 TypeSignatureCompiler.AnalyzeMembers(node.TypeSignature, analyzer, declaringType.Declaration.Scope);
                 SignatureCompiler.AnalyzeMembers(node.Signature, analyzer, method);
                 method.IsDllImport = this.IsDllImport(node.Attributes);
-                if (method.IsDllImport && node.Body != null && node.Body.Count != 0)
+                if (method.IsDllImport && node.Body.Any())
                     analyzer.ErrorSink.Add(Warnings.BodyOfDllImportedFunctionIgnored, analyzer.SourceUnit, node.Span);
             }
 
@@ -1032,7 +1035,7 @@ namespace PHP.Core.Compiler.AST
                     {
                         // base class has no constructor, the default parameterless is silently called (and that does nothing);
                         // report error, if there are any parameters passed to the parameterless ctor:
-                        if (node.BaseCtorParams.Count > 0)
+                        if (node.BaseCtorParams.Length > 0)
                             analyzer.ErrorSink.Add(Errors.UnexpectedParentCtorInvocation, analyzer.SourceUnit, node.Span);
                         node.BaseCtorParams = null;
                     }
@@ -1044,7 +1047,7 @@ namespace PHP.Core.Compiler.AST
                             method.DeclaringType.Base.Constructor.Name, Text.Span.Invalid,
                             node.BaseCtorParams, TypeRef.EmptyList);
 
-                        node.Body.Insert(0, new ExpressionStmt(node.Span, call_expr));
+                        node.Body = ArrayUtils.Concat(new ExpressionStmt(node.Span, call_expr), node.Body);
                         node.BaseCtorParams = null;
                     }
                 }
@@ -1089,7 +1092,7 @@ namespace PHP.Core.Compiler.AST
                 {
                     analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, node.Span, clrBase.FullName);
                 }
-                else if (base_ctor.Overloads[overload_index].MandatoryParamCount != call_sig.Parameters.Count)
+                else if (base_ctor.Overloads[overload_index].MandatoryParamCount != call_sig.Parameters.Length)
                 {
                     // invalid argument count passed to the base ctor:
                     analyzer.ErrorSink.Add(Errors.InvalidArgumentCount, analyzer.SourceUnit, node.Span);
@@ -1577,15 +1580,15 @@ namespace PHP.Core.Compiler.AST
         {
             Debug.Assert(declaringMember != null);
 
-            if (typeSignature.TypeParams.Count == 0)
+            if (typeSignature.TypeParams.Length == 0)
             {
                 mandatoryCount = 0;
                 return GenericParameterDesc.EmptyArray;
             }
 
-            GenericParameterDesc[] result = new GenericParameterDesc[typeSignature.TypeParams.Count];
+            GenericParameterDesc[] result = new GenericParameterDesc[typeSignature.TypeParams.Length];
             mandatoryCount = 0;
-            for (int i = 0; i < typeSignature.TypeParams.Count; i++)
+            for (int i = 0; i < typeSignature.TypeParams.Length; i++)
             {
                 result[i] = new GenericParameter(typeSignature.TypeParams[i].Name, i, declaringMember).GenericParameterDesc;
                 if (typeSignature.TypeParams[i].DefaultType == null)

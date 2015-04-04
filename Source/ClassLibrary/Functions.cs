@@ -87,8 +87,8 @@ namespace PHP.Library
         [PureFunction(typeof(PhpFunctions), "CreateFunction_Analyze")]
 		public static string CreateFunction(string args, string body)
 		{
-			ScriptContext context = ScriptContext.CurrentContext;
-			return DynamicCode.CreateLambdaFunction(args, body, context, context.GetCapturedSourceCodeDescriptor());
+			var context = ScriptContext.CurrentContext;
+            return DynamicCode.CreateLambdaFunction(args, body, context, context.GetCapturedSourceCodeDescriptor());
         }
 
         #region analyzer of create_function
@@ -178,6 +178,47 @@ namespace PHP.Library
         }
 
         #endregion
+
+        #endregion
+
+        #region assert, assert_options
+
+        /// <summary>
+        /// Assertion options.
+        /// </summary>
+        public enum AssertOption : int
+        {
+            [ImplementsConstant("ASSERT_ACTIVE")]
+            ASSERT_ACTIVE,
+            [ImplementsConstant("ASSERT_WARNING")]
+            ASSERT_WARNING,
+            [ImplementsConstant("ASSERT_BAIL")]
+            ASSERT_BAIL,
+            [ImplementsConstant("ASSERT_QUIET_EVAL")]
+            ASSERT_QUIET_EVAL,
+            [ImplementsConstant("ASSERT_CALLBACK")]
+            ASSERT_CALLBACK,
+        }
+
+        [ImplementsFunction("assert", FunctionImplOptions.CaptureEvalInfo /*| FunctionImplOptions.Special*/)]
+        public static bool Assert(object assertion)
+        {
+            return Assert(assertion, null);
+        }
+
+        [ImplementsFunction("assert", FunctionImplOptions.CaptureEvalInfo /*| FunctionImplOptions.Special*/)]
+        public static bool Assert(object assertion, string description)
+        {
+            ScriptContext context = ScriptContext.CurrentContext;
+            var descriptor = context.GetCapturedSourceCodeDescriptor();
+            return DynamicCode.CheckAssertion(assertion, null, context, descriptor.ContainingSourcePath, descriptor.Line, descriptor.Column, null);
+        }
+
+        [ImplementsFunction("assert_options", FunctionImplOptions.NotSupported)]
+        public static object AssertOptions(int what, object value)
+        {
+            return value;
+        }
 
         #endregion
 
