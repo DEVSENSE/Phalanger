@@ -270,17 +270,17 @@ namespace PHP.Core.Parsers
 							return token;
 						}
 
-					//case Tokens.T_IMPORT:
-                        //{
+					case Tokens.T_IMPORT:
+                        {
                             //if ((features & Features.V6Keywords) == 0)
                             //{
                             //    token = Tokens.T_STRING;
                             //    goto case Tokens.T_STRING;
                             //}
 
-                            //tokenCategory = TokenCategory.Keyword;
-                            //return token;
-                        //}
+                            tokenCategory = TokenCategory.Keyword;
+                            return token;
+                        }
 
 					#endregion
 

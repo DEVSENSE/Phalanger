@@ -204,6 +204,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"__NAMESPACE__"    { return Tokens.T_NAMESPACE_C; }
 <ST_IN_SCRIPTING>"namespace"        { return Tokens.T_NAMESPACE; }
 <ST_IN_SCRIPTING>"use"				{ return Tokens.T_USE; }
+<ST_IN_SCRIPTING>"import"			{ return Tokens.T_IMPORT; }
 <ST_IN_SCRIPTING>"goto"             { return Tokens.T_GOTO; }
 
 <ST_IN_SCRIPTING>"bool"             { return Tokens.T_BOOL_TYPE; }

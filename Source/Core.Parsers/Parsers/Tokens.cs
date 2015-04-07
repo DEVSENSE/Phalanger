@@ -83,7 +83,7 @@ namespace PHP.Core.Parsers
 		T_PARTIAL = Toks.T_PARTIAL,
 
 		T_GOTO = Toks.T_GOTO,
-		//T_IMPORT = Toks.T_IMPORT,
+		T_IMPORT = Toks.T_IMPORT,
 		T_NAMESPACE = Toks.T_NAMESPACE,
 		T_NAMESPACE_C = Toks.T_NAMESPACE_C,
 		T_NS_SEPARATOR = Toks.T_NS_SEPARATOR,

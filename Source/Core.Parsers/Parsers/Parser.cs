@@ -844,19 +844,19 @@ namespace PHP.Core.Parsers
         //{
         //    sourceUnit.AddImportedNamespace(new QualifiedName(Name.EmptyBaseName, new Name[] { new Name(namespaceName) }));
         //}
-        //public void AddImport(QualifiedName namespaceName)
-        //{
-        //    if (sourceUnit.IsPure)
-        //    {
-        //        ErrorSink.Add(Warnings.ImportDeprecated, SourceUnit, this.yypos);   // deprecated statement
+        public void AddImport(QualifiedName namespaceName)
+        {
+            if (sourceUnit.IsPure)
+            {
+                ErrorSink.Add(Warnings.ImportDeprecated, SourceUnit, this.yypos);   // deprecated statement
 
-        //        sourceUnit.ImportedNamespaces.Add(namespaceName);
-        //    }
-        //    else
-        //    {
-        //        ErrorSink.Add(Errors.ImportOnlyInPureMode, sourceUnit, this.yypos); // does actually not happen, since T_IMPORT is not recognized outside Pure mode at all
-        //    }
-        //}
+                sourceUnit.ImportedNamespaces.Add(namespaceName);
+            }
+            else
+            {
+                ErrorSink.Add(Errors.ImportOnlyInPureMode, sourceUnit, this.yypos); // does actually not happen, since T_IMPORT is not recognized outside Pure mode at all
+            }
+        }
 
         //#endregion
 
