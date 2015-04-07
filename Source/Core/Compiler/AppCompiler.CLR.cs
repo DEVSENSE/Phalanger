@@ -540,6 +540,7 @@ namespace PHP.Core
 					"/ew:<warning>", "ew",
 					"/verbose[+|-]", "verbose",
 					"/quiet", "quiet",
+                    "/legacy", "legacy",
 					"@<path>", "at_path",
 				};
 
@@ -846,6 +847,8 @@ namespace PHP.Core
 									
 								case "ig": drawInclusionGraph = true; break;
 								case "errors-to-stdout": redirectErrors = true; break;
+
+                                case "legacy": Parsers.Scanner.IsLegacy = true; break;
 
 								case "?":
 								case "help":

@@ -109,6 +109,7 @@ namespace PHP.Core.Parsers
 
         private Encoding Encoding { get { return sourceUnit.Encoding; } }
         private bool IsPure { get { return sourceUnit.IsPure; } }
+        public static bool IsLegacy;
 
         public Scanner(TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors,
             ICommentsSink commentsSink, LanguageFeatures features, int positionShift)
@@ -492,13 +493,13 @@ namespace PHP.Core.Parsers
 
 					case Tokens.T_IMPORT:
                         {
-                            if (!sourceUnit.IsPure)
+                            if (sourceUnit.IsPure && Scanner.IsLegacy)
                             {
-                                token = Tokens.T_STRING;
-                                goto case Tokens.T_STRING;
+                                goto default;
                             }
 
-                            goto default;
+                            token = Tokens.T_STRING;
+                            goto case Tokens.T_STRING;
                         }
 
 					case Tokens.T_BOOL_TYPE:
