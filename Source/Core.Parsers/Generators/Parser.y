@@ -267,8 +267,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_LGENERIC
 %token T_RGENERIC
 
-%token T_IMPORT		// pure mode
-
 %token T_BOOL_TYPE
 %token T_INT_TYPE
 %token T_INT64_TYPE
@@ -312,8 +310,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> use_statement_content                   // KeyValuePair<string, QualifiedName>
 %type<Object> ns_separator_opt						  // null
 %type<Object> use_statement		                      // EmptyStmt
-%type<Object> import_statement		                  // EmptyStmt
-%type<Object> import_statement_list                   // EmptyStmt
 %type<Object> statement                               // Statement
 %type<Object> empty_statement                         // EmptyStmt
 %type<Object> non_empty_statement                     // Statement
@@ -495,11 +491,6 @@ start:
 			List<Statement> top_statements = (List<Statement>)$1;
 			astRoot = new GlobalCode(top_statements, sourceUnit);
 		}
-	|	import_statement_list top_statement_list 
-		{ 
-			List<Statement> top_statements = (List<Statement>)$2;
-			astRoot = new GlobalCode(top_statements, sourceUnit);
-		}
 ;
 
 comma_opt:
@@ -510,15 +501,6 @@ comma_opt:
 /* Added to distinguish identifiers from encapsulated strings both represented by T_STRING */
 identifier:
 		T_STRING { $$ = $1.Object; }
-;
-
-import_statement_list:	/* pure mode */
-		import_statement		{ $$ = new EmptyStmt(@$); }
-	|	import_statement_list import_statement	{ /*nop*/ }
-;
-
-import_statement: /* pure mode */
-	T_IMPORT T_NAMESPACE namespace_name_list ';'	{ /* nop */ $$ = new EmptyStmt(@$); AddImport( new QualifiedName( (List<string>)$3, false, true ) ); }
 ;
 
 use_statement: /* PHP 5.3 */

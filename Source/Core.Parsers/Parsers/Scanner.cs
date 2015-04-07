@@ -490,16 +490,16 @@ namespace PHP.Core.Parsers
 							goto default;
 						}
 
-					case Tokens.T_IMPORT:
-                        {
-                            if (!sourceUnit.IsPure)
-                            {
-                                token = Tokens.T_STRING;
-                                goto case Tokens.T_STRING;
-                            }
+					//case Tokens.T_IMPORT:
+                        //{
+                            //if (!sourceUnit.IsPure)
+                            //{
+                                //token = Tokens.T_STRING;
+                                //goto case Tokens.T_STRING;
+                            //}
 
-                            goto default;
-                        }
+                            //goto default;
+                        //}
 
 					case Tokens.T_BOOL_TYPE:
 					case Tokens.T_INT_TYPE:
