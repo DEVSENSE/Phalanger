@@ -231,7 +231,8 @@ namespace Lex
 			this.outstream.WriteLine("this.lookahead_index = 0;");
 			this.outstream.WriteLine("this.token_chunk_start = 0;");
 			this.outstream.WriteLine("this.token_end = 0;");
-			this.outstream.WriteLine("this.reader = reader;");
+            this.outstream.WriteLine("this.token_end_pos = new Position(0);");
+            this.outstream.WriteLine("this.reader = reader;");
 			this.outstream.WriteLine("this.yy_at_bol = atBol;");
 			this.outstream.WriteLine("this.current_lexical_state = lexicalState;");
 			this.EmitUserCode(this.spec.InitCode);

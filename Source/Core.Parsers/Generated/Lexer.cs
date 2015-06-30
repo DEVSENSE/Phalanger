@@ -101,6 +101,7 @@ using System.Collections.Generic;
 			this.lookahead_index = 0;
 			this.token_chunk_start = 0;
 			this.token_end = 0;
+			this.token_end_pos = new Position(0);
 			this.reader = reader;
 			this.yy_at_bol = atBol;
 			this.current_lexical_state = lexicalState;
