@@ -58,13 +58,11 @@ namespace PHP.Core.Parsers
 
 	#endregion
 
-	public partial class Parser
+	public partial class Parser : IScannerHandler, ICommentsSink
 	{
 		#region Reductions Sinks
 
-        public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
-
-		private sealed class _NullReductionsSink : IReductionsSink
+        private sealed class NullReductionsSink : IReductionsSink
 		{
 			void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
 			{
@@ -146,11 +144,6 @@ namespace PHP.Core.Parsers
 			get { return (int)Tokens.ERROR; }
 		}
 
-        protected override bool IsDocCommentToken(int tok)
-        {
-            return (tok == (int)Tokens.T_DOC_COMMENT);
-        }
-
         protected override Text.Span CombinePositions(Text.Span first, Text.Span last)
         {
             if (last.IsValid)
@@ -181,7 +174,7 @@ namespace PHP.Core.Parsers
 		public SourceUnit SourceUnit { get { return sourceUnit; } }
 		private SourceUnit sourceUnit;
 
-		private IReductionsSink/*!*/reductionsSink;
+        private IReductionsSink/*!*/reductionsSink;
 		private bool unicodeSemantics;
 		private TextReader reader;
 		private Scope currentScope;
@@ -235,11 +228,10 @@ namespace PHP.Core.Parsers
             this.errors = errors;
             this.features = features;
             this.reader = reader;
-            this.reductionsSink = reductionsSink ?? NullReductionSink;
+            this.reductionsSink = reductionsSink ?? new NullReductionsSink();
             InitializeFields();
 
-            this.scanner = new Scanner(reader, sourceUnit, errors, (reductionsSink as ICommentsSink) ?? (sourceUnit as ICommentsSink), features, positionShift);
-			this.scanner.CurrentLexicalState = initialLexicalState;
+            this.scanner = new Scanner(reader, sourceUnit, errors, this, this, features, positionShift) { CurrentLexicalState = initialLexicalState };
 			this.currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
 
 			this.unicodeSemantics = (features & LanguageFeatures.UnicodeSemantics) != 0;
@@ -257,9 +249,9 @@ namespace PHP.Core.Parsers
 
 		private void InitializeFields()
 		{
-			strBufStack.Clear();
-            //docCommentStack = null;
-			condLevel = 0;
+            InitializeCommentSink();
+            strBufStack.Clear();
+            condLevel = 0;
 
             Debug.Assert(sourceUnit != null);
 
@@ -280,12 +272,14 @@ namespace PHP.Core.Parsers
 
 		private void ClearFields()
 		{
-			scanner = null;
+            ClearCommentSink();
+            
+            scanner = null;
 			features = 0;
 			errors = null;
 			sourceUnit = null;
-			reductionsSink = null;
-			astRoot = null;
+            reductionsSink = null;
+            astRoot = null;
 			reader = null;
 		}
 
@@ -1030,28 +1024,6 @@ namespace PHP.Core.Parsers
 
         #endregion
 
-        #region PHPDocBlock
-
-        protected object CreatePHPDocBlockStmt(object/*!*/doccomment)
-        {
-            Debug.Assert(doccomment is PHPDocBlock);
-            return new PHPDocStmt(yypos, (PHPDocBlock)doccomment);
-        }
-
-        protected object SetPHPDoc(object obj, object phpdoc)
-        {
-            Debug.Assert(obj is LangElement);
-            if (!object.ReferenceEquals(phpdoc, null))
-            {
-                Debug.Assert(phpdoc is PHPDocBlock);
-                ((LangElement)obj).SetPHPDoc((PHPDocBlock)phpdoc);
-            }
-
-            return obj;
-        }
-
-        #endregion
-
         #region Helpers
 
         private static readonly List<Statement> emptyStatementList = new List<Statement>();
@@ -1084,7 +1056,7 @@ namespace PHP.Core.Parsers
             return tlist;
         }
 
-        private static object/*!*/StatementListAdd(object/*!*/listObj, object itemObj)
+        private object/*!*/StatementListAdd(object/*!*/listObj, object itemObj)
         {
             Debug.Assert(listObj is List<Statement>);
 
@@ -1110,16 +1082,6 @@ namespace PHP.Core.Parsers
                 }
                 else
                 {
-                    if (list.Count != 0)
-                    {
-                        var last = list.Last();
-                        if (last.GetType() == typeof(PHPDocStmt))
-                            stmt.SetPHPDoc(((PHPDocStmt)last).PHPDoc);
-
-                        // last.GetType() == typeof(NamespaceDecl) && last.Statements.Last() is PHPDoc
-                        // ...
-                    }
-
                     list.Add(stmt);
                 }
             }
@@ -1157,6 +1119,8 @@ namespace PHP.Core.Parsers
         /// <returns>Text of the token.</returns>
         private string CSharpNameToken(Text.Span span, string token)
         {
+            // TODO: move to scanner
+
             // get token string:
             //string token = this.scanner.GetTokenString(position);
 
@@ -1190,5 +1154,194 @@ namespace PHP.Core.Parsers
         }
 
 		#endregion
-	}
+
+        #region Handling PHPDoc: ICommentsSink, IScannerHandler Members
+
+        private ICommentsSink/*!*/_commentSink;
+        private IScannerHandler/*!*/_scannerHandler;
+        private DocCommentList/*!*/_docList;
+        
+        private void InitializeCommentSink()
+        {
+            _commentSink = ChainForwardCommentSink.ChainSinks(reductionsSink as ICommentsSink, sourceUnit as ICommentsSink);
+            _scannerHandler = (sourceUnit as IScannerHandler) ?? new Scanner.NullScannerHandler();
+            _docList = new DocCommentList();
+        }
+
+        private void ClearCommentSink()
+        {
+            _commentSink = null;
+            _scannerHandler = null;
+            _docList = null;			
+        }
+
+        #region Nested class: ChainCommentsSink
+
+        private abstract class ChainCommentsSink : ICommentsSink
+        {
+            readonly ICommentsSink/*!*/_next;
+
+            protected ChainCommentsSink(ICommentsSink next)
+            {
+                _next = next ?? new Scanner.NullCommentsSink();
+            }
+
+            #region ICommentsSink Members
+
+            public virtual void OnLineComment(Scanner scanner, Text.TextSpan span)
+            {
+                _next.OnLineComment(scanner, span);
+            }
+
+            public virtual void OnComment(Scanner scanner, Text.TextSpan span)
+            {
+                _next.OnComment(scanner, span);
+            }
+
+            public virtual void OnPhpDocComment(Scanner scanner, PHPDocBlock phpDocBlock)
+            {
+                _next.OnPhpDocComment(scanner, phpDocBlock);
+            }
+
+            public virtual void OnOpenTag(Scanner scanner, Text.TextSpan span)
+            {
+                _next.OnOpenTag(scanner, span);
+            }
+
+            public virtual void OnCloseTag(Scanner scanner, Text.TextSpan span)
+            {
+                _next.OnCloseTag(scanner, span);
+            }
+
+            #endregion
+        }
+
+        private sealed class ChainForwardCommentSink : ChainCommentsSink
+        {
+            readonly ICommentsSink/*!*/_forward;
+
+            private ChainForwardCommentSink(ICommentsSink/*!*/forward, ICommentsSink/*!*/next)
+                :base(next)
+            {
+                _forward = forward;
+            }
+
+            public static ICommentsSink/*!*/ChainSinks(ICommentsSink first, ICommentsSink second)
+            {
+                if (first != null)
+                {
+                    if (second != null) return new ChainForwardCommentSink(first, second);
+                    else return first;
+                }
+
+                //
+                return second ?? new Scanner.NullCommentsSink();
+            }
+
+            public override void OnLineComment(Scanner scanner, Text.TextSpan span)
+            {
+                _forward.OnLineComment(scanner, span);
+ 	             base.OnLineComment(scanner, span);
+            }
+
+            public override void OnComment(Scanner scanner, Text.TextSpan span)
+            {
+                _forward.OnComment(scanner, span);
+                base.OnComment(scanner, span);
+            }
+
+            public override void OnPhpDocComment(Scanner scanner, PHPDocBlock phpDocBlock)
+            {
+                _forward.OnPhpDocComment(scanner, phpDocBlock);
+                base.OnPhpDocComment(scanner, phpDocBlock);
+            }
+
+            public override void OnOpenTag(Scanner scanner, Text.TextSpan span)
+            {
+                _forward.OnOpenTag(scanner, span);
+                base.OnOpenTag(scanner, span);
+            }
+
+            public override void OnCloseTag(Scanner scanner, Text.TextSpan span)
+            {
+                _forward.OnCloseTag(scanner, span);
+                base.OnCloseTag(scanner, span);
+            }
+        }
+
+        private sealed class HandleDocComment : IScannerHandler
+        {
+            readonly Parser _parser;
+            readonly IScannerHandler _next;
+            readonly PHPDocBlock _docComment;
+
+            public HandleDocComment(Parser/*!*/parser, PHPDocBlock/*!*/phpDocBlock, IScannerHandler/*!*/next)
+            {
+                Debug.Assert(parser != null);
+                Debug.Assert(phpDocBlock != null);
+                Debug.Assert(next != null);
+
+                _parser = parser;
+                _docComment = phpDocBlock;
+                _next = next;
+            }
+
+            #region IScannerHandler Members
+
+            public void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength)
+            {
+                if (token != Tokens.T_WHITESPACE)
+                {
+                    // now we know all the whitespace after the DOC comment
+                    _parser._docList.AppendBlock(_docComment, _parser.Scanner.TokenPosition.Start);
+
+                    // remove this handler so it is not called on every IScannerHandler.OnNextToken
+                    Debug.Assert(_parser._scannerHandler == this);
+                    _parser._scannerHandler = _next;
+                }
+
+                _next.OnNextToken(token, buffer, tokenStart, tokenLength);
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        void ICommentsSink.OnLineComment(Scanner scanner, Text.TextSpan span)
+        {
+            _commentSink.OnLineComment(scanner, span);
+        }
+
+        void ICommentsSink.OnComment(Scanner scanner, Text.TextSpan span)
+        {
+            _commentSink.OnComment(scanner, span);
+        }
+
+        void ICommentsSink.OnPhpDocComment(Scanner scanner, PHPDocBlock phpDocBlock)
+        {
+            // handle the next non-whitespace token so we'll know span of the DOC comment including the following whitespace
+            _scannerHandler = new HandleDocComment(this, phpDocBlock, _scannerHandler);
+
+            //
+            _commentSink.OnPhpDocComment(scanner, phpDocBlock);
+        }
+
+        void ICommentsSink.OnOpenTag(Scanner scanner, Text.TextSpan span)
+        {
+            _commentSink.OnOpenTag(scanner, span);
+        }
+
+        void ICommentsSink.OnCloseTag(Scanner scanner, Text.TextSpan span)
+        {
+            _commentSink.OnCloseTag(scanner, span);
+        }
+
+        void IScannerHandler.OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength)
+        {
+            _scannerHandler.OnNextToken(token, buffer, tokenStart, tokenLength);
+        }
+
+        #endregion
+    }
 }

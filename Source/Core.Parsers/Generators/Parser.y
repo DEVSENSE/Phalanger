@@ -189,7 +189,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_FILE
 %token T_DIR
 %token T_COMMENT
-%token<Object> T_DOC_COMMENT			  // PHPDocBlock
+%token T_DOC_COMMENT
 %token T_PRAGMA_LINE
 %token T_PRAGMA_FILE
 %token T_PRAGMA_DEFAULT_LINE
@@ -673,7 +673,7 @@ class_declaration_statement:
 				IsCurrentCodeConditional, GetScope(), 
 				member_attr, $4 != 0, class_name, @6, currentNamespace, 
 				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Text.Span>)$9, (List<Tuple<GenericQualifiedName,Text.Span>>)$10, 
-		    (List<LangElement>)$12, (List<CustomAttribute>)$1);
+		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 		  UnreserveTypeNames((List<FormalTypeParam>)$7);
@@ -704,7 +704,7 @@ class_declaration_statement:
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
 				$4 != 0, class_name, @6, currentNamespace,
 				(List<FormalTypeParam>)$7, null, (List<Tuple<GenericQualifiedName,Text.Span>>)$9,
-				(List<LangElement>)$11, (List<CustomAttribute>)$1); 
+				(List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1); 
 				
 			reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -1079,10 +1079,6 @@ non_empty_statement:
 		{
 			$$ = new DeclareStmt(@$, (Statement)$5);
 		}
-	|	T_DOC_COMMENT
-		{
-			$$ = CreatePHPDocBlockStmt($1);
-		}
 ;
 
 
@@ -1360,8 +1356,8 @@ static_variable:
 ;
 
 class_statement_list_opt:
-		class_statement_list_opt class_statement	{ $$ = ListAdd<LangElement>($1, $2); }
-	|	/* empty */									{ $$ = new List<LangElement>(); }
+		class_statement_list_opt class_statement	{ $$ = ListAdd<TypeMemberDecl>($1, $2); }
+	|	/* empty */									{ $$ = new List<TypeMemberDecl>(); }
 ;
 
 class_statement:
@@ -1397,7 +1393,6 @@ class_statement:
 			UnreserveTypeNames((List<FormalTypeParam>)$6);
 		}
 	|	trait_use_statement		{ $$ = $1; }
-	|	T_DOC_COMMENT			{ $$ = $1; }
 ;
 
 trait_use_statement:
