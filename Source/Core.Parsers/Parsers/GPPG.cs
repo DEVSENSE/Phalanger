@@ -207,7 +207,8 @@ namespace PHP.Core.Parsers.GPPG
 		protected abstract Rule[] Rules { get; }
 		protected abstract int ErrorToken { get; }
 		protected abstract int EofToken { get; }
-        
+        protected virtual bool IsDocCommentToken(int tok) { return false; }
+		
 		protected virtual PositionType InvalidPosition { get { return default(PositionType); } } 
 		protected abstract PositionType CombinePositions(PositionType first, PositionType last);
 
@@ -276,6 +277,12 @@ namespace PHP.Core.Parsers.GPPG
                 }
                 else if (action == 0)   // error
                 {
+                    if (IsDocCommentToken(next))
+                    {
+                        next = 0;
+                        continue;   // ignore T_DOC_COMMENT
+                    }
+
                     if (!ErrorRecovery())
                         return false;
                 }

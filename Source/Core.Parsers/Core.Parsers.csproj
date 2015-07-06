@@ -74,7 +74,6 @@
     <Compile Include="AST\UnaryEx.cs" />
     <Compile Include="AST\VariableUse.cs" />
     <Compile Include="AST\YieldEx.cs" />
-    <Compile Include="Parsers\DocCommentList.cs" />
     <Compile Include="Text\Span.cs" />
     <Compile Include="Text\TextSpan.cs" />
     <Compile Include="Text\TextPoint.cs" />

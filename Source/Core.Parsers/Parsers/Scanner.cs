@@ -43,27 +43,11 @@ namespace PHP.Core.Parsers
 
     #endregion
 
-    #region IScannerHandler
-
-    public interface IScannerHandler
-    {
-        /// <summary>
-        /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
-        /// </summary>
-        /// <param name="token">Token.</param>
-        /// <param name="buffer">Internal text buffer.</param>
-        /// <param name="tokenStart">Position within <paramref name="buffer"/> where the token text starts.</param>
-        /// <param name="tokenLength">Length of the token text.</param>
-        void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength);
-    }
-
-    #endregion
-
     public sealed class Scanner : Lexer, ITokenProvider<SemanticValueType, Text.Span>
     {
-        #region Nested class: NullCommentsSink
+        #region Nested class: _NullCommentsSink
 
-        internal sealed class NullCommentsSink : ICommentsSink
+        private sealed class _NullCommentsSink : ICommentsSink
         {
             #region ICommentsSink Members
 
@@ -78,15 +62,18 @@ namespace PHP.Core.Parsers
 
         #endregion
 
-        #region Nested class: NullScannerHandler
+        #region Nested interface: IScannerHandler
 
-        internal sealed class NullScannerHandler : IScannerHandler
+        public interface IScannerHandler
         {
-            #region IScannerHandler Members
-
-            public void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength) { }
-
-            #endregion
+            /// <summary>
+            /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
+            /// </summary>
+            /// <param name="token">Token.</param>
+            /// <param name="buffer">Internal text buffer.</param>
+            /// <param name="tokenStart">Position within <paramref name="buffer"/> where the token text starts.</param>
+            /// <param name="tokenLength">Length of the token text.</param>
+            void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength);
         }
 
         #endregion
@@ -102,7 +89,7 @@ namespace PHP.Core.Parsers
         /// <summary>
         /// Sink for various scanner events.
         /// </summary>
-        private readonly IScannerHandler/*!*/scannerHandler;
+        private readonly IScannerHandler scannerHandler;
 
 		public LanguageFeatures LanguageFeatures { get { return features; } }
 		private readonly LanguageFeatures features;
@@ -123,9 +110,8 @@ namespace PHP.Core.Parsers
         private Encoding Encoding { get { return sourceUnit.Encoding; } }
         private bool IsPure { get { return sourceUnit.IsPure; } }
 
-        public Scanner(TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit,
-            ErrorSink/*!*/ errors, ICommentsSink commentsSink, IScannerHandler scannerHandler,
-            LanguageFeatures features, int positionShift)
+        public Scanner(TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors,
+            ICommentsSink commentsSink, LanguageFeatures features, int positionShift)
 			: base(reader)
 		{
 			if (reader == null)
@@ -136,14 +122,14 @@ namespace PHP.Core.Parsers
 				throw new ArgumentNullException("errors");
 
 			this.errors = errors;
-            this.commentsSink = commentsSink ?? new NullCommentsSink();
-            this.scannerHandler = scannerHandler ?? new NullScannerHandler();
-            this.features = features;
+            this.commentsSink = commentsSink ?? new _NullCommentsSink();
+			this.features = features;
 			this.sourceUnit = sourceUnit;
+            this.scannerHandler = sourceUnit as IScannerHandler;
             this.charOffset = positionShift;
 
-			this.AllowAspTags = (features & LanguageFeatures.AspTags) != 0;
-			this.AllowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
+			AllowAspTags = (features & LanguageFeatures.AspTags) != 0;
+			AllowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
 		}
 
 		private void StoreEncapsedString()
@@ -185,9 +171,11 @@ namespace PHP.Core.Parsers
                 isCode = false;
                 
                 Tokens token = base.GetNextToken();
-                UpdateTokenPosition();
 
-                this.scannerHandler.OnNextToken(token, this.Buffer, this.BufferTokenStart, this.TokenLength);
+                if (this.scannerHandler != null)
+                    this.scannerHandler.OnNextToken(token, this.Buffer, this.BufferTokenStart, this.TokenLength);
+
+                UpdateTokenPosition();
 
 				switch (token)
 				{
@@ -198,7 +186,14 @@ namespace PHP.Core.Parsers
                     case Tokens.T_COMMENT: this.commentsSink.OnComment(this, TokenTextSpan); break;
                     case Tokens.T_LINE_COMMENT: this.commentsSink.OnLineComment(this, TokenTextSpan); break;
                     case Tokens.T_OPEN_TAG: this.commentsSink.OnOpenTag(this, TokenTextSpan); break;
-                    case Tokens.T_DOC_COMMENT: this.commentsSink.OnPhpDocComment(this, new PHPDocBlock(base.GetTokenString(), TokenTextSpan)); break;
+
+                    case Tokens.T_DOC_COMMENT:
+                        {
+                            var phpdoc = new PHPDocBlock(base.GetTokenString(), TokenTextSpan);
+                            this.commentsSink.OnPhpDocComment(this, phpdoc);
+                            tokenSemantics.Object = phpdoc;
+                            goto default;
+                        }
 
 					case Tokens.T_PRAGMA_FILE:
                         sourceUnit.AddSourceFileMapping(TokenTextSpan.FirstLine, base.GetTokenAsFilePragma());
