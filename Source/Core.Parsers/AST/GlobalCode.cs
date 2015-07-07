@@ -21,6 +21,7 @@ using System.Diagnostics.SymbolStore;
 
 using PHP.Core;
 using PHP.Core.Parsers;
+using PHP.Core.Text;
 
 namespace PHP.Core.AST
 {
@@ -35,7 +36,7 @@ namespace PHP.Core.AST
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
     [Serializable]
-    public sealed class GlobalCode : AstNode, IHasSourceUnit
+    public sealed class GlobalCode : AstNode, IHasSourceUnit, IDeclarationElement
     {
         /// <summary>
         /// Array of nodes representing statements in PHP global code
@@ -48,6 +49,8 @@ namespace PHP.Core.AST
         /// </summary>
         public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
         private readonly SourceUnit/*!*/ sourceUnit;
+
+        public Span EntireDeclarationSpan { get { return new Text.Span(0, sourceUnit.LineBreaks.TextLength); } }
 
         #region Constructors
 
@@ -88,7 +91,7 @@ namespace PHP.Core.AST
     #region NamespaceDecl
 
     [Serializable]
-    public sealed class NamespaceDecl : Statement
+    public sealed class NamespaceDecl : Statement, IDeclarationElement
     {
         internal override bool IsDeclaration { get { return true; } }
 
@@ -99,6 +102,8 @@ namespace PHP.Core.AST
 
         public QualifiedName QualifiedName { get { return this.qualifiedName; } }
         private QualifiedName qualifiedName;
+
+        public Span EntireDeclarationSpan { get { return this.Span; } }
 
         /// <summary>
         /// Naming context defining aliases.
