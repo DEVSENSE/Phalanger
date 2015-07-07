@@ -294,9 +294,9 @@ namespace PHP.Core.AST
         /// Visit all statements in the given list.
         /// </summary>
         /// <param name="statements">Collection of statements to visit.</param>
-        private void VisitStatements(ICollection<Statement> statements)
+        private void VisitStatements(IList<Statement> statements)
         {
-            if (statements != null && statements.Any())
+            if (statements != null)
                 foreach (Statement s in statements)
                     VisitElement(s);
         }

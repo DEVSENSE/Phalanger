@@ -156,7 +156,7 @@ namespace PHP.Core.AST
 	/// Represents a function declaration.
 	/// </summary>
     [Serializable]
-    public sealed class FunctionDecl : Statement, IHasSourceUnit
+    public sealed class FunctionDecl : Statement, IHasSourceUnit, IDeclarationElement
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
@@ -197,8 +197,8 @@ namespace PHP.Core.AST
             set { this.SetCustomAttributes(value); }
         }
 
-        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Text.Span entireDeclarationPosition;
+        public Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
+        private Text.Span entireDeclarationSpan;
 
         public int HeadingEndPosition { get { return headingEndPosition; } }
         private int headingEndPosition;
@@ -224,7 +224,7 @@ namespace PHP.Core.AST
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
 			this.body = body.AsArray();
-			this.entireDeclarationPosition = entireDeclarationPosition;
+			this.entireDeclarationSpan = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;
             this.IsConditional = isConditional;

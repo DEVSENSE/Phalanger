@@ -414,7 +414,7 @@ namespace PHP.Core.Compiler.AST
                 if (!codeGenerator.EnterFunctionDeclaration(function)) return;
 
                 // emits the arg-full overload:
-                codeGenerator.EmitArgfullOverloadBody(function, node.Body, node.EntireDeclarationPosition, node.DeclarationBodyPosition);
+                codeGenerator.EmitArgfullOverloadBody(function, node.Body, node.EntireDeclarationSpan, node.DeclarationBodyPosition);
 
                 // restores original code generator settings:
                 codeGenerator.LeaveFunctionDeclaration();

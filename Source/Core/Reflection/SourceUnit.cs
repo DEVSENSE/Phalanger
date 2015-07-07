@@ -282,7 +282,7 @@ namespace PHP.Core.Reflection
 
 	#region SourceFileUnit
 
-	public sealed class SourceFileUnit : CompilationSourceUnit, Scanner.IScannerHandler
+	public sealed class SourceFileUnit : CompilationSourceUnit, IScannerHandler
 	{
 		public FileStream Stream { get { return stream; } }
 		private FileStream stream;
@@ -359,7 +359,7 @@ namespace PHP.Core.Reflection
 
         #region IScannerHandler Members
 
-        void Scanner.IScannerHandler.OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength)
+        void IScannerHandler.OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength)
         {
             // update internal ILineBreaks
             Debug.Assert(innerLineBreaks is ExpandableLineBreaks);

@@ -576,7 +576,7 @@ namespace PHP.Core.Compiler.AST
 
                     // TODO: instead of embedding class source code,
                     // embedd serialized AST, so avoid parsing again in runtime
-                    this.typeDefinitionCode = analyzer.SourceUnit.GetSourceCode(node.EntireDeclarationPosition);
+                    this.typeDefinitionCode = analyzer.SourceUnit.GetSourceCode(node.EntireDeclarationSpan);
                     
                     // we emit eval
                     return node;
@@ -1148,7 +1148,7 @@ namespace PHP.Core.Compiler.AST
                     codeGenerator.EnterMethodDeclaration(method);
 
                     // emits the arg-full overload:
-                    codeGenerator.EmitArgfullOverloadBody(method, node.Body, node.EntireDeclarationPosition, node.DeclarationBodyPosition);
+                    codeGenerator.EmitArgfullOverloadBody(method, node.Body, node.EntireDeclarationSpan, node.DeclarationBodyPosition);
 
                     // restores original code generator settings:
                     codeGenerator.LeaveMethodDeclaration();

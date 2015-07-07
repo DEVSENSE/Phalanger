@@ -171,7 +171,7 @@ namespace PHP.Core.AST
     #region GlobalConstDeclList, GlobalConstantDecl
 
     [Serializable]
-    public sealed class GlobalConstDeclList : Statement
+    public sealed class GlobalConstDeclList : Statement, IDeclarationElement
     {
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -184,7 +184,12 @@ namespace PHP.Core.AST
 
         public List<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly List<GlobalConstantDecl>/*!*/ constants;
-        
+
+        public Text.Span EntireDeclarationSpan
+        {
+            get { return this.Span; }
+        }
+
         public GlobalConstDeclList(Text.Span span, List<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span)
         {

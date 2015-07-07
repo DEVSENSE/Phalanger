@@ -106,7 +106,7 @@ namespace PHP.Core.AST
 	/// Represents a class or an interface declaration.
 	/// </summary>
     [Serializable]
-    public sealed class TypeDecl : Statement, IHasSourceUnit
+    public sealed class TypeDecl : Statement, IHasSourceUnit, IDeclarationElement
 	{
 		#region Properties
 
@@ -172,8 +172,8 @@ namespace PHP.Core.AST
 		/// Position spanning over the entire declaration including the attributes.
 		/// Used for transformation to an eval and for VS integration.
 		/// </summary>
-        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Text.Span entireDeclarationPosition;
+        public Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
+        private Text.Span entireDeclarationSpan;
 
         public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
         private int declarationBodyPosition;
@@ -203,7 +203,7 @@ namespace PHP.Core.AST
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Text.Span> baseClassName,
-            List<Tuple<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<LangElement>/*!*/ elements,
+            List<Tuple<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
 			List<CustomAttribute> attributes)
             : base(span)
 		{
@@ -233,60 +233,16 @@ namespace PHP.Core.AST
                 this.ImplementsList = implementsList.Select(x => x.Item1).ToArray();
                 this.ImplementsListPosition = implementsList.Select(x => x.Item2).ToArray();
             }
-            this.members = ProcessMemberElements(elements);
+            this.members = elements;
+            this.members.TrimExcess();
+
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
-			this.entireDeclarationPosition = entireDeclarationPosition;
+			this.entireDeclarationSpan = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
 			this.declarationBodyPosition = declarationBodyPosition;
             this.partialKeyword = isPartial;
 		}
-
-        /// <summary>
-        /// Processes top elements within type declaration;
-        /// - associates PHPDoc blocks with the following TypeMemberDecl.
-        /// - trims the list.
-        /// </summary>
-        /// <param name="elements">All elements within the type declaration.</param>
-        /// <returns>List of type member declarations.</returns>
-        private static List<TypeMemberDecl>/*!*/ProcessMemberElements(List<LangElement>/*!*/elements)
-        {
-            Debug.Assert(elements != null);
-
-            int membersCount = 0;
-            PHPDocBlock lastPHPDoc = null;
-
-            // associate PHPDoc with following member element
-            for (int i = 0; i < elements.Count; i++)
-            {
-                var member = elements[i] as TypeMemberDecl;
-                if (member != null)
-                {
-                    membersCount++;
-                    if (lastPHPDoc != null)
-                    {
-                        member.SetPHPDoc(lastPHPDoc);
-                        lastPHPDoc = null;
-                    }
-                }
-                else
-                {
-                    lastPHPDoc = elements[i] as PHPDocBlock;
-                }
-            }
-
-            // trims/filters the list
-            var list = new List<TypeMemberDecl>(membersCount);
-            for (int i = 0; i < elements.Count; i++)
-            {
-                var member = elements[i] as TypeMemberDecl;
-                if (member != null)
-                    list.Add(member);
-            }
-
-            //
-            return list;
-        }
 
         #endregion
 
@@ -317,10 +273,15 @@ namespace PHP.Core.AST
 	/// Represents a member declaration.
 	/// </summary>
     [Serializable]
-	public abstract class TypeMemberDecl : LangElement
+    public abstract class TypeMemberDecl : LangElement, IDeclarationElement
 	{
         public PhpMemberAttributes Modifiers { get { return modifiers; } }
 		protected PhpMemberAttributes modifiers;
+
+        /// <summary>
+        /// Gets extent of the entire declaration.
+        /// </summary>
+        public abstract Text.Span EntireDeclarationSpan { get; }
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -367,8 +328,8 @@ namespace PHP.Core.AST
         public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
 		private ActualParam[] baseCtorParams;
 
-        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Text.Span entireDeclarationPosition;
+        public override Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
+        private Text.Span entireDeclarationSpan;
 
         public int HeadingEndPosition { get { return headingEndPosition; } }
         private int headingEndPosition;
@@ -392,7 +353,7 @@ namespace PHP.Core.AST
             this.typeSignature = new TypeSignature(genericParams);
             this.body = (body != null) ? body.AsArray() : null;
             this.baseCtorParams = (baseCtorParams != null) ? baseCtorParams.AsArray() : null;
-            this.entireDeclarationPosition = entireDeclarationPosition;
+            this.entireDeclarationSpan = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;
         }
@@ -436,6 +397,7 @@ namespace PHP.Core.AST
         /// <summary>List of fields in this list</summary>
         public List<FieldDecl> Fields/*!*/ { get { return fields; } }
 
+        public override Text.Span EntireDeclarationSpan { get { return this.Span; } }
 
 		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, List<FieldDecl>/*!*/ fields,
 			List<CustomAttribute> attributes)
@@ -526,6 +488,8 @@ namespace PHP.Core.AST
 		/// <summary>List of constants in this list</summary>
         public List<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly List<ClassConstantDecl>/*!*/ constants;
+
+        public override Text.Span EntireDeclarationSpan { get { return this.Span; } }
         
 		public ConstDeclList(Text.Span span, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, attributes)
@@ -681,6 +645,8 @@ namespace PHP.Core.AST
         /// </summary>
         public int HeadingEndPosition { get { return headingEndPosition; } }
         private readonly int headingEndPosition;
+
+        public override Text.Span EntireDeclarationSpan { get { return this.Span; } }
 
         public TraitsUse(Text.Span span, int headingEndPosition, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
             : base(span, null)

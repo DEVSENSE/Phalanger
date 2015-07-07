@@ -96,7 +96,7 @@ namespace PHP.Core.Compiler.AST
                 if (!codeGenerator.EnterFunctionDeclaration(function))
                     throw new Exception("EnterFunctionDeclaration() failed!");
 
-                codeGenerator.EmitArgfullOverloadBody(function, node.Body, node.EntireDeclarationPosition, node.DeclarationBodyPosition);
+                codeGenerator.EmitArgfullOverloadBody(function, node.Body, node.EntireDeclarationSpan, node.DeclarationBodyPosition);
 
                 codeGenerator.LeaveFunctionDeclaration();
 

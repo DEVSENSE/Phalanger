@@ -148,7 +148,7 @@ namespace PHP.Core.AST
 
         internal override bool SkipInPureGlobalCode() { return true; }
 
-        public PHPDocStmt(Text.Span p, PHPDocBlock/*!*/phpdoc) : base(p)
+        public PHPDocStmt(PHPDocBlock/*!*/phpdoc) : base(phpdoc.Span)
         {
             Debug.Assert(phpdoc != null);
             _phpdoc = phpdoc;

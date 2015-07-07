@@ -174,7 +174,19 @@ namespace PHP.Core.AST
 
     #endregion
 
-#region IHasSourceUnit
+    #region IDeclarationElement
+
+    public interface IDeclarationElement
+    {
+        /// <summary>
+        /// Gets extent of entire declaration including header, modifiers, attributes and eventually function body.
+        /// </summary>
+        Text.Span EntireDeclarationSpan { get; }
+    }
+
+    #endregion
+
+    #region IHasSourceUnit
 
     /// <summary>
     /// Annotates AST nodes having reference to containing source unit.
@@ -187,5 +199,5 @@ namespace PHP.Core.AST
         SourceUnit SourceUnit { get; }
     }
 
-#endregion
+    #endregion
 }
