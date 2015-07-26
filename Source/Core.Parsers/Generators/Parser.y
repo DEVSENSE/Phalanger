@@ -1218,7 +1218,7 @@ else_opt:
 
 else_colon_opt:
 		/* empty */									        { $$ = null; }
-	|	T_ELSE ':' inner_statement_list_opt { $$ = new BlockStmt(@3, StmtList(@2, $2)); }
+	|	T_ELSE ':' inner_statement_list_opt { $$ = new BlockStmt(@3, StmtList(@3, $3)); }
 ;
 
 

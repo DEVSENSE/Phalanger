@@ -2481,7 +2481,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 { yyval.Object = null; }
         return;
       case 188: // else_colon_opt -> T_ELSE ':' inner_statement_list_opt 
-{ yyval.Object = new BlockStmt(value_stack.array[value_stack.top-1].yypos, StmtList(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval)); }
+{ yyval.Object = new BlockStmt(value_stack.array[value_stack.top-1].yypos, StmtList(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 189: // formal_parameter_list_opt -> formal_parameter_list 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
