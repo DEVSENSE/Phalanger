@@ -415,7 +415,8 @@ namespace PHP.Core.Parsers
 					case Tokens.T_RGENERIC:                     // :>
 					case Tokens.T_SEMI:                         // ;
 					case Tokens.T_COMMA:                        // ,
-						tokenCategory = TokenCategory.Delimiter;
+                    case Tokens.T_NS_SEPARATOR:                 // \
+                        tokenCategory = TokenCategory.Delimiter;
 						return token;
 
 					//case Tokens.T_NAMESPACE_NAME:               // namespace name
@@ -440,7 +441,6 @@ namespace PHP.Core.Parsers
 					case Tokens.T_CONSTANT_ENCAPSED_STRING:     // quoted string not containing '$' 
 					case Tokens.T_BAD_CHARACTER:                // incorrectly slashed character in string
 					case Tokens.T_NUM_STRING:                   // number in string
-                    case Tokens.T_NS_SEPARATOR:
                         tokenCategory = TokenCategory.String;
 						return token;
 
