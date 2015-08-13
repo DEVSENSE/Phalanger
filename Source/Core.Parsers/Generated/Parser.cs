@@ -2354,12 +2354,12 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
       case 151: // catches -> catches T_CATCH '(' qualified_static_type_ref T_VARIABLE ')' '{' inner_statement_list_opt '}' 
 { 
 			yyval.Object = value_stack.array[value_stack.top-9].yyval.Object; 
-			ListAdd<CatchItem>(yyval.Object, new CatchItem(value_stack.array[value_stack.top-6].yypos, (GenericQualifiedName)value_stack.array[value_stack.top-6].yyval.Object, new DirectVarUse(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object), StmtList(Combine(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.Object))); 
+			ListAdd<CatchItem>(yyval.Object, new CatchItem(Combine(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-1].yypos), DirectTypeRef.FromGenericQualifiedName(value_stack.array[value_stack.top-6].yypos, (GenericQualifiedName)value_stack.array[value_stack.top-6].yyval.Object), new DirectVarUse(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object), StmtList(Combine(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.Object))); 
 		}
         return;
       case 152: // catches -> T_CATCH '(' qualified_static_type_ref T_VARIABLE ')' '{' inner_statement_list_opt '}' 
 {
-			yyval.Object = NewList<CatchItem>(new CatchItem(value_stack.array[value_stack.top-6].yypos, (GenericQualifiedName)value_stack.array[value_stack.top-6].yyval.Object, new DirectVarUse(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object), StmtList(Combine(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.Object)));
+			yyval.Object = NewList<CatchItem>(new CatchItem(yypos, DirectTypeRef.FromGenericQualifiedName(value_stack.array[value_stack.top-6].yypos, (GenericQualifiedName)value_stack.array[value_stack.top-6].yyval.Object), new DirectVarUse(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object), StmtList(Combine(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.Object)));
 		}
         return;
       case 153: // finally_opt -> 

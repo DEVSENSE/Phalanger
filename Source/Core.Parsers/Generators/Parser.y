@@ -1091,11 +1091,11 @@ catches:
 		catches T_CATCH '(' qualified_static_type_ref T_VARIABLE ')'  '{' inner_statement_list_opt '}' 
 		{ 
 			$$ = $1; 
-			ListAdd<CatchItem>($$, new CatchItem(@4, (GenericQualifiedName)$4, new DirectVarUse(@5, (string)$5), StmtList(Combine(@7, @9), $8))); 
+			ListAdd<CatchItem>($$, new CatchItem(Combine(@2, @9), DirectTypeRef.FromGenericQualifiedName(@4, (GenericQualifiedName)$4), new DirectVarUse(@5, (string)$5), StmtList(Combine(@7, @9), $8))); 
 		}		
 	|	T_CATCH '(' qualified_static_type_ref T_VARIABLE ')'  '{' inner_statement_list_opt '}'
 		{
-			$$ = NewList<CatchItem>(new CatchItem(@3, (GenericQualifiedName)$3, new DirectVarUse(@4, (string)$4), StmtList(Combine(@6, @8), $7)));
+			$$ = NewList<CatchItem>(new CatchItem(@$, DirectTypeRef.FromGenericQualifiedName(@3, (GenericQualifiedName)$3), new DirectVarUse(@4, (string)$4), StmtList(Combine(@6, @8), $7)));
 		} 
 ;
 

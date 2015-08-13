@@ -2653,8 +2653,7 @@ namespace PHP.Core.CodeDom
                 if (statement.Catches != null)
                     foreach (CatchItem Catch in statement.Catches)
                     {
-                        Try.CatchClauses.Add(new CodeCatchClause(TranslateDirectVarUse(Catch.Variable, Method), TranslateGenericQualifiedName(Catch.ClassName, true)));
-                        CatchStatementContext @catch = new CatchStatementContext(Method, Block as BlockStatementContext, Try, Try.CatchClauses.Count - 1, this);
+                        Try.CatchClauses.Add(new CodeCatchClause(TranslateDirectVarUse(Catch.Variable, Method), TranslateTypeRef(Catch.TypeRef, TryContext)));                        CatchStatementContext @catch = new CatchStatementContext(Method, Block as BlockStatementContext, Try, Try.CatchClauses.Count - 1, this);
                         TranslateBlock(Catch.Statements, Method, @catch);
                     }
             }

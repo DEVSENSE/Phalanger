@@ -161,7 +161,7 @@ namespace PHP.Core.AST
 			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(GenericParams, errors, sourceUnit));
 		}
 
-		public DirectTypeRef(Text.Span span, QualifiedName className, List<TypeRef>/*!*/ genericParams)
+        public DirectTypeRef(Text.Span span, QualifiedName className, List<TypeRef>/*!*/ genericParams)
 			: base(span, genericParams)
 		{
 			this.className = className;

@@ -93,17 +93,27 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// An index of type identifier.
 		/// </summary>
-		private GenericQualifiedName className;
+		private DirectTypeRef tref;
         /// <summary>An index of type identifier.</summary>
-        public GenericQualifiedName ClassName { get { return className; } }
+        public QualifiedName ClassName { get { return tref.QualifiedName; } }
 
-        public CatchItem(Text.Span p, GenericQualifiedName className, DirectVarUse/*!*/ variable,
+        /// <summary>
+        /// Position of <see cref="TypeRef"/>.
+        /// </summary>
+        public Text.Span ClassNameSpan { get { return tref.Span; } }
+
+        /// <summary>
+        /// Catch type reference.
+        /// </summary>
+        public DirectTypeRef TypeRef { get { return tref; } }
+
+        public CatchItem(Text.Span p, DirectTypeRef tref, DirectVarUse/*!*/ variable,
 			IList<Statement>/*!*/ statements)
 			: base(p)
 		{
 			Debug.Assert(variable != null && statements != null);
 
-			this.className = className;
+			this.tref = tref;
 			this.variable = variable;
 			this.statements = statements.AsArray();
 		}

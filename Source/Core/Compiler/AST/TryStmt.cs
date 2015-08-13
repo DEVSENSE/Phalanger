@@ -200,7 +200,9 @@ namespace PHP.Core.Compiler.AST
                 ExInfoFromParent info = new ExInfoFromParent(node);
                 info.Access = AccessType.Write;
 
-                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Span, false);
+                TypeRefHelper.Analyze(node.TypeRef, analyzer);
+                resolvedType = TypeRefHelper.ResolvedTypeOrUnknown(node.TypeRef);
+                //resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Span, false);
 
                 node.Variable.Analyze(analyzer, info);
 

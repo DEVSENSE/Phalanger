@@ -822,8 +822,8 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitCatchItem(CatchItem x)
         {
+            VisitElement(x.TypeRef);
             VisitElement(x.Variable);
-
             VisitStatements(x.Statements);
         }
 
