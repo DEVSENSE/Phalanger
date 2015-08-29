@@ -82,41 +82,24 @@ namespace PHP.Library.Data
 			FloatN = 109
 		}
 
-		#endregion
+        #endregion
 
-		#region Thread Static Variables
+        #region SqlConnectionManager
 
-		private static SqlConnectionManager manager
-		{
-			get
-			{
-				if (_manager == null) _manager = new SqlConnectionManager();
-				return _manager;
-			}
-		}
-		[ThreadStatic]
-		private static SqlConnectionManager _manager;
+        private static SqlConnectionManager GetManager(ScriptContext ctx)
+        {
+            return ctx.Properties.GetOrCreateProperty(() => new SqlConnectionManager());
+        }
 
-		[ThreadStatic]
-		private static string failConnectErrorMessage = "";
-
-		/// <summary>
-		/// Clears thread static fields at the end of each request.
-		/// </summary>
-		private static void Clear()
-		{
-			_manager = null;
-			failConnectErrorMessage = "";
-		}
-
-		static MsSql()
-		{
-			RequestContext.RequestEnd += new Action(Clear);
-		}
+        private static SqlConnectionManager GetManager()
+        {
+            return GetManager(ScriptContext.CurrentContext);
+        }
 
 		private static void UpdateConnectErrorInfo(PhpSqlDbConnection connection)
 		{
-			failConnectErrorMessage = connection.GetLastErrorMessage();
+            GetManager(connection.ScriptContext)
+                .FailConnectErrorMessage = connection.GetLastErrorMessage();
 		}
 
 		#endregion
@@ -130,9 +113,11 @@ namespace PHP.Library.Data
 		[ImplementsFunction("mssql_close")]
 		public static bool Close()
 		{
-			PhpDbConnection last_connection = manager.GetLastConnection();
+            var manager = GetManager();
 
-			if (last_connection == null) return false;
+            var last_connection = manager.GetLastConnection();
+			if (last_connection == null)
+                return false;
 
 			manager.RemoveConnection(last_connection);
 
@@ -149,10 +134,10 @@ namespace PHP.Library.Data
 		[ImplementsFunction("mssql_close")]
 		public static bool Close(PhpResource linkIdentifier)
 		{
-			PhpSqlDbConnection connection = PhpSqlDbConnection.ValidConnection(linkIdentifier);
+			var connection = PhpSqlDbConnection.ValidConnection(linkIdentifier);
 			if (connection == null) return false;
 
-			manager.RemoveConnection(connection);
+            GetManager().RemoveConnection(connection);
 
 			connection.Close();
 			return true;
@@ -369,7 +354,7 @@ namespace PHP.Library.Data
 			string connection_string = PhpSqlDbConnection.BuildConnectionString(server, user, password, opts.ToString());
 
 			bool success;
-			PhpSqlDbConnection connection = (PhpSqlDbConnection)manager.OpenConnection(connection_string,
+			PhpSqlDbConnection connection = (PhpSqlDbConnection)GetManager().OpenConnection(connection_string,
 			  newLink, global.MaxConnections, out success);
 
 			if (!success)
@@ -416,7 +401,7 @@ namespace PHP.Library.Data
 		[ImplementsFunction("mssql_select_db")]
 		public static bool SelectDb(string databaseName)
 		{
-			PhpDbConnection last_connection = manager.GetLastConnection();
+			PhpDbConnection last_connection = GetManager().GetLastConnection();
 			if (last_connection == null)
 			{
 				last_connection = (PhpDbConnection)Connect();
@@ -454,7 +439,7 @@ namespace PHP.Library.Data
 		[return: CastToFalse]
 		public static PhpResource Query(string query)
 		{
-			PhpDbConnection last_connection = manager.GetLastConnection();
+			PhpDbConnection last_connection = GetManager().GetLastConnection();
 
 			if (last_connection == null)
 				last_connection = (PhpDbConnection)Connect();
@@ -594,7 +579,7 @@ namespace PHP.Library.Data
 		[ImplementsFunction("mssql_rows_affected")]
 		public static int GetLastAffectedRows()
 		{
-			PhpDbConnection last_connection = manager.GetLastConnection();
+			PhpDbConnection last_connection = GetManager().GetLastConnection();
 
 			if (last_connection == null)
 				last_connection = (PhpDbConnection)Connect();
@@ -659,10 +644,11 @@ namespace PHP.Library.Data
 		[ImplementsFunction("mssql_get_last_message")]
 		public static string GetLastMessage()
 		{
-			PhpSqlDbConnection last_connection = (PhpSqlDbConnection)manager.GetLastConnection();
+            var manager = GetManager();
+            var last_connection = (PhpSqlDbConnection)manager.GetLastConnection();
 
 			if (last_connection == null)
-				return failConnectErrorMessage;
+				return manager.FailConnectErrorMessage;
 
 			return last_connection.GetLastErrorMessage();
 		}
@@ -953,7 +939,7 @@ namespace PHP.Library.Data
 		[return: CastToFalse]
 		public static PhpResource CreateProcedure(string procedureName)
 		{
-			PhpDbConnection last_connection = manager.GetLastConnection();
+			PhpDbConnection last_connection = GetManager().GetLastConnection();
 
 			if (last_connection == null)
 				last_connection = (PhpDbConnection)Connect();

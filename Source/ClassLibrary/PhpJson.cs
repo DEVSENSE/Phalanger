@@ -74,19 +74,6 @@ namespace PHP.Library
     [ImplementsExtension(LibraryDescriptor.ExtJson)]
 	public static class PhpJson
     {
-        #region static ctor
-
-        static PhpJson()
-        {
-            // clear the last error variable every request
-            RequestContext.RequestBegin += () =>
-                {
-                    PhpJson.LastError = JsonLastError.JSON_ERROR_NONE;
-                };
-        }
-
-        #endregion
-
         #region Constants
 
         /// <summary>
@@ -269,11 +256,13 @@ namespace PHP.Library
         [ImplementsFunction("json_last_error")]
         public static int GetLastError()
         {
-            return (int)LastError;
-        }
+            JsonLastError err;
+            var ctx = ScriptContext.CurrentContext;
+            if (ctx.Properties.TryGetProperty<JsonLastError>(out err) == false)
+                err = JsonLastError.JSON_ERROR_NONE;
 
-        [ThreadStatic]
-        internal static JsonLastError LastError = JsonLastError.JSON_ERROR_NONE;
+            return (int)err;
+        }
 
 #endif
 		#endregion
@@ -834,6 +823,8 @@ namespace PHP.Library
             /// <returns>The top object of the deserialized graph. Null in case of error.</returns>
             internal object Deserialize()
             {
+                context.Properties.RemoveProperty<PhpJson.JsonLastError>();
+
                 var scanner = new JsonScanner(reader, decodeOptions);
                 var parser = new Json.Parser(context, decodeOptions) { Scanner = scanner };
 
@@ -844,11 +835,11 @@ namespace PHP.Library
                 }
                 catch (Exception)
                 {
-                    PhpJson.LastError = PhpJson.JsonLastError.JSON_ERROR_SYNTAX;
+                    context.Properties.SetProperty<PhpJson.JsonLastError>(PhpJson.JsonLastError.JSON_ERROR_SYNTAX);
                     return null;
                 }
 
-                PhpJson.LastError = PhpJson.JsonLastError.JSON_ERROR_NONE;
+                //
                 return parser.Result;
             }
         }

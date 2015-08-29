@@ -22,7 +22,12 @@ namespace PHP.Library.Data
 {
 	internal sealed class SqlConnectionManager : ConnectionManager
 	{
-		protected override PhpDbConnection CreateConnection(string/*!*/ connectionString)
+        /// <summary>
+        /// Last failed connect attempt error message.
+        /// </summary>
+        public string FailConnectErrorMessage = "";
+
+        protected override PhpDbConnection CreateConnection(string/*!*/ connectionString)
 		{
 			return new PhpSqlDbConnection(connectionString, ScriptContext.CurrentContext);
 		}
@@ -33,9 +38,13 @@ namespace PHP.Library.Data
 	/// </summary>
 	public sealed class PhpSqlDbConnection : PhpDbConnection
 	{
-		internal SqlConnection Connection { get { return (SqlConnection)this.connection; } }
+		internal SqlConnection SqlConnection { get { return (SqlConnection)this.connection; } }
 
-		private readonly ScriptContext/*!*/ context;
+        /// <summary>
+        /// Gets reference to script context. Cannot be <c>null</c>.
+        /// </summary>
+        public ScriptContext/*!*/ScriptContext { get { return this.context; } }
+        private readonly ScriptContext/*!*/ context;
 
 		/// <summary>
 		/// Creates a new connection resource.

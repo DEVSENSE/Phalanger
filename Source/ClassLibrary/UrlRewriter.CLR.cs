@@ -49,12 +49,6 @@ namespace PHP.Library
 
 		private PhpCallback filterCallback;
 
-		private static UrlRewriter/*!*/ GetOrCreate()
-		{
-			if (current == null) current = new UrlRewriter();
-			return current;
-		}
-
 		private PhpCallback/*!*/ GetOrCreateFilterCallback(ScriptContext/*!*/ context)
 		{
 			if (filterCallback == null)
@@ -156,33 +150,6 @@ namespace PHP.Library
 
 		#endregion
 
-		#region Current
-
-		/// <summary>
-		/// A context associated with the current thread.
-		/// </summary>
-		public static UrlRewriter Current { get { return current; } }
-		[ThreadStatic]
-		private static UrlRewriter current;
-
-		/// <summary>
-		/// Clears thread static field. Called on request end.
-		/// </summary>
-		public static void Clear()
-		{
-			current = null;
-		}
-
-		/// <summary>
-		/// Registers <see cref="Clear"/> called on request end.
-		/// </summary>
-		static UrlRewriter()
-		{
-            RequestContext.RequestEnd += new Action(Clear);
-		}
-
-		#endregion
-
 		#region output_add_rewrite_var, output_reset_rewrite_vars
 
 		[ImplementsFunction("output_add_rewrite_var")]
@@ -195,7 +162,7 @@ namespace PHP.Library
 			}
 
 			ScriptContext context = ScriptContext.CurrentContext;
-            UrlRewriter rewriter = UrlRewriter.GetOrCreate();
+            UrlRewriter rewriter = context.Properties.GetOrCreateProperty(() => new UrlRewriter());
             BufferedOutput output = context.BufferedOutput;
 
             // some output flush
@@ -225,15 +192,14 @@ namespace PHP.Library
 
             
             ScriptContext context = ScriptContext.CurrentContext;
-            UrlRewriter rewriter = UrlRewriter.Current;
+            UrlRewriter rewriter;
+
+            if (context.Properties.TryGetProperty<UrlRewriter>(out rewriter) == false)
+                return false;
+
             BufferedOutput output = context.BufferedOutput;
-	  
-            if (rewriter == null ||
-                output.Level == 0 ||
-                output.GetFilter() != rewriter.filterCallback)
-              {
-                  return false;
-              }
+            if (output.Level == 0 || output.GetFilter() != rewriter.filterCallback)
+                return false;
             
             // some output flush
             output.Flush();

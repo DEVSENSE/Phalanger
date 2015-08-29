@@ -4300,34 +4300,19 @@ namespace PHP.Library
             /// <summary>
             /// A context associated with the current thread.
             /// </summary>
-            public static TokenizerContext CurrentContext
+            public static TokenizerContext/*!*/CurrentContext
             {
                 get
                 {
-                    if (currentContext == null) currentContext = new TokenizerContext();
-                    return currentContext;
+                    var ctx = ScriptContext.CurrentContext;
+
+                    TokenizerContext tctx;
+                    if (ctx.Properties.TryGetProperty<TokenizerContext>(out tctx) == false)
+                        ctx.Properties.SetProperty<TokenizerContext>(tctx = new TokenizerContext());
+                    
+                    //
+                    return tctx;
                 }
-            }
-
-#if !SILVERLIGHT
-            [ThreadStatic]
-#endif
-            private static TokenizerContext currentContext;
-
-            /// <summary>
-            /// Clears thread static field. Called on request end.
-            /// </summary>
-            public static void Clear()
-            {
-                currentContext = null;
-            }
-
-            /// <summary>
-            /// Registeres <see cref="Clear"/> called on request end.
-            /// </summary>
-            static TokenizerContext()
-            {
-                RequestContext.RequestEnd += new Action(Clear);
             }
         }
 

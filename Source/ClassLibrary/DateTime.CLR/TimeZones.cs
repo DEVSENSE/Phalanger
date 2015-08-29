@@ -292,12 +292,10 @@ namespace PHP.Library
         }
 
         /// <summary>
-        /// Registers <see cref="Clear"/> called on request end.
+        /// Initializes list of time zones.
         /// </summary>
         static PhpTimeZone()
         {
-            RequestContext.RequestEnd += new Action(Clear);
-
             // initialize tz database (from system time zone database)
             timezones = InitializeTimeZones();
         }
@@ -435,12 +433,21 @@ namespace PHP.Library
         {
             get
             {
-                // timezone is set by date_default_timezone_set(), return this one
-                if (_default != null)
-                    return _default;
+                TimeZoneInfo info;
 
-                // default timezone was not set, use & cache the current timezone
-                return (_current ?? (_current = new CurrentTimeZoneCache())).TimeZone;
+                var ctx = ScriptContext.CurrentContext;
+
+                // timezone is set by date_default_timezone_set(), return this one
+                if (ctx.Properties.TryGetProperty<TimeZoneInfo>(out info) == false || info == null)
+                {
+                    // default timezone was not set, use & cache the current timezone
+                    info = ctx.Properties
+                        .GetOrCreateProperty(() => new CurrentTimeZoneCache())
+                        .TimeZone;
+                }
+
+                //
+                return info;
             }
 #if DEBUG   // for unit tests only
             internal set
@@ -449,22 +456,6 @@ namespace PHP.Library
             }
 #endif
         }
-
-        /// <summary>
-        /// Time zone set as current. <B>null</B> initially.
-        /// </summary>
-#if !SILVERLIGHT
-        [ThreadStatic]
-#endif
-        private static TimeZoneInfo _default;
-
-        /// <summary>
-        /// Time zone set as current. <B>null</B> initially.
-        /// </summary>
-#if !SILVERLIGHT
-        [ThreadStatic]
-#endif
-        private static CurrentTimeZoneCache _current;
 
         #region CurrentTimeZoneCache
 
@@ -556,15 +547,6 @@ namespace PHP.Library
         }
 
         #endregion
-
-        /// <summary>
-        /// Clears thread static field. Called on request end.
-        /// </summary>
-        private static void Clear()
-        {
-            _current = null;
-            _default = null;
-        }
 
 #if !SILVERLIGHT
         /// <summary>
@@ -659,7 +641,8 @@ namespace PHP.Library
                 PhpException.Throw(PhpError.Notice, LibResources.GetString("unknown_timezone", zoneName));
                 return false;
             }
-            _default = zone;
+
+            ScriptContext.CurrentContext.Properties.SetProperty<TimeZoneInfo>(zone);
             return true;
         }
 
