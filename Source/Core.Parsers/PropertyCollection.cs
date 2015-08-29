@@ -294,6 +294,20 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Gets value from collection. If value is not set yet, it is created using provided factory.
+        /// </summary>
+        public T GetOrCreateProperty<T>(Func<T>/*!*/factory)
+        {
+            T value;
+            if (this.TryGetProperty<T>(out value) == false)
+            {
+                this.SetProperty<T>(value = factory());
+            }
+
+            return value;
+        }
+
+        /// <summary>
         /// Removes property from the container.
         /// </summary>
         /// <param name="key">Key.</param>
