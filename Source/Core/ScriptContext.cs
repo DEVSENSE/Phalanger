@@ -378,8 +378,8 @@ namespace PHP.Core
         /// <summary>
         /// Gets collection of script context properties used to store custom objects. Cannot be <c>null</c>.
         /// </summary>
-        public PropertyCollection/*!*/Properties { get { return this.properties; } }
-        private readonly PropertyCollection/*!*/properties = new PropertyCollection();
+        public PropertyCollectionClass/*!*/Properties { get { return this.properties; } }
+        private readonly PropertyCollectionClass/*!*/properties = new PropertyCollectionClass();
 
         /// <summary>
         /// The stack for performing indirect calls and calls to argument-aware functions.
