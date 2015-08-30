@@ -294,20 +294,6 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Gets value from collection. If value is not set yet, it is created using provided factory.
-        /// </summary>
-        public T GetOrCreateProperty<T>(Func<T>/*!*/factory)
-        {
-            T value;
-            if (this.TryGetProperty<T>(out value) == false)
-            {
-                this.SetProperty<T>(value = factory());
-            }
-
-            return value;
-        }
-
-        /// <summary>
         /// Removes property from the container.
         /// </summary>
         /// <param name="key">Key.</param>
@@ -467,5 +453,90 @@ namespace PHP.Core
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Helper reference object implementing <see cref="IPropertyCollection"/>
+    /// </summary>
+    [Serializable]
+    [DebuggerDisplay("Count = {_properties.Count}")]
+    public class PropertyCollectionClass : IPropertyCollection
+    {
+        /// <summary>
+        /// Internbal collection (struct).
+        /// </summary>
+        private PropertyCollection _properties = new PropertyCollection();
+
+        public object this[object key]
+        {
+            get
+            {
+                return _properties.GetProperty(key);
+            }
+
+            set
+            {
+                _properties.SetProperty(key, value);
+            }
+        }
+
+        public void ClearProperties()
+        {
+            _properties.ClearProperties();
+        }
+
+        public object GetProperty(object key)
+        {
+            return _properties.GetProperty(key);
+        }
+
+        public T GetProperty<T>()
+        {
+            return _properties.GetProperty<T>();
+        }
+
+        public bool RemoveProperty(object key)
+        {
+            return _properties.RemoveProperty(key);
+        }
+
+        public bool RemoveProperty<T>()
+        {
+            return _properties.RemoveProperty<T>();
+        }
+
+        public void SetProperty(object key, object value)
+        {
+            _properties.SetProperty(key, value);
+        }
+
+        public void SetProperty<T>(T value)
+        {
+            _properties.SetProperty<T>(value);
+        }
+
+        public bool TryGetProperty(object key, out object value)
+        {
+            return _properties.TryGetProperty(key, out value);
+        }
+
+        public bool TryGetProperty<T>(out T value)
+        {
+            return _properties.TryGetProperty<T>(out value);
+        }
+
+        /// <summary>
+        /// Gets value from collection. If value is not set yet, it is created using provided factory.
+        /// </summary>
+        public T GetOrCreateProperty<T>(Func<T>/*!*/factory)
+        {
+            T value;
+            if (this.TryGetProperty<T>(out value) == false)
+            {
+                this.SetProperty<T>(value = factory());
+            }
+
+            return value;
+        }
     }
 }

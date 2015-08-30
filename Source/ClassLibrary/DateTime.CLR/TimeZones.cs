@@ -439,7 +439,7 @@ namespace PHP.Library
 
                 // timezone is set by date_default_timezone_set(), return this one
                 if (ctx.Properties.TryGetProperty<TimeZoneInfo>(out info) == false || info == null)
-                {
+                { 
                     // default timezone was not set, use & cache the current timezone
                     info = ctx.Properties
                         .GetOrCreateProperty(() => new CurrentTimeZoneCache())
@@ -452,7 +452,7 @@ namespace PHP.Library
 #if DEBUG   // for unit tests only
             internal set
             {
-                _current = new CurrentTimeZoneCache(value);
+                ScriptContext.CurrentContext.Properties.SetProperty(value);
             }
 #endif
         }

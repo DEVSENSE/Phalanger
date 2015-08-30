@@ -376,6 +376,12 @@ namespace PHP.Core
         private List<PhpReference> staticLocals;
 
         /// <summary>
+        /// Gets collection of script context properties used to store custom objects. Cannot be <c>null</c>.
+        /// </summary>
+        public PropertyCollectionClass/*!*/Properties { get { return this.properties; } }
+        private readonly PropertyCollectionClass/*!*/properties = new PropertyCollectionClass();
+
+        /// <summary>
         /// The stack for performing indirect calls and calls to argument-aware functions.
         /// </summary>
         public readonly PhpStack Stack;
