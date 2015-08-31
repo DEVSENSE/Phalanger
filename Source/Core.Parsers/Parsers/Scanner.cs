@@ -198,7 +198,7 @@ namespace PHP.Core.Parsers
                     case Tokens.T_COMMENT: this.commentsSink.OnComment(this, TokenTextSpan); break;
                     case Tokens.T_LINE_COMMENT: this.commentsSink.OnLineComment(this, TokenTextSpan); break;
                     case Tokens.T_OPEN_TAG: this.commentsSink.OnOpenTag(this, TokenTextSpan); break;
-                    case Tokens.T_DOC_COMMENT: this.commentsSink.OnPhpDocComment(this, new PHPDocBlock(base.GetTokenString(), TokenTextSpan)); break;
+                    case Tokens.T_DOC_COMMENT: this.commentsSink.OnPhpDocComment(this, new PHPDocBlock(base.GetTokenString(), this.tokenPosition)); break;
 
                     case Tokens.T_PRAGMA_FILE:
                         sourceUnit.AddSourceFileMapping(TokenTextSpan.FirstLine, base.GetTokenAsFilePragma());

@@ -1730,7 +1730,7 @@ namespace PHP.Core
         /// </summary>
         /// <param name="doccomment">PHPDoc token content.</param>
         /// <param name="span">Position of the comment in the source code.</param>
-        public PHPDocBlock(string doccomment, TextSpan span)
+        public PHPDocBlock(string doccomment, Span span)
             :base(span)
         {
             this._docCommentString = doccomment;

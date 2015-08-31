@@ -87,8 +87,7 @@ namespace PHP.Core.Parsers.Tests
 
         static PHPDocBlock NewPHPDoc(string phpdoc)
         {
-            var linebreaks = LineBreaks.Create(phpdoc);
-            return new PHPDocBlock(phpdoc, new TextSpan(linebreaks, 0, phpdoc.Length));
+            return new PHPDocBlock(phpdoc, new Span(0, phpdoc.Length));
         }
     }
 }
