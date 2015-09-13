@@ -1,4 +1,4 @@
-call "%VS120COMNTOOLS%\vsvars32.bat"
+call "%VS140COMNTOOLS%\vsvars32.bat"
 
 REM determining changeset number ...
 REM run this batch file from within root folder of your workspace

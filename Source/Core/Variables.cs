@@ -314,20 +314,16 @@ namespace PHP.Core
 		internal static readonly Type/*!*/ RTVariablesTableType = typeof(Dictionary<string, object>);
 		internal static readonly ConstructorInfo/*!*/ RTVariablesTableCtor = RTVariablesTableType.GetConstructor(Types.Int);
 		internal static readonly MethodInfo/*!*/ RTVariablesTableAdder = RTVariablesTableType.GetProperty("Item").GetSetMethod();//RTVariablesTableType.GetMethod("Add");
-        
-		#region IPhpPrintable
 
-		/// <summary>
-		/// Auxiliary variable holding the current level of indentation while printing a variable.
-		/// </summary>
-#if SILVERLIGHT
-        //TODO: Silverlight doesn't have ThreadStatic, it should be done in different way... now output is just a normal static field
-        internal static int PrintIndentationLevel = 0;
-		
-#else
-		[ThreadStatic]
-		internal static int PrintIndentationLevel = 0;
+        #region IPhpPrintable
+
+        /// <summary>
+        /// Auxiliary variable holding the current level of indentation while printing a variable.
+        /// </summary>
+#if !SILVERLIGHT            //TODO: Silverlight doesn't have ThreadStatic, it should be done in different way... now output is just a normal static field
+        [ThreadStatic]
 #endif
+		internal static int PrintIndentationLevel = 0;
 
 		/// <summary>
 		/// Writes indentation spaces to <see cref="TextWriter"/> according to <see cref="PrintIndentationLevel"/>.
@@ -335,11 +331,12 @@ namespace PHP.Core
 		/// <param name="output">The <see cref="TextWriter"/> where to write spaces.</param>
 		internal static void PrintIndentation(TextWriter output)
 		{
-			for (int i = 0; i < PrintIndentationLevel; i++)
-			{
-				output.Write(' ');
-				output.Write(' ');
-			}
+            var level = PrintIndentationLevel;
+            if (level > 0)
+            {
+                output.Write(' ');
+                output.Write(' ');
+            }
 		}
 
 		/// <summary>
@@ -474,9 +471,9 @@ namespace PHP.Core
 			Export(Console.Out, obj);
 		}
 
-		#endregion
+#endregion
 
-		#region IPhpCloneable Interface
+#region IPhpCloneable Interface
 
 		/// <summary>
 		/// Creates a deep copy of specified PHP variable.
@@ -532,9 +529,9 @@ namespace PHP.Core
 				yield return DeepCopy(item);
 		}
 
-		#endregion
+#endregion
 
-		#region IPhpVariable Interface: GetTypeName, IsEmpty, IsScalar
+#region IPhpVariable Interface: GetTypeName, IsEmpty, IsScalar
 
 		/// <summary>
 		/// Implements empty language construct.
@@ -589,9 +586,9 @@ namespace PHP.Core
 			return false;
 		}
 
-		#endregion
+#endregion
 
-		#region Types
+#region Types
 
 		/// <summary>
 		/// PHP name for <see cref="int"/>.
@@ -766,9 +763,9 @@ namespace PHP.Core
 			else return PhpTypeCode.Invalid;
 		}
 
-		#endregion
+#endregion
 
-		#region AsString, IsString, AsBytes, Dereference, MakeReference, AsArray, Unwrap
+#region AsString, IsString, AsBytes, Dereference, MakeReference, AsArray, Unwrap
 
 		/// <summary>
 		/// Casts or converts a specified variable representing a string in PHP into a string. 
@@ -945,9 +942,9 @@ namespace PHP.Core
 			return var;
 		}
 
-		#endregion
+#endregion
 
-		#region IsValidName
+#region IsValidName
 
 		/// <summary>
 		/// Checks whether a string is "valid" PHP variable identifier.
@@ -973,10 +970,10 @@ namespace PHP.Core
 			return true;
 		}
 
-		#endregion
+#endregion
 	}
 
-	#region PhpArgument
+#region PhpArgument
 
 	/// <summary>
 	/// Methods used for checking arguments of Class Library functions.
@@ -1019,5 +1016,5 @@ namespace PHP.Core
 		}
 	}
 
-	#endregion
+#endregion
 }
