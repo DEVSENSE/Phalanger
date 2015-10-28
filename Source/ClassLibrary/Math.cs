@@ -42,7 +42,7 @@ namespace PHP.Library
 			get
 			{
 				if (_generator == null)
-					_generator = new Random(unchecked((int)System.DateTime.Now.ToFileTime()));
+					_generator = new Random(unchecked((int)DateTime.UtcNow.ToFileTime()));
 				return _generator;
 			}
 		}
@@ -59,7 +59,7 @@ namespace PHP.Library
 			get
 			{
 				if (_mtGenerator == null)
-					_mtGenerator = new MersenneTwister(unchecked((uint)System.DateTime.Now.ToFileTime()));
+					_mtGenerator = new MersenneTwister(unchecked((uint)DateTime.UtcNow.ToFileTime()));
 				return _mtGenerator;
 			}
 		}
@@ -82,9 +82,7 @@ namespace PHP.Library
 		private static void ClearGenerators()
 		{
 			_generator = null;
-
-			if (_mtGenerator != null)
-				_mtGenerator.Seed(unchecked((uint)System.DateTime.Now.ToFileTime()));
+            _mtGenerator = null;
 		}
 
 		#endregion
@@ -190,6 +188,14 @@ namespace PHP.Library
 		#region rand, srand, getrandmax, uniqid, lcg_value
 
         /// <summary>
+        /// Gets <c>0</c> or <c>1</c> randomly.
+        /// </summary>
+        static int Random01()
+        {
+            return (int)Math.Round(Generator.NextDouble());
+        }
+
+        /// <summary>
         /// Seed the random number generator. No return value.
         /// </summary>
         [ImplementsFunction("srand")]
@@ -225,7 +231,7 @@ namespace PHP.Library
 		[ImplementsFunction("rand")]
 		public static int Random()
 		{
-			return Generator.Next();
+            return Generator.Next() + Random01();
 		}
 
         /// <summary>
@@ -237,7 +243,13 @@ namespace PHP.Library
 		[ImplementsFunction("rand")]
 		public static int Random(int min, int max)
 		{
-			return (min < max) ? Generator.Next(min, max) : Generator.Next(max, min);
+            if (min > max)
+                return Random(max, min);
+
+            if (min == max)
+                return min;
+
+            return Generator.Next(min, max) + Random01();
 		}
 
         /// <summary>
