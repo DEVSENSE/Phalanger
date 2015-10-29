@@ -249,7 +249,10 @@ namespace PHP.Library
             if (min == max)
                 return min;
 
-            return Generator.Next(min, max) + Random01();
+            if (max == int.MaxValue)
+                return Generator.Next(min, int.MaxValue) + Random01();
+            
+            return Generator.Next(min, max + 1);
 		}
 
         /// <summary>
