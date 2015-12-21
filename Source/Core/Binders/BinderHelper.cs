@@ -295,16 +295,16 @@ namespace PHP.Core.Binders
             return restrictions;
         }
 
+        private static object AssertNotPhpReferenceMethod(object obj)
+        {
+            Debug.Assert(!(obj is PhpReference));
+            return obj;
+        }
+
         public static Expression/*!*/ AssertNotPhpReference(Expression objEx)
         {
 #if DEBUG
-            Func<object,object> isNotPhpReference = (obj) =>
-            {
-               Debug.Assert( !(obj is PhpReference) );
-               return obj;
-            };
-
-            return Expression.Call(null, isNotPhpReference.Method, objEx);
+            return Expression.Call(null, new Func<object, object>(AssertNotPhpReferenceMethod).Method, objEx);
 #else
             return objEx;
 #endif
