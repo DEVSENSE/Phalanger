@@ -58,6 +58,21 @@ namespace PHP.Core.Binders
             return FallbackInvokeMember(target, args);
         }
 
+        static PhpReference notsetOperation(DObject self, string name, DTypeDesc caller, PhpReference refrnc)
+        {
+            bool getter_exists;
+            // the CT property has been unset -> try to invoke __get
+            PhpReference get_ref = self.InvokeGetterRef(name, caller, out getter_exists);
+            if (getter_exists) return get_ref ?? new PhpReference();
+
+            Debug.Assert(refrnc != null);
+
+            refrnc.IsAliased = true;
+            refrnc.IsSet = true;
+
+            return refrnc;
+        }
+
         private DynamicMetaObject/*!*/ FallbackInvokeMember(DynamicMetaObject target/*!*/, DynamicMetaObject/*!*/[]/*!*/ args)
         {
             // determine run time values and additional restrictions:
@@ -193,21 +208,7 @@ namespace PHP.Core.Binders
                                     ////    reference.IsAliased = true;
                                     ////    reference.IsSet = true;
                                     ////}
-                                    Func<DObject, string, DTypeDesc, PhpReference, PhpReference> notsetOperation = (self, name, caller, refrnc) =>
-                                        {
-                                            bool getter_exists;
-                                            // the CT property has been unset -> try to invoke __get
-                                            PhpReference get_ref = self.InvokeGetterRef(name, caller, out getter_exists);
-                                            if (getter_exists) return get_ref ?? new PhpReference();
-
-                                            Debug.Assert(refrnc != null);
-
-                                            refrnc.IsAliased = true;
-                                            refrnc.IsSet = true;
-
-                                            return refrnc;
-                                        };
-
+                                   
                                     ////return reference;
 
                                     return new DynamicMetaObject(
@@ -216,7 +217,7 @@ namespace PHP.Core.Binders
                                             new Expression[]{
                                                 isset,
                                                 Expression.Label(returnLabel,
-                                                    Expression.Call(null, notsetOperation.Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]), reference))
+                                                    Expression.Call(null, new Func<DObject, string, DTypeDesc, PhpReference, PhpReference>(notsetOperation).Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]), reference))
                                             }),
                                             restrictions);
                                 }
@@ -235,16 +236,7 @@ namespace PHP.Core.Binders
                                     ////else return value;
 
 
-                                    Func<DObject, string, DTypeDesc, object> notsetOperation;
-                                    if (_issetSemantics) notsetOperation = (self, name, caller) =>
-                                        {
-                                            return PhpVariable.Dereference(self.GetRuntimeField(name, caller));
-                                        };
-                                    else notsetOperation = (self, name, caller) =>
-                                        {
-                                            bool handled;
-                                            return PhpVariable.Dereference(self.PropertyIssetHandler(name, caller, out handled));
-                                        };
+                                    var notsetOperation = _issetSemantics ? (Func<DObject, string, DTypeDesc, object>)GetMemberRuntimeFld : GetMemberIsSet;
                                     var value =
                                         Expression.Block(this._returnType,
                                             new[] { reference },
@@ -334,34 +326,8 @@ namespace PHP.Core.Binders
                     case GetMemberResult.NotFound:
                         if (WantReference)
                         {
-                            Func<DObject, string, DTypeDesc, PhpReference> op = (self, name, caller) =>
-                            {
-                                PhpReference reference;
-                                bool getter_exists;
-
-                                // search in RT fields
-                                if (self.RuntimeFields != null && self.RuntimeFields.ContainsKey(name))
-                                {
-                                    var namekey = new IntStringKey(name);
-                                    return self.RuntimeFields.table._ensure_item_ref(ref namekey, self.RuntimeFields);
-                                }
-
-                                // property is not present -> try to invoke __get
-                                reference = self.InvokeGetterRef(name, caller, out getter_exists);
-                                if (getter_exists) return (reference == null) ? new PhpReference() : reference;
-
-                                // (no notice/warning/error thrown by PHP)
-
-                                // add the field
-                                reference = new PhpReference();
-                                if (self.RuntimeFields == null) self.RuntimeFields = new PhpArray();
-                                self.RuntimeFields[name] = reference;
-
-                                return reference;
-                            };
-
                             return new DynamicMetaObject(
-                                Expression.Call(null, op.Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0])),
+                                Expression.Call(null, new Func<DObject, string, DTypeDesc, PhpReference>(GetRefMemberNotFound).Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0])),
                                 restrictions);
                         }
                         else
@@ -383,22 +349,9 @@ namespace PHP.Core.Binders
 
                             if (_issetSemantics)
                             {
-                                Func<DObject, string, DTypeDesc, object> notsetOperation = (self, name, caller) =>
-                                {
-                                    if (self.RuntimeFields != null)
-                                    {
-                                        object value;
-                                        if (self.RuntimeFields.TryGetValue(name, out value))
-                                            return value;
-                                    }
-
-                                    bool handled;
-                                    return self.PropertyIssetHandler(name, caller, out handled);
-                                };
-
                                 return new DynamicMetaObject(
                                     Expression.Call(Methods.PhpVariable.Dereference,
-                                        Expression.Call(null, notsetOperation.Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]))),
+                                        Expression.Call(null, new Func<DObject, string, DTypeDesc, object>(GetMemberNotFoundIsSet).Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]))),
                                     restrictions);
                             }
                             else
@@ -411,8 +364,6 @@ namespace PHP.Core.Binders
                                             Methods.DObject_GetRuntimeField, Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]))),
                                     restrictions);
                             };
-                            
-                            
                         }
                     case GetMemberResult.BadVisibility:
                         {
@@ -475,6 +426,55 @@ namespace PHP.Core.Binders
                 (target.HasValue && target.Value == null) ?
                     BindingRestrictions.GetInstanceRestriction(target.Expression, null) :
                     BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType));
+        }
+
+        static object GetMemberRuntimeFld(DObject self, string name, DTypeDesc caller)
+        {
+            return PhpVariable.Dereference(self.GetRuntimeField(name, caller));
+        }
+        
+        static object GetMemberIsSet(DObject self, string name, DTypeDesc caller)
+        {
+            return PhpVariable.Dereference(self.GetRuntimeField(name, caller));
+        }
+
+        static PhpReference GetRefMemberNotFound(DObject self, string name, DTypeDesc caller)
+        {
+            PhpReference reference;
+            bool getter_exists;
+
+            // search in RT fields
+            if (self.RuntimeFields != null && self.RuntimeFields.ContainsKey(name))
+            {
+                var namekey = new IntStringKey(name);
+                return self.RuntimeFields.table._ensure_item_ref(ref namekey, self.RuntimeFields);
+            }
+
+            // property is not present -> try to invoke __get
+            reference = self.InvokeGetterRef(name, caller, out getter_exists);
+            if (getter_exists) return (reference == null) ? new PhpReference() : reference;
+
+            // (no notice/warning/error thrown by PHP)
+
+            // add the field
+            reference = new PhpReference();
+            if (self.RuntimeFields == null) self.RuntimeFields = new PhpArray();
+            self.RuntimeFields[name] = reference;
+
+            return reference;
+        }
+
+        static object GetMemberNotFoundIsSet(DObject self, string name, DTypeDesc caller)
+        {
+            if (self.RuntimeFields != null)
+            {
+                object value;
+                if (self.RuntimeFields.TryGetValue(name, out value))
+                    return value;
+            }
+
+            bool handled;
+            return self.PropertyIssetHandler(name, caller, out handled);
         }
     }
 }
