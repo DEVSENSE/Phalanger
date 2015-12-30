@@ -2768,7 +2768,8 @@ namespace PHP.Core
             // if signatures match, only explicit override must be stated
 
             if (target.Name.ToString() != php_template.Name.ToString() ||           // the names differ (perhaps only in casing)
-                target.Signature.ParamCount != php_template.Signature.ParamCount    // signature was extended (additional arguments added, with implicit value only)
+                target.Signature.ParamCount != php_template.Signature.ParamCount || // signature was extended (additional arguments added, with implicit value only)
+                target.Signature.AliasReturn != php_template.Signature.AliasReturn  // returns PhpReference instead of Object
                 )
 			{
 				MethodInfo target_argfull = DType.MakeConstructed(target.ArgFullInfo, targetType as ConstructedType);
@@ -2779,7 +2780,9 @@ namespace PHP.Core
 				// a generic type in v2.0 SRE (feedback ID=97425)
 				bool sre_bug_workaround = (template.Type is ConstructedType);
 
-                if (target.DeclaringType == declaringType && !sre_bug_workaround && target.Signature.ParamCount == php_template.Signature.ParamCount)
+                if (target.DeclaringType == declaringType && !sre_bug_workaround &&
+                    target.Signature.ParamCount == php_template.Signature.ParamCount &&
+                    target.Signature.AliasReturn == php_template.Signature.AliasReturn)
 				{
                     // signatures match, just install an explicit override if possible
 					type_builder.DefineMethodOverride(target_argfull,
@@ -2829,7 +2832,13 @@ namespace PHP.Core
                         il.Emit(OpCodes.Ldsfld, PHP.Core.Emit.Fields.Arg_Default);  // paramN
                     }
                     il.Emit(OpCodes.Callvirt, target_argfull);
-					il.Emit(OpCodes.Ret);
+
+                    // return
+                    if (target.Signature.AliasReturn != php_template.Signature.AliasReturn)
+                        il.Emit(OpCodes.Call, target.Signature.AliasReturn
+                            ? Methods.PhpVariable.Dereference       // PhpVariable.Deference(obj)                   
+                            : Methods.PhpVariable.MakeReference);   // PhpVariable.MakeReference(obj)
+                    il.Emit(OpCodes.Ret);
 
 					if (sre_bug_workaround)
 					{
