@@ -11,7 +11,7 @@
     <DocumentationFile>$(OutputPath)$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
 	
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' != 'Unix'">
     <PreBuildEvent>
 cd "$(RootDir)"
 "$(ToolsDir)UpdateFileVersionFromChangeset.cmd" "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
@@ -23,6 +23,12 @@ if [$(TargetExt)]==[.dll] if [$(SignAssembly)]==[true] (
    "$(ToolsDir)gacutil" /f /i "$(TargetPath)" 1&gt;nul
 )
     </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Unix'">
+	  <PreBuildEvent>
+		  cd "$(RootDir)"
+		  "$(ToolsDir)UpdateFileVersionFromChangesetNumber.sh" "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
+	  </PreBuildEvent>
   </PropertyGroup>
   
 </Project>

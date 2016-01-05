@@ -34,5 +34,9 @@
 	<NoWarn>436,1591</NoWarn>
     <TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)' == ''">true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <!-- mono settings -->
+  <PropertyGroup Condition="'$(OS)' == 'Unix'">
+	  <NoCompilerStandardLib>false</NoCompilerStandardLib>
+  </PropertyGroup>
 
 </Project>
