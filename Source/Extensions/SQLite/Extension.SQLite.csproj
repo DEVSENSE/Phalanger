@@ -88,7 +88,13 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\Build\Common.Build.targets" />
+  <!-- don't build sqlite on unix - there's no System.Data.SQLite available, at least not easily  -->
+  <Import Project="..\..\Build\Common.Build.targets" Condition="'$(OS)' != 'Unix'"/>
+
+  <!-- stub build targets for unices -->
+  <Target Name="Build" Condition="'$(OS)' == 'Unix'"/>
+  <Target Name="Clean" Condition="'$(OS)' == 'Unix'"/>
+
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

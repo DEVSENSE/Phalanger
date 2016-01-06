@@ -19,7 +19,7 @@
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputPath Condition="'$(OutputPath)' == ''">$(RootDir)Deployment\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(MSBuildProjectDirectory)\obj\$(Configuration))\</IntermediateOutputPath>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(MSBuildProjectDirectory)\obj\$(Configuration)\</IntermediateOutputPath>
 
     <OutDir>$(OutputPath)</OutDir>
     <IntDir>$(IntermediateOutputPath)</IntDir>
