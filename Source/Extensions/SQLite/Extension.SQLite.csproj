@@ -34,7 +34,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL" />
+    <Reference Include="System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+		<HintPath Condition="'$(OS)' == 'Unix'">.\lib\SystemData.SQLite</HintPath>
+	</Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -88,12 +90,7 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <!-- don't build sqlite on unix - there's no System.Data.SQLite available, at least not easily  -->
-  <Import Project="..\..\Build\Common.Build.targets" Condition="'$(OS)' != 'Unix'"/>
-
-  <!-- stub build targets for unices -->
-  <Target Name="Build" Condition="'$(OS)' == 'Unix'"/>
-  <Target Name="Clean" Condition="'$(OS)' == 'Unix'"/>
+  <Import Project="..\..\Build\Common.Build.targets"/>
 
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
