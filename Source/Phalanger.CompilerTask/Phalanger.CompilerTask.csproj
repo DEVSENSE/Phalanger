@@ -73,9 +73,10 @@
   <!--The following is used for deploying the task and target to Program Files\MSBuild\...-->
   <PropertyGroup>
     <DeployDestination>$(MSBuildExtensionsPath)\Phalanger\4.0\</DeployDestination>
+	<ForceMSBuildDeploy Condition="'$(ForceMSBuildDeploy)' == ''">false</ForceMSBuildDeploy>
   </PropertyGroup>
   <!-- do not deploy on Unix platform (because we have no permissions) -->
-  <Target Name="AfterBuild" Condition="'$(OS)' != 'Unix'">
+  <Target Name="AfterBuild" Condition="'$(OS)' != 'Unix' or '$(ForceMSBuildDeploy)' == 'true'">
     <Message Text="Deploying..." />
     <MakeDir Directories="$(DeployDestination)" Condition="!Exists('$(DeployDestination)')" />
     <CreateItem Include="$(OutputPath)\$(TargetName).*" AdditionalMetadata="Visible=false">
