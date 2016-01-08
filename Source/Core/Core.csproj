@@ -71,7 +71,7 @@
       <Name>System</Name>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>

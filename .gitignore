@@ -13,6 +13,7 @@
 # nuget-specifics
 packages
 *.nupkg
+Tools/nuget.exe
 
 # Build results
 *_i.c
@@ -52,7 +53,7 @@ ipch/
 # ReSharper is a .NET coding add-in
 _ReSharper*
 
-# Installshield output folder 
+# Installshield output folder
 [Ee]xpress
 
 # Backup & report files from converting an old project file to a newer
@@ -67,7 +68,7 @@ UpgradeLog*.XML
 ############
 
 # Windows image file caches
-Thumbs.db 
+Thumbs.db
 
 # Folder config file
 Desktop.ini

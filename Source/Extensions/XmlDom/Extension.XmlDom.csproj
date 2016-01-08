@@ -146,12 +146,11 @@
   </ItemGroup>
   <Import Project="..\..\Build\Common.Build.targets" />
   <PropertyGroup>
-    <PreBuildEvent>attrib -R "$(ProjectDir)Dynamic\*.dynamic.cs"
-
-"$(SolutionDir)..\Tools\ClassDynamizer" "$(ProjectDir)DomAttribute.cs" "$(ProjectDir)DomCollections.cs" "$(ProjectDir)DomDocument.cs" "$(ProjectDir)DomElement.cs" "$(ProjectDir)DomEntity.cs" "$(ProjectDir)DomException.cs" "$(ProjectDir)DomCharacterData.cs" "$(ProjectDir)DomImplementation.cs" "$(ProjectDir)DomMiscClasses.cs" "$(ProjectDir)DomMiscNodes.cs" "$(ProjectDir)DomNode.cs" "$(ProjectDir)DomXPath.cs" "$(ProjectDir)XsltProcessor.cs" "$(ProjectDir)SimpleXml.cs" "$(ProjectDir)XmlReader.cs" "/out:$(ProjectDir)Dynamic"
-
+    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">
+attrib -R "$(ProjectDir)Dynamic\*.dynamic.cs"
 cd "$(RootDir)"
 $(ToolsDir)UpdateFileVersionFromChangeset.cmd "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
-	</PreBuildEvent>
+    </PreBuildEvent>
+    <PreBuildEvent>$(SolutionDir)..\Tools\ClassDynamizer.exe "$(ProjectDir)DomAttribute.cs" "$(ProjectDir)DomCollections.cs" "$(ProjectDir)DomDocument.cs" "$(ProjectDir)DomElement.cs" "$(ProjectDir)DomEntity.cs" "$(ProjectDir)DomException.cs" "$(ProjectDir)DomCharacterData.cs" "$(ProjectDir)DomImplementation.cs" "$(ProjectDir)DomMiscClasses.cs" "$(ProjectDir)DomMiscNodes.cs" "$(ProjectDir)DomNode.cs" "$(ProjectDir)DomXPath.cs" "$(ProjectDir)XsltProcessor.cs" "$(ProjectDir)SimpleXml.cs" "$(ProjectDir)XmlReader.cs" "/out:$(ProjectDir)Dynamic"</PreBuildEvent>
   </PropertyGroup>
 </Project>

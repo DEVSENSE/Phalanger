@@ -1,34 +1,63 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-	<Compile Include="$(MSBuildThisFileDirectory)\AssemblyInfoCommon.cs">
-	  <Link>AssemblyInfoCommon.cs</Link>
-	</Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)\AssemblyInfoCommon.cs">
+      <Link>AssemblyInfoCommon.cs</Link>
+    </Compile>
   </ItemGroup>
-  
+
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  
-  <PropertyGroup>  
+
+  <UsingTask TaskName="DownloadFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" Condition=" '$(OS)' == 'Windows_NT' ">
+    <ParameterGroup>
+      <Address ParameterType="System.String" Required="true"/>
+      <OutputFilename ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            new System.Net.WebClient().DownloadFile(Address, OutputFilename);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <PropertyGroup>
     <DocumentationFile>$(OutputPath)$(TargetName).xml</DocumentationFile>
+    <ToolsDir Condition=" '$(ToolsDir)'=='' ">$(SolutionDir)Tools</ToolsDir>
+    <NuGetExeDir Condition=" '$(NuGetExeDir)'=='' ">$(ToolsDir)</NuGetExeDir>
+    <NuGetDownloadAddress Condition=" '$(NuGetDownloadAddress)'=='' ">http://nuget.org/nuget.exe</NuGetDownloadAddress>
+    <NuGetExe Condition=" '$(NuGetExe)'=='' ">$(NuGetExeDir)\nuget.exe</NuGetExe>
+    <GacUtilExe Condition=" '$(GacUtilExe)'=='' ">$(ToolsDir)\gacutil</GacUtilExe>
+    <NuGetCommand Condition=" '$(NuGetCommand)'=='' ">"$(NuGetExe)"</NuGetCommand>
+    <GacUtilCommand Condition=" '$(GacUtilCommand)'=='' ">"$(GacUtilExe)"</GacUtilCommand>
   </PropertyGroup>
-  
-  <Target Name="BeforeBuild">
-    <Exec Command="&quot;$(ToolsDir)UpdateFileVersionFromChangeset.cmd&quot; &quot;$(RootDir)&quot; &quot;$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs&quot;"></Exec>
+
+  <Target Name="DownloadNuGet">
+    <MakeDir Directories="$(NuGetExeDir)" Condition=" !Exists('$(NuGetExeDir)') " />
+    <DownloadFile Address="$(NuGetDownloadAddress)" OutputFilename="$(NuGetExe)" Condition=" '$(OS)' == 'Windows_NT' AND !Exists('$(NuGetExe)')" />
+    <Exec Command="wget $(NuGetDownloadAddress) -O $(NuGetExe)" Condition=" '$(OS)' != 'Windows_NT' AND !Exists('$(NuGetExe)') " />
+  </Target>
+
+  <Target Name="RestorePackages" DependsOnTargets="DownloadNuGet">
+    <Exec Command="$(NuGetCommand) restore &quot;$(MSBuildThisFileDirectory)../../Solutions/Phalanger.sln&quot;"/>
+  </Target>
+
+  <Target Name="BeforeBuild" DependsOnTargets="RestorePackages">
+    <Exec Command="&quot;$(ToolsDir)UpdateFileVersionFromChangeset.cmd&quot; &quot;$(RootDir)&quot; &quot;$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs&quot;" Condition=" '$(OS)' == 'Windows_NT' "></Exec>
+    <Exec Command="&quot;$(ToolsDir)UpdateFileVersionFromChangeset.sh&quot; &quot;$(RootDir)&quot; &quot;$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs&quot;" Condition=" '$(OS)' == 'Unix' " />
   </Target>
 
   <Target Name="AfterBuild" Condition=" '$(Configutation)' == 'ReleaseGAC' ">
-    <Exec Command="&quot;$(ToolsDir)gacutil&quot; /u &quot;$(TargetName)&quot;"></Exec>
-    <Exec Command="&quot;$(ToolsDir)gacutil&quot; /f /i &quot;$(TargetPath)&quot;"></Exec>
+    <Exec Command="$(GacUtilCommand) /u &quot;$(TargetName)&quot;"></Exec>
+    <Exec Command="$(GacUtilCommand) /f /i &quot;$(TargetPath)&quot;"></Exec>
   </Target>
 
-  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
+  <Target Name="AfterBuild" DependsOnTargets="DownloadNuGet" Condition=" '$(Configuration)' == 'Release' ">
     <PropertyGroup>
-      <OutputNugetPath>$(OutputPath)..\Release-NuGet</OutputNugetPath>
+      <OutputNugetPath>$(OutputPath)..\$(Configuration)-NuGet</OutputNugetPath>
     </PropertyGroup>
-
-    <!-- Only download a new copy of nuget.exe if we don't have a copy available -->
-    <!--WebDownload Condition="!Exists('nuget.exe')" Filename="nuget.exe" FileUri="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" /-->
-
     <MakeDir Directories="$(OutputNugetPath)" />
-    <Exec Command="&quot;$(ToolsDir)nuget&quot; pack &quot;$(MSBuildProjectFullPath)&quot; -IncludeReferencedProjects -Symbols -Prop Configuration=Release -OutputDirectory &quot;$(OutputNugetPath)&quot;"></Exec>
+    <Exec Command="$(NuGetCommand) pack &quot;$(MSBuildProjectFullPath)&quot; -IncludeReferencedProjects -Symbols -Prop Configuration=$(Configuration) -OutputDirectory &quot;$(OutputNugetPath)&quot;"></Exec>
   </Target>
 </Project>
