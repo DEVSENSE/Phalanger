@@ -2,10 +2,10 @@
 
  Copyright (c) 2004-2006 Tomas Matousek and Jan Benda.
 
- The use and distribution terms for this software are contained in the file named License.txt, 
- which can be found in the root of the Phalanger distribution. By using this software 
+ The use and distribution terms for this software are contained in the file named License.txt,
+ which can be found in the root of the Phalanger distribution. By using this software
  in any fashion, you are agreeing to be bound by the terms of this license.
- 
+
  You must not remove this notice from this software.
 
 */
@@ -45,10 +45,11 @@ namespace PHP.Library
 			/// <summary>
 			/// Default option.
 			/// </summary>
+			[ImplementsConstant("STREAM_CLIENT_CONNECT")]
 			None = 0,
 
 			/// <summary>
-			/// Client socket opened with <c>stream_socket_client</c> should remain persistent 
+			/// Client socket opened with <c>stream_socket_client</c> should remain persistent
 			/// between page loads.
 			/// </summary>
 			[ImplementsConstant("STREAM_CLIENT_PERSISTENT")]
@@ -113,7 +114,7 @@ namespace PHP.Library
 
 		#region TODO: stream_get_transports, stream_socket_get_name
 
-		/// <summary>Retrieve list of registered socket transports</summary>  
+		/// <summary>Retrieve list of registered socket transports</summary>
         [ImplementsFunction("stream_get_transports", FunctionImplOptions.NotSupported)]
 		public static PhpArray GetTransports()
 		{
@@ -135,16 +136,16 @@ namespace PHP.Library
 
 		#region TODO: stream_socket_client
 
-		private static void SplitSocketAddressPort(ref string socket, out int port)
-		{
-			port = 0;
-			var arr = socket.Split(new[] {':'}, 2, StringSplitOptions.RemoveEmptyEntries);
-			if (arr.Length == 2)
-			{
-				socket = arr[0];
-				port = int.Parse(arr[1]);
-			}
-		}
+		//private static void SplitSocketAddressPort(ref string socket, out int port)
+		//{
+		//	port = 0;
+		//	String[] arr = socket.Split(new[] {':'}, 2, StringSplitOptions.RemoveEmptyEntries);
+		//	if (arr.Length == 2)
+		//	{
+		//		socket = arr[0];
+		//		port = int.Parse(arr[1]);
+		//	}
+		//}
 		/// <summary>
 		/// Open client socket.
 		/// </summary>
@@ -153,8 +154,8 @@ namespace PHP.Library
 		{
 			int errno;
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref remoteSocket, out port);
 			return Connect(remoteSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -165,8 +166,8 @@ namespace PHP.Library
 		public static PhpResource ConnectClient(string remoteSocket, out int errno)
 		{
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref remoteSocket, out port);
 			return Connect(remoteSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -176,8 +177,8 @@ namespace PHP.Library
 		[ImplementsFunction("stream_socket_client")]
 		public static PhpResource ConnectClient(string remoteSocket, out int errno, out string errstr)
 		{
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref remoteSocket, out port);
 			return Connect(remoteSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -188,8 +189,8 @@ namespace PHP.Library
 		public static PhpResource ConnectClient(string remoteSocket, out int errno, out string errstr,
 		  double timeout)
 		{
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref remoteSocket, out port);
 			return Connect(remoteSocket, port, out errno, out errstr, timeout, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -200,8 +201,8 @@ namespace PHP.Library
 		public static PhpResource ConnectClient(string remoteSocket, out int errno, out string errstr,
 		  double timeout, SocketOptions flags)
 		{
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref remoteSocket, out port);
 			return Connect(remoteSocket, port, out errno, out errstr, timeout, flags, StreamContext.Default);
 		}
 
@@ -220,8 +221,8 @@ namespace PHP.Library
 				return null;
 			}
 
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref remoteSocket, out port);
 			return Connect(remoteSocket, port, out errno, out errstr, timeout, flags, sc);
 		}
 
@@ -237,8 +238,8 @@ namespace PHP.Library
 		{
 			int errno;
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref localSocket, out port);
 			return Connect(localSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -249,8 +250,8 @@ namespace PHP.Library
 		public static PhpResource ConnectServer(string localSocket, out int errno)
 		{
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref localSocket, out port);
 			return Connect(localSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -260,8 +261,8 @@ namespace PHP.Library
 		[ImplementsFunction("stream_socket_server")]
 		public static PhpResource ConnectServer(string localSocket, out int errno, out string errstr)
 		{
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref localSocket, out port);
 			return Connect(localSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -272,8 +273,8 @@ namespace PHP.Library
 		public static PhpResource ConnectServer(string localSocket, out int errno, out string errstr,
 		  double timeout)
 		{
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref localSocket, out port);
 			return Connect(localSocket, port, out errno, out errstr, timeout, SocketOptions.None, StreamContext.Default);
 		}
 
@@ -284,8 +285,8 @@ namespace PHP.Library
 		public static PhpResource ConnectServer(string localSocket, out int errno, out string errstr,
 		  double timeout, SocketOptions flags)
 		{
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref localSocket, out port);
 			return Connect(localSocket, port, out errno, out errstr, timeout, flags, StreamContext.Default);
 		}
 
@@ -304,8 +305,8 @@ namespace PHP.Library
 				return null;
 			}
 
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
+			int port = 0;
+			//SplitSocketAddressPort(ref localSocket, out port);
 			return Connect(localSocket, port, out errno, out errstr, timeout, flags, sc);
 		}
 
@@ -439,6 +440,36 @@ namespace PHP.Library
 			// TODO: extract schema (tcp://, udp://) and port from remoteSocket
 			// Uri uri = Uri.TryCreate(remoteSocket);
 			ProtocolType protocol = ProtocolType.Tcp;
+			if (remoteSocket.Contains("://"))
+			{
+				String[] separator = { "://" };
+				String[] socketParts = remoteSocket.Split(separator, 2, StringSplitOptions.None);
+				switch (socketParts[0])
+				{
+					case "udp":
+						protocol = ProtocolType.Udp;
+						break;
+					case "tcp":
+					default:
+						protocol = ProtocolType.Tcp;
+						break;
+				}
+				remoteSocket = socketParts[1];
+			}
+
+			if (remoteSocket.Contains(":"))
+			{
+				Char[] separator = { ':' };
+				String[] socketParts = remoteSocket.Split(separator, 2, StringSplitOptions.None);
+				remoteSocket = socketParts[0];
+
+				int result = 0;
+				if (socketParts[1] != "" && int.TryParse(socketParts[1], out result) &&
+					(0 < result && result < 65536))
+				{
+					port = result;
+				}
+			}
 
 			if (Double.IsNaN(timeout))
 				timeout = Configuration.Local.FileSystem.DefaultSocketTimeout;
@@ -451,7 +482,7 @@ namespace PHP.Library
 			{
                 // workitem 299181; for remoteSocket as IPv4 address it results in IPv6 address
                 //IPAddress address = System.Net.Dns.GetHostEntry(remoteSocket).AddressList[0];
-                
+
                 IPAddress address;
                 if (!IPAddress.TryParse(remoteSocket, out address)) // if remoteSocket is not a valid IP address then lookup the DNS
                     address = System.Net.Dns.GetHostEntry(remoteSocket).AddressList[0];
