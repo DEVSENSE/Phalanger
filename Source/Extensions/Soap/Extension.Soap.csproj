@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Web" />
@@ -90,7 +90,11 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\Build\Common.Build.targets" />
+  <!-- skip this extension on unix - there's conflict between system.data.dll and system.web.dll -->
+  <Import Project="..\..\Build\Common.Build.targets" Condition="'$(OS)' != 'Unix'"/>
+  <!-- stubs for unices -->
+  <Target Name="Build" Condition="'$(OS)' == 'Unix'" />
+  <Target Name="Clean" Condition="'$(OS)' == 'Unix'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
