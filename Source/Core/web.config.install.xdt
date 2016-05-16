@@ -1,28 +1,38 @@
 <?xml version="1.0"?>
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
-  <configSections xdt:Transform="InsertIfMissing">
+	<!-- reference: http://stackoverflow.com/questions/18737022/xdt-transform-insertbefore-locator-condition-is-ignored/19041487 -->
+	<configSections xdt:Transform="InsertBefore(/configuration/*[1])" />
+	<configSections xdt:Locator="XPath(/configuration/configSections[last()])">
 		<section name="phpNet" type="PHP.Core.ConfigurationSectionHandler, PhpNetCore" xdt:Transform="InsertIfMissing" />
 	</configSections>
+	<configSections xdt:Transform="RemoveAll" xdt:Locator="Condition(count(*)=0)" />
 
-	<system.webServer xdt:Transform="InsertIfMissing">
-		<handlers xdt:Transform="InsertIfMissing">
+	<system.webServer xdt:Transform="InsertIfMissing" />
+	<system.webServer>
+		<handlers xdt:Transform="InsertIfMissing" />
+		<handlers>
 			<add
 				name="PhalangerHandler"
 				path="*.php" verb="*"
 				type="PHP.Core.RequestHandler, PhpNetCore"
 				resourceType="Unspecified"
 				preCondition="integratedMode"
-				xdt:Transform="InsertIfMissing" />
+				xdt:Transform="InsertIfMissing"
+        xdt:Locator="Match(name)"/>
 		</handlers>
-		<defaultDocument xdt:Transform="InsertIfMissing">
-			<files xdt:Transform="InsertIfMissing">
-				<add value="index.php" xdt:Transform="InsertIfMissing" />
+		<defaultDocument xdt:Transform="InsertIfMissing" />
+		<defaultDocument>
+			<files xdt:Transform="InsertIfMissing" />
+			<files>
+				<add value="index.php" xdt:Transform="InsertIfMissing" xdt:Locator="Match(value)" />
 			</files>
 		</defaultDocument>
 	</system.webServer>
 
-	<phpNet xdt:Transform="InsertIfMissing">
-		<error-control xdt:Transform="InsertIfMissing">
+	<phpNet xdt:Transform="InsertIfMissing" />
+	<phpNet>
+		<error-control xdt:Transform="InsertIfMissing" />
+		<error-control>
 			<set name="HtmlMessages" value="false" phpName="html_errors" xdt:Transform="InsertIfMissing" />
 		</error-control>
 	</phpNet>

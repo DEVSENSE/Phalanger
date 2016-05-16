@@ -15,9 +15,5 @@
 		</defaultDocument>
 	</system.webServer>
 
-	<phpNet>
-		<error-control>
-			<set name="HtmlMessages" xdt:Transform="Remove" xdt:Locator="Match(name)" />
-		</error-control>
-	</phpNet>
+	<phpNet xdt:Transform="Remove" />
 </configuration>

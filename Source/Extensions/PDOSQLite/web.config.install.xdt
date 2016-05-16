@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
-	<phpNet xdt:Transform="InsertIfMissing">
-		<classLibrary xdt:Transform="InsertIfMissing">
-			<add assembly="PhpNetPDOSQLite" xdt:Transform="InsertIfMissing" />
+	<phpNet xdt:Transform="InsertIfMissing" />
+	<phpNet>
+		<classLibrary xdt:Transform="InsertIfMissing" />
+		<classLibrary>
+			<add assembly="PhpNetPDOSQLite" xdt:Transform="InsertIfMissing" xdt:Locator="Match(assembly)" />
 		</classLibrary>
 	</phpNet>
 </configuration>

@@ -76,6 +76,8 @@
       <Link>Extensions.snk</Link>
     </None>
     <None Include="Extension.GetText.nuspec" />
+    <None Include="web.config.install.xdt" />
+    <None Include="web.config.uninstall.xdt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
