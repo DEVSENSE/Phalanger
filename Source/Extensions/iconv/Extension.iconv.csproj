@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5E1DFCA3-11ED-491D-8EC0-7923ECC9CC03}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <AssemblyName>PhpNetIconv</AssemblyName>
+    <AssemblyName>PhpNet.Extension.Iconv</AssemblyName>
     <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
@@ -19,54 +19,6 @@
     <SccProvider>SAK</SccProvider>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>4194304</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>512</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <Optimize>false</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>4194304</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>512</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <Optimize>true</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseGAC|AnyCPU'">
-    <OutputPath>bin\ReleaseGAC\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <BaseAddress>4194304</BaseAddress>
-    <DocumentationFile>..\..\Deployment\Release\PhpNetIconv.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <FileAlignment>512</FileAlignment>
-    <NoWarn>436,1591</NoWarn>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">

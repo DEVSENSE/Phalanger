@@ -7,7 +7,7 @@
     <ProjectGuid>{68B54816-884B-48A1-949C-DBBDE2A5C412}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <AssemblyName>PHP.VisualStudio.PhalangerTasks</AssemblyName>
+    <AssemblyName>PhpNet.VisualStudio.PhalangerTasks</AssemblyName>
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.VisualStudio.PhalangerTasks</RootNamespace>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -15,36 +15,6 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'ReleaseGAC'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ReleaseGAC\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DocumentationFile>..\..\Deployment\Release\PHP.VisualStudio.PhalangerTasks.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>436,1591</NoWarn>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework, Version=4.0.0.0" />
@@ -107,11 +77,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
       <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
-      <Name>Core.Parsers</Name>
+      <Name>PhpNet.Core.Parsers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
-      <Name>Core</Name>
+      <Name>PhpNet.Core</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

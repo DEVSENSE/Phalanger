@@ -6,7 +6,7 @@
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D515E8F4-357C-4CAF-87C1-97D64C5F865A}</ProjectGuid>
-    <AssemblyName>PhpNetClassLibrary</AssemblyName>
+    <AssemblyName>PhpNet.ClassLibrary</AssemblyName>
     <AssemblyOriginatorKeyFile>ClassLibrary.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
@@ -16,53 +16,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <NoWarn>$(NoWarn),1591,419</NoWarn>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>4194304</BaseAddress>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>Bin\Debug\PhpNetClassLibrary.xml</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>512</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <Optimize>false</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <DebugType>full</DebugType>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>4194304</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>Bin\Release\PhpNetClassLibrary.xml</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>512</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <Optimize>true</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseGAC|AnyCPU'">
-    <OutputPath>bin\ReleaseGAC\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <BaseAddress>4194304</BaseAddress>
-    <DocumentationFile>..\..\Deployment\Release\PhpNetClassLibrary.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <FileAlignment>512</FileAlignment>
-    <NoWarn>436,1591,1591,419</NoWarn>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">

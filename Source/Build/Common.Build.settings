@@ -12,27 +12,47 @@
   
   <PropertyGroup>
 	<RootDir>$(MSBuildThisFileDirectory)..\..\</RootDir>
-	<ToolsDir>$(MSBuildThisFileDirectory)..\..\Tools\</ToolsDir>
-  </PropertyGroup>
+	<ToolsDir>$(RootDir)Tools\</ToolsDir>
 
-  <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputPath Condition="'$(OutputPath)' == ''">$(RootDir)Deployment\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(MSBuildProjectDirectory)\obj\$(Configuration)\</IntermediateOutputPath>
 
+    <OutputPath Condition="'$(OutputPath)' == ''">$(RootDir)Deployment\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(OutputPath)obj\</IntermediateOutputPath>
     <OutDir>$(OutputPath)</OutDir>
     <IntDir>$(IntermediateOutputPath)</IntDir>
 
-    <SuppressCommonAssemblyMetadata Condition="'$(SuppressCommonAssemblyMetadata)' == ''">False</SuppressCommonAssemblyMetadata>
+    <DocumentationFile Condition="'$(DocumentationFile)' == ''">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <ToolsDir Condition=" '$(ToolsDir)'=='' ">$(ProjectRootDir)Tools\</ToolsDir>
+    <NuGetExeDir Condition=" '$(NuGetExeDir)'=='' ">$(ToolsDir)</NuGetExeDir>
+    <NuGetDownloadAddress Condition=" '$(NuGetDownloadAddress)'=='' ">http://nuget.org/nuget.exe</NuGetDownloadAddress>
+    <NuGetExe Condition=" '$(NuGetExe)'=='' ">$(NuGetExeDir)nuget.exe</NuGetExe>
+    <GacUtilExe Condition=" '$(GacUtilExe)'=='' ">$(ToolsDir)gacutil</GacUtilExe>
+    <NuGetCommand Condition=" '$(NuGetCommand)'=='' ">"$(NuGetExe)"</NuGetCommand>
+    <GacUtilCommand Condition=" '$(GacUtilCommand)'=='' ">"$(GacUtilExe)"</GacUtilCommand>
 
+    <SuppressCommonAssemblyMetadata Condition="'$(SuppressCommonAssemblyMetadata)' == ''">False</SuppressCommonAssemblyMetadata>
+    <TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)' == ''">true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>436,1591</NoWarn>
-    <TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)' == ''">true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn),419,436,1591,CS0618</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'ReleaseGAC' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
 </Project>

@@ -22,17 +22,6 @@
     </Task>
   </UsingTask>
 
-  <PropertyGroup>
-    <DocumentationFile>$(OutputPath)$(TargetName).xml</DocumentationFile>
-    <ToolsDir Condition=" '$(ToolsDir)'=='' ">$(SolutionDir)Tools</ToolsDir>
-    <NuGetExeDir Condition=" '$(NuGetExeDir)'=='' ">$(ToolsDir)</NuGetExeDir>
-    <NuGetDownloadAddress Condition=" '$(NuGetDownloadAddress)'=='' ">http://nuget.org/nuget.exe</NuGetDownloadAddress>
-    <NuGetExe Condition=" '$(NuGetExe)'=='' ">$(NuGetExeDir)\nuget.exe</NuGetExe>
-    <GacUtilExe Condition=" '$(GacUtilExe)'=='' ">$(ToolsDir)\gacutil</GacUtilExe>
-    <NuGetCommand Condition=" '$(NuGetCommand)'=='' ">"$(NuGetExe)"</NuGetCommand>
-    <GacUtilCommand Condition=" '$(GacUtilCommand)'=='' ">"$(GacUtilExe)"</GacUtilCommand>
-  </PropertyGroup>
-
   <Target Name="DownloadNuGet">
     <MakeDir Directories="$(NuGetExeDir)" Condition=" !Exists('$(NuGetExeDir)') " />
     <DownloadFile Address="$(NuGetDownloadAddress)" OutputFilename="$(NuGetExe)" Condition=" '$(OS)' == 'Windows_NT' AND !Exists('$(NuGetExe)')" />
@@ -55,7 +44,7 @@
 
   <Target Name="AfterBuild" DependsOnTargets="DownloadNuGet" Condition=" '$(Configuration)' == 'Release' ">
     <PropertyGroup>
-      <OutputNugetPath>$(OutputPath)..\$(Configuration)-NuGet</OutputNugetPath>
+      <OutputNugetPath>$(OutputPath)NuGet</OutputNugetPath>
     </PropertyGroup>
     <MakeDir Directories="$(OutputNugetPath)" />
     <Exec Command="$(NuGetCommand) pack &quot;$(MSBuildProjectFullPath)&quot; -IncludeReferencedProjects -Symbols -Prop Configuration=$(Configuration) -OutputDirectory &quot;$(OutputNugetPath)&quot;"></Exec>
