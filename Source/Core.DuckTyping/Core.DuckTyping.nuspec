@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>PhpNet.Core.DuckTyping</id>
-    <version>0.1</version>
-    <title>Phalanger DuckTyping</title>
-    <authors>The Phalanger Project</authors>
-    <owners>The Phalanger Project</owners>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$description$</title>
+    <description>$description$</description>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
   	<licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Phalanger/master/LICENSE.txt</licenseUrl>
   	<projectUrl>https://github.com/DEVSENSE/Phalanger</projectUrl>
   	<iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=Phalanger&amp;DownloadId=240061</iconUrl>
   	<requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Phalanger DuckTyping</description>
   	<releaseNotes>Bug fixes and performance improvements</releaseNotes>
   	<copyright>Copyright 2015</copyright>
   	<tags>PHP Phalanger</tags>
