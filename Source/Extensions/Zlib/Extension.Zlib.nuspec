@@ -15,8 +15,6 @@
     <copyright>Copyright 2015</copyright>
     <tags>PHP Phalanger Extension ZLib Compression Decompression</tags>
     <dependencies>
-      <dependency id="PhpNet.Core" />
-      <dependency id="PhpNet.ClassLibrary" />
       <dependency id="zlib.net" version="1.0.4.0" />
     </dependencies>
   </metadata>

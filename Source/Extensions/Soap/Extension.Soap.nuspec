@@ -14,10 +14,5 @@
     <releaseNotes>Bug fixes and performance improvements</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>PHP Phalanger Extension web services soap xml</tags>
-    <dependencies>
-      <dependency id="PhpNet.Core" />
-      <dependency id="PhpNet.Core.Parsers" />
-      <dependency id="PhpNet.ClassLibrary" />
-    </dependencies>
   </metadata>
 </package>

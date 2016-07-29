@@ -14,11 +14,5 @@
     <releaseNotes>Bug fixes and performance improvements</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>PHP Phalanger Extension Data Objects PDO database MSSQL SQLServer</tags>
-    <dependencies>
-      <dependency id="PhpNet.Core" />
-      <dependency id="PhpNet.Core.Parsers" />
-      <dependency id="PhpNet.ClassLibrary" />
-      <dependency id="PhpNet.Extension.PDO" />
-    </dependencies>
   </metadata>
 </package>

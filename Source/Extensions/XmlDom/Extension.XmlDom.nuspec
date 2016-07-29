@@ -15,9 +15,6 @@
     <copyright>Copyright 2015</copyright>
     <tags>PHP Phalanger Extension XML DOM Document Object Model</tags>
     <dependencies>
-      <dependency id="PhpNet.Core" />
-      <dependency id="PhpNet.Core.Parsers" />
-      <dependency id="PhpNet.Extension.Xml" />
       <dependency id="HtmlAgilityPack" version="1.4.9" />
     </dependencies>
   </metadata>

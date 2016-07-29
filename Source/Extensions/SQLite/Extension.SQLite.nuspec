@@ -15,8 +15,6 @@
     <copyright>Copyright 2015</copyright>
     <tags>PHP Phalanger Extension database SQLite</tags>
     <dependencies>
-      <dependency id="PhpNet.Core" />
-      <dependency id="PhpNet.ClassLibrary" />
       <dependency id="System.Data.SQLite.Core" version="1.0.99.0" />
     </dependencies>
   </metadata>
