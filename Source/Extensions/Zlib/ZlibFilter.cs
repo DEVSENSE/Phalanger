@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PHP.Core;
-using ComponentAce.Compression.Libs.zlib;
+using zlib;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 

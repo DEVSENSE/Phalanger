@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<system.codedom  xdt:Transform="InsertIfMissing" />
+	<system.codedom>
+		<compilers  xdt:Transform="InsertIfMissing" />
+		<compilers>
+			<compiler
+				 language="PHP"
+				 extension=".php"
+				 type="PHP.Core.CodeDom.PhpCodeProvider, PhpNetCore.CodeDom"
+				 compilerOptions=""
+				 xdt:Transform="InsertIfMissing"
+         xdt:Locator="Match(extension)"/>
+		</compilers>
+	</system.codedom>
+</configuration>

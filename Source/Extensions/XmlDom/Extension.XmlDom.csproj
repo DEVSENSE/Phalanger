@@ -7,7 +7,7 @@
     <ProjectGuid>{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.Library.Xml</RootNamespace>
-    <AssemblyName>PhpNetXmlDom</AssemblyName>
+    <AssemblyName>PhpNet.Extension.XmlDom</AssemblyName>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -18,21 +18,11 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <BaseAddress>439353344</BaseAddress>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Solutions\packages\HtmlAgilityPack.1.4.9\lib\Net40\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -41,8 +31,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Dynamic\XmlReader.dynamic.cs" />
     <Compile Include="XmlReader.cs" />
-    <Compile Include="DomAttribute.cs">
-    </Compile>
+    <Compile Include="DomAttribute.cs" />
     <Compile Include="DomDocument.cs" />
     <Compile Include="DomElement.cs" />
     <Compile Include="DomEntity.cs" />
@@ -68,22 +57,6 @@
     <Compile Include="Dynamic\DomXPath.dynamic.cs" />
     <Compile Include="Dynamic\SimpleXml.dynamic.cs" />
     <Compile Include="Dynamic\XsltProcessor.dynamic.cs" />
-    <Compile Include="HtmlAgilityPack\EncodingFoundException.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlAttribute.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlAttributeCollection.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlCommentNode.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlDocument.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlElementFlag.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlEntity.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlNameTable.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlNode.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlNodeCollection.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlNodeNavigator.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlNodeType.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlParseError.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlParseErrorCode.cs" />
-    <Compile Include="HtmlAgilityPack\HtmlTextNode.cs" />
-    <Compile Include="HtmlAgilityPack\NameValuePairList.cs" />
     <Compile Include="LibraryDescriptor.cs" />
     <Compile Include="LibXml.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -103,6 +76,10 @@
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xml\Extension.Xml.csproj">
+      <Project>{8145f722-1b6c-4162-92dc-824dfdc3ed6a}</Project>
+      <Name>Extension.Xml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -129,15 +106,34 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="web.config.install.xdt" />
+    <Content Include="web.config.uninstall.xdt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Extension.XmlDom.nuspec" />
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="..\..\Build\Common.Build.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>attrib -R "$(ProjectDir)Dynamic\*.dynamic.cs"
-
-"$(SolutionDir)..\Tools\ClassDynamizer" "$(ProjectDir)DomAttribute.cs" "$(ProjectDir)DomCollections.cs" "$(ProjectDir)DomDocument.cs" "$(ProjectDir)DomElement.cs" "$(ProjectDir)DomEntity.cs" "$(ProjectDir)DomException.cs" "$(ProjectDir)DomCharacterData.cs" "$(ProjectDir)DomImplementation.cs" "$(ProjectDir)DomMiscClasses.cs" "$(ProjectDir)DomMiscNodes.cs" "$(ProjectDir)DomNode.cs" "$(ProjectDir)DomXPath.cs" "$(ProjectDir)XsltProcessor.cs" "$(ProjectDir)SimpleXml.cs" "$(ProjectDir)XmlReader.cs" "/out:$(ProjectDir)Dynamic"
-
-cd "$(RootDir)"
-$(ToolsDir)UpdateFileVersionFromChangeset.cmd "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
-	</PreBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <DynamicClass Include="DomAttribute.cs" />
+    <DynamicClass Include="DomCollections.cs" />
+    <DynamicClass Include="DomDocument.cs" />
+    <DynamicClass Include="DomElement.cs" />
+    <DynamicClass Include="DomEntity.cs" />
+    <DynamicClass Include="DomException.cs" />
+    <DynamicClass Include="DomCharacterData.cs" />
+    <DynamicClass Include="DomImplementation.cs" />
+    <DynamicClass Include="DomMiscClasses.cs" />
+    <DynamicClass Include="DomMiscNodes.cs" />
+    <DynamicClass Include="DomNode.cs" />
+    <DynamicClass Include="DomXPath.cs" />
+    <DynamicClass Include="XsltProcessor.cs" />
+    <DynamicClass Include="SimpleXml.cs" />
+    <DynamicClass Include="XmlReader.cs" />
+  </ItemGroup>
+  <Target Name="BeforeCompile">
+    <Exec Command="attrib -R &quot;$(ProjectDir)Dynamic\*.dynamic.cs&quot;" Condition="'$(OS)' == 'Windows_NT'" />
+    <Exec Command="&quot;$(ToolsDir)ClassDynamizer.exe&quot; &quot;$(ProjectDir)%(DynamicClass.Identity)&quot; &quot;/out:$(ProjectDir)Dynamic&quot;" />
+  </Target>
 </Project>
