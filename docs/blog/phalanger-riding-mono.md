@@ -1,3 +1,5 @@
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
+
 Phalanger is a complete reimplementation of PHP, written in the C# language. It was always being developed with the Mono platform in mind. This means you can compile and run PHP application on Linux web servers using Mono. Since Phalanger 3.0, this become more official, periodically tested and maintained.
 
 # Notes
