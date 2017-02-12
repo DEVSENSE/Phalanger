@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 In a recent scenario I wanted to run WordPress as a subdirectory of a .NET application. I also wanted to avoid installing PHP and MySql on the Windows server. Impossible? Apparently not! (I’ll get to the word Possimpible a bit later).
 
@@ -60,20 +60,20 @@ I’ve created the physical subdirectory (wpblog), but now I need to buy viagra 
 CREATE A 32-BIT APPLICATION POOL  
 For the open source version of Phalanger to work properly you’ll need an Application Pool that is 32-Bit enabled. So here I will create a new Application Pool that will run in 32-Bit Mode. In IIS go to the Application Pools area under your server. Right click and do “Add New Application Pool…” I called mine WordPress. Select .NET 4.0 or above and click OK.
 
-![1](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image002.jpg)
+![1](clip_image002.jpg)
 
 Next, check the list of Application Pools that should appear on the right. Select the newly created one and right click and select “Advanced Settings” option. Change “Enable 32-Bit Applications” from False to True.
 
-![2](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image004_thumb.jpg)
+![2](clip_image004_thumb.jpg)
 
 CREATE A WEB APPLICATION  
 In IIS right click and select the “Add Application”, then set the Physical Path to the wpblog directory. I’m going to call it “blog” so eventually it will look like http://mysite/blog/
 
-![3](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image006_thumb.gif)
+![3](clip_image006_thumb.gif)
 
 Next select the previously created Application Pool (called WordPress as mentioned in the previous step)
 
-![4](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image008_thumb.gif)
+![4](clip_image008_thumb.gif)
 
 ADD A WEB.CONFIG FILE  
 Configure ASP.NET using Web.config. The web.config file will reside in the root of the wordpress directory (in this case wpblog). Here is an example web.config file that uses Phalanger 3.0 references.
@@ -88,11 +88,11 @@ More information about configurations can be found here in the wiki.
 
 Create a new empty SQL Server database for the WordPress stuff to reside. Optionally, you can skip this if you have already created one or are planning on using an existing database.
 
-![4](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image010_thumb.gif)
+![4](clip_image010_thumb.gif)
 
 Be sure to setup a user with high enough privileges to create the tables.
 
-![5](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image012_thumb.gif)
+![5](clip_image012_thumb.gif)
 
 #Setup the WP Database Abstraction Plugin
 
@@ -100,13 +100,13 @@ Now we’ll need to follow theDB Abstraction plugin instructions.
 
 Upload wp-db-abstraction.php and the wp-db-abstraction directory to wp-content/mu-plugins. This should be parallel to your regular plugins directory. If the mu-plugins directory does not exist, you must create it.
 
-![6](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image014_thumb.gif)
+![6](clip_image014_thumb.gif)
 
 Move the db.php file from inside the wp-db-abstraction directory to wp-content/db.php
 
 Setup and install the plugin by going your wordpress url (eg. http://localhost/blog/) with the subdirectory /wp-content/mu-plugins/wp-db-abstraction/setup-config.php appended to generate your wp-config.php file.
 
-![7](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image016_thumb.gif)
+![7](clip_image016_thumb.gif)
 
 Follow the on-screen instructions from the point on…
 
@@ -127,13 +127,13 @@ To do this, create a build.bat file in the wordpress directory with something si
 
 This batch file runs the Phalanger compiler to perform the pre-compilation. Detailed documentation for each of phpc option can be found here.
 
-![8](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image018_thumb.gif)
+![8](clip_image018_thumb.gif)
 
 # Error during Build? Here is a quick fix!
 
 It will likely give you an error when you attempt to build (although this may be fixed in the future), so you have to make a slight modification to the WP Abstraction Plugin. I encountered an error with the Data Abstraction plugin at line 562 of the pdo.php:
 
-![9](https://github.com/bfistein/Phalanger/blob/master/docs/blog/clip_image020_thumb.jpg)
+![9](clip_image020_thumb.jpg)
 
 It seems to choke on the “break;” line in the pdo.php since it is not in a loop. Modify it to “return;”, save the file, and then it should compile OK.
 

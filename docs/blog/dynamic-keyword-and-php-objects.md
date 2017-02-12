@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 We’ve already demonstrated, how to use PHP scripts from within a .NET application using Phalanger. For reference you can take a look at PHP as a scripting language for C# article or Standard mode interoperability tutorial. In this way we can take an existing PHP web or a library, load them into C# context and reuse their functions, classes, constants or global variables. In addition we can even define new functions and classes in C# and inject them into PHP, so the code in PHP seamlessly uses these declarations as they would be declared in PHP too.
 

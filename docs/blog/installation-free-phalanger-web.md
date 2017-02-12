@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 A few people asked how to run their web site on top of Phalanger without a need of installing Phalanger. This seems to be useful idea, since you may not be allowed to (or you just don’t want to) install any additional software on a target machine. Since Phalanger works like standard ASP.NET request handler and uses a little of standard .NET configurations, it is possible. And the new version of Phalanger (June 2011) makes it even easier to configure.
 
@@ -18,7 +18,7 @@ The web application requires several assemblies. They have to be just copied int
 
 In addition to assemblies above, you will probably need some native PHP extensions (extensions not implemented as managed yet). In case of WordPress, you want to add mbstring, image, zlib and xml extensions at least. To add an extension, copy some files from the Phalanger distribution; copy managed wrapper of the extension from the /Wrappers folder, copy php4ts.dll and php5ts.dll and copy also folder Extensions. Note you can delete php_*.dll files representing extensions you are not going to use.
 
-![pic](https://github.com/bfistein/Phalanger/blob/master/docs/blog/standalone-wordpress-bin-folderpng.png)
+![pic](standalone-wordpress-bin-folderpng.png)
 
 The tree above shows the content of my Bin folder placed within my WordPress web root directory. It contains all the necessary files to allow us using WordPress on .NET 4 without a need of installing Phalanger on target machine.
 

@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 Phalanger is the only solution allowing to seamlessly interoperate between PHP and .NET world. It allows to use e.g. .NET generics, namespaces, properties, method overloads, global variables, constants and .NET delegates in both worlds. In this post I will show how to pass delegates from C# into PHP, and how to use them in PHP.
 
@@ -25,7 +25,7 @@ function foo( $func ) {
 
 To demonstrate the feature, we have a simple demo called ClrDelegates.
 
-![ClrDelegates](https://github.com/bfistein/Phalanger/blob/master/docs/blog/ClrDelegates.jpg)
+![ClrDelegates](ClrDelegates.jpg)
 
 The application lets the .NET code to pass some delegates into PHP, and then it calls them to transform given text. It makes use of App_Code feature and other interoperability features that will be described in some future article.
 

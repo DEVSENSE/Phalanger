@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 Phalanger 3.0 brings several cool and useful features, making interoperability between C# and PHP even easier. In this post, I will show one of them.
 
@@ -20,7 +20,7 @@ Demo
 
 I’ve created simple demo here: App_Code interoperability. The demo consists of one PHP page, containing the presentation layer, using Class1 written in C#. Notice there is no configuration linking these two worlds, the things work as it would be expected in any other ASP.NET site.
 
-![camel](https://github.com/bfistein/Phalanger/blob/master/docs/blog/camelweb.jpg)
+![camel](camelweb.jpg)
 
 The demo takes advantage of several features of Phalanger & ASP.NET.
 
