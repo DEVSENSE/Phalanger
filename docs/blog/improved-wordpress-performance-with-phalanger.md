@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 **Update: Latest benchmarks are depicted on Benchmarks page.**
 
@@ -22,7 +22,7 @@ We tested three different approaches on Windows: classic PHP 5.3.5 via FastCGI, 
 
 To get some numbers, we used Visual Studio 2010 and its Load Test project; starting with 5 users up to 250 users at the same time. The users were continuously requesting the pages of a WordPress 3.1.2 site with only a few articles in it. Note that this doesn’t correspond to actual 250 human users, because the test runner requests the web site in a loop without waiting (and reading the article). The tests depicted below were run on Core 2 Duo, 2.4 GHz, 2MB cache, 4GB DDR3 RAM with Windows 7 Professional and IIS 7.5. The machine was a typical business notebook. A server machine would likely give a better performance, but the comparison would look similar.
 
-![bench](https://github.com/bfistein/Phalanger/blob/master/docs/blog/Screen%20Shot%202017-02-12%20at%2021.21.16.png)
+![bench](Screen%20Shot%202017-02-12%20at%2021.21.16.png)
 
 As you can see, Phalanger can be easily used as a PHP accelerator. In addition to that, it provides easy access to all the .NET features. Just to note, the tests were run on a development version of Phalanger, and we’re still able to increase the performance every few weeks.
 
