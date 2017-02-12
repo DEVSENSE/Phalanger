@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 The main goal of Phalanger is to provide fast and easy means for PHP and .NET languages to interoperate with each other. When using Phalanger, PHP becomes a .NET language, but it’s still a dynamic language. That means that, in order to communicate with strongly typed languages as C#, we need more sofisticated architecture. This comes with DLR (Dynamic Language Runtime) and dynamic keyword in C#.
 
