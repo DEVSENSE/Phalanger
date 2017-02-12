@@ -1,3 +1,5 @@
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+
 As an established open-source community project, Phalanger already has a discussion forum and an issue tracker. Today, we’re starting a new Wiki page for Phalanger and also this blog. Although we’re actively working on Phalanger, we didn’t have any way to easily share news and information about the development of Phalanger with the community. We’re hoping to change it with this blog.
 Until today, there was no single blog site dedicated to Phalanger, except for Phalanger blog posts from Tomas.
 
