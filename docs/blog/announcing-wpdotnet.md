@@ -2,6 +2,8 @@
 
 Phalanger was capable of compiling WordPress for quite a long time, but this support was always targeted at developer audience. Experienced developers could compile WordPress and run it on their servers. However, we noticed that the combination is interesting not only to developers, but also to end users. Some of WordPress users want to run it on .NET or on Mono. Mainly for performance reasons, but some of them also because they already have other stuff running on .NET. The problem was it is quite a tough job to install Phalanger, configure, compile… don’t mentioning that on shared hosting it zyprexa street value can be a problem to install anything.
 
+![Right Now](https://github.com/bfistein/Phalanger/blob/master/docs/blog/rightnow.png "WP 1")
+
 So today we’re happy to announce WP.NET (wpdotnet.com) – A package of WordPress with embedded Phalanger. One package gives watson s hong kong online store you WordPress for both .NET 4.0 and for Mono (2.10.8 and higher), with no installation hassles. If you have ASP.NET hosting it’s easy to deploy and when a new Phalanger is available, you can update it from administration section, just easily as WordPress update.
 
 WP.NET is fully managed ASP.NET application. It does not contain any native code, so it’s possible to run it 64bit on Windows. The same package buy viagra taiwan 49 also works on Linux using Mono with version greater than 2.10.8.
