@@ -1,3 +1,8 @@
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+
+
+
+
 > **Note:** This is detailed tutorial mainly for Windows. Now there is a package of WordPress with embedded Phalanger which is prepared both for .NET and Mono. You can download directly from http://wpdotnet.com
 
 WordPress is an open-source content management system (CMS) built using PHP and MySQL. It’s of the most frequently used solutions for blog publishing. In this article I describe how to compile this PHP application to .NET Framework 4.0 using Phalanger.
