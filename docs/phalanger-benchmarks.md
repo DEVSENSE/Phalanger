@@ -4,11 +4,11 @@
 The following benchmarks were performed using Phalanger (March 2012).
 
 ## WordPress benchmarks
--CPU: Core i7 2600K, 3.70 GHz, 16GB RAM
--Windows 7 Professional, 64 bit, IIS 7.5, .NET 4.0
--WordPress: 3.3.1, clean installation
--No output caching.
--Managed MySQL extension for Phalanger.
+-CPU: Core i7 2600K, 3.70 GHz, 16GB RAM  
+-Windows 7 Professional, 64 bit, IIS 7.5, .NET 4.0  
+-WordPress: 3.3.1, clean installation  
+-No output caching.  
+-Managed MySQL extension for Phalanger.  
 
 ![1](https://github.com/bfistein/Phalanger/blob/master/docs/blog/1.png)
 ![2](https://github.com/bfistein/Phalanger/blob/master/docs/blog/2.png)
