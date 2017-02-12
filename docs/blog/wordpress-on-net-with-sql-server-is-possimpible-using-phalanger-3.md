@@ -4,7 +4,7 @@ In a recent scenario I wanted to run WordPress as a subdirectory of a .NET appli
 
 I already have IIS and SQL Server setup, so I want to utilize those with WordPress. To do this I installed a pre-compiled version of WordPress, using Phalanger, as well as a simple WordPress plugin to avoid having to install MySql. Here is what I did…
 
-#Contents
+# Contents
 
 - Download the Goods
 - Install Phalanger 3.0
@@ -139,7 +139,7 @@ It seems to choke on the “break;” line in the pdo.php since it is not in a l
 
 After it compiles successfully, the Bin folder should have a WebPages.dll file inside. If you are doing a standalone install, you’ll need to drop all the necessary Phalanger DLLs in the Bin as well.
 
-#Concluding Thoughts
+# Concluding Thoughts
 
 This is a real-world walk-through from notes as I set it up for my own purposes. There are numerous variations you can take along the way to set it up in your own environment and this post should only be used as a guideline. Definitely spend time testing it out in a local or sandbox environment before putting it into production.
 
