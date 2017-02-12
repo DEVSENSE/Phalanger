@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie) for the project repository and check out the latest [benchmarks on the project's website](http://peachpie.io/benchmarks).
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie) and check out the latest [benchmarks on the project's website](http://peachpie.io/benchmarks).
 
 # Benchmarks
 The following benchmarks were performed using Phalanger (March 2012).
@@ -10,12 +10,12 @@ The following benchmarks were performed using Phalanger (March 2012).
 -No output caching.
 -Managed MySQL extension for Phalanger.
 
-![1](https://github.com/bfistein/Phalanger/blob/master/docs/blog/1.png)
-![2](https://github.com/bfistein/Phalanger/blob/master/docs/blog/2.png)
+![1](1.png)
+![2](2.png)
 
 Tollowing tests are available in Phalanger’s source code repository. Benchmarks are performed on Core i7 2600K, 3.70 GHz, running as x86 or x64.
 
-![3](https://github.com/bfistein/Phalanger/blob/master/docs/blog/3.png)
-![4](https://github.com/bfistein/Phalanger/blob/master/docs/blog/4.png)
-![5](https://github.com/bfistein/Phalanger/blob/master/docs/blog/5.png)
+![3](3.png)
+![4](4.png)
+![5](5.png)
 
