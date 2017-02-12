@@ -1,1 +1,2 @@
-[Blog](/blog)
+- [Blog](blog)
+- [Benchmarks](phalanger-benchmarks)
