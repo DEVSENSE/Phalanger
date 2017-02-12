@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
 We are happy to announce that Phalanger 2.1 for .NET 4 (August 2011), our PHP language compiler, takes advantage of Dynamic Language Runtime (DLR) which is present in .NET 4.0 Framework and Mono.
 
@@ -10,7 +10,7 @@ Before DLR, we were classifying operations into two cases (not counting eval), b
 
 Following picture shows some selected micro-benchmarks. Each test of an operation was performed ten million times on Core i7 2600, 3.5 GHz, 16GB DDR3 desktop machine, running Windows 7 64 bit with .NET 4.0. You can clearly see the progress we’ve made with Phalanger in this release. where can i buy levothyroxine The chart shows time required to run the operation 10 million times (so a smaller value is better):
 
-![microbenchmarl](https://github.com/bfistein/Phalanger/blob/master/docs/blog/microbenchmark.png)
+![microbenchmarl](microbenchmark.png)
 
 You may wonder why Phalanger performs static operations so efficiently. The reason is that operation is bound during compilation. At run time there are just few CPU instructions going on. In dynamic operations where we need to bind the operation at run time, we have to do more stuff, but still it’s pretty fast now thanks to DLR.
 
