@@ -1,4 +1,4 @@
-> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](www.github.com/iolevel/peachpie)
+> **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [here](https://github.com/iolevel/peachpie)
 
 After the long break we are happy to announce progress on Phalanger and the new version 4.0. There are some major changes in functionality and planned changes in Phalanger API. Following blog post should summarize them and describe Phalanger 4.0 advantages and improvements.
 
