@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 03/06/2013
+
 After several months of development, contributions from opensource community and collaboration with big commercial users, Phalanger is getting bigger. Today we’ve released package of Phalanger, containing many new extensions and latest integration for Visual Studio.
 
 # New goodies in Phalanger
