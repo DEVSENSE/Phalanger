@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 04/07/2014
+
 After the long break we are happy to announce progress on Phalanger and the new version 4.0. There are some major changes in functionality and planned changes in Phalanger API. Following blog post should summarize them and describe Phalanger 4.0 advantages and improvements.
 
 In previous releases most of the issues were caused by complexity of the compilation process and the need of low level configuration of ASP.NET and Phalanger to achieve working Phalanger application. With Phalanger it was possible e.g. to build WinForms, ASP.NET Forms, console apps, class libraries; in two compilation modes with different parser settings.
