@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Miloslav Beno, 08/01/2011
+
 We are happy to announce that Phalanger 2.1 for .NET 4 (August 2011), our PHP language compiler, takes advantage of Dynamic Language Runtime (DLR) which is present in .NET 4.0 Framework and Mono.
 
 We’ve decided to use DLR for a few PHP operations in order to improve their performance. So far, the operations that use DLR are field read access and instance method invocation. Using DLR improved the performance significantly, for some operations we measured even more than 6x performance improvement. This significant progress was possible because of DLR caching system which is actual implementation of polymorfic inline cache.
