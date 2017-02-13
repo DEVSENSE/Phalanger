@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 11/22/2011
+
 Today we have released sources of Phalanger 3.0 – the PHP compiler for .NET Framework. It represents a big step for PHP compatibility, .NET interoperability and overall performance.The main changes include PHP 5.3 namespace support, PHP constants using const keyword, the support for Mono on Linux, improvements that enable using Phalanger with numerous open-source PHP applications and several bugfixes.
 
 EDIT: Phalanger 3.0 is released under Apache 2 license.
