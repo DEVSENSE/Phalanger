@@ -1,6 +1,6 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
-
+By Miloslav Beno, 04/19/2011
 
 
 > **Note:** This is detailed tutorial mainly for Windows. Now there is a package of WordPress with embedded Phalanger which is prepared both for .NET and Mono. You can download directly from http://wpdotnet.com
