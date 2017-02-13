@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 06/27/2011
+
 When creating .NET applications (including desktop and web applications), it may be useful to allow extending the application using some scripting language. The users of the application can write simple scripts to configure the application, modify how data is presented or write simple add-ins. In this article, we look how to use PHP as a scripting language. This has numerous benefits:
 
 - Many people have some basic knowledge of PHP, so even less experienced developers can write simple PHP scripts for your application.
