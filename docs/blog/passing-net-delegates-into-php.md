@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 12/10/2011
+
 Phalanger is the only solution allowing to seamlessly interoperate between PHP and .NET world. It allows to use e.g. .NET generics, namespaces, properties, method overloads, global variables, constants and .NET delegates in both worlds. In this post I will show how to pass delegates from C# into PHP, and how to use them in PHP.
 
 This interoperability feature is available since Phalanger 3.0, and it is very useful e.g. when writing C# plugins for PHP systems.
