@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 12/03/2011
+
 Global.asax file gives web developers great posibilities of handling the life-cycle of their web app. It is a common practice to take advantage of this file in ASP.NET applications. Now you can make use of it in a PHP web application too.
 
 Since Phalanger runs PHP web as a native ASP.NET application, you can extend its functionality using ASP.NET features. In this post I would like to show some advantages and possibilities of using Global.asax file in PHP web applications.

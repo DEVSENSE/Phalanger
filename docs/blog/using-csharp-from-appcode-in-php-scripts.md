@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 12/05/2011
+
 Phalanger 3.0 brings several cool and useful features, making interoperability between C# and PHP even easier. In this post, I will show one of them.
 
 # Use cases

@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Marc Mezzacca, 01/23/2012
+
 In a recent scenario I wanted to run WordPress as a subdirectory of a .NET application. I also wanted to avoid installing PHP and MySql on the Windows server. Impossible? Apparently not! (I’ll get to the word Possimpible a bit later).
 
 I already have IIS and SQL Server setup, so I want to utilize those with WordPress. To do this I installed a pre-compiled version of WordPress, using Phalanger, as well as a simple WordPress plugin to avoid having to install MySql. Here is what I did…

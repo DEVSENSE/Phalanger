@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 02/07/2012
+
 PHP offers a lot of various extensions which add additional library functions, classes, constants and other constructs. Common extensions include for example php_mysql and php_iconv. capoten on line no presciption Since extensions are implemented in C language, the performance is great. It also allows programmers to use other native libraries that are not available in PHP. However there is one big disadvantage; writing such extensions is not easy. C code is harder to maintain, it requires learning lower-level language and it is easier to make mistakes that lead to program failures that are hard to handle.
 
 Writing custom extensions is mostly done by companies requiring high performance code. Most of the normal libraries are written in PHP as a bunch of standard PHP scripts containing functions and classes. Users then include these libraries as normal, and the result is very similar. Writing libraries in PHP is much easier then writing extensions in C language, but it has significant performance costs. Also the author has to expose the source code of their library, which is not always desirable (I know, there is a obfuscation; but also deobfuscation).

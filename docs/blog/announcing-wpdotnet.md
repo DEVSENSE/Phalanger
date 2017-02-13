@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Miloslav Beno, 02/27/2012
+
 Phalanger was capable of compiling WordPress for quite a long time, but this support was always targeted at developer audience. Experienced developers could compile WordPress and run it on their servers. However, we noticed that the combination is interesting not only to developers, but also to end users. Some of WordPress users want to run it on .NET or on Mono. Mainly for performance reasons, but some of them also because they already have other stuff running on .NET. The problem was it is quite a tough job to install Phalanger, configure, compile… don’t mentioning that on shared hosting it can be a problem to install anything.
 
 ![Right Now](rightnow.png)

@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 05/09/2011
+
 **Update: Latest benchmarks are depicted on Benchmarks page.**
 
 One of the reasons why you may be interested in using Phalanger is that you need to run your PHP applications faster. Phalanger is a PHP language compiler for .NET. It is almost fully compatible with PHP, and it also adds several useful extensions. It makes it easy to integrate PHP applications with .NET or ASP.NET and it adds better compile time checking, but we’ll write about these in some other article.
