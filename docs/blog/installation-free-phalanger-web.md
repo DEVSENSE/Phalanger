@@ -1,5 +1,7 @@
 > **Note:** There is a new, modern PHP compiler to .NET entitled Peachpie, which is being developed at the moment. Please see [the Peachpie repository](https://github.com/iolevel/peachpie)
 
+By Jakub Misek, 06/11/2011
+
 A few people asked how to run their web site on top of Phalanger without a need of installing Phalanger. This seems to be useful idea, since you may not be allowed to (or you just don’t want to) install any additional software on a target machine. Since Phalanger works like standard ASP.NET request handler and uses a little of standard .NET configurations, it is possible. And the new version of Phalanger (June 2011) makes it even easier to configure.
 
 The solution I found allows users to run their PHP/Phalanger code on an ASP.NET/IIS 7 hosting without a need of installing an additional software. It only requires a few prerequisites required by the Phalanger runtime that should be installed already. At first you need to have .NET 4 (full) installed. And secondly Visual C++ 2010 runtime.
