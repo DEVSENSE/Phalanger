@@ -4,7 +4,7 @@ Introducing full-featured PHP 5.4 runtime & compiler for .NET/Mono frameworks. P
 
 ## Status
 
-Phalanger is a predecessor of Peachpie compiler (https://github.com/iolevel/peachpie) - PHP 7.1 compiler for .NET and .NET Core frameworks.
+Phalanger is a predecessor of Peachpie compiler (https://github.com/peachpiecompiler/peachpie) - PHP 7.1 compiler for .NET and .NET Core frameworks.
 
 ## Visual Studio Integration
 
