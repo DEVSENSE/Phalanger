@@ -308,10 +308,18 @@ namespace PHP.Library
                 if (StatInternalTryCache(path, out url))
                     return true;
 
+                bool res = FileStreamWrapper.HandleNewFileSystemInfo(false, path, (p) =>
+                    new FileInfo(p).Exists || new DirectoryInfo(p).Exists);
+
+                if (!res) {
+                    // Check if file exists inside MSA since
+                    // file_exists() may be used for checking for .php files
+                    // Console.WriteLine("IX: file_exists '" + path + "' = " + res);
+                }
+
                 // we can't just call {Directory|File}.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
-                return FileStreamWrapper.HandleNewFileSystemInfo(false, path, (p) =>
-                    new FileInfo(p).Exists || new DirectoryInfo(p).Exists);
+                return res;
             }
 
             return false;

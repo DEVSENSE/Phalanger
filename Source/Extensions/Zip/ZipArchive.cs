@@ -584,9 +584,17 @@ namespace PHP.Library.Zip
         [ImplementsMethod, PhpVisible]
         public object open(ScriptContext context, object filename, object flags)
         {
-            string name = Core.Convert.ObjectToString(filename);
-            this.m_zip = new ZipFile(name);
-            return true;
+			try
+			{
+				string name = Core.Convert.ObjectToString(filename);
+				this.m_zip = new ZipFile(name);
+				return true;
+
+			} catch(ICSharpCode.SharpZipLib.Zip.ZipException)
+			{
+				// If file is not a zip file, return false
+				return false;
+			}
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
