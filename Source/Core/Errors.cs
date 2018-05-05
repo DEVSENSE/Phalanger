@@ -582,8 +582,19 @@ namespace PHP.Core
         /// <summary>
         /// Delegate used to catch any thrown PHP exception. Used in compile time to catch PHP runtime exceptions.
         /// </summary>
-        [ThreadStatic]
-        internal static Action<PhpError, string> ThrowCallbackOverride = null;
+        internal static Action<PhpError, string> ThrowCallbackOverride
+		{
+			get
+			{
+				Action<PhpError, string> info;
+				ThreadStatic.Properties.TryGetProperty<Action<PhpError, string>>(out info);
+				return info;
+			}
+			set
+			{
+				ThreadStatic.Properties.SetProperty<Action<PhpError, string>>(value);
+			}
+		}
 
         /// <summary>
         /// Reports a PHP error. 
@@ -802,7 +813,7 @@ namespace PHP.Core
 
                     // error string as it is
                     default:
-                        return error.ToString(); ;
+                        return error.ToString();
                 }
             }
         }

@@ -7,14 +7,18 @@
     <ProjectGuid>{68B54816-884B-48A1-949C-DBBDE2A5C412}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <AssemblyName>PhpNet.VisualStudio.PhalangerTasks</AssemblyName>
+    <AssemblyName>PHP.VisualStudio.PhalangerTasks</AssemblyName>
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.VisualStudio.PhalangerTasks</RootNamespace>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework, Version=4.0.0.0" />
@@ -57,23 +61,6 @@
     <VisualStudio>
     </VisualStudio>
   </ProjectExtensions>
-  <!--The following is used for deploying the task and target to Program Files\MSBuild\...-->
-  <PropertyGroup>
-    <DeployDestination>$(MSBuildExtensionsPath)\Phalanger\4.0\</DeployDestination>
-  </PropertyGroup>
-  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'ReleaseGAC' ">
-    <Message Text="Deploying..." />
-    <MakeDir Directories="$(DeployDestination)" Condition="!Exists($(DeployDestination))" />
-    <CreateItem Include="$(OutputPath)\$(TargetName).*" AdditionalMetadata="Visible=false">
-      <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
-    </CreateItem>
-    <Copy SourceFiles="%(DeployToMSBuild.Identity)" DestinationFolder="$(DeployDestination)" SkipUnchangedFiles="true" />
-  </Target>
-  <ItemGroup>
-    <DeployToMSBuild Include="Phalanger.targets">
-      <Visible>false</Visible>
-    </DeployToMSBuild>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
       <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>

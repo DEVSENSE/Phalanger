@@ -171,6 +171,30 @@ namespace PHP.Core
 	/// </summary>
 	public abstract class PhpFilter : IFilter
 	{
+        #region GlobalInfo
+
+	    private class StaticInfo
+	    {
+	        /// <summary>The list of (script-specific) user filters.</summary>
+	        public Hashtable UserFilters = null;
+
+	        public static StaticInfo Get
+	        {
+	            get
+	            {
+	                StaticInfo info;
+	                var properties = ThreadStatic.Properties;
+	                if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+	                {
+	                    properties.SetProperty(info = new StaticInfo());
+	                }
+	                return info;
+	            }
+	        }
+	    }
+
+	    #endregion
+
 		#region Filtering methods and properties.
 
 		/// <summary>
@@ -378,16 +402,14 @@ namespace PHP.Core
 		{
 			get
 			{
-				return userFilters;
-				// EX: store userfilters in ScriptContext.
+				return StaticInfo.Get.UserFilters;
 			}
 			set
 			{
-				userFilters = value;
+				StaticInfo.Get.UserFilters = value;
 			}
 		}
 
-		/// <summary>The list of (script-specific) user filters.</summary>
 #if SILVERLIGHT
         //TODO: Silverlight doesn't have ThreadStatic, it should be done it in different way... now output is just a normal field
 		private static Hashtable userFilters = null;// { get { return tsuserFilters.Value; } set { tsuserFilters.Value = value; } }
@@ -398,9 +420,6 @@ namespace PHP.Core
         private static ArrayList systemFilters = new ArrayList();
 
 #else
-		[ThreadStatic]
-		private static Hashtable userFilters = null;
-
         /// <summary>The list of built-in filters.</summary>
 		private static ArrayList systemFilters = ArrayList.Synchronized(new ArrayList());
 

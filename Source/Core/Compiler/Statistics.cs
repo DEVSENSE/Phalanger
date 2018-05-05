@@ -38,54 +38,73 @@ namespace PHP.Core
 
 		internal struct AST
 		{
-            [ThreadStatic]
-			private static Dictionary<string, int> libraryCalls;
-            [ThreadStatic]
-            private static Dictionary<QualifiedName, int> unknownCalls;
-            [ThreadStatic]
-            private static Dictionary<string, int> nodes;
+		    private class StaticInfo
+			{
+				public Dictionary<string, int> LibraryCalls;
+				public Dictionary<QualifiedName, int> UnknownCalls;
+				public Dictionary<string, int> Nodes;
+
+				public static StaticInfo Get
+				{
+					get
+					{
+						StaticInfo info;
+						var properties = ThreadStatic.Properties;
+						if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+						{
+							properties.SetProperty(info = new StaticInfo());
+						}
+						return info;
+					}
+				}
+			}
 
 			[Conditional("DEBUG")]
 			public static void AddLibraryFunctionCall(string name, int paramCount)
 			{
-				if (libraryCalls == null) libraryCalls = new Dictionary<string, int>();
+				var info = StaticInfo.Get;
+				if (info.LibraryCalls == null) info.LibraryCalls = new Dictionary<string, int>();
 
-				CollectionUtils.IncrementValue(libraryCalls, name + ';' + paramCount, 1);
+				CollectionUtils.IncrementValue(info.LibraryCalls, name + ';' + paramCount, 1);
 			}
 
 			[Conditional("DEBUG")]
 			public static void AddUnknownFunctionCall(QualifiedName name)
 			{
-				if (unknownCalls == null) unknownCalls = new Dictionary<QualifiedName, int>();
+				var info = StaticInfo.Get;
+				if (info.UnknownCalls == null) info.UnknownCalls = new Dictionary<QualifiedName, int>();
 
-				CollectionUtils.IncrementValue(unknownCalls, name, 1);
+				CollectionUtils.IncrementValue(info.UnknownCalls, name, 1);
 			}
 
 			[Conditional("DEBUG")]
 			public static void AddNode(string name)
 			{
-				if (nodes == null) nodes = new Dictionary<string, int>();
-				CollectionUtils.IncrementValue(nodes, name, 1);
+				var info = StaticInfo.Get;
+				if (info.Nodes == null) info.Nodes = new Dictionary<string, int>();
+				CollectionUtils.IncrementValue(info.Nodes, name, 1);
 			}
 
 			[Conditional("DEBUG")]
 			public static void DumpBasic(TextWriter output)
 			{
+				var info = StaticInfo.Get;
 				output.WriteLine("AST: LibraryFunctionCalls = {0}, UnknownFunctionCalls = {1}",
-				  (libraryCalls != null) ? libraryCalls.Count : 0,
-				  (unknownCalls != null) ? unknownCalls.Count : 0);
+				  (info.LibraryCalls != null) ? info.LibraryCalls.Count : 0,
+				  (info.UnknownCalls != null) ? info.UnknownCalls.Count : 0);
 			}
 
 			[Conditional("DEBUG")]
 			public static void DumpLibraryFunctionCalls(TextWriter output)
 			{
-				if (libraryCalls == null) return;
+				var info = StaticInfo.Get;
+				if (info.LibraryCalls == null) return;
 
-				string[] keys = new string[libraryCalls.Count];
-				int[] values = new int[libraryCalls.Count];
+				string[] keys = new string[info.LibraryCalls.Count];
+				int[] values = new int[info.LibraryCalls.Count];
 
-				libraryCalls.Keys.CopyTo(keys, 0);
-				libraryCalls.Values.CopyTo(values, 0);
+				info.LibraryCalls.Keys.CopyTo(keys, 0);
+				info.LibraryCalls.Values.CopyTo(values, 0);
 
 				//TODO:Array.Sort(values, keys);
 
@@ -99,10 +118,11 @@ namespace PHP.Core
 			[Conditional("DEBUG")]
 			public static void DumpUnknownFunctionCalls(TextWriter output)
 			{
-				if (unknownCalls == null) return;
+				var info = StaticInfo.Get;
+				if (info.UnknownCalls == null) return;
 
-				QualifiedName[] names = new QualifiedName[unknownCalls.Count];
-				unknownCalls.Keys.CopyTo(names, 0);
+				QualifiedName[] names = new QualifiedName[info.UnknownCalls.Count];
+				info.UnknownCalls.Keys.CopyTo(names, 0);
 
 				//TODO:Array.Sort(names);
 
@@ -115,18 +135,19 @@ namespace PHP.Core
 			[Conditional("DEBUG")]
 			public static void DumpNodes(TextWriter output)
 			{
-				if (nodes == null) return;
+				var info = StaticInfo.Get;
+				if (info.Nodes == null) return;
 
-				string[] keys = new string[nodes.Count];
-				int[] values = new int[nodes.Count];
+				string[] keys = new string[info.Nodes.Count];
+				int[] values = new int[info.Nodes.Count];
 
-				nodes.Keys.CopyTo(keys, 0);
-				nodes.Values.CopyTo(values, 0);
+				info.Nodes.Keys.CopyTo(keys, 0);
+				info.Nodes.Values.CopyTo(values, 0);
 
 				//TODO:Array.Sort(values,keys);
 
 				output.WriteLine("node;emitted instances");
-				for (int i = 0; i < nodes.Count; i++)
+				for (int i = 0; i < info.Nodes.Count; i++)
 				{
 					output.WriteLine(keys[i] + ";" + values[i]);
 				}

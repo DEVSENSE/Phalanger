@@ -15,10 +15,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.Library.Strings</RootNamespace>
     <SignAssembly>true</SignAssembly>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
@@ -71,6 +75,10 @@
     <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
       <Project>{d515e8f4-357c-4caf-87c1-97d64c5f865a}</Project>
       <Name>ClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core.Parsers\Core.Parsers.csproj">
+      <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
+      <Name>Core.Parsers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{9a2867a2-981c-4b5a-a1c5-eaccc80b5148}</Project>

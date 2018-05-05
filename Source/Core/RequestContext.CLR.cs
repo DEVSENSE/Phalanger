@@ -47,9 +47,20 @@ namespace PHP.Core
 		/// Contains a <B>null</B> reference when the current thread is not executing any web request 
 		/// (or prior to the call to <see cref="Initialize"/> method).
 		/// </summary>
-		public static RequestContext CurrentContext { get { return currentContext; } }
-		[ThreadStatic]
-		private static RequestContext currentContext = null;
+		[DebuggerNonUserCode]
+		public static RequestContext CurrentContext
+		{
+			get
+			{
+				RequestContext info;
+				ThreadStatic.Properties.TryGetProperty<RequestContext>(out info);
+				return info;
+			}
+			set
+			{
+				ThreadStatic.Properties.SetProperty<RequestContext>(value);
+			}
+		}
 
 		private RequestContext(HttpContext/*!*/ httpContext)
 		{
@@ -161,7 +172,7 @@ namespace PHP.Core
 			if (context == null)
 				throw new ArgumentNullException("context");
 
-			RequestContext req_context = currentContext;
+			RequestContext req_context = CurrentContext;
 
 			// already initialized within the current request:
 			if (req_context != null && req_context.httpContext.Timestamp == context.Timestamp)
@@ -170,7 +181,7 @@ namespace PHP.Core
 			Debug.WriteLine("REQUEST", "-- started ----------------------");
 
 			req_context = new RequestContext(context);
-			currentContext = req_context;
+			CurrentContext = req_context;
 
 			req_context.Initialize(appContext);
 
@@ -202,7 +213,7 @@ namespace PHP.Core
 		/// </summary>
 		public static void FinalizeContext()
 		{
-			RequestContext req_context = currentContext;
+			RequestContext req_context = CurrentContext;
 			if (req_context != null) req_context.Dispose();
 		}
 
@@ -644,7 +655,7 @@ namespace PHP.Core
 			UpdateSessionCookieExpiration();
 
 			this.httpContext = null;
-			currentContext = null;
+			CurrentContext = null;
 		}
 
 		#endregion

@@ -2717,7 +2717,7 @@ namespace PHP.Core.Reflection
                 {
                     if (cache.ContainsKey(realObject))
                     {
-                        cache.Resurrect(realObject, this);
+                        //cache.Resurrect(realObject, this);
                         GC.ReRegisterForFinalize(this);
                     }
                 }

@@ -166,7 +166,7 @@ namespace PHP.Library.Data
 		/// <param name="convertTypes">Whether to convert resulting values to PHP types.</param>
 		/// <exception cref="ArgumentNullException">Argument is a <B>null</B> reference.</exception>
 		protected PhpDbResult(PhpDbConnection/*!*/ connection, IDataReader/*!*/ reader, string/*!*/ name, bool convertTypes)
-			: base(name)
+			: base(name, false)
 		{
 			if (connection == null)
 				throw new ArgumentNullException("connection");
@@ -212,15 +212,6 @@ namespace PHP.Library.Data
 			this.currentSetIndex = 0;
 			this.currentRowIndex = -1;
 			this.currentFieldIndex = 0;
-		}
-
-		/// <summary>
-		/// Disposes the resource.
-		/// </summary>
-		protected override void FreeManaged()
-		{
-			base.FreeManaged();
-			if (this.reader != null) reader.Close();
 		}
 
 		internal void ReleaseConnection()

@@ -2141,11 +2141,25 @@ namespace PHP.Core
 		private readonly GlobalConfiguration/*!*/ global;
 		private readonly LocalConfiguration/*!*/ defaultLocal;
 
-		[ThreadStatic]
-		private static Configuration current = null;
+		private class StaticInfo
+		{
+			public Configuration Current = null;
+			public bool IsBeingLoadedToCurrentThread = false;
 
-		[ThreadStatic]
-		private static bool isBeingLoadedToCurrentThread = false;
+			public static StaticInfo Get
+			{
+				get
+				{
+					StaticInfo info;
+					var properties = ThreadStatic.Properties;
+					if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+					{
+						properties.SetProperty(info = new StaticInfo());
+					}
+					return info;
+				}
+			}
+		}
 
         private Configuration(GlobalConfiguration/*!*/ global, LocalConfiguration/*!*/ defaultLocal)
         {
@@ -2167,10 +2181,11 @@ namespace PHP.Core
 		/// <exception cref="ConfigurationErrorsException">Configuration is invalid or incomplete.</exception>
 		public static void Load(ApplicationContext/*!*/ appContext)
 		{
-			if (current == null)
+			var info = StaticInfo.Get;
+			if (info.Current == null)
 			{
-				Debug.Assert(!isBeingLoadedToCurrentThread, "Configuration loader triggered next configuration load");
-				isBeingLoadedToCurrentThread = true;
+				Debug.Assert(!info.IsBeingLoadedToCurrentThread, "Configuration loader triggered next configuration load");
+				info.IsBeingLoadedToCurrentThread = true;
 
 				try
 				{
@@ -2178,17 +2193,17 @@ namespace PHP.Core
 
 					if (context != null)
 					{
-						current = new Configuration(context.Global, context.Local);
+						info.Current = new Configuration(context.Global, context.Local);
 					}
 					else
 					{
 						// no configuration loaded from .config files:
-						current = new Configuration(new GlobalConfiguration(), new LocalConfiguration());
+						info.Current = new Configuration(new GlobalConfiguration(), new LocalConfiguration());
 					}
 				}
 				finally
 				{
-					isBeingLoadedToCurrentThread = false;
+					info.IsBeingLoadedToCurrentThread = false;
 				}
 			}
 		}
@@ -2204,7 +2219,8 @@ namespace PHP.Core
 		/// </remarks>
 		public static void Reload(ApplicationContext/*!*/ appContext, bool reloadFromFile)
 		{
-			current = null;
+			var info = StaticInfo.Get;
+			info.Current = null;
 			
 			if (reloadFromFile) 
 				ConfigurationManager.RefreshSection(SectionName);
@@ -2232,7 +2248,7 @@ namespace PHP.Core
 		/// </summary>
 		internal static ApplicationConfiguration.PathsSection/*!*/ GetPathsNoLoad()
 		{
-			Debug.Assert(current != null || isBeingLoadedToCurrentThread);
+			Debug.Assert(StaticInfo.Get.Current != null || StaticInfo.Get.IsBeingLoadedToCurrentThread);
 			return application.Paths;
 		}
 
@@ -2246,8 +2262,9 @@ namespace PHP.Core
 			get
 			{
                 LoadDefault();
-				Debug.Assert(current != null);
-				return current.global;
+				var info = StaticInfo.Get;
+				Debug.Assert(info.Current != null);
+				return info.Current.global;
 			}
 		}
 
@@ -2261,8 +2278,9 @@ namespace PHP.Core
 			get
 			{
                 LoadDefault();
-				Debug.Assert(current != null);
-				return current.defaultLocal;
+				var info = StaticInfo.Get;
+				Debug.Assert(info.Current != null);
+				return info.Current.defaultLocal;
 			}
 		}
 
@@ -2273,7 +2291,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				return current != null;
+				return StaticInfo.Get.Current != null;
 			}
 		}
 
@@ -2284,7 +2302,7 @@ namespace PHP.Core
         {
             get
             {
-                return isBeingLoadedToCurrentThread;
+                return StaticInfo.Get.IsBeingLoadedToCurrentThread;
             }
         }
 

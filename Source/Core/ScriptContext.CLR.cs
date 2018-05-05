@@ -300,11 +300,6 @@ namespace PHP.Core
 		#region Current Context
 
 		/// <summary>
-		/// Call context name for the current <see cref="ScriptContext"/>.
-		/// </summary>
-		private const string callContextSlotName = "PhpNet:ScriptContext";
-
-		/// <summary>
 		/// The instance of <see cref="ScriptContext"/> associated with the current logical thread.
 		/// </summary>
 		/// <remarks>
@@ -319,25 +314,22 @@ namespace PHP.Core
 			[Emitted]
 			get
 			{
-				// try to get script context from call context:
-                // ScriptContext is ILogicalThreadAffinative, LogicalCallContext is used.
-				try
-				{
-                    return ((ScriptContext)CallContext.GetData(callContextSlotName)) ?? CreateDefaultScriptContext();   // on Mono, .GetData must be used (GetLogicalData is not implemented)
-				}
-				catch (InvalidCastException)
-				{
-					throw new InvalidCallContextDataException(callContextSlotName);
-				}
-
-				//return result.AttachToHttpApplication();
+                ScriptContext info;
+                ThreadStatic.Properties.TryGetProperty<ScriptContext>(out info);
+                return info;
 			}
 			set
 			{
-				if (value == null)
-					CallContext.FreeNamedDataSlot(callContextSlotName);
-				else
-                    CallContext.SetData(callContextSlotName, value);            // on Mono, .SetData must be used (SetLogicalData is not implemented)
+			    if (value == null)
+			    {
+                    // If we are clearing the current script context, ditch all the thread static properties at once. This
+                    // happens at the end of the request and cleans everything up.
+                    ThreadStatic.Properties = null;
+			    }
+			    else
+			    {
+                    ThreadStatic.Properties.SetProperty<ScriptContext>(value);
+                }
 			}
 		}
 

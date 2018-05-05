@@ -49,6 +49,30 @@ namespace PHP.Library.Xml
     [ImplementsExtension("libxml")]
     public static class PhpLibXml
     {
+        #region GlobalInfo
+
+        private class StaticInfo
+        {
+            public List<XmlError> ErrorList;
+            public Action<XmlError> ErrorHandler;
+
+            public static StaticInfo Get
+            {
+                get
+                {
+                    StaticInfo info;
+                    var properties = ThreadStatic.Properties;
+                    if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+                    {
+                        properties.SetProperty(info = new StaticInfo());
+                    }
+                    return info;
+                }
+            }
+        }
+
+        #endregion
+
         #region libxml constants
 
         /// <summary>
@@ -251,16 +275,6 @@ namespace PHP.Library.Xml
 
         #endregion
 
-        #region Fields
-
-        [ThreadStatic]
-        private static List<XmlError> error_list;
-
-        [ThreadStatic]
-        private static Action<XmlError> error_handler;
-
-        #endregion
-
         #region Initialization
 
         static PhpLibXml()
@@ -268,10 +282,11 @@ namespace PHP.Library.Xml
             // restores libxml at the request end,
             // clears error list and handlers:
             RequestContext.RequestEnd += () =>
-                {
-                    error_list = null;
-                    error_handler = null;
-                };
+            {
+				var info = StaticInfo.Get;
+				info.ErrorList = null;
+                info.ErrorHandler = null;
+            };
         }
 
         #endregion
@@ -287,9 +302,10 @@ namespace PHP.Library.Xml
             if (err == null)
                 return;
 
-            if (error_handler != null)
+            var errorHandler = StaticInfo.Get.ErrorHandler;
+			if (errorHandler != null)
             {
-                error_handler(err);
+                errorHandler(err);
             }
             else
             {
@@ -304,7 +320,7 @@ namespace PHP.Library.Xml
         [ImplementsFunction("libxml_clear_errors")]
         public static void ClearErrors()
         {
-            error_list = null;
+            StaticInfo.Get.ErrorList = null;
         }
 
         [ImplementsFunction("libxml_disable_entity_loader")]
@@ -322,20 +338,22 @@ namespace PHP.Library.Xml
         [ImplementsFunction("libxml_get_errors")]
         public static PhpArray/*!*/GetErrors(ScriptContext/*!*/context)
         {
-            if (error_list == null)
+            var errorList = StaticInfo.Get.ErrorList;
+			if (errorList == null)
                 return new PhpArray();
 
-            return new PhpArray(error_list.Select(x => x.GetPhpErrorObject(context)));
+            return new PhpArray(errorList.Select(x => x.GetPhpErrorObject(context)));
         }
 
         [ImplementsFunction("libxml_get_last_error")]
         [return: CastToFalse]
         public static PhpObject GetLastError(ScriptContext/*!*/context)
         {
-            if (error_list == null || error_list.Count == 0)
+            var errorList = StaticInfo.Get.ErrorList;
+			if (errorList == null || errorList.Count == 0)
                 return null;
 
-            return error_list[error_list.Count - 1].GetPhpErrorObject(context);
+            return errorList[errorList.Count - 1].GetPhpErrorObject(context);
         }
 
         [ImplementsFunction("libxml_set_streams_context")]
@@ -361,23 +379,24 @@ namespace PHP.Library.Xml
         [ImplementsFunction("libxml_use_internal_errors")]
         public static bool UseInternalErrors(bool use_errors)
         {
-            bool previousvalue = error_handler != null;
+			var info = StaticInfo.Get;
+            bool previousvalue = info.ErrorHandler != null;
 
             if (use_errors)
             {
-                error_handler = (err) =>
+                info.ErrorHandler = (err) =>
                     {
-                        if (error_list == null)
-                            error_list = new List<XmlError>();
+                        if (info.ErrorList == null)
+                            info.ErrorList = new List<XmlError>();
 
-                        error_list.Add(err);
+                        info.ErrorList.Add(err);
                     };
-                //error_list = error_list;// keep error_list as it is
+                //info.ErrorList = info.ErrorList;// keep error_list as it is
             }
             else
             {
-                error_handler = null;   // outputs xml errors
-                error_list = null;
+                info.ErrorHandler = null;   // outputs xml errors
+                info.ErrorList = null;
             }
 
             return previousvalue;

@@ -315,15 +315,42 @@ namespace PHP.Core
 		internal static readonly ConstructorInfo/*!*/ RTVariablesTableCtor = RTVariablesTableType.GetConstructor(Types.Int);
 		internal static readonly MethodInfo/*!*/ RTVariablesTableAdder = RTVariablesTableType.GetProperty("Item").GetSetMethod();//RTVariablesTableType.GetMethod("Add");
 
+        #region GlobalInfo
+
+	    private class StaticInfo
+	    {
+	        /// <summary>
+	        /// Auxiliary variable holding the current level of indentation while printing a variable.
+	        /// </summary>
+	        public int PrintIndentationLevel = 0;
+
+	        public static StaticInfo Get
+	        {
+	            get
+	            {
+	                StaticInfo info;
+	                var properties = ThreadStatic.Properties;
+	                if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+	                {
+	                    properties.SetProperty(info = new StaticInfo());
+	                }
+	                return info;
+	            }
+	        }
+	    }
+
+	    #endregion
+
         #region IPhpPrintable
 
         /// <summary>
         /// Auxiliary variable holding the current level of indentation while printing a variable.
         /// </summary>
-#if !SILVERLIGHT            //TODO: Silverlight doesn't have ThreadStatic, it should be done in different way... now output is just a normal static field
-        [ThreadStatic]
-#endif
-		internal static int PrintIndentationLevel = 0;
+	    internal static int PrintIndentationLevel
+	    {
+	        get { return StaticInfo.Get.PrintIndentationLevel; }
+	        set { StaticInfo.Get.PrintIndentationLevel = value; }
+	    }
 
 		/// <summary>
 		/// Writes indentation spaces to <see cref="TextWriter"/> according to <see cref="PrintIndentationLevel"/>.
