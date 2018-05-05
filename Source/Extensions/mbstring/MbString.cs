@@ -60,6 +60,33 @@ namespace PHP.Library.Strings
 	/// </summary>
 	public static class MultiByteString
 	{
+        #region GlobalInfo
+
+	    private class StaticInfo
+	    {
+	        public Encoding InternalEncoding = null;
+	        public Encoding RegexEncoding = null;
+	        public RegexOptions RegexOptions = RegexOptions.DotMatchesNewLine | RegexOptions.ConvertMatchBeginEnd;
+	        public RegexSyntaxModes RegexSyntaxMode = RegexSyntaxModes.POSIXExtendedRegex;
+	        //public string MailLanguage = null;
+
+	        public static StaticInfo Get
+	        {
+	            get
+	            {
+	                StaticInfo info;
+	                var properties = ThreadStatic.Properties;
+	                if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+	                {
+	                    properties.SetProperty(info = new StaticInfo());
+	                }
+	                return info;
+	            }
+	        }
+	    }
+
+	    #endregion
+
         #region Constants
         
         [Flags]
@@ -237,13 +264,14 @@ namespace PHP.Library.Strings
         {
             get
             {
-                return _internalEncoding ?? Configuration.Application.Globalization.PageEncoding;
+                return StaticInfo.Get.InternalEncoding ?? Configuration.Application.Globalization.PageEncoding;
             }
             private set
             {
-                _internalEncoding = value;
+                StaticInfo.Get.InternalEncoding = value;
             }
         }
+
         /// <summary>
         /// Multi Byte String Internal Encoding IANA name.
         /// </summary>
@@ -254,8 +282,6 @@ namespace PHP.Library.Strings
                 return InternalEncoding.WebName;
             }
         }
-        [ThreadStatic]
-        private static Encoding _internalEncoding = null;
 
         /// <summary>
         /// Get encoding used by default in the extension.
@@ -323,13 +349,14 @@ namespace PHP.Library.Strings
         {
             get
             {
-                return _regexEncoding ?? Configuration.Application.Globalization.PageEncoding;
+                return StaticInfo.Get.RegexEncoding ?? Configuration.Application.Globalization.PageEncoding;
             }
             private set
             {
-                _regexEncoding = value;
+                StaticInfo.Get.RegexEncoding = value;
             }
         }
+
         /// <summary>
         /// Multi Byte String regex Encoding IANA name.
         /// </summary>
@@ -340,8 +367,6 @@ namespace PHP.Library.Strings
                 return RegexEncoding.WebName;
             }
         }
-        [ThreadStatic]
-        private static Encoding _regexEncoding = null;
 
         /// <summary>
         /// Get encoding used by regex in the extension.
@@ -427,12 +452,6 @@ namespace PHP.Library.Strings
             POSIXExtendedRegex,
         }
 
-        [ThreadStatic]
-        private static RegexOptions _regexOptions = RegexOptions.DotMatchesNewLine | RegexOptions.ConvertMatchBeginEnd;
-
-        [ThreadStatic]
-        private static RegexSyntaxModes _regexSyntaxMode = RegexSyntaxModes.POSIXExtendedRegex;
-
         /// <summary>
         /// Determines if given combination of options is enabled.
         /// </summary>
@@ -440,8 +459,9 @@ namespace PHP.Library.Strings
         /// <returns>True if given option mask is enabled.</returns>
         private static bool OptionEnabled(RegexOptions opt)
         {
-            return (_regexOptions & opt) != 0;
+            return (StaticInfo.Get.RegexOptions & opt) != 0;
         }
+
         /// <summary>
         /// Determines if given syntax mode is set.
         /// </summary>
@@ -449,7 +469,7 @@ namespace PHP.Library.Strings
         /// <returns>True if given syntax mode is enabled.</returns>
         private static bool OptionEnabled(RegexSyntaxModes opt)
         {
-            return (_regexSyntaxMode == opt);
+            return (StaticInfo.Get.RegexSyntaxMode == opt);
         }
 
         #endregion
@@ -552,8 +572,8 @@ namespace PHP.Library.Strings
             }
 
             //
-            _regexOptions = newRegexOptions;
-            _regexSyntaxMode = newRegexSyntaxModes;
+            StaticInfo.Get.RegexOptions = newRegexOptions;
+            StaticInfo.Get.RegexSyntaxMode = newRegexSyntaxModes;
 
             return GetRegexOptions();
         }
@@ -1268,16 +1288,14 @@ namespace PHP.Library.Strings
         {
             get
             {
-                return _mailLanguage ?? "uni";
+                return GlobalInfo.Get(ScriptContext.CurrentContext).MailLanguage ?? "uni";
             }
             set
             {
-                _mailLanguage = value;  // TODO: check the value
+                GlobalInfo.Get(ScriptContext.CurrentContext).MailLanguage = value;  // TODO: check the value
             }
 
-        }
-        [ThreadStatic]
-        private static string _mailLanguage = null;*/
+        }*/
 
         /// <summary>
         /// Get language used by mail functions.

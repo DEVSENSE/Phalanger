@@ -1088,6 +1088,31 @@ namespace PHP.Core
     /// </summary>
     public partial class InputOutputStreamWrapper : StreamWrapper
     {
+        #region GlobalInfo
+
+        private class StaticInfo
+        {
+            public PhpStream Input = null;
+            public PhpStream Output = null;
+            public Stream Bytesink = null;
+
+            public static StaticInfo Get
+            {
+                get
+                {
+                    StaticInfo info;
+                    var properties = ThreadStatic.Properties;
+                    if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+                    {
+                        properties.SetProperty(info = new StaticInfo());
+                    }
+                    return info;
+                }
+            }
+        }
+
+        #endregion
+
         #region StreamWrapper overrides
 
         /// <include file='Doc/Wrappers.xml' path='docs/method[@name="Open"]/*'/>
@@ -1242,19 +1267,17 @@ namespace PHP.Core
         {
             get
             {
-                if (input == null)
+                var info = StaticInfo.Get;
+				if (info.Input == null)
                 {
-                    input = new NativeStream(OpenScriptInput(), null,
+                    info.Input = new NativeStream(OpenScriptInput(), null,
                       StreamAccessOptions.Read | StreamAccessOptions.Persistent, "php://input", StreamContext.Default);
-                    input.IsReadBuffered = false;
+                    info.Input.IsReadBuffered = false;
                     // EX: cache this as a persistent stream
                 }
-                return input;
+                return info.Input;
             }
         }
-
-        [ThreadStatic]
-        private static PhpStream input = null;
 #endif
 
         /// <summary>
@@ -1269,26 +1292,19 @@ namespace PHP.Core
             get
             {
                 Stream currentScriptOutput = OpenScriptOutput();
-                if (bytesink != currentScriptOutput)
+                var info = StaticInfo.Get;
+				if (info.Bytesink != currentScriptOutput)
                 {
-                    bytesink = currentScriptOutput;
-                    if (output != null) output.Close();
-                    output = new NativeStream(currentScriptOutput, null,
+                    info.Bytesink = currentScriptOutput;
+                    if (info.Output != null) info.Output.Close();
+                    info.Output = new NativeStream(currentScriptOutput, null,
                       StreamAccessOptions.Write | StreamAccessOptions.Persistent, "php://output", StreamContext.Default);
-                    output.IsWriteBuffered = false;
+                    info.Output.IsWriteBuffered = false;
                     // EX: cache this as a persistent stream
                 }
-                return output;
+                return info.Output;
             }
         }
-#if SILVERLIGHT
-		//TODO: Silverlight doesn't have ThreadStatic, it should be done in different way... now output is just a normal static field
-		private static PhpStream output;
-#else
-        [ThreadStatic]
-        private static PhpStream output = null;
-#endif
-        private static Stream bytesink = null;
 
 #if !SILVERLIGHT
         /// <summary>

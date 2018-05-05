@@ -75,6 +75,30 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
 	public static class PhpIni
 	{
+        #region GlobalInfo
+
+	    private class StaticInfo
+	    {
+	        public Stack OldUserErrorHandlers = null; // GENERICS: <ErrorHandlerRecord>
+	        public Stack OldUserExceptionHandlers = null; // GENERICS: <PhpCallback>
+
+	        public static StaticInfo Get
+	        {
+	            get
+	            {
+	                StaticInfo info;
+	                var properties = ThreadStatic.Properties;
+	                if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+	                {
+	                    properties.SetProperty(info = new StaticInfo());
+	                }
+	                return info;
+	            }
+	        }
+	    }
+
+	    #endregion
+
 		#region Default values for Core options having no equivalent in configuration record
 
 		/// <summary>
@@ -879,24 +903,13 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Stores user error handlers which has been rewritten by a new one.
-		/// </summary>
-		[ThreadStatic]
-		private static Stack OldUserErrorHandlers;          // GENERICS: <ErrorHandlerRecord>
-
-		/// <summary>
-		/// Stores user exception handlers which has been rewritten by a new one.
-		/// </summary>
-		[ThreadStatic]
-		private static Stack OldUserExceptionHandlers;          // GENERICS: <PhpCallback>
-
-		/// <summary>
-		/// Clears <see cref="OldUserErrorHandlers"/> and <see cref="OldUserExceptionHandlers"/> on request end.
+		/// Clears <see cref="StaticInfo.OldUserErrorHandlers"/> and <see cref="StaticInfo.OldUserExceptionHandlers"/> on request end.
 		/// </summary>
 		private static void ClearOldUserHandlers()
 		{
-			OldUserErrorHandlers = null;
-			OldUserExceptionHandlers = null;
+			var info = StaticInfo.Get;
+			info.OldUserErrorHandlers = null;
+			info.OldUserExceptionHandlers = null;
 		}
 
 		/// <summary>
@@ -943,12 +956,12 @@ namespace PHP.Library
 			// previous handler was defined by user => store it into the stack:
 			if (old_handler != null)
 			{
-				if (OldUserErrorHandlers == null)
+				var info = StaticInfo.Get;
+				if (info.OldUserErrorHandlers == null)
 				{
-					OldUserErrorHandlers = new Stack(5);
-                    RequestContext.RequestEnd += new Action(ClearOldUserHandlers);
+					info.OldUserErrorHandlers = new Stack(5);
 				}
-				OldUserErrorHandlers.Push(new ErrorHandlerRecord(old_handler, old_errors));
+				info.OldUserErrorHandlers.Push(new ErrorHandlerRecord(old_handler, old_errors));
 			}
 
 			// sets the current handler:
@@ -966,9 +979,10 @@ namespace PHP.Library
 		public static bool RestoreErrorHandler()
 		{
 			// if some user handlers has been stored in the stack then restore the top-most, otherwise set to null:
-			if (OldUserErrorHandlers != null && OldUserErrorHandlers.Count > 0)
+			var info = StaticInfo.Get;
+			if (info.OldUserErrorHandlers != null && info.OldUserErrorHandlers.Count > 0)
 			{
-				ErrorHandlerRecord record = (ErrorHandlerRecord)OldUserErrorHandlers.Pop();
+				ErrorHandlerRecord record = (ErrorHandlerRecord)info.OldUserErrorHandlers.Pop();
 
 				Configuration.Local.ErrorControl.UserHandler = record.ErrorHandler;
 				Configuration.Local.ErrorControl.UserHandlerErrors = record.ErrorTypes;
@@ -1005,12 +1019,12 @@ namespace PHP.Library
 			// previous handler was defined by user => store it into the stack:
 			if (old_handler != null)
 			{
-				if (OldUserExceptionHandlers == null)
+				var info = StaticInfo.Get;
+				if (info.OldUserExceptionHandlers == null)
 				{
-					OldUserExceptionHandlers = new Stack(5);
-                    RequestContext.RequestEnd += new Action(ClearOldUserHandlers);
+					info.OldUserExceptionHandlers = new Stack(5);
 				}
-				OldUserExceptionHandlers.Push(old_handler);
+				info.OldUserExceptionHandlers.Push(old_handler);
 			}
 
 			// sets the current handler:
@@ -1026,8 +1040,9 @@ namespace PHP.Library
 		[ImplementsFunction("restore_exception_handler")]
 		public static bool RestoreExceptionHandler()
 		{
-			if (OldUserExceptionHandlers != null && OldUserExceptionHandlers.Count > 0)
-				Configuration.Local.ErrorControl.UserExceptionHandler = (PhpCallback)OldUserExceptionHandlers.Pop();
+			var info = StaticInfo.Get;
+			if (info.OldUserExceptionHandlers != null && info.OldUserExceptionHandlers.Count > 0)
+				Configuration.Local.ErrorControl.UserExceptionHandler = (PhpCallback)info.OldUserExceptionHandlers.Pop();
 			else
 				Configuration.Local.ErrorControl.UserExceptionHandler = null;
 

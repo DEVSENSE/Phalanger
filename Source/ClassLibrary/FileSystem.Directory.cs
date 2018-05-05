@@ -304,8 +304,9 @@ namespace PHP.Library
 
         protected override void FreeManaged()
         {
-            if (object.ReferenceEquals(this, PhpDirectory.lastDirHandle))
-                PhpDirectory.lastDirHandle = null;
+			var info = PhpDirectory.StaticInfo.Get;
+            if (object.ReferenceEquals(this, info.LastDirHandle))
+                info.LastDirHandle = null;
         }
 
 		public readonly string[] Listing;
@@ -326,6 +327,29 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
 	public static class PhpDirectory
 	{
+        #region GlobalInfo
+
+	    internal class StaticInfo
+	    {
+	        public PhpResource LastDirHandle = null;
+
+	        public static StaticInfo Get
+	        {
+	            get
+	            {
+	                StaticInfo info;
+	                var properties = ThreadStatic.Properties;
+	                if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+	                {
+	                    properties.SetProperty(info = new StaticInfo());
+	                }
+	                return info;
+	            }
+	        }
+	    }
+
+	    #endregion
+
 		#region Browsing (getcwd, chdir, NS: chroot)
 
 		/// <summary>Gets the virtual working directory of the current script.</summary>
@@ -398,12 +422,6 @@ namespace PHP.Library
 			return new Directory(directory);
 		}
 
-        /// <summary>
-        /// Last handle opened by <c>opendir</c>.
-        /// </summary>
-        [ThreadStatic]
-        internal static PhpResource lastDirHandle;
-
 		/// <summary>Returns a directory handle to be used in subsequent 
 		/// <c>readdir()</c>, <c>rewinddir()</c> and <c>closedir()</c> calls.</summary>
 		/// <remarks>
@@ -426,14 +444,15 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static PhpResource Open(string directory)
 		{
-            lastDirHandle = null;
+			var info = StaticInfo.Get;
+			info.LastDirHandle = null;
 
 			StreamWrapper wrapper;
 			if (!PhpStream.ResolvePath(ref directory, out wrapper, CheckAccessMode.Directory, CheckAccessOptions.Empty))
 				return null;
 
 			string[] listing = wrapper.Listing(directory, 0, null);
-			return (listing != null) ? (lastDirHandle = new DirectoryListing(listing)) : null;
+			return (listing != null) ? (info.LastDirHandle = new DirectoryListing(listing)) : null;
 		}
 
         /// <summary>
@@ -443,7 +462,7 @@ namespace PHP.Library
         [return: CastToFalse]
         public static string Read()
         {
-            return Read(PhpDirectory.lastDirHandle);
+            return Read(StaticInfo.Get.LastDirHandle);
         }
 
 		/// <summary>
@@ -472,7 +491,7 @@ namespace PHP.Library
         [ImplementsFunction("rewinddir")]
         public static void Rewind()
         {
-            Rewind(PhpDirectory.lastDirHandle);
+            Rewind(StaticInfo.Get.LastDirHandle);
         }
 
 		/// <summary>
@@ -498,7 +517,7 @@ namespace PHP.Library
         [ImplementsFunction("closedir")]
         public static void Close()
         {
-            Close(PhpDirectory.lastDirHandle);
+            Close(StaticInfo.Get.LastDirHandle);
         }
 
 		/// <summary>

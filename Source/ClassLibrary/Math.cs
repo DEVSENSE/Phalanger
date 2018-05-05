@@ -32,6 +32,30 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
 	public static class PhpMath
 	{
+        #region GlobalInfo
+
+	    private class StaticInfo
+	    {
+	        public Random Generator;
+	        public MersenneTwister MtGenerator;
+
+	        public static StaticInfo Get
+	        {
+	            get
+	            {
+	                StaticInfo info;
+	                var properties = ThreadStatic.Properties;
+	                if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+	                {
+	                    properties.SetProperty(info = new StaticInfo());
+	                }
+	                return info;
+	            }
+	        }
+	    }
+
+	    #endregion
+
 		#region Per-request Random Number Generators
 
 		/// <summary>
@@ -41,15 +65,12 @@ namespace PHP.Library
 		{
 			get
 			{
-				if (_generator == null)
-					_generator = new Random(unchecked((int)DateTime.UtcNow.ToFileTime()));
-				return _generator;
+				var info = StaticInfo.Get;
+				if (info.Generator == null)
+					info.Generator = new Random(unchecked((int)DateTime.UtcNow.ToFileTime()));
+				return info.Generator;
 			}
 		}
-#if !SILVERLIGHT
-		[ThreadStatic]
-#endif
-		private static Random _generator;
 
 		/// <summary>
 		/// Gets an initialized Mersenne Twister random number generator associated with the current thread.
@@ -58,15 +79,12 @@ namespace PHP.Library
 		{
 			get
 			{
-				if (_mtGenerator == null)
-					_mtGenerator = new MersenneTwister(unchecked((uint)DateTime.UtcNow.ToFileTime()));
-				return _mtGenerator;
+				var info = StaticInfo.Get;
+				if (info.MtGenerator == null)
+					info.MtGenerator = new MersenneTwister(unchecked((uint)DateTime.UtcNow.ToFileTime()));
+				return info.MtGenerator;
 			}
 		}
-#if !SILVERLIGHT
-		[ThreadStatic]
-#endif
-		private static MersenneTwister _mtGenerator;
 
 		/// <summary>
 		/// Registers <see cref="ClearGenerators"/> routine to be called on request end.
@@ -77,12 +95,13 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Nulls <see cref="_generator"/> and <see cref="_mtGenerator"/> fields on request end.
+		/// Nulls <see cref="Generator"/> and <see cref="MTGenerator"/> fields on request end.
 		/// </summary>
 		private static void ClearGenerators()
 		{
-			_generator = null;
-            _mtGenerator = null;
+			var info = StaticInfo.Get;
+			info.Generator = null;
+		    info.MtGenerator = null;
 		}
 
 		#endregion
@@ -201,7 +220,7 @@ namespace PHP.Library
         [ImplementsFunction("srand")]
         public static void Seed()
         {
-            _generator = new Random();
+            StaticInfo.Get.Generator = new Random();
         }
 
         /// <summary>
@@ -211,7 +230,7 @@ namespace PHP.Library
 		[ImplementsFunction("srand")]
 		public static void Seed(int seed)
 		{
-			_generator = new Random(seed);
+			StaticInfo.Get.Generator = new Random(seed);
 		}
 
         /// <summary>

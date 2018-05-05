@@ -39,20 +39,33 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
 	public static partial class PhpFile
 	{
-		#region Constructors and Thread Static Stuff
+		#region GlobalInfo
 
-		/// <summary>The most recent <c>stat()</c> result (<c>stat()</c> of the <see cref="statCacheUrl"/> file).</summary>
-		[ThreadStatic]
-		private static StatStruct statCache;
-
-		/// <summary>The absolute path of the last <c>stat()</c> operation.</summary>
-		[ThreadStatic]
-		private static string statCacheUrl = null;
-
-		private static void Clear()
+		private class StaticInfo
 		{
-			statCache = new StatStruct();
-			statCacheUrl = null;
+			public StatStruct StatCache = new StatStruct();     // The most recent <c>stat()</c> result (<c>stat()</c> of the <see cref="statCacheUrl"/> file).</summary>
+			public string StatCacheUrl = null;                  // The absolute path of the last <c>stat()</c> operation.<
+
+			public static StaticInfo Get
+			{
+				get
+				{
+					StaticInfo info;
+					var properties = ThreadStatic.Properties;
+					if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+					{
+						properties.SetProperty(info = new StaticInfo());
+					}
+					return info;
+				}
+			}
+
+			public static void Clear()
+			{
+				var info = Get;
+				info.StatCache = new StatStruct();
+				info.StatCacheUrl = null;
+			}
 		}
 
 		#endregion
@@ -158,7 +171,7 @@ namespace PHP.Library
         {
             // Try to hit the cache first
             url = PhpPath.GetUrl(path);
-            return (url == statCacheUrl);
+            return (url == StaticInfo.Get.StatCacheUrl);
         }
 
         /// <summary>
@@ -174,8 +187,9 @@ namespace PHP.Library
             StatStruct stat = wrapper.Stat(path, quiet ? StreamStatOptions.Quiet : StreamStatOptions.Empty, StreamContext.Default, false);
             if (stat.st_size >= 0)
             {
-                statCacheUrl = url;
-                statCache = stat;
+                var info = StaticInfo.Get;
+				info.StatCacheUrl = url;
+                info.StatCache = stat;
                 return true;
             }
             else
@@ -188,7 +202,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="path">The path (absolute or relative or an URL) to the file or directory to stat.</param>
 		/// <param name="quiet"><c>true</c> to suppress the display of error messages (for example for <c>exists()</c>).</param>
-		/// <returns><c>true</c> if the <see cref="statCache"/> contains a valid 
+		/// <returns><c>true</c> if the <see cref="StaticInfo.StatCache"/> contains a valid 
 		/// stat structure for the given URL, <c>false</c> on an error.</returns>
 		internal static bool StatInternal(string path, bool quiet)
 		{
@@ -232,7 +246,7 @@ namespace PHP.Library
 		{
 			if (StatInternal(path, false))
 			{
-				return BuildStatArray(statCache);
+				return BuildStatArray(StaticInfo.Get.StatCache);
 			}
 			return null;
 		}
@@ -272,13 +286,13 @@ namespace PHP.Library
 		[ImplementsFunction("clearstatcache")]
 		public static void ClearStatCache()
 		{
-            Clear();
+            StaticInfo.Clear();
 		}
 
         [ImplementsFunction("clearstatcache")]
         public static void ClearStatCache( bool clear_realpath_cache )
         {
-            Clear();   // note: arguments ignored, Phalanger does not cache a lot, caches of .NET and OS are used transparently
+            StaticInfo.Clear();   // note: arguments ignored, Phalanger does not cache a lot, caches of .NET and OS are used transparently
         }
         [ImplementsFunction("clearstatcache")]
         public static void ClearStatCache(bool clear_realpath_cache,  string filename  )
@@ -288,7 +302,7 @@ namespace PHP.Library
                 // TODO: throw warning
             }
 
-            Clear();   // note: arguments ignored, Phalanger does not cache a lot, caches of .NET and OS are used transparently
+            StaticInfo.Clear();   // note: arguments ignored, Phalanger does not cache a lot, caches of .NET and OS are used transparently
         }
 
 		/// <summary>
@@ -482,7 +496,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return null;
-			FileModeFlags mode = (FileModeFlags)statCache.st_mode & FileModeFlags.FileTypeMask;
+			FileModeFlags mode = (FileModeFlags)StaticInfo.Get.StatCache.st_mode & FileModeFlags.FileTypeMask;
 
 			switch (mode)
 			{
@@ -514,7 +528,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return unchecked((int)statCache.st_atime);
+			return unchecked((int)StaticInfo.Get.StatCache.st_atime);
 		}
 
 		/// <summary>
@@ -537,7 +551,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return unchecked((int)statCache.st_ctime);
+			return unchecked((int)StaticInfo.Get.StatCache.st_ctime);
 		}
 
 		/// <summary>
@@ -554,7 +568,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return (int)statCache.st_gid;
+			return (int)StaticInfo.Get.StatCache.st_gid;
 		}
 
 		/// <summary>
@@ -571,7 +585,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return (int)statCache.st_ino;
+			return (int)StaticInfo.Get.StatCache.st_ino;
 		}
 
 		/// <summary>
@@ -590,7 +604,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return unchecked((int)statCache.st_mtime);
+			return unchecked((int)StaticInfo.Get.StatCache.st_mtime);
 		}
 
 		/// <summary>
@@ -604,7 +618,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return (int)statCache.st_uid;
+			return (int)StaticInfo.Get.StatCache.st_uid;
 		}
 
 		/// <summary>
@@ -618,7 +632,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return (int)statCache.st_mode;
+			return (int)StaticInfo.Get.StatCache.st_mode;
 		}
 
 		/// <summary>
@@ -640,7 +654,7 @@ namespace PHP.Library
             {
                 string url;
                 if (StatInternalTryCache(path, out url))
-                    return statCache.st_size;
+                    return StaticInfo.Get.StatCache.st_size;
 
                 // we are not calling full stat(), it is slow
                 return FileStreamWrapper.HandleNewFileSystemInfo(-1, path, (p) => FileSystemUtils.FileSize(new FileInfo(p)));
@@ -670,7 +684,7 @@ namespace PHP.Library
             {
                 string url;
                 if (StatInternalTryCache(path, out url))
-                    return ((FileModeFlags)statCache.st_mode & FileModeFlags.Directory) != 0;
+                    return ((FileModeFlags)StaticInfo.Get.StatCache.st_mode & FileModeFlags.Directory) != 0;
 
                 // we can't just call Directory.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
@@ -695,7 +709,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return false;
-			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Execute) > 0;
+			return ((FileModeFlags)StaticInfo.Get.StatCache.st_mode & FileModeFlags.Execute) > 0;
 		}
 
 		/// <summary>
@@ -712,7 +726,7 @@ namespace PHP.Library
             {
                 string url;
                 if (StatInternalTryCache(path, out url))
-                    return ((FileModeFlags)statCache.st_mode & FileModeFlags.File) != 0;
+                    return ((FileModeFlags)StaticInfo.Get.StatCache.st_mode & FileModeFlags.File) != 0;
 
                 // we can't just call File.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
@@ -746,7 +760,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return false;
-			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Read) > 0;
+			return ((FileModeFlags)StaticInfo.Get.StatCache.st_mode & FileModeFlags.Read) > 0;
 		}
 
 		/// <summary>
@@ -771,7 +785,7 @@ namespace PHP.Library
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return false;
-			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Write) > 0;
+			return ((FileModeFlags)StaticInfo.Get.StatCache.st_mode & FileModeFlags.Write) > 0;
 		}
 
 		#endregion

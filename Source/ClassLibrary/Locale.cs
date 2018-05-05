@@ -87,17 +87,13 @@ namespace PHP.Library
 		{
 			get
 			{
-				if (_cultures == null)
-					_cultures = new CultureInfo[(int)Category.Time + 1];
-
-				return _cultures;
+				CultureInfo[] info;
+				var properties = ThreadStatic.Properties;
+				if (properties.TryGetProperty<CultureInfo[]>(out info) == false || info == null)
+					properties.SetProperty<CultureInfo[]>(info = new CultureInfo[(int)Category.Time + 1]);
+				return info;
 			}
 		}
-
-#if !SILVERLIGHT
-		[ThreadStatic]
-#endif
-		private static CultureInfo[] _cultures;
 
 		static Locale()
 		{
@@ -106,7 +102,7 @@ namespace PHP.Library
 
 		private static void Clear()
 		{
-			_cultures = null;
+			ThreadStatic.Properties.SetProperty<CultureInfo[]>(null);
 		}
 
 		/// <summary>

@@ -31,7 +31,6 @@ Tools/nuget.exe
 *.tli
 *.tlh
 *.tmp
-*.vspscc
 .builds
 **/*.dotCover
 *.dynamic.cs
@@ -94,3 +93,4 @@ Deployment/Bin/PhpNetZip.dll
 Deployment/Bin/System.Data.SQLite.dll
 Deployment/Release*
 Deployment/Debug*
+*.output

@@ -191,20 +191,15 @@ namespace PHP.Library
     {
         #region Character map
 
-#if !SILVERLIGHT
-        [ThreadStatic]
-#endif
-        private static CharMap _charmap;
-
         /// <summary>
-        /// Get clear <see cref="CharMap"/> to be used by current thread. <see cref="_charmap"/>.
+        /// Get clear <see cref="CharMap"/> to be used by current thread.
         /// </summary>
         internal static CharMap InitializeCharMap()
         {
-            CharMap result = _charmap;
-
-            if (result == null)
-                _charmap = result = new CharMap(0x0800);
+            CharMap result;
+			var properties = ThreadStatic.Properties;
+            if (properties.TryGetProperty<CharMap>(out result) == false || result == null)
+                properties.SetProperty<CharMap>(result = new CharMap(0x0800));
             else
                 result.ClearAll();
 
@@ -4304,11 +4299,10 @@ namespace PHP.Library
             {
                 get
                 {
-                    var ctx = ScriptContext.CurrentContext;
-
                     TokenizerContext tctx;
-                    if (ctx.Properties.TryGetProperty<TokenizerContext>(out tctx) == false)
-                        ctx.Properties.SetProperty<TokenizerContext>(tctx = new TokenizerContext());
+                    var properties = ThreadStatic.Properties;
+					if (properties.TryGetProperty<TokenizerContext>(out tctx) == false)
+                        properties.SetProperty<TokenizerContext>(tctx = new TokenizerContext());
                     
                     //
                     return tctx;

@@ -82,7 +82,7 @@ namespace PHP.Library.Data
 		/// <param name="name">Connection resource name.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="connection"/> is a <B>null</B> reference.</exception>
 		protected PhpDbConnection(string/*!*/ connectionString, IDbConnection/*!*/ connection, string/*!*/ name)
-			: base(name)
+			: base(name, false)
 		{
 			if (connection == null)
 				throw new ArgumentNullException("connection");

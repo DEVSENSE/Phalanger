@@ -11,17 +11,26 @@ namespace PHP.Core
     /// </summary>
     internal sealed class PhpResourceManager
     {
-        #region Fields & Properties
+        #region GlobalInfo
 
-        /// <summary>
-        /// Lazily initialized list of <see cref="PhpResource"/>s created during this web request.
-        /// </summary>
-        /// <remarks>
-        /// The resources are disposed of when the request is over.
-        /// <seealso cref="RegisterResource"/><seealso cref="CleanUpResources"/>
-        /// </remarks>
-        [ThreadStatic]
-        private static LinkedList<WeakReference> resources;
+        private class StaticInfo
+        {
+            public LinkedList<WeakReference> Resources = new LinkedList<WeakReference>();
+
+            public static StaticInfo Get
+            {
+                get
+                {
+                    StaticInfo info;
+                    var properties = ThreadStatic.Properties;
+                    if (properties.TryGetProperty<StaticInfo>(out info) == false || info == null)
+                    {
+                        properties.SetProperty(info = new StaticInfo());
+                    }
+                    return info;
+                }
+            }
+        }
 
         #endregion
 
@@ -47,10 +56,7 @@ namespace PHP.Core
             Debug.Assert(res != null);
             //Debug.Assert(this method can only be called on the request thread)
 
-            if (resources == null)
-                resources = new LinkedList<WeakReference>();
-
-            return resources.AddFirst(new WeakReference(res));
+            return StaticInfo.Get.Resources.AddFirst(new WeakReference(res));
         }
 
         /// <summary>
@@ -68,21 +74,21 @@ namespace PHP.Core
         /// </summary>
         internal static void CleanUpResources()
         {
-            if (resources != null)
+            var info = StaticInfo.Get;
+			if (info.Resources != null)
             {
-                for (var p = resources.First; p != null; )
+                for (var p = info.Resources.First; p != null; )
                 {
                     var next = p.Next;
                     if (p.Value.IsAlive)
                     {
-                        var phpresource = (PhpResource)p.Value.Target;
+                        var phpresource = (PhpResource) p.Value.Target;
                         if (phpresource != null)
                             phpresource.Close();
                     }
                     p = next;
                 }
-
-                resources = null;
+				info.Resources = null;
             }
         }
 

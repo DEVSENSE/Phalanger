@@ -283,6 +283,7 @@
     <Compile Include="Script.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ThreadStatic.CLR.cs" />
     <Compile Include="ScriptContext.CLR.cs" />
     <Compile Include="ScriptContext.cs">
       <SubType>Code</SubType>

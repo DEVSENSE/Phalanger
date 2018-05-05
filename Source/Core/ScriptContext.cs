@@ -1771,6 +1771,11 @@ namespace PHP.Core
         private bool throwExceptionOnError = true;
 
         /// <summary>
+        /// Whether to throw an exception on PHP errors
+        /// </summary>
+        public bool ThrowPhpExceptionOnError { get; set; }
+
+        /// <summary>
         /// Gets whether error reporting is disabled or enabled.
         /// </summary>
         public bool ErrorReportingDisabled
@@ -2170,6 +2175,11 @@ namespace PHP.Core
             }
             catch (PhpException)
             {
+                // Throw the error if requested so the caller can catch it
+                if (ThrowPhpExceptionOnError) 
+                {
+                    throw;
+                }
                 // an error occurred -> we shell continue with execution
             }
             catch (PhpUserException e)
